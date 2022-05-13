@@ -10,8 +10,8 @@ const { SendMessage } = require('../helpers/sms.helper');
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
-const con = require('db.config');
-var mysql = require('mysql');
+// const con = require('db.config');
+// var mysql = require('mysql');
 
 router.post('/login', async (req, res) => {
     try {
@@ -21,21 +21,21 @@ router.post('/login', async (req, res) => {
 
         if (oldDb && !user) {
 
-            con.query(`SELECT * FROM user WHERE username =` + mysql.escape(req.body.username), async function (err, result, fields) {
-                if (err) throw err;
-                console.log(result[0].name);
-                const body = req.body
-                body.password = "password"
-                body.l_name = result[0].name
-                body.user_id = result[0].id
-                body.role = RoleOb._id
-                body.office = result[0].office
-                body.hashPassword = bcrypt.hashSync(body.password, 10);
-                let NewUser = new User(body);
-                const brancht = await NewUser.save();
-                const token = await jwt.sign({ username: NewUser.username, username: NewUser.username, _id: NewUser._id }, process.env.JWT_KEY);
-                return res.status(200).json({ token, username: NewUser.username, username: NewUser.username, _id: NewUser._id });
-            });
+            // con.query(`SELECT * FROM user WHERE username =` + mysql.escape(req.body.username), async function (err, result, fields) {
+            //     if (err) throw err;
+            //     console.log(result[0].name);
+            //     const body = req.body
+            //     body.password = "password"
+            //     body.l_name = result[0].name
+            //     body.user_id = result[0].id
+            //     body.role = RoleOb._id
+            //     body.office = result[0].office
+            //     body.hashPassword = bcrypt.hashSync(body.password, 10);
+            //     let NewUser = new User(body);
+            //     const brancht = await NewUser.save();
+            //     const token = await jwt.sign({ username: NewUser.username, username: NewUser.username, _id: NewUser._id }, process.env.JWT_KEY);
+            //     return res.status(200).json({ token, username: NewUser.username, username: NewUser.username, _id: NewUser._id });
+            // });
 
             return
         }
