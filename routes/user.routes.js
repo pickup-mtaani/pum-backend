@@ -16,12 +16,12 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
     try {
         let oldDb = req.query.olddb
-        const user = await User.findOne({ username: req.body.username });
+        const user = await User.findOne({ email: req.body.email });
         const RoleOb = await Role.findOne({ name: "client" })
 
         if (oldDb && !user) {
 
-            // con.query(`SELECT * FROM user WHERE username =` + mysql.escape(req.body.username), async function (err, result, fields) {
+            // con.query(`SELECT * FROM user WHERE email =` + mysql.escape(req.body.email), async function (err, result, fields) {
             //     if (err) throw err;
             //     console.log(result[0].name);
             //     const body = req.body
@@ -33,15 +33,15 @@ router.post('/login', async (req, res) => {
             //     body.hashPassword = bcrypt.hashSync(body.password, 10);
             //     let NewUser = new User(body);
             //     const brancht = await NewUser.save();
-            //     const token = await jwt.sign({ username: NewUser.username, username: NewUser.username, _id: NewUser._id }, process.env.JWT_KEY);
-            //     return res.status(200).json({ token, username: NewUser.username, username: NewUser.username, _id: NewUser._id });
+            //     const token = await jwt.sign({ email: NewUser.email, email: NewUser.email, _id: NewUser._id }, process.env.JWT_KEY);
+            //     return res.status(200).json({ token, email: NewUser.email, email: NewUser.email, _id: NewUser._id });
             // });
 
             return
         }
         else {
 
-            const user = await User.findOne({ username: req.body.username }).populate('role');
+            const user = await User.findOne({ email: req.body.email }).populate('role');
             console.log(user)
             if (user && !user.activated) {
                 return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
@@ -53,12 +53,12 @@ router.post('/login', async (req, res) => {
                 if (!password_match) {
                     return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
                 }
-                const token = await jwt.sign({ username: user.username, _id: user._id }, process.env.JWT_KEY);
-                return res.status(200).json({ token, key: process.env.JWT_KEY, username: user.username, _id: user._id, role: user.role.name });
+                const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
 
 
-                // const token = await jwt.sign({ username: mail.username, username: mail.username, _id: mail._id }, process.env.JWT_KEY);
-                // return res.status(200).json({ token, key: process.env.JWT_KEY, username: mail.username, username: mail.username, _id: mail._id });
+                // const token = await jwt.sign({ email: mail.email, email: mail.email, _id: mail._id }, process.env.JWT_KEY);
+                // return res.status(200).json({ token, key: process.env.JWT_KEY, email: mail.email, email: mail.email, _id: mail._id });
             }
             // return res.status(400).json({ message: 'User Not found !!' });
         }
@@ -73,7 +73,8 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
 
-        const user = await User.findOne({ username: req.body.username });
+        const user = await User.findOne({ email: req.body.email });
+        
         if (user) {
             return res.status(400).json({ message: 'User Exists !!' });
         }
@@ -83,11 +84,11 @@ router.post('/register', async (req, res) => {
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
-        const brancht = await NewUser.save();
-        const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.username}\nYour Activation Code is ${body.verification_code} ` }
+        const saved = await NewUser.save();
+        const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code is ${body.verification_code} ` }
         await SendMessage(recObj)
-        console.log(recObj)
-        return res.status(400).json({ message: 'User Saved Successfully !!', brancht });
+        
+        return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
         console.log(error)
@@ -102,7 +103,6 @@ router.put('/user/:id/activate', async (req, res) => {
 
         const user = await User.findOne({ _id: req.params.id });
 
-
         if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
 
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
@@ -115,7 +115,7 @@ router.put('/user/:id/activate', async (req, res) => {
 
 
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
