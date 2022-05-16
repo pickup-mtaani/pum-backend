@@ -121,6 +121,20 @@ router.put('/user/:id/activate', async (req, res) => {
     }
 
 });
+router.post('/user/:id/delete', async (req, res) => {
+    try {
+            await User.findByIdAndDelete( req.params.id )
+            return res.status(200).json({ message: 'User Deleted successfully !!' });
+      
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 
 router.get('/user/:id', async (req, res) => {
     try {
