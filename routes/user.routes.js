@@ -41,8 +41,8 @@ router.post('/login', async (req, res) => {
         }
         else {
 
-            const user = await User.findOne({ email: req.body.email }).populate('role');
-            console.log(user)
+            const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
+            
             if (user && !user.activated) {
                 return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
             }
