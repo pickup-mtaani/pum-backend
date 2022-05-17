@@ -121,9 +121,9 @@ router.put('/user/:id/activate', async (req, res) => {
     }
 
 });
-router.post('/user/:id/delete', async (req, res) => {
+router.post('/user/delete', async (req, res) => {
     try {
-            await User.findByIdAndDelete( req.params.id )
+            await User.findByIdAndDelete( {phone_number:req.body.phone_number )
             return res.status(200).json({ message: 'User Deleted successfully !!' });
       
 
