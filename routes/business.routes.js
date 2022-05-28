@@ -1,12 +1,11 @@
 const express = require('express');
-var mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 var Business = require('models/business.model')
 var BusinessDetails = require('models/business_details.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+const { validateBusinesInput } = require('../va;lidations/business.validations');
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -39,6 +38,10 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
         }
+        const { errors, isValid } = validateBusinesInput(req.body);
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
         else {
             const body = req.body
             body.createdBy = req.user._id
@@ -52,7 +55,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
     }
 });
 
-router.post('/business/:id/details', [authMiddleware, authorized], async (req, res, next) => {
+router.post('/business/:id/details', [authMiddleware, authorized], async (req, res) => {
     try {
         const Exists = await BusinessDetails.findOne({ business: req.params.id })
         const body = req.body
