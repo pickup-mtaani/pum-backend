@@ -7,7 +7,7 @@ var Role = require('models/roles.model')
 var jwt = require('jsonwebtoken');
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
-
+var { validateRegisterInput, validateLoginInput } = require('./../va;lidations/user.validations')
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
@@ -16,6 +16,8 @@ const router = express.Router();
 
 router.post('/login', async (req, res) => {
     try {
+
+
         let oldDb = req.query.olddb
         const user = await User.findOne({ email: req.body.email });
         const RoleOb = await Role.findOne({ name: "client" })
@@ -43,11 +45,14 @@ router.post('/login', async (req, res) => {
         else {
 
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
-            
+
             if (user && !user.activated) {
                 return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
             }
-
+            const { errors, isValid } = validateLoginInput(req.body);
+            if (!isValid) {
+                return res.status(400).json(errors);
+            }
 
             if (user) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
@@ -73,11 +78,13 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     try {
-
         const user = await User.findOne({ email: req.body.email });
-        
         if (user) {
             return res.status(400).json({ message: 'User Exists !!' });
+        }
+        const { errors, isValid } = validateRegisterInput(req.body);
+        if (!isValid) {
+            return res.status(400).json(errors);
         }
         const RoleOb = await Role.findOne({ name: "client" })
         const body = req.body
@@ -88,7 +95,7 @@ router.post('/register', async (req, res) => {
         const saved = await NewUser.save();
         const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         await SendMessage(recObj)
-        
+
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
@@ -124,16 +131,14 @@ router.put('/user/:id/activate', async (req, res) => {
 });
 router.post('/user/delete', async (req, res) => {
     try {
-console.log(req.body)
-         const user = await User.findOne({ f_name: req.body.f_name })
-console.log(user)
-if(user==null){
- return res.status(400).json({ success: false, message: 'user not found ' });
-}
-        
-            await User.findOneAndDelete({ f_name: req.body.f_name })
-            return res.status(200).json({ message: 'User Deleted' });
-        
+        const user = await User.findOne({ f_name: req.body.f_name })
+        if (user == null) {
+            return res.status(400).json({ success: false, message: 'user not found ' });
+        }
+
+        await User.findOneAndDelete({ f_name: req.body.f_name })
+        return res.status(200).json({ message: 'User Deleted' });
+
 
 
     } catch (error) {
