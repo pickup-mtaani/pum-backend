@@ -1,4 +1,3 @@
-
 const express = require('express');
 var mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -42,8 +41,8 @@ router.post('/login', async (req, res) => {
         }
         else {
 
-            const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
-            
+            const user = await User.findOne({ email: req.body.email }).populate('role');
+            console.log(user)
             if (user && !user.activated) {
                 return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
             }
@@ -86,7 +85,7 @@ router.post('/register', async (req, res) => {
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
         const saved = await NewUser.save();
-        const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
+        const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code is ${body.verification_code} ` }
         await SendMessage(recObj)
         
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
@@ -122,30 +121,8 @@ router.put('/user/:id/activate', async (req, res) => {
     }
 
 });
-router.post('/user/delete', async (req, res) => {
-    try {
-console.log(req.body)
-         const user = await User.findOne({ f_name: req.body.f_name })
-console.log(user)
-if(user==null){
- return res.status(400).json({ success: false, message: 'user not found ' });
-}
-        
-            await User.findOneAndDelete({ f_name: req.body.f_name })
-            return res.status(200).json({ message: 'User Deleted' });
-        
-
-
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({ success: false, message: 'operation failed ', error });
-
-    }
-
-});
 
 router.get('/user/:id', async (req, res) => {
-
     try {
         const userObj = await User.findById(req.params.id).populate('role')
         console.log(userObj);
@@ -161,3 +138,64 @@ router.get('/user/:id', async (req, res) => {
 
 
 module.exports = router;
+
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userObj = await User.findById(req.params.id).populate('role')
+        console.log(userObj);
+        return res.status(400).json({ message: 'User Fetched Successfully !!', >
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation faile>
+
+    }
+
+});
+
+
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userObj = await User.findById(req.params.id).populate('role')
+        console.log(userObj);
+        return res.status(400).json({ message: 'User Fetched Successfully !!', >
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation faile>
+
+    }
+
+});
+
+
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userObj = await User.findById(req.params.id).populate('role')
+        console.log(userObj);
+        return res.status(400).json({ message: 'User Fetched Successfully !!', >
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation faile>
+
+    }
+
+});
+
+
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userObj = await User.findById(req.params.id).populate('role')
+        console.log(userObj);
+        return res.status(400).json({ message: 'User Fetched Successfully !!', >
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation faile>
+
+    }
+
+});
+
+router.
