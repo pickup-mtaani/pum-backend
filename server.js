@@ -19,8 +19,8 @@ const RiderRoutes = require('routes/riders.routes')
 const productsRoutes = require('routes/products.routes')
 const stocksRoutes = require('routes/stocks.routes')
 const salesRoutes = require('routes/sales.routes')
-
-
+var Riders = require('./IoControllers/riders.io')
+var http = require('http').createServer(app)
 app.use(express.static(path.join(__dirname, 'public')));
 dotenv.config();
 
@@ -66,4 +66,6 @@ app.use('/api/', salesRoutes)
 
 // start server
 const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
-app.listen(port, () => console.log('Server listening on port ' + port));
+http.listen(port, () => console.log('Server listening on port ' + port));
+
+Riders(http)
