@@ -19,10 +19,7 @@ const BizSchema = new Schema({
         type: String,
         required: true
     },
-    // shelf_location: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'thrifter_location'
-    // },
+    
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'

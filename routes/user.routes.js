@@ -106,6 +106,49 @@ router.post('/register', async (req, res) => {
 
 });
 
+// router.post('/socialmedia', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
+//     try {
+
+
+//         const Exists = await User.findOne({ email: req.body.email });
+//         if (Exists) {
+//             return
+//         }
+
+//         else {
+//             const body = req.body
+//             body.email
+
+//             new Business(body)
+//             const biz = await newBusiness.save()
+//             return res.status(200).json({ message: 'Saved', biz });
+//         }
+//     } catch (error) {
+//         return res.status(400).json({ success: false, message: 'operation failed ', error });
+//     }
+// });
+
+router.post('/get-user', async (req, res) => {
+    try {
+        const Exists = await User.findOne({ email: req.body.email });
+        return res.status(200).json({ Exists });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
+router.put('/update-user', async (req, res) => {
+    try {
+        await User.findOneAndUpdate({ _id: req.params.id },  req.body , { new: true, useFindAndModify: false })
+        return res.status(200).json({ Exists });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
+
 router.put('/user/:id/activate', async (req, res) => {
     try {
 
