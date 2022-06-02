@@ -51,6 +51,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
             return res.status(200).json({ message: 'Saved', biz });
         }
     } catch (error) {
+        console.log(error.response)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
