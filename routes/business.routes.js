@@ -33,7 +33,7 @@ var upload = multer({
 router.post('/business', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
     try {
         const url = req.protocol + '://' + req.get('host');
-
+        console.log(url)
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
