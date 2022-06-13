@@ -77,6 +77,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/social-login', async (req, res) => {
+
     try {
         const user = await User.findOne({ email: req.body.email });
         if (user) {
@@ -90,15 +91,14 @@ router.post('/social-login', async (req, res) => {
         body.activated = true
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
-        await NewUser.save();
-        const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-        return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
+        let savedUser=await NewUser.save();
+        const token = await jwt.sign({ email: req.body.email, _id: user._id }, process.env.JWT_KEY);
+        return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.post('/register', async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
@@ -128,9 +128,6 @@ router.post('/register', async (req, res) => {
     }
 
 });
-
-
-
 router.post('/get-user', async (req, res) => {
     try {
         const Exists = await User.findOne({ email: req.body.email });
@@ -140,7 +137,6 @@ router.post('/get-user', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.put('/update-user', async (req, res) => {
     try {
         const userUpdate = await User.findOneAndUpdate({ email: req.body.email }, req.body, { new: true, useFindAndModify: false })
@@ -150,8 +146,6 @@ router.put('/update-user', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
-
 router.put('/user/:id/activate', async (req, res) => {
     try {
 
@@ -194,7 +188,6 @@ router.post('/user/delete', async (req, res) => {
     }
 
 });
-
 router.get('/user/:id', async (req, res) => {
 
     try {
