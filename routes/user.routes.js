@@ -76,6 +76,29 @@ router.post('/login', async (req, res) => {
 
 });
 
+router.post('/social-login', async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (user) {
+            const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+            return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
+        }
+        const RoleOb = await Role.findOne({ name: "client" })
+        const body = req.body
+        body.role = RoleOb._id
+        body.verification_code = MakeActivationCode(5)
+        body.activated = true
+        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        let NewUser = new User(body);
+        await NewUser.save();
+        const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+        return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
 router.post('/register', async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
@@ -140,7 +163,7 @@ router.post('/get-user', async (req, res) => {
 
 router.put('/update-user', async (req, res) => {
     try {
-        await User.findOneAndUpdate({ _id: req.params.id },  req.body , { new: true, useFindAndModify: false })
+        await User.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         return res.status(200).json({ Exists });
 
     } catch (error) {
