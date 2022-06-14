@@ -91,7 +91,7 @@ router.post('/social-login', async (req, res) => {
         body.activated = true
         body.hashPassword = bcrypt.hashSync("password", 10);
         let NewUser = new User(body);
-        let savedUser=await NewUser.save();
+        let savedUser = await NewUser.save();
         const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
         return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
     } catch (error) {
@@ -139,7 +139,9 @@ router.post('/get-user', async (req, res) => {
 });
 router.put('/update-user', async (req, res) => {
     try {
-        const userUpdate = await User.findOneAndUpdate({ email: req.body.email }, req.body, { new: true, useFindAndModify: false })
+        let body = req.body
+        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        const userUpdate = await User.findOneAndUpdate({ email: body.email }, body, { new: true, useFindAndModify: false })
         return res.status(200).json({ userUpdate });
 
     } catch (error) {
