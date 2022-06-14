@@ -89,10 +89,10 @@ router.post('/social-login', async (req, res) => {
         body.role = RoleOb._id
         body.verification_code = MakeActivationCode(5)
         body.activated = true
-        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        body.hashPassword = bcrypt.hashSync("password", 10);
         let NewUser = new User(body);
         let savedUser=await NewUser.save();
-        const token = await jwt.sign({ email: req.body.email, _id: user._id }, process.env.JWT_KEY);
+        const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
         return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
     } catch (error) {
         console.log(error)
