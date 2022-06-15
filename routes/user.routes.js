@@ -140,11 +140,15 @@ router.post('/get-user', async (req, res) => {
 router.put('/update-user', async (req, res) => {
     try {
         let body = req.body
-        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        if (body.password) {
+            body.hashPassword = bcrypt.hashSync(body.password, 10);
+        }
+        body.updatedAt=new Date();
         const userUpdate = await User.findOneAndUpdate({ email: body.email }, body, { new: true, useFindAndModify: false })
         return res.status(200).json({ userUpdate });
 
     } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
