@@ -24,6 +24,18 @@ router.post('/role', async (req, res) => {
     }
 
 });
+router.get('/roles', async (req, res) => {
+    try {
+        const roles = await Role.find({ deleted_at: null });
+        return res.status(200).json({ message: 'roles', roles });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 
 
 
