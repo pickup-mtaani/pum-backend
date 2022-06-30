@@ -68,12 +68,12 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
 router.get('/products', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
     try {
 
-        const products = await Product.find({ deleted_at: null, createdBy: req.user._id });
+        const products = await Product.find({ deleted_at: null, createdBy: req.user._id }).populate('category');
 
         return res.status(200).json({ message: 'Successfull pulled ', products });
 
     } catch (error) {
-        console.log(error)
+        
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
