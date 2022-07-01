@@ -79,7 +79,6 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
 });
 router.put('/product/:id',  [authMiddleware, authorized], async (req, res) => {
     try {
-
         await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         return res.status(200).json({ message: 'Successfull Update ', Product });
 
