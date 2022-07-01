@@ -77,7 +77,7 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.put('/product/id', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
+router.put('/product/:id',  [authMiddleware, authorized], async (req, res) => {
     try {
 
         await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
