@@ -4,7 +4,8 @@ const imagemin = require('imagemin');
 const imageminMozJpeg = require('imagemin-mozjpeg')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
-;
+var path = require('path');
+const fs = require('fs');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -38,13 +39,10 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             return res.status(400).json({ message: 'You Already added this Product !!' });
         }
         else {
-
             const reqFiles = [];
             const url = req.protocol + '://' + req.get('host')
-
             for (var i = 0; i < req.files.length; i++) {
                 reqFiles.push(url + '/uploads/products/' + req.files[i].filename);
-
                 await imagemin(["uploads/products/" + req.files[i].filename], {
                     destination: "uploads/products",
                     plugins: [
@@ -77,10 +75,68 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.put('/product/:id',  [authMiddleware, authorized], async (req, res) => {
+router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Successfull Update ', Product });
+        const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Successfull Update ', prod });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
+router.put('/product/:id/delete_image', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const prod = await Product.findById(req.params.id);
+
+        fs.unlink(__dirname + './../uploads/products/' + path.basename(prod.images[1]), async (err) => {
+            if (err) throw err;
+            let newImages = prod.images.splice(1, 0)
+            await Product.findOneAndUpdate({ _id: req.params.id }, { images: newImages }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'successfully deleted file ' });
+        });
+        //
+
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/product/:id/update_images', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        const product = await Product.findById(req.params.id);
+
+        const reqFiles = [];
+        const url = req.protocol + '://' + req.get('host')
+        for (var i = 0; i < req.files.length; i++) {
+            reqFiles.push(url + '/uploads/products/' + req.files[i].filename);
+            await imagemin(["uploads/products/" + req.files[i].filename], {
+                destination: "uploads/products",
+                plugins: [
+                    imageminMozJpeg({ quality: 30 })
+                ]
+            })
+
+        }
+
+        req.body.images = reqFiles
+        let newimages = product.images.concat(reqFiles)
+        const update = await Product.findOneAndUpdate({ _id: req.params.id }, { images: newimages }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Images Updated Successfully', update });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.get('/product/:id', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const prod = await Product.findById(req.params.id);
+
+        return res.status(200).json({ message: 'Successfull Update ', prod });
 
     } catch (error) {
 
