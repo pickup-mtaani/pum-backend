@@ -65,8 +65,12 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
 });
 router.get('/products', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
     try {
+        const { page,limit } = req.query
+        const PAGE_SIZE = limit;
+        const skip = (page - 1) * PAGE_SIZE;
 
-        const products = await Product.find({ deleted_at: null, createdBy: req.user._id }).populate('category');
+        const products = await Product.find({ deleted_at: null, createdBy: req.user._id }).populate('category').skip(skip)
+            .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });
 
