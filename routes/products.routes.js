@@ -90,9 +90,9 @@ router.put('/product/:id/delete_image', [authMiddleware, authorized], async (req
     try {
         const prod = await Product.findById(req.params.id);
 
-        fs.unlink(__dirname + './../uploads/products/' + path.basename(prod.images[1]), async (err) => {
+        fs.unlink(__dirname + './../uploads/products/' + path.basename(prod.images[req.body.index]), async (err) => {
             if (err) throw err;
-            let newImages = prod.images.splice(1, 0)
+            let newImages = prod.images.splice(req.body.index, 1)
             await Product.findOneAndUpdate({ _id: req.params.id }, { images: newImages }, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'successfully deleted file ' });
         });
@@ -104,6 +104,7 @@ router.put('/product/:id/delete_image', [authMiddleware, authorized], async (req
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+
 router.put('/product/:id/update_images', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
     try {
 
@@ -129,6 +130,30 @@ router.put('/product/:id/update_images', upload.array('images'), [authMiddleware
 
     } catch (error) {
         console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.get('/product/search/:key', [authMiddleware, authorized], async (req, res) => {
+    try {
+        let result = await Product.find({
+            "$or": [
+                {
+                    product_name: {
+                        $regex: req.params.key
+                    },
+                    // color: {
+                    //     $regex: req.params.key
+                    // },
+                    // price: {
+                    //     $regex: req.params.key
+                    // }
+                }
+            ]
+        })
+        return res.status(200).json({ message: 'Successfull Update ', result });
+
+    } catch (error) {
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
