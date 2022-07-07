@@ -18,13 +18,25 @@ const ProductSchema = new Schema({
         type: Array
         // required: true
     },
-    color: {
-        type: String,
+    colors: {
+        type: Array,
         // required: true
     },
     price: {
         type: Number,
         required: true
+    },
+    qty: {
+        type: Number,
+        required: true
+    },
+    min_order: {
+        type: Number,
+        required: true
+    },
+    size: {
+        type: String,
+
     },
     createdBy: {
         type: Schema.Types.ObjectId,

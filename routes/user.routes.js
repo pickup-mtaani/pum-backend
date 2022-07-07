@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
         else {
 
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
-
+            const mail = await User.findOne({ email: req.body.phone_number }).populate('role');
             if (user && !user.activated) {
                 return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
             }
@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
                 return res.status(400).json(errors);
             }
 
-            if (user) {
+            if (user ) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
                 if (!password_match) {
                     return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
@@ -75,13 +75,12 @@ router.post('/login', async (req, res) => {
     }
 
 });
-
 router.post('/social-login', async (req, res) => {
 
     try {
         const user = await User.findOne({ email: req.body.email });
         if (user) {
-            const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+            const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
         }
         const RoleOb = await Role.findOne({ name: "client" })
@@ -102,7 +101,8 @@ router.post('/social-login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
-        if (user) {
+        const phone = await User.findOne({ phone_number: req.body.phone_number });
+        if (user || phone) {
             return res.status(400).json({ message: 'User Exists !!' });
         }
         const { errors, isValid } = validateRegisterInput(req.body);
@@ -117,7 +117,7 @@ router.post('/register', async (req, res) => {
         let NewUser = new User(body);
         const saved = await NewUser.save();
         const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
-        await SendMessage(recObj)
+        // await SendMessage(recObj)
 
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
@@ -143,7 +143,7 @@ router.put('/update-user', async (req, res) => {
         if (body.password) {
             body.hashPassword = bcrypt.hashSync(body.password, 10);
         }
-        body.updatedAt=new Date();
+        body.updatedAt = new Date();
         const userUpdate = await User.findOneAndUpdate({ email: body.email }, body, { new: true, useFindAndModify: false })
         return res.status(200).json({ userUpdate });
 
