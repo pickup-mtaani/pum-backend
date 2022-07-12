@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
                 return res.status(400).json(errors);
             }
 
-            if (user ) {
+            if (user) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
                 if (!password_match) {
                     return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
@@ -117,7 +117,7 @@ router.post('/register', async (req, res) => {
         let NewUser = new User(body);
         const saved = await NewUser.save();
         const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
-        // await SendMessage(recObj)
+        await SendMessage(recObj)
 
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
@@ -127,6 +127,17 @@ router.post('/register', async (req, res) => {
 
     }
 
+});
+router.post('/:id/resend-token', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
+        console.log(textbody)
+        await SendMessage(textbody)
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
 });
 router.post('/get-user', async (req, res) => {
     try {
