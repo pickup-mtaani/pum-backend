@@ -7,6 +7,7 @@ var Role = require('models/roles.model')
 var jwt = require('jsonwebtoken');
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
+var transporter = require('../helpers/transpoter');
 var { validateRegisterInput, validateLoginInput } = require('./../va;lidations/user.validations')
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
@@ -60,13 +61,11 @@ router.post('/login', async (req, res) => {
                     return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
                 }
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id,  });
+                const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
+                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, });
 
-                // const token = await jwt.sign({ email: mail.email, email: mail.email, _id: mail._id }, process.env.JWT_KEY);
-                // return res.status(200).json({ token, key: process.env.JWT_KEY, email: mail.email, email: mail.email, _id: mail._id });
             }
-            // return res.status(400).json({ message: 'User Not found !!' });
         }
     } catch (error) {
         console.log(error)
@@ -116,8 +115,8 @@ router.post('/register', async (req, res) => {
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
         const saved = await NewUser.save();
-        const recObj = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
-        await SendMessage(recObj)
+        const textbody = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
+        await SendMessage(textbody)
 
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
@@ -132,8 +131,9 @@ router.post('/:id/resend-token', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
-        console.log(textbody)
+        // console.log(textbody)
         await SendMessage(textbody)
+        return res.status(200).json({ success: false, message: 'Activation resent ' });
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
@@ -141,7 +141,7 @@ router.post('/:id/resend-token', async (req, res) => {
 });
 router.post('/:id/update_password', async (req, res) => {
     try {
-        const  body  = req.body
+        const body = req.body
         console.log(body)
         const user = await User.findById(req.params.id)
         const password_match = user.comparePassword(req.body.password, user.hashPassword);
@@ -157,7 +157,64 @@ router.post('/:id/update_password', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.post('/get-user', async (req, res) => {
+
+router.post('/recover_account', async (req, res) => {
+    try {
+        const body = req.body
+        if (req.body.phone_number) {
+            const user = await User.findOne({ phone_number: body.phone_number });
+            if (!user) {
+                return res.status(401).json({ message: 'The phone Number you entered is not registered ' });
+            }
+
+            let verification_code = MakeActivationCode(5)
+            const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code }, { new: true, useFindAndModify: false })
+
+            const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${verification_code} ` }
+
+            await SendMessage(textbody)
+        }
+        else if (req.body.email) {
+            const user = await User.findOne({ email: req.body.email });
+            let verification_code = MakeActivationCode(5)
+            if (!user) {
+                return res.status(401).json({ message: 'The Email you entered is not registered ' });
+            }
+            const mailOptions = {
+                from: '"Pickup mtaani" <bradcoupers@gmail.com>',
+                to: `${req.body.email}`,
+                subject: 'Pickup Mtaani Account Recovery',
+                template: 'application',
+
+                context: {
+                    email: `${req.body.email}`,
+                    name: `${req.body.f_name} ${req.body.l_name}`,
+                    code: `${verification_code}`,
+
+                }
+            };
+            const body = req.body
+            await transporter.sendMail(mailOptions
+
+                , function async(error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        const userUpdate = User.findOneAndUpdate({ email: req.body.email }, { verification_code }, { new: true, useFindAndModify: false })
+                        return res.status(200).json({ success: true, message: `Email sent:  + ${info.response}` });
+                        // console.log();
+                    }
+                });
+        }
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
+router.post('/:id', async (req, res) => {
     try {
         const Exists = await User.findOne({ email: req.body.email });
         return res.status(200).json({ Exists });
@@ -183,20 +240,14 @@ router.put('/update-user', async (req, res) => {
 });
 router.put('/user/:id/activate', async (req, res) => {
     try {
-
         const user = await User.findOne({ _id: req.params.id });
-
         if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
-
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
-
         }
         else {
             await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'User Activated successfully and can now login !!' });
         }
-
-
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
