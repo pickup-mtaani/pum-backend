@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
                     return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
                 }
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
+                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id,  });
 
 
                 // const token = await jwt.sign({ email: mail.email, email: mail.email, _id: mail._id }, process.env.JWT_KEY);
@@ -134,6 +134,24 @@ router.post('/:id/resend-token', async (req, res) => {
         const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
         console.log(textbody)
         await SendMessage(textbody)
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.post('/:id/update_password', async (req, res) => {
+    try {
+        const  body  = req.body
+        console.log(body)
+        const user = await User.findById(req.params.id)
+        const password_match = user.comparePassword(req.body.password, user.hashPassword);
+        if (!password_match) {
+            return res.status(401).json({ message: 'The Previous Password is incorrect!!' });
+        }
+        let hashPassword = bcrypt.hashSync(body.new_password, 10);
+        const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })
+        return res.status(400).json({ success: false, message: 'User Updated Successfully ', Update });
+
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
