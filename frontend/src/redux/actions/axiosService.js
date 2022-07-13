@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const base = "http://localhost:4000";
+const base = "http://178.62.228.130:4000";
 
 const axiosService = axios.create({
   baseURL: `${base}`,
