@@ -31,8 +31,8 @@ function Dashboard() {
                     ))}
                 </div>
                 <div className="w-full gap-x-10 mx-5 flex mt-10">
-                    <div className="w-2/5 h-40 bg-green-100"></div>
-                    <div className="w-2/5 h-40 bg-green-100"></div>
+                    {/* <div className="w-2/5 h-40 bg-green-100"></div>
+                    <div className="w-2/5 h-40 bg-green-100"></div> */}
                 </div>
             </div>
         </Layout>
