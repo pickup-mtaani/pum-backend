@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import AddTodoModal from "../components/reject.componenet";
-
-import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
 import { getParcels, reject, recieve, postPackage, collect } from "../redux/actions/package.actions";
 import { getlocations, addthrift } from "../redux/actions/location.actions";
@@ -15,7 +13,6 @@ import AddThrift from "../components/AddThriftModal";
 
 export function Todo(props) {
 
-    const dispatch = useDispatch();
     let navigate = useNavigate();
     const { packages, locations } = props
     const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -26,7 +23,6 @@ export function Todo(props) {
     const [packageObj, setPackage] = useState({ recipient_name: '', recipient_phone: '', current_custodian: '', package_value: 0, pack_color: '' });
     const [reciver, setReciever] = useState({ reciver_id_no: '', reciver_phone_no: '', reciver_name: '' });
     const [reject_reason, setReason] = useState('');
-    const [todoObj, setTodoObj] = useState({});
     const [thrift, setThrift] = useState({ name: '', location: '' })
     const [showThrift, setShowThrift] = useState(false)
     const inputChange = (e) => {
@@ -139,7 +135,7 @@ export function Todo(props) {
         }
     }
 
-    const Badge = (props) => {
+    const Badge = () => {
         <div className='p-1 w-3 h-2 bg-red-100'></div>
     }
     console.log(props.user)

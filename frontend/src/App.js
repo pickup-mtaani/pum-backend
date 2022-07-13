@@ -8,11 +8,14 @@ import {
   useRoutes,
 } from "react-router-dom";
 import AssignRider from "./components/assignRider";
+import Layouts from "./views/Layouts";
+import Dashboard from "./components/dashboard";
+import Users from "./components/users";
 
 const App = () => {
   let routes = useRoutes([
-    { path: "/", element: <Login /> },
-    { path: "/dashboard", element: <Todo /> },
+    { path: "/", element: <Dashboard /> },
+    { path: "/users", element: <Users /> },
     { path: "/assign", element: <AssignRider /> },
     // ...
   ]);

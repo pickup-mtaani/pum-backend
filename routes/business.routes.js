@@ -3,7 +3,8 @@ var Business = require('models/business.model')
 var BusinessDetails = require('models/business_details.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
-
+const fs = require('fs');
+var path = require('path');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const { validateBusinesInput } = require('../va;lidations/business.validations');
 const router = express.Router();
@@ -51,6 +52,45 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         }
     } catch (error) {
         console.log(error.response)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const Bussiness = await Business.find( );
+
+        return res.status(200).json({ message: 'Businesses Fetched Successfully !!', Bussiness });
+
+    } catch (error) {
+        console.log(error.response)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const body = req.body
+        const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Edited successfully', Edited });
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
+    try {
+        const Biz = await Business.findById(req.params.id)
+        fs.unlink(__dirname + './../uploads/bussiness_logo/' + path.basename(Biz.logo), async (err) => {
+            if (err) throw err;
+            if (req.file) {
+                const url = req.protocol + '://' + req.get('host');
+                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { Logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
+                return res.status(200).json({ message: 'Logo Updated Successfully', update });
+            } else {
+                return res.status(200).json({ message: 'Logo Deleted Successfully' });
+            }
+        });
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });

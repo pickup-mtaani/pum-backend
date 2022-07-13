@@ -1,6 +1,7 @@
 const initialState = {
   errors: [],
   error: "",
+  users: [],
   user: {},
   loading: true,
 };
@@ -16,7 +17,7 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        user:action.payload
+        user: action.payload
       };
     case "LOGIN_FAIL":
       return {
@@ -36,6 +37,23 @@ export default function store(state = initialState, action) {
         loading: false,
       };
     case "REGISTER_USER_FAIL":
+      return {
+        ...state,
+        loading: true,
+        error: action.payload,
+      };
+    case "FETCH_USERS":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "FETCH_USERS_SUCCESSFUL":
+      return {
+        ...state,
+        loading: false,
+        users:action.payload,
+      };
+    case "FETCH_USERS_FAIL":
       return {
         ...state,
         loading: true,

@@ -43,6 +43,21 @@ export const registerUser = (dat) => async (dispatch) => {
     throw error;
   }
 };
+export const FetchUsers = () => async (dispatch) => {
+  try {
+
+    dispatch({ type: "FETCH_USERS" });
+    const { data } = await axios.get(`/api/users`);
+    let payload = data.Users
+    dispatch({ type: "FETCH_USERS_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error);
+    let payload = "error.response.data.message";
+    dispatch({ type: "FETCH_USERS_FAIL", payload });
+    throw error;
+  }
+};
 
 export const clearError = (dat) => async (dispatch) => {
 

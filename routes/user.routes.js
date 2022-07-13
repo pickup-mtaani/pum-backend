@@ -288,6 +288,19 @@ router.get('/user/:id', async (req, res) => {
     }
 
 });
+router.get('/users', async (req, res) => {
+
+    try {
+        const Users = await User.find().populate('role')
+        return res.status(200).json({ message: 'Users Fetched Successfully !!', Users });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 
 
 module.exports = router;
