@@ -278,6 +278,25 @@ router.put('/user/:id/activate', async (req, res) => {
     }
 
 });
+router.put('/user/re-activate', async (req, res) => {
+    try {
+        let user = await User.findOne({ phone_number: req.body.phone_number });
+        
+
+        if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
+            return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
+        }
+        else {
+            await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { activated: true }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'User Activated successfully and can now login !!' });
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 router.post('/user/delete', async (req, res) => {
     try {
         const user = await User.findOne({ f_name: req.body.f_name })

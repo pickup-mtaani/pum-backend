@@ -31,7 +31,7 @@ router.post('/busines-category', [authMiddleware, authorized], async (req, res) 
 });
 
 
-router.get('/busines-categories', [authMiddleware, authorized], async (req, res) => {
+router.get('/busines-categories',  async (req, res) => {
     try {
         const Categories = await Category.find({deleted_at:null});
         return res.status(200).json({ success: true, message: 'Categories fetched successfull', Categories });
