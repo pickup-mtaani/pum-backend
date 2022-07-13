@@ -39,7 +39,6 @@ module.exports.validateRegisterInput = (data) => {
         isValid: isEmpty(errors)
     }
 }
-
 module.exports.validateLoginInput = (data) => {
     let errors = {};
 
@@ -57,16 +56,22 @@ module.exports.validateLoginInput = (data) => {
         isValid: isEmpty(errors)
     }
 }
-
 module.exports.validatePasswordInput = (data) => {
     let errors = {};
     data.new_password = !isEmpty(data.new_password) && data.new_password !== undefined ? data.new_password : '';
+    data.confirm_password = !isEmpty(data.confirm_password) && data.confirm_password !== undefined ? data.confirm_password : '';
 
     if (Validator.isEmpty(data.new_password)) {
-        errors.new_password = 'phone number  field is required';
+        errors.new_password = 'Password  field is required';
+    }
+    if (Validator.isEmpty(data.confirm_password)) {
+        errors.password = 'password confirmation  field is required';
     }
     if (!isUpper(data.new_password)) {
         errors.new_password = 'Password Must contain Both Upper and Lower case Characters  ';
+    }
+    if (!data.new_password !== data.confirm_password) {
+        errors.new_password = 'Password Mismatch the confirm password  ';
     }
     if (!isSpecial(data.new_password)) {
         errors.new_password = 'Password Must contain at least one special characters  ';
