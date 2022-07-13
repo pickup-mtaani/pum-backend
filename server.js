@@ -64,6 +64,15 @@ app.use('/api/', salesRoutes)
 // global error handler
 // app.use(errorHandler);
 
+const root = require('path').join(__dirname, 'frontend', 'build')
+app.use(express.static(root));
+// app.get("*", (req, res) => {
+//   res.sendFile('index.html', { root });
+// })
+app.get('*', function (req, res) {
+    res.sendFile('index.html', { root: path.join(__dirname, 'frontend/build') });
+});
+
 // start server
 const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
 http.listen(port, () => console.log('Server listening on port ' + port));

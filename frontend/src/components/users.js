@@ -31,6 +31,24 @@ function Users(props) {
       selector: row => row.phone_number
     }
   ]
+  // const subHeaderComponentMemo = React.useMemo(() => {
+
+  //   return (
+  //     <>
+  //       <Search_filter_component
+  //         onChangeFilter={onChangeFilter}
+  //         status={status}
+  //         searchValue={searchValue}
+  //         download={() => DownloadFile(() =>
+  //           props.getproducts({ limit: -1, download: true, status: status, cursor: props.lastElement, q: searchValue, enabled: true, }),
+  //           `${totalRows > 0 ? totalRows : "all"}_${status}_products`
+  //         )}
+  //       />
+  //       <AddButton toggleCanvarse={toggleCanvarse} />
+  //       <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} />
+  //     </>
+  //   );
+  // }, [status, searchValue,]);
 
   useEffect(() => {
     props.FetchUsers()
