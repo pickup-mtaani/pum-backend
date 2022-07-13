@@ -8,7 +8,7 @@ var jwt = require('jsonwebtoken');
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 var transporter = require('../helpers/transpoter');
-var { validateRegisterInput, validateLoginInput } = require('./../va;lidations/user.validations')
+var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations')
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
@@ -17,8 +17,6 @@ const router = express.Router();
 
 router.post('/login', async (req, res) => {
     try {
-
-
         let oldDb = req.query.olddb
         const user = await User.findOne({ email: req.body.email });
         const RoleOb = await Role.findOne({ name: "client" })
@@ -142,11 +140,36 @@ router.post('/:id/resend-token', async (req, res) => {
 router.post('/:id/update_password', async (req, res) => {
     try {
         const body = req.body
-        console.log(body)
+        const { errors, isValid } = validatePasswordInput(req.body);
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
         const user = await User.findById(req.params.id)
         const password_match = user.comparePassword(req.body.password, user.hashPassword);
         if (!password_match) {
             return res.status(401).json({ message: 'The Previous Password is incorrect!!' });
+        }
+        let hashPassword = bcrypt.hashSync(body.new_password, 10);
+        const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })
+        return res.status(400).json({ success: false, message: 'User Updated Successfully ', Update });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/reset-password', async (req, res) => {
+    try {
+        const body = req.body
+        const { errors, isValid } = validatePasswordInput(req.body);
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+        let user = {}
+        if (req.body.email) {
+            user = await User.findOne({ email: req.body.email })
+        } else {
+            user = await User.findOne({ phone_number: req.body.phone_number })
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
         const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })

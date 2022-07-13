@@ -1,9 +1,10 @@
 const Validator = require('validator');
 const isEmpty = require('./isEmpty');
 const { emailIsValid, } = require('./isEmail');
+const { UpperCase, NumericalExists, isUpper, isSpecial } = require('./passwordValidator');
 module.exports.validateRegisterInput = (data) => {
     let errors = {};
-  
+
     data.f_name = !isEmpty(data.f_name) && data.f_name !== undefined ? data.f_name : '';
     data.l_name = !isEmpty(data.l_name) && data.l_name !== undefined ? data.l_name : '';
     data.email = !isEmpty(data.email) && data.email !== undefined ? data.email : '';
@@ -44,12 +45,38 @@ module.exports.validateLoginInput = (data) => {
 
     data.phone_number = !isEmpty(data.phone_number) && data.phone_number !== undefined ? data.phone_number : '';
     data.password = !isEmpty(data.password) && data.password !== undefined ? data.password : '';
-  
+
     if (Validator.isEmpty(data.phone_number)) {
         errors.phone_number = 'phone number  field is required';
     }
     if (Validator.isEmpty(data.password)) {
         errors.password = 'Password is required';
+    }
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    }
+}
+
+module.exports.validatePasswordInput = (data) => {
+    let errors = {};
+    data.new_password = !isEmpty(data.new_password) && data.new_password !== undefined ? data.new_password : '';
+
+    if (Validator.isEmpty(data.new_password)) {
+        errors.new_password = 'phone number  field is required';
+    }
+    if (!isUpper(data.new_password)) {
+        errors.new_password = 'Password Must contain Both Upper and Lower case Characters  ';
+    }
+    if (!isSpecial(data.new_password)) {
+        errors.new_password = 'Password Must contain at least one special characters  ';
+    }
+
+    if (!Validator.isLength(data.new_password, { min: 6, max: 30 })) {
+        errors.new_password = 'Password must be more than 6 characters long';
+    }
+    if (!NumericalExists(data.new_password)) {
+        errors.new_password = 'Password Must have at least one Numerical value';
     }
     return {
         errors,
