@@ -176,7 +176,11 @@ router.put('/reset-password', async (req, res) => {
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
-        const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })
+        if(req.body.email){
+            const Update = await User.findOneAndUpdate({  email: user.email  }, { hashPassword:hashPassword }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
+        }
+        const Update = await User.findOneAndUpdate({  phone_number: user.phone_number  }, { hashPassword:hashPassword }, { new: true, useFindAndModify: false })
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
@@ -205,10 +209,11 @@ router.post('/recover_account', async (req, res) => {
         }
         else if (req.body.email) {
             const user = await User.findOne({ email: req.body.email });
-            let verification_code = MakeActivationCode(5)
+
             if (!user) {
                 return res.status(401).json({ message: 'The Email you entered is not registered ' });
             }
+            let verification_code = await MakeActivationCode(5)
             const mailOptions = {
                 from: '"Pickup mtaani" <bradcoupers@gmail.com>',
                 to: `${req.body.email}`,
@@ -228,9 +233,9 @@ router.post('/recover_account', async (req, res) => {
                     if (error) {
                         console.log(error);
                     } else {
-                        const userUpdate = User.findOneAndUpdate({ email: req.body.email }, { verification_code }, { new: true, useFindAndModify: false })
+                        const userUpdate = User.findOneAndUpdate({ email: user.email }, { verification_code: verification_code }, { new: true, useFindAndModify: false })
                         return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.email}` });
-                       
+
                     }
                 });
         }
