@@ -70,7 +70,7 @@ module.exports.validatePasswordInput = (data) => {
     if (!isUpper(data.new_password)) {
         errors.new_password = 'Password Must contain Both Upper and Lower case Characters  ';
     }
-    if (!data.new_password !== data.confirm_password) {
+    if (data.new_password !== data.confirm_password) {
         errors.new_password = 'Password Mismatch the confirm password  ';
     }
     if (!isSpecial(data.new_password)) {

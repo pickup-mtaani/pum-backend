@@ -14,7 +14,7 @@ import Users from "./components/users";
 
 const App = () => {
   let routes = useRoutes([
-    { path: "/", element: <Login /> },
+    { path: "/", element: <Dashboard /> },
     { path: "/users", element: <Users /> },
     { path: "/assign", element: <AssignRider /> },
     // ...

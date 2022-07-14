@@ -217,7 +217,7 @@ router.post('/recover_account', async (req, res) => {
 
                 context: {
                     email: `${req.body.email}`,
-                    name: `${req.body.f_name} ${req.body.l_name}`,
+                    name: `${user.f_name} ${user.l_name}`,
                     code: `${verification_code}`,
 
                 }
