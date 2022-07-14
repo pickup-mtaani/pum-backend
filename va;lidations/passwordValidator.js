@@ -12,7 +12,7 @@ const isUpper = (str) => {
     return true ;
 }
 const isSpecial = (str) => {
-    if(/[#?!@$%^&*-]/.test(str) && /[A-Z]/.test(str))
+    if(/[#?!@$%^&*-]/.test(str))
     return true ;
 }
 
