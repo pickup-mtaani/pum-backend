@@ -41,7 +41,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         const { errors, isValid } = validateBusinesInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
-            return res.status(400).json(error);
+            return res.status(400).json({ message: error });
         }
         else {
             const body = req.body

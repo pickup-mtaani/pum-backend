@@ -106,7 +106,7 @@ router.post('/register', async (req, res) => {
         const { errors, isValid } = validateRegisterInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
-            return res.status(400).json(error);
+            return res.status(400).json({ message: error });
         }
         const RoleOb = await Role.findOne({ name: "client" })
         const body = req.body
@@ -145,7 +145,7 @@ router.post('/:id/update_password', async (req, res) => {
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
-            return res.status(400).json(error);;
+            return res.status(400).json({ message: error });;
         }
         const user = await User.findById(req.params.id)
         const password_match = user.comparePassword(req.body.password, user.hashPassword);
@@ -167,7 +167,7 @@ router.put('/reset-password', async (req, res) => {
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
-            return res.status(400).json(error);
+            return res.status(400).json({ message: error });
         }
         let user = {}
         if (req.body.email) {
@@ -188,7 +188,10 @@ router.put('/reset-password', async (req, res) => {
 router.post('/recover_account', async (req, res) => {
     try {
         const body = req.body
-        if (req.body.phone_number) {
+        if (!req.body.phone_number && !req.body.email) {
+            return res.status(401).json({ message: 'Kindly enter your email or phone number' });
+        }
+        else if (req.body.phone_number) {
             const user = await User.findOne({ phone_number: body.phone_number });
             if (!user) {
                 return res.status(401).json({ message: 'The phone Number you entered is not registered ' });
@@ -196,9 +199,7 @@ router.post('/recover_account', async (req, res) => {
 
             let verification_code = MakeActivationCode(5)
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code }, { new: true, useFindAndModify: false })
-
-            const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${verification_code} ` }
-
+            const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
             await SendMessage(textbody)
             return res.status(200).json({ message: `A recovery Text has been sent to  ${req.body.phone_number}` });
         }
@@ -284,18 +285,26 @@ router.put('/user/:id/activate', async (req, res) => {
 });
 router.put('/user/re-activate', async (req, res) => {
     try {
-        let user = await User.findOne({ phone_number: req.body.phone_number });
-
-
+        let user = {}
+        if (req.body.phone_number) {
+            user = await User.findOne({ phone_number: req.body.phone_number });
+        }
+        else if (req.body.email) {
+            user = await User.findOne({ email: req.body.email });
+        }
         if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
         }
-        else {
+        else if (req.body.phone_number) {
             await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { activated: true }, { new: true, useFindAndModify: false })
-            return res.status(200).json({ message: 'User Activated successfully and can now login !!' });
+            return res.status(200).json({ message: 'User ReActivated successfully !!' });
+        }
+        else if (req.body.email) {
+            await User.findOneAndUpdate({ email: req.body.email }, { activated: true }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'User ReActivated successfully !!' });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
