@@ -50,7 +50,8 @@ router.post('/login', async (req, res) => {
             }
             const { errors, isValid } = validateLoginInput(req.body);
             if (!isValid) {
-                return res.status(400).json(errors);
+                let error = Object.values(errors)[0]
+                return res.status(400).json(error);
             }
 
             if (user) {
@@ -104,7 +105,8 @@ router.post('/register', async (req, res) => {
         }
         const { errors, isValid } = validateRegisterInput(req.body);
         if (!isValid) {
-            return res.status(400).json(errors);
+            let error = Object.values(errors)[0]
+            return res.status(400).json(error);
         }
         const RoleOb = await Role.findOne({ name: "client" })
         const body = req.body
@@ -142,7 +144,8 @@ router.post('/:id/update_password', async (req, res) => {
         const body = req.body
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
-            return res.status(400).json(errors);
+            let error = Object.values(errors)[0]
+            return res.status(400).json(error);;
         }
         const user = await User.findById(req.params.id)
         const password_match = user.comparePassword(req.body.password, user.hashPassword);
@@ -163,7 +166,8 @@ router.put('/reset-password', async (req, res) => {
         const body = req.body
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
-            return res.status(400).json(errors);
+            let error = Object.values(errors)[0]
+            return res.status(400).json(error);
         }
         let user = {}
         if (req.body.email) {
@@ -219,7 +223,6 @@ router.post('/recover_account', async (req, res) => {
             };
             const body = req.body
             await transporter.sendMail(mailOptions
-
                 , function async(error, info) {
                     if (error) {
                         console.log(error);

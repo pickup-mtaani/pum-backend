@@ -40,7 +40,8 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         }
         const { errors, isValid } = validateBusinesInput(req.body);
         if (!isValid) {
-            return res.status(400).json(errors);
+            let error = Object.values(errors)[0]
+            return res.status(400).json(error);
         }
         else {
             const body = req.body
@@ -57,7 +58,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
 });
 router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Bussiness = await Business.find( );
+        const Bussiness = await Business.find();
 
         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', Bussiness });
 

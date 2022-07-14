@@ -1,10 +1,6 @@
 var mongoose = require('mongoose');
 const bcrypt = require('bcryptjs')
-
-
 const Schema = mongoose.Schema;
-
-
 const LogsSchema = new Schema({
     type: {
         type: String,

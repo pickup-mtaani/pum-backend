@@ -4,6 +4,23 @@ export default function Login(props) {
   const { toggleRegistering, registering, changeInput, submit, error } = props;
 
   return (
+    <div class="w-full h-screen  flex justify-center items-center">
+      <div class="bg-gray-400 w-full h-full relative z-0 flex justify-center items-center">
+        <div class="w-3/4 h-3/4 bg-white shadow-xl ">
+          <div className="w-96 bg-red-600 h-full mx-4"></div>
+          <div></div>
+        </div>
+        <div class="absolute inset-0 flex  z-10">
+          <div class="h-full w-2/5 bg-primary-600 opacity-40"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+export function Login1(props) {
+  const { toggleRegistering, registering, changeInput, submit, error } = props;
+
+  return (
     <div className=" h-2/4  md:w-1/4 w-1/2 bg-transparent py-10 px-2 shadow-xl">
       <h3 className="text-2xl text-white text-center py-4 uppercase">
         WElCOME
