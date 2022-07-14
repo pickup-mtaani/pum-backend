@@ -169,11 +169,14 @@ router.put('/reset-password', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        let user = {}
+        let user
         if (req.body.email) {
             user = await User.findOne({ email: req.body.email })
         } else {
             user = await User.findOne({ phone_number: req.body.phone_number })
+        }
+        if(!user){
+            return res.status(400).json({ success: false, message: 'User Not Found ' }); 
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
         if(req.body.email){
