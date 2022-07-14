@@ -229,7 +229,7 @@ router.post('/recover_account', async (req, res) => {
                         console.log(error);
                     } else {
                         const userUpdate = User.findOneAndUpdate({ email: req.body.email }, { verification_code }, { new: true, useFindAndModify: false })
-                        return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.emai}` });
+                        return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.email}` });
                         // console.log();
                     }
                 });
