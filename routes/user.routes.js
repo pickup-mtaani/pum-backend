@@ -154,7 +154,7 @@ router.post('/:id/update_password', async (req, res) => {
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
         const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })
-        return res.status(400).json({ success: false, message: 'User Updated Successfully ', Update });
+        return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
         console.log(error)
@@ -177,7 +177,7 @@ router.put('/reset-password', async (req, res) => {
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
         const Update = await User.findOneAndUpdate({ _id: req.params.id }, { hashPassword }, { new: true, useFindAndModify: false })
-        return res.status(400).json({ success: false, message: 'User Updated Successfully ', Update });
+        return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
         console.log(error)
@@ -230,7 +230,7 @@ router.post('/recover_account', async (req, res) => {
                     } else {
                         const userUpdate = User.findOneAndUpdate({ email: req.body.email }, { verification_code }, { new: true, useFindAndModify: false })
                         return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.email}` });
-                        // console.log();
+                       
                     }
                 });
         }
