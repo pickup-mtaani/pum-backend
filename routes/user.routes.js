@@ -196,6 +196,7 @@ router.post('/recover_account', async (req, res) => {
             const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${verification_code} ` }
 
             await SendMessage(textbody)
+            return res.status(200).json({ message: `A recovery Text has been sent to  ${req.body.phone_number}` });
         }
         else if (req.body.email) {
             const user = await User.findOne({ email: req.body.email });
@@ -224,7 +225,7 @@ router.post('/recover_account', async (req, res) => {
                         console.log(error);
                     } else {
                         const userUpdate = User.findOneAndUpdate({ email: req.body.email }, { verification_code }, { new: true, useFindAndModify: false })
-                        return res.status(200).json({ success: true, message: `Email sent:  + ${info.response}` });
+                        return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.emai}` });
                         // console.log();
                     }
                 });
@@ -281,7 +282,7 @@ router.put('/user/:id/activate', async (req, res) => {
 router.put('/user/re-activate', async (req, res) => {
     try {
         let user = await User.findOne({ phone_number: req.body.phone_number });
-        
+
 
         if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
