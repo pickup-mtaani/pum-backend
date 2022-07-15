@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
             const mail = await User.findOne({ email: req.body.phone_number }).populate('role');
             if (user && !user.activated) {
-                return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message', user });
+                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message', user });
             }
             const { errors, isValid } = validateLoginInput(req.body);
             if (!isValid) {
@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
             if (user) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
                 if (!password_match) {
-                    return res.status(401).json({ message: 'Authentication failed with wrong credentials!!', user });
+                    return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', user });
                 }
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
                 const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
@@ -102,7 +102,7 @@ router.post('/register', async (req, res) => {
         const user = await User.findOne({ email: req.body.email });
         const phone = await User.findOne({ phone_number: req.body.phone_number });
         if (user || phone) {
-            return res.status(400).json({ message: 'User Exists !!', user });
+            return res.status(402).json({ message: 'User Exists !!', user });
         }
         const { errors, isValid } = validateRegisterInput(req.body);
         if (!isValid) {
