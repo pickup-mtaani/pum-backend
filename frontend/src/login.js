@@ -14,13 +14,11 @@ function Login(props) {
 
   const error = useSelector((state) => state.userDetails);
   const [user, setUser] = useState({
-    // email: "",
+
     password: "",
-    // name: "",
+
     phone_number: "",
-    // l_name: '',
-    // gender: '',
-    // username: ''
+
   });
   const dispatch = useDispatch();
   const [registering, setReistering] = useState(false);
@@ -48,21 +46,27 @@ function Login(props) {
   };
   const LoginUser = async () => {
     await props.loginUser(user)
-    var user = JSON.parse(localStorage.getItem('userInfo'));
-    if (user.role.name === "admin") {
+    var userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if (userInfo.role.name === "admin") {
       return navigate("/dashboard");
     }
     else {
-      alert("Access Dinied")
+      return navigate("/403");
     }
 
   };
 
   const navigate = useNavigate();
   useEffect(() => {
-    var user = JSON.parse(localStorage.getItem('userInfo'));
-    if (user) {
+    var userInfor = JSON.parse(localStorage.getItem('userInfo'));
+    if (userInfor && userInfor.role.name === "admin") {
       return navigate("/dashboard");
+    }
+    else if (userInfor && userInfor.role.name !== "admin") {
+
+      return navigate("/403");
+    } else {
+      return navigate("/");
     }
 
   })

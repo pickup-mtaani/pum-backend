@@ -11,12 +11,14 @@ import AssignRider from "./components/assignRider";
 import Layouts from "./views/Layouts";
 import Dashboard from "./components/dashboard";
 import Users from "./components/users";
+import UnAuth from "./components/unAuth";
 
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
     { path: "/users", element: <Users /> },
     { path: "/dashboard", element: <Dashboard /> },
+    { path: "/403", element: <UnAuth /> },
     // ...
   ]);
   return routes;

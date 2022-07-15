@@ -29,6 +29,8 @@ function Layout(props) {
         var user = JSON.parse(localStorage.getItem('userInfo'));
         if (!user) {
             return navigate("/");
+        } else if (user.role.name !== "admin") {
+            return navigate("/403");
         }
 
     })
