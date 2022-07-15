@@ -48,16 +48,23 @@ function Login(props) {
   };
   const LoginUser = async () => {
     await props.loginUser(user)
-    return navigate("/dashboard");
+    var user = JSON.parse(localStorage.getItem('userInfo'));
+    if (user.role.name === "admin") {
+      return navigate("/dashboard");
+    }
+    else {
+      alert("Access Dinied")
+    }
+
   };
 
   const navigate = useNavigate();
   useEffect(() => {
-      var user = JSON.parse(localStorage.getItem('userInfo'));
-      if(user){
-          return navigate("/dashboard");  
-      }
-      
+    var user = JSON.parse(localStorage.getItem('userInfo'));
+    if (user) {
+      return navigate("/dashboard");
+    }
+
   })
   useEffect(() => {
 

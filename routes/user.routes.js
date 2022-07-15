@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
             const mail = await User.findOne({ email: req.body.phone_number }).populate('role');
             if (user && !user.activated) {
-                return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
+                return res.status(401).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message', user });
             }
             const { errors, isValid } = validateLoginInput(req.body);
             if (!isValid) {
@@ -57,12 +57,12 @@ router.post('/login', async (req, res) => {
             if (user) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
                 if (!password_match) {
-                    return res.status(401).json({ message: 'Authentication failed with wrong credentials!!' });
+                    return res.status(401).json({ message: 'Authentication failed with wrong credentials!!', user });
                 }
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
                 const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
-                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, });
+                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id,role: user.role });
 
             }
         }
@@ -98,10 +98,11 @@ router.post('/social-login', async (req, res) => {
 });
 router.post('/register', async (req, res) => {
     try {
+
         const user = await User.findOne({ email: req.body.email });
         const phone = await User.findOne({ phone_number: req.body.phone_number });
         if (user || phone) {
-            return res.status(400).json({ message: 'User Exists !!' });
+            return res.status(400).json({ message: 'User Exists !!', user });
         }
         const { errors, isValid } = validateRegisterInput(req.body);
         if (!isValid) {
@@ -175,15 +176,15 @@ router.put('/reset-password', async (req, res) => {
         } else {
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
-        if(!user){
-            return res.status(400).json({ success: false, message: 'User Not Found ' }); 
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'User Not Found ' });
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
-        if(req.body.email){
-            const Update = await User.findOneAndUpdate({  email: user.email  }, { hashPassword:hashPassword }, { new: true, useFindAndModify: false })
+        if (req.body.email) {
+            const Update = await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
             return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
         }
-        const Update = await User.findOneAndUpdate({  phone_number: user.phone_number  }, { hashPassword:hashPassword }, { new: true, useFindAndModify: false })
+        const Update = await User.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
