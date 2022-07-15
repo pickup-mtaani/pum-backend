@@ -24,11 +24,11 @@ export default function Login(props) {
             {error && <div className="bg-red-100 text-center mb-5 py-2 px-3 border w-full text-red-600">{error}</div>}
             <div className="w-full ">
               <div className="uppercase text-slate-400   py-2">Phone Number</div>
-              <input name="phone_number" type="text" autoComplete="off" onChange={(changeInput)} className="border border-slate-200 w-full px-3 py-2" placeholder="Phone Number" />
+              <input name="phone_number" type="text"onChange={(changeInput)} className="border border-slate-200 w-full px-3 py-2" placeholder="Phone Number" />
             </div>
             <div className="w-full ">
               <div className="uppercase text-slate-400  py-2">Password</div>
-              <input name="password" type="password" autoComplete="off" onChange={changeInput} className="border border-slate-200 w-full px-3 py-2" placeholder="Phone Number" />
+              <input name="password" type="password" onChange={changeInput} className="border border-slate-200 w-full px-3 py-2" placeholder="Phone Number" />
             </div>
             <div className=" flex w-full justify-end my-3">Forgot password</div>
             <div className="w-full  bg-gradient-to-r from-primary-500 to-primary-600 px-3 py-2 flex justify-center items-center my-10" onClick={submit}>

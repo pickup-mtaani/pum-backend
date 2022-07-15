@@ -62,7 +62,7 @@ router.post('/login', async (req, res) => {
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
                 const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
-                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id,role: user.role });
+                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
 
             }
         }
@@ -223,27 +223,17 @@ router.post('/recover_account', async (req, res) => {
                 to: `${req.body.email}`,
                 subject: 'Pickup Mtaani Account Recovery',
                 template: 'application',
-
                 context: {
                     email: `${req.body.email}`,
                     name: `${user.f_name} ${user.l_name}`,
                     code: `${verification_code}`,
-
                 }
             };
             const body = req.body
-            await transporter.sendMail(mailOptions
-                , function async(error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        const userUpdate = User.findOneAndUpdate({ email: user.email }, { verification_code: verification_code }, { new: true, useFindAndModify: false })
-                        return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.email}` });
-
-                    }
-                });
+            await transporter.sendMail(mailOptions)
+            const userUpdate = await User.findOneAndUpdate({ email: user.email }, { verification_code: verification_code }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ success: true, message: `Email sent with a recovery code to ${req.body.email}`, userUpdate });
         }
-
 
     } catch (error) {
         console.log(error)
