@@ -3,7 +3,7 @@ const initialState = {
   error: "",
   users: [],
   user: {},
-  loading: true,
+  loading: false,
 };
 
 export default function store(state = initialState, action) {
@@ -22,7 +22,7 @@ export default function store(state = initialState, action) {
     case "LOGIN_FAIL":
       return {
         ...state,
-        loading: true,
+        loading: false,
         error: action.payload,
       };
 

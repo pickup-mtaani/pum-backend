@@ -1,7 +1,7 @@
 import React from 'react'
 import Layout from '../views/Layouts'
-
-function Dashboard() {
+import { connect } from 'react-redux'
+function Dashboard(props) {
     const dataItems = [
         { title: 'Todays Complete deliveries' },
         { title: '1' },
@@ -9,6 +9,7 @@ function Dashboard() {
         { title: '1' },
         { title: '1' },
     ]
+
     return (
         <Layout>
             <div className='w-full h-20 '>
@@ -39,4 +40,14 @@ function Dashboard() {
     )
 }
 
-export default Dashboard
+
+const mapStateToProps = (state) => {
+    return {
+        error: state.userDetails.error,
+        user: state.userDetails.user,
+        // packages: state.PackageDetails.packages
+    }
+
+};
+
+export default connect(mapStateToProps, {  })(Dashboard);

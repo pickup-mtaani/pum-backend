@@ -18,7 +18,7 @@ function Users(props) {
       sortable: true,
       name: 'Full Name',
       minWidth: '225px',
-      selector: row => (<>{`${row.f_name} ${row.verification_code}`}</>)
+      selector: row => (<>{`${row.f_name} ${row.l_name}`}</>)
     },
     {
       sortable: true,

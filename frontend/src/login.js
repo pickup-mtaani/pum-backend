@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Register from "./auth/register.auth";
 import LoginView from "./auth/login.auth";
 import { connect } from 'react-redux'
+
 import {
   loginUser,
   registerUser,
@@ -10,16 +11,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 function Login(props) {
-  const navigate = useNavigate();
+
   const error = useSelector((state) => state.userDetails);
   const [user, setUser] = useState({
-    email: "",
+    // email: "",
     password: "",
-    name: "",
-    phone_number: 0,
-    l_name: '',
-    gender: '',
-    username: ''
+    // name: "",
+    phone_number: "",
+    // l_name: '',
+    // gender: '',
+    // username: ''
   });
   const dispatch = useDispatch();
   const [registering, setReistering] = useState(false);
@@ -45,11 +46,19 @@ function Login(props) {
     }
 
   };
-  const LoginUser = () => {
-    dispatch(loginUser(user));
-
+  const LoginUser = async () => {
+    await props.loginUser(user)
     return navigate("/dashboard");
   };
+
+  const navigate = useNavigate();
+  useEffect(() => {
+      var user = JSON.parse(localStorage.getItem('userInfo'));
+      if(user){
+          return navigate("/dashboard");  
+      }
+      
+  })
   useEffect(() => {
 
   }, [error]);
@@ -68,8 +77,9 @@ function Login(props) {
           toggleRegistering={toggleRegistering}
           registering={registering}
           changeInput={changeInput}
+          loading={props.loading}
           submit={LoginUser}
-          error={error.error}
+          error={props.error}
         />
       )}
     </div>
@@ -78,11 +88,11 @@ function Login(props) {
 
 const mapStateToProps = (state) => {
   return {
-    // error: state.PackageDetails.error,
-    // loading: state.PackageDetails.loading,
+    error: state.userDetails.error,
+    loading: state.userDetails.loading,
     // packages: state.PackageDetails.packages
   }
 
 };
 
-export default connect(mapStateToProps, { registerUser })(Login);
+export default connect(mapStateToProps, { loginUser })(Login);

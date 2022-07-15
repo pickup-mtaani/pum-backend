@@ -77,8 +77,8 @@ module.exports.validatePasswordInput = (data) => {
         errors.new_password = 'Password Must contain at least one special characters  ';
     }
 
-    if (!Validator.isLength(data.new_password, { min: 6, max: 30 })) {
-        errors.new_password = 'Password must be more than 6 characters long';
+    if (!Validator.isLength(data.new_password, { min: 8, max: 30 })) {
+        errors.new_password = 'Password must be more than 8 characters long';
     }
     if (!NumericalExists(data.new_password)) {
         errors.new_password = 'Password Must have at least one Numerical value';

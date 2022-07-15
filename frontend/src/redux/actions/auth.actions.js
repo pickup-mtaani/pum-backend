@@ -4,13 +4,12 @@ export const loginUser = (dat) => async (dispatch) => {
   try {
     dispatch({ type: "LOGIN" });
     const { data } = await axios.post(`/api/login`, dat);
-
     localStorage.setItem("userInfo", JSON.stringify(data));
     let payload = data;
     dispatch({ type: "LOGIN_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    // alert()
+    console.log(error.response.data)
     let payload = error.response.data.message;
     dispatch({ type: "LOGIN_FAIL", payload });
 

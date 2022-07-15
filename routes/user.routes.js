@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
             const { errors, isValid } = validateLoginInput(req.body);
             if (!isValid) {
                 let error = Object.values(errors)[0]
-                return res.status(400).json(error);
+                return res.status(400).json({ message: error });
             }
 
             if (user) {
