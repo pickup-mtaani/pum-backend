@@ -11,9 +11,7 @@ module.exports.SendMessage = async (data) => {
         to: [`${data.address}`],
         message: `${data.Body}`
     }
-    console.log(options)
     await sms.send(options)
-    console.log(options.message)
 }
 
 // module.exports = sendMessage

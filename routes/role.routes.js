@@ -4,7 +4,7 @@ var { authMiddleware, authorized } = require('middlewere/authorization.middlewer
 const router = express.Router();
 
 router.post('/roled', async (req, res) => {
-    console.log(req.body)
+   
     try {
 
         const Exists = await Role.findOne({ name: req.body.name });

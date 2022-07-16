@@ -42,11 +42,11 @@ export const registerUser = (dat) => async (dispatch) => {
     throw error;
   }
 };
-export const FetchUsers = () => async (dispatch) => {
+export const FetchUsers = ({ date }) => async (dispatch) => {
   try {
 
     dispatch({ type: "FETCH_USERS" });
-    const { data } = await axios.get(`/api/users`);
+    const { data } = await axios.get(`/api/users?date=${date}`);
     let payload = data.Users
     dispatch({ type: "FETCH_USERS_SUCCESSFUL", payload });
     return payload;

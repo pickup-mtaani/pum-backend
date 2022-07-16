@@ -9,6 +9,7 @@ import { DownloadFile } from './common/helperFunctions'
 function Users(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
+  const [date, setDate] = useState("")
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
@@ -49,32 +50,39 @@ function Users(props) {
     );
     setFilterData(filtered)
   }
+
+  const filter_BY_date = async (e) => {
+
+    await props.FetchUsers({ date: new Date(e) })
+
+  }
   const subHeaderComponentMemo = React.useMemo(() => {
 
     return (
       <>
         <Search_filter_component
           onChangeFilter={onChangeFilter}
-        
+
           searchValue={searchValue}
-          
+          date={date}
           download={() => DownloadFile(() =>
-            props.FetchUsers({ limit: -1, download: true,  cursor: props.lastElement, q: searchValue, enabled: true, }),
+            props.FetchUsers({ date,limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
+        <input type="date" onChange={e => filter_BY_date(e.target.value)}  placeHolder="Select a date" style={{marginRight:20,borderColor:"red"}}/>
         {/* <AddButton toggleCanvarse={toggleCanvarse} />
         <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
         /> */}
-        
+
       </>
     );
-  }, [ searchValue,]);
+  }, [searchValue, date]);
 
   useEffect(() => {
-    props.FetchUsers()
+    props.FetchUsers({ date: date })
   }, [])
-  console.log(props.users)
+
   return (
     <Layout>
       <div className=" mx-2">
@@ -89,8 +97,8 @@ function Users(props) {
           subHeader
           subHeaderComponent={subHeaderComponentMemo}
           persistTableHead
-        // onChangePage={handlePageChange}
-        paginationTotalRows={totalRows}
+          // onChangePage={handlePageChange}
+          paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
       </div>

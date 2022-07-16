@@ -4,9 +4,11 @@ var mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 var User = require('models/user.model')
 var Role = require('models/roles.model')
+var moment = require('moment');
 var jwt = require('jsonwebtoken');
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
+var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations')
 // var { authMiddleware, authorized } = require('./../common/authrized');
@@ -119,20 +121,19 @@ router.post('/register', async (req, res) => {
         const textbody = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         await SendMessage(textbody)
 
-        const mailOptions = {
-            from: '"Pickup mtaani" <bradcoupers@gmail.com>',
-            to: `${req.body.email}`,
-            subject: 'Pickup Mtaani Account Recovery',
-            template: 'application',
-            context: {
-                email: `${req.body.email}`,
-                name: `${body.f_name} ${body.l_name}`,
-                code: `${body.verification_code}`,
-            }
-        };
-        
-        await transporter.sendMail(mailOptions)
+        // const mailOptions = {
+        //     from: '"Pickup mtaani" <bradcoupers@gmail.com>',
+        //     to: `${req.body.email}`,
+        //     subject: 'Pickup Mtaani Account Recovery',
+        //     template: 'application',
+        //     context: {
+        //         email: `${req.body.email}`,
+        //         name: `${body.f_name} ${body.l_name}`,
+        //         code: `${body.verification_code}`,
+        //     }
+        // };
 
+        // await transporter.sendMail(mailOptions)
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
@@ -206,7 +207,6 @@ router.put('/reset-password', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.post('/recover_account', async (req, res) => {
     try {
         const body = req.body
@@ -254,7 +254,6 @@ router.post('/recover_account', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.post('/:id', async (req, res) => {
     try {
         const Exists = await User.findOne({ email: req.body.email });
@@ -357,9 +356,24 @@ router.get('/user/:id', async (req, res) => {
 
 });
 router.get('/users', async (req, res) => {
-
     try {
-        const Users = await User.find().populate('role')
+        const { page, limit, date } = req.query
+        const PAGE_SIZE = limit;
+        const skip = (page - 1) * PAGE_SIZE;
+        let Users
+        if (date) {
+            const today = moment(date).startOf('day')
+            Users = await User.find({
+                createdAt: {
+                    $gte: today.toDate(),
+                    $lte: moment(today).endOf('day').toDate()
+                }
+            }).populate('role').skip(skip).limit(PAGE_SIZE);
+        }
+        else {
+            Users = await User.find({}).populate('role').skip(skip).limit(PAGE_SIZE);
+        }
+
         return res.status(200).json({ message: 'Users Fetched Successfully !!', Users });
 
     } catch (error) {

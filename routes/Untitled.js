@@ -503,7 +503,6 @@ class Create extends Component {
             //   //alert(JSON.stringify(arr[arr.length - 1]));
             const lastid = arr[arr.length - 1]._id
 
-            console.log(lastid)
             const response = await axios.get(`/hairstyle/page/5e96b66adf2eac658652e0b4/all`)
             const data = response.data.styles;
             // //alert(JSON.stringify(data))

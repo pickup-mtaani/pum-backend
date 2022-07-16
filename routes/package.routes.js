@@ -85,7 +85,7 @@ router.post('/package/:id/collect', [authMiddleware, authorized], async (req, re
 router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res) => {
     try {
         console.log(req.params.id)
-        console.log(req.body)
+     
         const Pack = await Package.findById(req.params.id).populate('thrifter_id')
         const Thrifter = await User.findById(Pack.thrifter_id.user_id)
 
