@@ -18,11 +18,15 @@ const router = express.Router();
 // var mysql = require('mysql');
 
 router.post('/login', async (req, res) => {
+   
     try {
         let oldDb = req.query.olddb
         const user = await User.findOne({ email: req.body.email });
         const RoleOb = await Role.findOne({ name: "client" })
-
+        if (req.body.phone_number.charAt(0) === "0") {
+            let newPhone = req.body.phone_number.slice(1);
+            req.body.phone_number = "+254".concat(newPhone)
+        }
         if (oldDb && !user) {
 
             // con.query(`SELECT * FROM user WHERE email =` + mysql.escape(req.body.email), async function (err, result, fields) {
