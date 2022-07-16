@@ -129,19 +129,19 @@ router.post('/register', async (req, res) => {
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         await SendMessage(textbody)
 
-        // const mailOptions = {
-        //     from: '"Pickup mtaani" <bradcoupers@gmail.com>',
-        //     to: `${req.body.email}`,
-        //     subject: 'Pickup Mtaani Account Recovery',
-        //     template: 'application',
-        //     context: {
-        //         email: `${req.body.email}`,
-        //         name: `${body.f_name} ${body.l_name}`,
-        //         code: `${body.verification_code}`,
-        //     }
-        // };
+        const mailOptions = {
+            from: '"Pickup mtaani" <bradcoupers@gmail.com>',
+            to: `${req.body.email}`,
+            subject: 'Pickup Mtaani Account Recovery',
+            template: 'application',
+            context: {
+                email: `${req.body.email}`,
+                name: `${body.f_name} ${body.l_name}`,
+                code: `${body.verification_code}`,
+            }
+        };
 
-        // await transporter.sendMail(mailOptions)
+        await transporter.sendMail(mailOptions)
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
