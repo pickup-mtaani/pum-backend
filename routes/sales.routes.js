@@ -26,11 +26,11 @@ router.post('/sale', [authMiddleware, authorized], async (req, res) => {
 
 
             if (Exists.business.createdBy !== req.user._id) {
-                const TextObj = { address: `+254${Business.phone_number}`, Body: `Hi ${Business.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out and your new stock is ${newqty} ` }
+                const TextObj = { address: `${Business.phone_number}`, Body: `Hi ${Business.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out and your new stock is ${newqty} ` }
                 await SendMessage(TextObj)
                 return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
             } else {
-                const TextObj = { address: `+254${Agency.phone_number}`, Body: `Hi ${Agency.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out by ${Business.username} and the new stock is ${newqty} ` }
+                const TextObj = { address: `${Agency.phone_number}`, Body: `Hi ${Agency.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out by ${Business.username} and the new stock is ${newqty} ` }
                 await SendMessage(TextObj)
                 return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
             }

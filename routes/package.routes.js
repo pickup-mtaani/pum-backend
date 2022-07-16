@@ -26,9 +26,9 @@ router.post('/package', [authMiddleware, authorized], async (req, res) => {
         const newPackage = new Package(req.body)
         await newPackage.save()
         const Custodian = await Location.findOne({ _id: body.current_custodian }).populate('user_id')
-        const textObj = { address: `+254${Custodian.user_id.phone_number}`, Body: `Hi ${UserObj.username}\n ${Thrift.name} Will be delivering a package in  a ${body.pack_color} package ` }
+        const textObj = { address: `${Custodian.user_id.phone_number}`, Body: `Hi ${UserObj.username}\n ${Thrift.name} Will be delivering a package in  a ${body.pack_color} package ` }
 
-        const recObj = { address: `+254${body.recipient_phone}`, Body: `Hi ${newPackage.recipient_name}\n ${Thrift.name} Has dispatched a packege to  ${Custodian.agent_location}\nkindly wait for a confirmation  to pick it later today ` }
+        const recObj = { address: `${body.recipient_phone}`, Body: `Hi ${newPackage.recipient_name}\n ${Thrift.name} Has dispatched a packege to  ${Custodian.agent_location}\nkindly wait for a confirmation  to pick it later today ` }
         // await SendMessage(textObj)
         // await SendMessage(recObj)
         return res.status(200).json({ message: 'Package successfully Saved', newPackage });
@@ -45,7 +45,7 @@ router.post('/package/:id/recieve', [authMiddleware, authorized], async (req, re
 
         const Pack = await Package.findById(req.params.id).populate(['thrifter_id', 'current_custodian'])
         const RecievedPack = await Package.findOneAndUpdate({ _id: req.params.id }, { recieved: true, receiving_agent: req.user._id, recieved_at: Date.now() }, { new: true, useFindAndModify: false })
-        const smsBody = { address: `+254${Pack.recipient_phone}`, Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${Pack.thrifter_id.name} at ${Pack.current_custodian.agent_location} before the close of Day ${moment(new Date().setDate(new Date().getDate() + 3)).format('ddd MMM YY')}` }
+        const smsBody = { address: `${Pack.recipient_phone}`, Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${Pack.thrifter_id.name} at ${Pack.current_custodian.agent_location} before the close of Day ${moment(new Date().setDate(new Date().getDate() + 3)).format('ddd MMM YY')}` }
         // const body = req.body
 
         // body.package = req.params.id
@@ -69,7 +69,7 @@ router.post('/package/:id/collect', [authMiddleware, authorized], async (req, re
         body.package = req.params.id
         await new Reciever(body).save()
         const smsBody = {
-            address: `+254${Pack.recipient_phone}`, Body: `Hello ${Pack.recipient_name}, Your Parcel from ${Pack.thrifter_id.name} has been collected  by ${body.reciver_name}of ID_NO ${body.reciver_id_no}`
+            address: `{Pack.recipient_phone}`, Body: `Hello ${Pack.recipient_name}, Your Parcel from ${Pack.thrifter_id.name} has been collected  by ${body.reciver_name}of ID_NO ${body.reciver_id_no}`
         }
 
         await SendMessage(smsBody)
@@ -90,7 +90,7 @@ router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res
         const Thrifter = await User.findById(Pack.thrifter_id.user_id)
 
         const newReject = new Reject(req.body).save()
-        const smsBody = { address: `+254${Thrifter.phone_number}`, Body: `Hello ${Pack.thrifter_id.name},Parcel from ${Pack.receipt_no} has been rejected due ${req.body.reject_reason} kindly edit the details to allow further processing` }
+        const smsBody = { address: `${Thrifter.phone_number}`, Body: `Hello ${Pack.thrifter_id.name},Parcel from ${Pack.receipt_no} has been rejected due ${req.body.reject_reason} kindly edit the details to allow further processing` }
         await SendMessage(smsBody)
         const RecievedPack = await Package.findOneAndUpdate({ _id: req.params.id }, { rejected: true, rejecting_agent: req.user._id, rejected_at: Date.now(), rejected_reasons: newReject._id }, { new: true, useFindAndModify: false })
         return res.status(200).json({ message: 'Package successfully rejectesd', RecievedPack });

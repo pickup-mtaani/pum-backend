@@ -101,6 +101,13 @@ router.post('/social-login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
 
+        const body = req.body
+        if (body.phone_number.charAt(0) === "0") {
+            let newPhone = body.phone_number.slice(1);
+            body.phone_number = "+254".concat(newPhone)
+        }
+        // console.log(body)
+        // return
         const user = await User.findOne({ email: req.body.email });
         const phone = await User.findOne({ phone_number: req.body.phone_number });
         if (user || phone) {
@@ -111,14 +118,15 @@ router.post('/register', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
+        
         const RoleOb = await Role.findOne({ name: "client" })
-        const body = req.body
+
         body.role = RoleOb._id
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
         const saved = await NewUser.save();
-        const textbody = { address: `+254${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
+        const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         await SendMessage(textbody)
 
         // const mailOptions = {
@@ -146,7 +154,7 @@ router.post('/register', async (req, res) => {
 router.post('/:id/resend-token', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
+        const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
         // console.log(textbody)
         await SendMessage(textbody)
         return res.status(200).json({ success: false, message: 'Activation resent ' });
@@ -221,7 +229,7 @@ router.post('/recover_account', async (req, res) => {
 
             let verification_code = MakeActivationCode(5)
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code }, { new: true, useFindAndModify: false })
-            const textbody = { address: `+254${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
+            const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
             await SendMessage(textbody)
             return res.status(200).json({ message: `A recovery Text has been sent to  ${req.body.phone_number}` });
         }
