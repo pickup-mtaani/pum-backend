@@ -57,7 +57,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
+router.get('/businesses', async (req, res) => {
     try {
         const Bussiness = await Business.find();
 
