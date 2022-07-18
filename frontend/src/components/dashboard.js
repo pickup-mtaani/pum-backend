@@ -1,6 +1,7 @@
 import React from 'react'
 import Layout from '../views/Layouts'
 import { connect } from 'react-redux'
+import DashboardItems from './DashboardItems'
 function Dashboard(props) {
     const dataItems = [
         { title: 'Todays Complete deliveries' },
@@ -15,20 +16,7 @@ function Dashboard(props) {
             <div className='w-full h-20 '>
                 <div className='flex gap-x-2 mx-5'>
                     {dataItems.map((item, i) => (
-                        <div className="bg-white h-20 w-56  rounded-xl shadow-sm flex">
-                            <div className="h-full w-4/6 ">
-                                <div className=" w-full flex flex-col p-3">
-                                    <h1 className="font-bold text-gray-400 text-xs">{item.title}</h1>
-                                    <h1 className="font-bold text-primary-500 text-2xl">300<span className="font-semibold pl-10 text-xl text-red-600 text-gray-400">3%</span></h1>
-                                </div>
-                            </div>
-                            <div className="h-full w-2/6 flex justify-center items-center">
-
-                                <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md">
-
-                                </div>
-                            </div>
-                        </div>
+                        <DashboardItems item={item} key={i}/>
                     ))}
                 </div>
                 <div className="w-full gap-x-10 mx-5 flex mt-10">
@@ -50,4 +38,4 @@ const mapStateToProps = (state) => {
 
 };
 
-export default connect(mapStateToProps, {  })(Dashboard);
+export default connect(mapStateToProps, {})(Dashboard);

@@ -222,6 +222,10 @@ router.put('/reset-password', async (req, res) => {
 router.post('/recover_account', async (req, res) => {
     try {
         const body = req.body
+        if (req.body.phone_number.charAt(0) === "0") {
+            let newPhone = req.body.phone_number.slice(1);
+            req.body.phone_number = "+254".concat(newPhone)
+        }
         if (!req.body.phone_number && !req.body.email) {
             return res.status(401).json({ message: 'Kindly enter your email or phone number' });
         }
@@ -266,7 +270,7 @@ router.post('/recover_account', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.post('/:id', async (req, res) => {
+router.post('/:id/yty', async (req, res) => {
     try {
         const Exists = await User.findOne({ email: req.body.email });
         return res.status(200).json({ Exists });

@@ -32,6 +32,7 @@ var upload = multer({
 
 
 router.post('/business', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
+    console.log("first")
     try {
         const url = req.protocol + '://' + req.get('host');
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
@@ -77,6 +78,16 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+router.get('/business/:id', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const Bus = await Business.findOne({ createdBy: req.params.id }).populate('category')
+        return res.status(200).json({ message: 'fetched successfully', Bus });
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
 router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
     try {
         const Biz = await Business.findById(req.params.id)
@@ -98,22 +109,13 @@ router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, 
 
 router.post('/business/:id/details', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Exists = await BusinessDetails.findOne({ business: req.params.id })
-        const body = req.body
-        body.createdBy = req.user._id
-        body.business = req.params.id
-        if (Exists) {
-            const Edited = await BusinessDetails.findOneAndUpdate({ business: req.params.id }, body, { new: true, useFindAndModify: false })
-            return res.status(200).json({ message: 'Saved successfully', Edited });
-        } else {
-
-            const newBusinessdetail = new BusinessDetails(body)
-            const details = await newBusinessdetail.save()
-            return res.status(200).json({ message: 'Saved successfully', details });
-        }
+        let body = req.body
+        const Edited = await Business.findOneAndUpdate({ business: req.params.id }, body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Saved successfully', Edited });
 
 
     } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

@@ -55,8 +55,8 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             body.createdBy = req.user._id
             body.images = reqFiles
             const newProduct = new Product(body)
-            const biz = await newProduct.save()
-            return res.status(200).json({ message: 'Saved', biz });
+            const product_created = await newProduct.save()
+            return res.status(200).json({ message: 'Saved', product_created });
         }
     } catch (error) {
         console.log(error)
@@ -69,6 +69,21 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
         const products = await Product.find({ deleted_at: null, createdBy: req.user._id }).populate('category').skip(skip)
+            .limit(PAGE_SIZE);
+
+        return res.status(200).json({ message: 'Successfull pulled ', products });
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const { page, limit } = req.query
+        const PAGE_SIZE = limit;
+        const skip = (page - 1) * PAGE_SIZE;
+        const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).populate('category').skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });

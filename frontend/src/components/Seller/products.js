@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import Layout from '../views/Layouts'
+
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { FetchUsers } from './../redux/actions/auth.actions'
-import Search_filter_component from './common/Search_filter_component'
-import { DownloadFile } from './common/helperFunctions'
-function Users(props) {
+import { FetchUsers } from '../../redux/actions/auth.actions'
+import Search_filter_component from '../common/Search_filter_component'
+import { DownloadFile } from '../common/helperFunctions'
+import { Link } from 'react-router-dom'
+import Layout from '../../views/Layouts'
+function Products(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
   const [date, setDate] = useState("")
@@ -17,38 +19,39 @@ function Users(props) {
   const serverSideColumns = [
     {
       sortable: true,
-      name: 'Full Name',
+      name: 'Name',
       minWidth: '225px',
-      selector: row => (<>{`${row.f_name} ${row.l_name}`}</>)
+      selector: row => row.product_name
+      
     },
     {
       sortable: true,
-      name: 'Email',
+      name: 'Qty',
       minWidth: '250px',
-      selector: row => row.email
+      selector: row => row.qty
     },
     {
       sortable: true,
-      name: 'Role',
+      name: 'shelf',
       minWidth: '250px',
       selector: row => row.role && row.role.name
     },
     {
       sortable: true,
-      name: 'Phone Number',
+      name: 'Price',
       minWidth: '150px',
-      selector: row => row.phone_number
+      selector: row => row.price
     }
   ]
-  const filteredItems = props.users.filter(
-    item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
-  );
+  //   const filteredItems = props.P.filter(
+  //     item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
+  //   );
   const onChangeFilter = (e) => {
     setFilterText(e)
-    const filtered = filteredItems.filter(
-      item => item.title && item.title.toLowerCase().includes(filterText.toLowerCase()),
-    );
-    setFilterData(filtered)
+    // const filtered = filteredItems.filter(
+    //   item => item.title && item.title.toLowerCase().includes(filterText.toLowerCase()),
+    // );
+    // setFilterData(filtered)
   }
 
   const filter_BY_date = async (e) => {
@@ -66,11 +69,11 @@ function Users(props) {
           searchValue={searchValue}
           date={date}
           download={() => DownloadFile(() =>
-            props.FetchUsers({ date,limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
+            props.FetchUsers({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-        <input type="date" onChange={e => filter_BY_date(e.target.value)}  placeHolder="Select a date" style={{marginRight:20,borderColor:"red"}}/>
+        <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} />
         {/* <AddButton toggleCanvarse={toggleCanvarse} />
         <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
         /> */}
@@ -80,34 +83,33 @@ function Users(props) {
   }, [searchValue, date]);
 
   useEffect(() => {
-    props.FetchUsers({ date: date })
+    // props.FetchUsers({ date: date })
   }, [])
 
   return (
-    <Layout>
-      <div className=" mx-2">
-        <DataTable
-          //title="PortFolio Reports"
-          columns={serverSideColumns}
-          data={filteredItems}
-          pagination
-          paginationServer
-          progressPending={props.loading}
-          paginationResetDefaultPage={resetPaginationToggle}
-          subHeader
-          subHeaderComponent={subHeaderComponentMemo}
-          persistTableHead
-          // onChangePage={handlePageChange}
-          paginationTotalRows={totalRows}
-        // onChangeRowsPerPage={handlePerRowsChange}
-        />
-      </div>
+    <div>
+      <DataTable
+        //title="PortFolio Reports"
+        columns={serverSideColumns}
+        data={props.data}
+        pagination
+        paginationServer
+        progressPending={props.loading}
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
+        // onChangePage={handlePageChange}
+        paginationTotalRows={totalRows}
+      // onChangeRowsPerPage={handlePerRowsChange}
+      />
 
-    </Layout>
+
+    </div>
   )
 }
 
-Users.propTypes = {}
+Products.propTypes = {}
 
 
 const mapStateToProps = (state) => {
@@ -119,5 +121,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { FetchUsers })(Users)
+export default connect(mapStateToProps, { FetchUsers })(Products)
 

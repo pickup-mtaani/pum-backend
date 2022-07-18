@@ -36,7 +36,7 @@ const Modal = (props) => {
                     <label className="block text-black text-sm font-bold mb-1">
                       {/* Reason To reject package {item.receipt_no} */}
                     </label>
-                    <textarea onChange={inputChange} name="reject_reason"  placeholder={` Type your reason to reject ${item.receipt_no}`} className="w-full"/>
+                    <textarea onChange={inputChange} name="reject_reason" placeholder={` Type your reason to reject ${item.receipt_no}`} className="w-full" />
                     {/* <input
                       name="todo"
                       // type="textarea"

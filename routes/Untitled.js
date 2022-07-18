@@ -1231,66 +1231,66 @@ salon.amenities.forEach((amenity, i) => {
 
 export const createSalon = (salon) => async dispatch => {
     try {
-  
-      // alert(JSON.stringify(salon));
-  
-      var formData = new FormData();
-  
-      formData.append('salon_name', salon.salon_name);
-  
-      formData.append('phone_number', salon.phone_number);
-  
-      formData.append('latitude', salon.latitude);
-  
-      formData.append('longitude', salon.longitude);
-  
-      formData.append('user_id', salon.user_id);
-  
-      formData.append('Email', salon.Email);
-  
-      formData.append('logo', {
-        uri: salon.logo.uri,
-        name: 'logo.jpg',
-        type: 'image/jpeg', // This is important for Android!!
-      });
-  
-      if (salon.styles !== undefined && salon.styles.length > 0) {
-  
-        salon.styles.forEach((style, i) => {
-  
-          formData.append("styles", style.id);
-  
+
+        // alert(JSON.stringify(salon));
+
+        var formData = new FormData();
+
+        formData.append('salon_name', salon.salon_name);
+
+        formData.append('phone_number', salon.phone_number);
+
+        formData.append('latitude', salon.latitude);
+
+        formData.append('longitude', salon.longitude);
+
+        formData.append('user_id', salon.user_id);
+
+        formData.append('Email', salon.Email);
+
+        formData.append('logo', {
+            uri: salon.logo.uri,
+            name: 'logo.jpg',
+            type: 'image/jpeg', // This is important for Android!!
         });
-  
-  
-      }
-  
-      if (salon.amenities !== undefined && salon.amenities.length > 0) {
-  
-        salon.amenities.forEach((amenity, i) => {
-  
-          formData.append("amenities", amenity.id);
-  
-        });
-  
-      }
-  
-      formData.append('salon_description', salon.salon_description);
-  
-      const token = await AsyncStorage.getItem('jwtToken');
-  
-      await setAuthToken(instance, token);
-  
-      const reeults = await instance.post('/salon', formData)
-  
-      return reeults;
-  
+
+        if (salon.styles !== undefined && salon.styles.length > 0) {
+
+            salon.styles.forEach((style, i) => {
+
+                formData.append("styles", style.id);
+
+            });
+
+
+        }
+
+        if (salon.amenities !== undefined && salon.amenities.length > 0) {
+
+            salon.amenities.forEach((amenity, i) => {
+
+                formData.append("amenities", amenity.id);
+
+            });
+
+        }
+
+        formData.append('salon_description', salon.salon_description);
+
+        const token = await AsyncStorage.getItem('jwtToken');
+
+        await setAuthToken(instance, token);
+
+        const reeults = await instance.post('/salon', formData)
+
+        return reeults;
+
     } catch (error) {
-      console.log(JSON.stringify(error.response.data));
-      throw error
+        console.log(JSON.stringify(error.response.data));
+        throw error
     }
-  
-  }
+
+}
 
 
 formData.append('salon_description', salon.salon_description);

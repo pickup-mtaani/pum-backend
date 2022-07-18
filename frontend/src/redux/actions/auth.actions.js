@@ -9,7 +9,7 @@ export const loginUser = (dat) => async (dispatch) => {
     dispatch({ type: "LOGIN_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error.response.data)
+  
     let payload = error.response.data.message;
     dispatch({ type: "LOGIN_FAIL", payload });
 

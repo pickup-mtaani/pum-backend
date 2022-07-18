@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { getTodo, postTodo } from "../redux/actions/package.actions";
 const RecieveModal = (props) => {
-  const { toggleModal, show, item, Submit, changeInput,loading } = props;
+  const { toggleModal, show, item, Submit, changeInput, loading } = props;
 
   return (
     <>
@@ -40,7 +40,7 @@ const RecieveModal = (props) => {
                     </div>
                     <div>
                       <label className="block text-black text-sm font-bold mb-1">
-                        Reciever phone  
+                        Reciever phone
                       </label>
                       <input
                         name="reciver_phone_no"
@@ -52,7 +52,7 @@ const RecieveModal = (props) => {
                     </div>
                     <div>
                       <label className="block text-black text-sm font-bold mb-1">
-                        Reciever phone  
+                        Reciever phone
                       </label>
                       <input
                         name="reciver_id_no"

@@ -27,6 +27,23 @@ const BizSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'business_category'
     },
+
+    till_No: {
+        type: Number,
+        // required: true
+    },
+    Mpesa_No: {
+        type: Number,
+        // required: true
+    },
+    loc: {
+        type: { type: String },
+        coordinates: []
+    },
+    agent: {
+        type: Schema.Types.ObjectId,
+        ref: 'agent'
+    },
     deleted_at: {
         type: Date,
         default: null
