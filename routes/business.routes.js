@@ -35,7 +35,7 @@ router.post('/business', upload.single('logo'), async (req, res) => {
    
     try {
         const url = req.protocol + '://' + req.get('host');
-        const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
+        const Exists = await Business.findOne({ name: req.body.name, createdBy: req.body.user_id });
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
         }
