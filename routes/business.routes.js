@@ -31,8 +31,8 @@ var upload = multer({
 });
 
 
-router.post('/business', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
-    console.log("first")
+router.post('/business', upload.single('logo'), async (req, res) => {
+   
     try {
         const url = req.protocol + '://' + req.get('host');
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
@@ -46,7 +46,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         }
         else {
             const body = req.body
-            body.createdBy = req.user._id
+            body.createdBy = req.body.user_id
             body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
             const newBusiness = new Business(body)
             const biz = await newBusiness.save()
@@ -57,7 +57,7 @@ router.post('/business', upload.single('logo'), [authMiddleware, authorized], as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/businesses', async (req, res) => {
+router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
         const Bussiness = await Business.find();
 
