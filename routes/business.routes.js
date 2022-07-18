@@ -53,7 +53,7 @@ router.post('/business', upload.single('logo'), async (req, res) => {
             return res.status(200).json({ message: 'Saved', biz });
         }
     } catch (error) {
-        console.log(error.response)
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
