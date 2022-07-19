@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { FetchUsers } from '../../redux/actions/auth.actions'
+import { FetchAdmins } from '../../redux/actions/auth.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -18,9 +18,9 @@ function Users(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
-  
-  const filteredItems = props.users.filter(
-    item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
+
+  const filteredItems = props.admins.filter(
+    item => item.name.toLowerCase().includes(filterText.toLowerCase()),
   );
   const onChangeFilter = (e) => {
     setFilterText(e)
@@ -32,7 +32,7 @@ function Users(props) {
 
   const filter_BY_date = async (e) => {
 
-    await props.FetchUsers({ date: new Date(e) })
+    await props.FetchAdmins({ date: new Date(e) })
 
   }
   const subHeaderComponentMemo = React.useMemo(() => {
@@ -45,27 +45,21 @@ function Users(props) {
           searchValue={searchValue}
           date={date}
           download={() => DownloadFile(() =>
-            props.FetchUsers({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
+            props.FetchAdmins({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-        <select className="border py-1 px-2 border-slate-200 mx-2 rounded-md " onChange={(e) =>setShowModal(true)}>
-          <option >Filters</option>
-          <option value="Today">Today</option>
-          <option value="Monthly">Monthly</option>
-          <option value="Yearly">Yearly</option>
-        </select>
-        <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} />
-        {/* <AddButton toggleCanvarse={toggleCanvarse} />
-        <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
-        /> */}
+
+        <button className="border py-1 px-2 border-slate-200 mx-2 rounded-md flex gap-x-2 bg-green-200 justify-center items-center"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex justify-center items-center border" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>ADD </button>
 
       </>
     );
   }, [searchValue, date]);
 
   useEffect(() => {
-    props.FetchUsers({ date: date })
+    props.FetchAdmins()
   }, [])
 
   return (
@@ -98,12 +92,12 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-    users: state.userDetails.users,
+    admins: state.userDetails.admins,
     // lastId: state.userDetails.lastId,
     loading: state.userDetails.loading,
     // error: state.userDetails.error,
   };
 };
 
-export default connect(mapStateToProps, { FetchUsers })(Users)
+export default connect(mapStateToProps, { FetchAdmins })(Users)
 

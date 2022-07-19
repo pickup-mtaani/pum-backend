@@ -3,6 +3,7 @@ const initialState = {
   error: "",
   users: [],
   user: {},
+  admins:[],
   loading: false,
 };
 
@@ -42,18 +43,18 @@ export default function store(state = initialState, action) {
         loading: true,
         error: action.payload,
       };
-    case "FETCH_USERS":
+    case "FETCH_ADMINS":
       return {
         ...state,
         loading: true,
       };
-    case "FETCH_USERS_SUCCESSFUL":
+    case "FETCH_ADMINS_SUCCESSFUL":
       return {
         ...state,
         loading: false,
-        users:action.payload,
+        admins:action.payload,
       };
-    case "FETCH_USERS_FAIL":
+    case "FETCH_ADMINS_FAIL":
       return {
         ...state,
         loading: true,

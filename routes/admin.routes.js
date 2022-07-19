@@ -1,0 +1,106 @@
+
+const express = require('express');
+var mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+var Admin = require('models/admin.model')
+var Role = require('models/roles.model')
+var moment = require('moment');
+var jwt = require('jsonwebtoken');
+const { MakeActivationCode } = require('../helpers/randomNo.helper');
+const { SendMessage } = require('../helpers/sms.helper');
+var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+var transporter = require('../helpers/transpoter');
+var { validateAdminRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations')
+// var { authMiddleware, authorized } = require('./../common/authrized');
+const router = express.Router();
+var Format_phone_number = require('./../helpers/phone_number_formater')
+router.post('/register', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const body = req.body
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+        const user = await Admin.findOne({ email: req.body.email });
+        const phone = await Admin.findOne({ phone_number: req.body.phone_number });
+        if (user || phone) {
+            return res.status(402).json({ message: 'Admin Exists !!', user });
+        }
+        const { errors, isValid } = validateAdminRegisterInput(req.body);
+        if (!isValid) {
+            let error = Object.values(errors)[0]
+            return res.status(400).json({ message: error });
+        }
+        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        body.createdBy = req.user._id
+        let newAdmin = new Admin(body);
+        const saved = await newAdmin.save();
+        return res.status(200).json({ message: 'User Saved Successfully !!', saved });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.post('/login', async (req, res) => {
+
+    try {
+
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+        const user = await Admin.findOne({ phone_number: req.body.phone_number })
+
+        const { errors, isValid } = validateLoginInput(req.body);
+        if (!isValid) {
+            let error = Object.values(errors)[0]
+            return res.status(400).json({ message: error });
+        }
+        if (!user) {
+
+            return res.status(400).json({ message: "Authentication failed with wrong credentials!!" });
+        }
+        if (user) {
+            const password_match = user.comparePassword(req.body.password, user.hashPassword);
+
+            if (!password_match) {
+                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', user });
+            }
+            console.log(req.body)
+            const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+            return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'Operation failed ', error });
+    }
+
+});
+
+router.get('/', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const { page, limit, date } = req.query
+        const PAGE_SIZE = limit;
+        const skip = (page - 1) * PAGE_SIZE;
+        let Admins
+        if (date) {
+            const today = moment(date).startOf('day')
+            Admins = await Admin.find({
+                createdAt: {
+                    $gte: today.toDate(),
+                    $lte: moment(today).endOf('day').toDate()
+                }
+            }).populate('role').skip(skip).limit(PAGE_SIZE);
+        }
+        else {
+            Admins = await Admin.find({}).populate('createdBy').skip(skip).limit(PAGE_SIZE);
+        }
+
+        return res.status(200).json({ message: 'Admins Fetched Successfully !!', Admins });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+
+module.exports = router;

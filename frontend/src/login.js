@@ -59,13 +59,10 @@ function Login(props) {
   const navigate = useNavigate();
   useEffect(() => {
     var userInfor = JSON.parse(localStorage.getItem('userInfo'));
-    if (userInfor && userInfor.role.name === "admin") {
+    if (userInfor) {
       return navigate("/dashboard");
     }
-    else if (userInfor && userInfor.role.name !== "admin") {
-
-      return navigate("/403");
-    } else {
+    else  {
       return navigate("/");
     }
 

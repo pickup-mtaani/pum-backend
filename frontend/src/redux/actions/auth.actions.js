@@ -3,15 +3,15 @@ import axios, { setAuthToken } from "./axiosService";
 export const loginUser = (dat) => async (dispatch) => {
   try {
     dispatch({ type: "LOGIN" });
-    const { data } = await axios.post(`/api/login`, dat);
+    const { data } = await axios.post(`/api/admin/login`, dat);
     localStorage.setItem("userInfo", JSON.stringify(data));
     let payload = data;
     dispatch({ type: "LOGIN_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-  
-    let payload = error.response.data.message;
-    dispatch({ type: "LOGIN_FAIL", payload });
+    alert(error)
+    // let payload = error.response.data.message;
+    // dispatch({ type: "LOGIN_FAIL", payload });
 
     throw error;
   }
@@ -44,7 +44,7 @@ export const registerUser = (dat) => async (dispatch) => {
 };
 export const FetchUsers = ({ date }) => async (dispatch) => {
   try {
-
+    await setAuthToken(axios)
     dispatch({ type: "FETCH_USERS" });
     const { data } = await axios.get(`/api/users?date=${date}`);
     let payload = data.Users
@@ -54,6 +54,22 @@ export const FetchUsers = ({ date }) => async (dispatch) => {
     console.log(error);
     let payload = "error.response.data.message";
     dispatch({ type: "FETCH_USERS_FAIL", payload });
+    throw error;
+  }
+};
+export const FetchAdmins = (dat) => async (dispatch) => {
+  try {
+    await setAuthToken(axios)
+    dispatch({ type: "FETCH_ADMINS" });
+    const { data } = await axios.get(`/api/admin?date=${dat !== undefined ? dat.date : ""}`);
+    console.log(data)
+    let payload = data.Admins
+    dispatch({ type: "FETCH_ADMINS_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error);
+    let payload = "error.response.data.message";
+    dispatch({ type: "FETCH_ADMINS_FAIL", payload });
     throw error;
   }
 };

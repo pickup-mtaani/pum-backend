@@ -10,17 +10,17 @@ import {
 import AssignRider from "./components/assignRider";
 import Layouts from "./views/Layouts";
 import Dashboard from "./components/dashboard";
-import Users from "./components/Seller";
-import UnAuth from "./components/unAuth";
+import Sellers from "./components/Seller";
+import Admin from "./components/Seller copy";
 import UserDetails from "./components/Seller/UserDetails";
 
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
-    { path: "/users", element: <Users /> },
+    { path: "/sellers", element: <Sellers /> },
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/seller/:id", element: <UserDetails /> },
-    { path: "/403", element: <UnAuth /> },
+    { path: "/administrators", element: < Admin /> },
     // ...
   ]);
   return routes;

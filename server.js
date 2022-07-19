@@ -19,6 +19,7 @@ const RiderRoutes = require('routes/riders.routes')
 const productsRoutes = require('routes/products.routes')
 const stocksRoutes = require('routes/stocks.routes')
 const salesRoutes = require('routes/sales.routes')
+const adminRoutes = require('routes/admin.routes')
 var Riders = require('./IoControllers/riders.io')
 var http = require('http').createServer(app)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -59,6 +60,7 @@ app.use('/api/', RiderRoutes)
 app.use('/api/', productsRoutes)
 app.use('/api/', stocksRoutes)
 app.use('/api/', salesRoutes)
+app.use('/api/admin', adminRoutes)
 
 
 // global error handler
