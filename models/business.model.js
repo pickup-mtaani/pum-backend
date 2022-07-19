@@ -42,7 +42,7 @@ const BizSchema = new Schema({
     },
     agent: {
         type: Schema.Types.ObjectId,
-        ref: 'agent'
+        ref: 'thrifter_location'
     },
     deleted_at: {
         type: Date,

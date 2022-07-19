@@ -112,8 +112,7 @@ router.post('/business/:id/details', async (req, res) => {
     try {
         let body = req.body
         const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, body, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Saved successfully', Edited });
-
+        return res.status(200).json({ message: 'Saved successfully', Edited })
 
     } catch (error) {
         console.log(error)
