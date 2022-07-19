@@ -10,7 +10,8 @@ const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
-var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations')
+var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
+const Format_phone_number = require('../helpers/phone_number_formater');
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
@@ -18,15 +19,11 @@ const router = express.Router();
 // var mysql = require('mysql');
 
 router.post('/login', async (req, res) => {
-   
+
     try {
         let oldDb = req.query.olddb
         const user = await User.findOne({ email: req.body.email });
-        const RoleOb = await Role.findOne({ name: "client" })
-        if (req.body.phone_number.charAt(0) === "0") {
-            let newPhone = req.body.phone_number.slice(1);
-            req.body.phone_number = "+254".concat(newPhone)
-        }
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         if (oldDb && !user) {
 
             // con.query(`SELECT * FROM user WHERE email =` + mysql.escape(req.body.email), async function (err, result, fields) {
@@ -36,7 +33,7 @@ router.post('/login', async (req, res) => {
             //     body.password = "password"
             //     body.l_name = result[0].name
             //     body.user_id = result[0].id
-            //     body.role = RoleOb._id
+            //    
             //     body.office = result[0].office
             //     body.hashPassword = bcrypt.hashSync(body.password, 10);
             //     let NewUser = new User(body);
@@ -87,9 +84,7 @@ router.post('/social-login', async (req, res) => {
             const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
         }
-        const RoleOb = await Role.findOne({ name: "client" })
         const body = req.body
-        body.role = RoleOb._id
         body.verification_code = MakeActivationCode(5)
         body.activated = true
         body.hashPassword = bcrypt.hashSync("password", 10);
@@ -104,14 +99,8 @@ router.post('/social-login', async (req, res) => {
 });
 router.post('/register', async (req, res) => {
     try {
-
         const body = req.body
-        if (body.phone_number.charAt(0) === "0") {
-            let newPhone = body.phone_number.slice(1);
-            body.phone_number = "+254".concat(newPhone)
-        }
-        // console.log(body)
-        // return
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         const user = await User.findOne({ email: req.body.email });
         const phone = await User.findOne({ phone_number: req.body.phone_number });
         if (user || phone) {
@@ -122,10 +111,6 @@ router.post('/register', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        
-        const RoleOb = await Role.findOne({ name: "client" })
-
-        body.role = RoleOb._id
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
@@ -201,6 +186,7 @@ router.put('/reset-password', async (req, res) => {
         if (req.body.email) {
             user = await User.findOne({ email: req.body.email })
         } else {
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
         if (!user) {
@@ -223,13 +209,13 @@ router.post('/recover_account', async (req, res) => {
     try {
         const body = req.body
         if (req.body.phone_number.charAt(0) === "0") {
-            let newPhone = req.body.phone_number.slice(1);
-            req.body.phone_number = "+254".concat(newPhone)
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         }
         if (!req.body.phone_number && !req.body.email) {
             return res.status(401).json({ message: 'Kindly enter your email or phone number' });
         }
         else if (req.body.phone_number) {
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             const user = await User.findOne({ phone_number: body.phone_number });
             if (!user) {
                 return res.status(401).json({ message: 'The phone Number you entered is not registered ' });
@@ -285,9 +271,12 @@ router.put('/update-user', async (req, res) => {
         if (body.password) {
             body.hashPassword = bcrypt.hashSync(body.password, 10);
         }
+        if (req.body.phone_number) {
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+        }
         body.updatedAt = new Date();
-        const userUpdate = await User.findOneAndUpdate({ email: body.email }, body, { new: true, useFindAndModify: false })
-        return res.status(200).json({ userUpdate });
+        const update_user = await User.findOneAndUpdate({ email: body.email }, body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ update_user });
 
     } catch (error) {
         console.log(error)
@@ -315,6 +304,7 @@ router.put('/user/re-activate', async (req, res) => {
     try {
         let user = {}
         if (req.body.phone_number) {
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             user = await User.findOne({ phone_number: req.body.phone_number });
         }
         else if (req.body.email) {
@@ -324,6 +314,7 @@ router.put('/user/re-activate', async (req, res) => {
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
         }
         else if (req.body.phone_number) {
+            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { activated: true }, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'User ReActivated successfully !!' });
         }
