@@ -42,19 +42,19 @@ function Add_admin(props) {
                                         <div className="w-full flex flex-col gap-y-2 ">
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Name</div>
-                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin Name" name="name" />
+                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin Name" name="name" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Phone</div>
-                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin phone number" name="phone_number" />
+                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin phone number" name="phone_number" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Email</div>
-                                                <input type="email" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="admin email" name="email" />
+                                                <input type="email" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="admin email" name="email" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Password</div>
-                                                <input type="password" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
+                                                <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
                                             </div>
 
                                         </div>
