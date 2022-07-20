@@ -351,9 +351,8 @@ router.post('/user/delete', async (req, res) => {
 router.get('/user/:id', async (req, res) => {
 
     try {
-        const userObj = await User.findById(req.params.id).populate('role')
-        console.log(userObj);
-        return res.status(400).json({ message: 'User Fetched Successfully !!', userObj });
+        const userObj = await User.findById(req.params.id).populate('role').populate('role')
+        return res.status(200).json({ message: 'User Fetched Successfully !!', userObj });
 
     } catch (error) {
         console.log(error)

@@ -63,7 +63,7 @@ function Layout(props) {
 
             <div className="w-4/5  flex  ">
                 <div className="w-full flex flex-col">
-                    <div className="w-full h-14  flex">
+                    <div className="w-full h-14  flex pt-10">
                         <div className="w-3/4 flex justify-center items-center font-bold ">Welcome {JSON.parse(localStorage.getItem('userInfo')) && JSON.parse(localStorage.getItem('userInfo')).email}</div>
                         <div className="w-1/3  flex justify-center items-center">
                             <input type="text" className="rounded-md h-8 bg-transparent  w-full mr-5 border border-slate-300 pl-2 justify-center items-center" placeholder="Search" />

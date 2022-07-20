@@ -65,9 +65,8 @@ function Users(props) {
   }, [searchValue, date]);
 
   useEffect(() => {
-    props.FetchUsers({ date: date })
+    props.FetchUsers()
   }, [])
-
   return (
     <Layout>
       <div className=" mx-2">
