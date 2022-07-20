@@ -34,7 +34,6 @@ var upload = multer({
 router.post('/business', upload.single('logo'), async (req, res) => {
 
     try {
-        console.log(req.body)
         const url = req.protocol + '://' + req.get('host');
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.body.user_id });
         if (Exists) {
@@ -54,7 +53,7 @@ router.post('/business', upload.single('logo'), async (req, res) => {
             return res.status(200).json({ message: 'Saved', biz });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -103,7 +102,7 @@ router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, 
             }
         });
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -115,7 +114,7 @@ router.post('/business/:id/details', async (req, res) => {
         return res.status(200).json({ message: 'Saved successfully', Edited })
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

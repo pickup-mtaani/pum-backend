@@ -10,7 +10,7 @@ export const DownloadFile = async (fetch, name) => {
     })
     return obj;
   });
-  console.log(result)
+
   DownloadCSV(data, name)
 }
 

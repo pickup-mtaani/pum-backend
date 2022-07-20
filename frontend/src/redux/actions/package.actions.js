@@ -13,7 +13,7 @@ export const getParcels = () => async (dispatch) => {
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
     return;
   } catch (error) {
-    console.log(error);
+    ;
   }
 };
 
@@ -28,7 +28,7 @@ export const recieve = (id) => async (dispatch) => {
     dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
     let payload = "";
     if (error.response === undefined) {
       payload = "timeout";
@@ -56,7 +56,7 @@ export const collect = (id, data) => async (dispatch) => {
     dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
     let payload = "";
     if (error.response === undefined) {
       payload = "timeout";

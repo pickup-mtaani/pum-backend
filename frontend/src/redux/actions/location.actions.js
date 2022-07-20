@@ -2,7 +2,7 @@ import axios, { setAuthToken } from "./axiosService";
 
 export const getlocations = () => async (dispatch) => {
   try {
-await setAuthToken(axios);
+    await setAuthToken(axios);
     dispatch({ type: "FETCH_LOCATION" });
     let payload = [];
     const response = await axios.get(`/api/thrifter_location`);
@@ -11,22 +11,22 @@ await setAuthToken(axios);
     dispatch({ type: "FETCH_LOCATION_SUCCESSFUL", payload });
     return;
   } catch (error) {
-    console.log(error);
+    ;
   }
 };
 
-export const addthrift = ( data) => async (dispatch) => {
+export const addthrift = (data) => async (dispatch) => {
   try {
     await setAuthToken(axios);
     dispatch({ type: "ADD_THRIFT" });
     const response = await axios.post(`/api/thrifter`, data);
-    
+
     let payload = [];
     payload = response;
     dispatch({ type: "ADD_THRIFT_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
   }
 };
 

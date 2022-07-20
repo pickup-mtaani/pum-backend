@@ -25,33 +25,33 @@ export const AuthUser = (id) => async (dispatch) => {
 
   }
 }
-
 export const registerUser = (dat) => async (dispatch) => {
   try {
-
+    await setAuthToken(axios)
     dispatch({ type: "REGISTER_USER" });
-    const { data } = await axios.post(`/api/register`, dat);
-
+    const { data } = await axios.post(`/api/admin/register`, dat);
     let payload = data
     dispatch({ type: "REGISTER_USER_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
     let payload = "error.response.data.message";
     dispatch({ type: "REGISTER_USER_FAIL", payload });
     throw error;
   }
 };
 export const FetchUsers = (dat) => async (dispatch) => {
+  const { date } = dat
+ console.log(date)
   try {
     await setAuthToken(axios)
     dispatch({ type: "FETCH_USERS" });
-    const { data } = await axios.get(`/api/users?date=${dat !== undefined ? dat.date : ""}`);
+    const { data } = await axios.get(`/api/users?start_date=${date.start_date !== "" ? date.start_date : undefined}?end_date=${date.end_date !== "" ? date.end_date : undefined}`);
     let payload = data.Users
     dispatch({ type: "FETCH_USERS_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
     let payload = "error.response.data.message";
     dispatch({ type: "FETCH_USERS_FAIL", payload });
     throw error;
@@ -62,18 +62,17 @@ export const FetchAdmins = (dat) => async (dispatch) => {
     await setAuthToken(axios)
     dispatch({ type: "FETCH_ADMINS" });
     const { data } = await axios.get(`/api/admin?date=${dat !== undefined ? dat.date : ""}`);
-    console.log(data)
+
     let payload = data.Admins
     dispatch({ type: "FETCH_ADMINS_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
-    console.log(error);
+    ;
     let payload = "error.response.data.message";
     dispatch({ type: "FETCH_ADMINS_FAIL", payload });
     throw error;
   }
 };
-
 export const clearError = (dat) => async (dispatch) => {
 
   dispatch({ type: "CLEAR" });

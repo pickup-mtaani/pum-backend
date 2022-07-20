@@ -37,7 +37,7 @@ router.post('/stock', [authMiddleware, authorized], async (req, res) => {
         return res.status(200).json({ message: 'Stock Added successfully', saved: saved });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

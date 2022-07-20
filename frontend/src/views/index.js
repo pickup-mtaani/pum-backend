@@ -55,7 +55,7 @@ export function Todo(props) {
         } catch (error) {
             // setShowThrift(false)
             //    alert(error)
-            //    console.log(error)
+            //    
         }
     }
     const onchangeInput = (e) => {
@@ -73,7 +73,7 @@ export function Todo(props) {
             await props.getParcels();
             setShowAd(false);
         } catch (error) {
-            console.log(error)
+
             throw error;
         }
     }
@@ -84,7 +84,7 @@ export function Todo(props) {
             await props.getParcels();
             setShow(false);
         } catch (error) {
-            console.log(error)
+
             throw error;
         }
     }
@@ -95,7 +95,7 @@ export function Todo(props) {
             await props.getParcels();
             setShow(false);
         } catch (error) {
-            console.log(error)
+
             throw error;
         }
     }
@@ -130,7 +130,7 @@ export function Todo(props) {
             await props.getParcels();
             setShowModal(false);
         } catch (error) {
-            console.log(error)
+
             throw error;
         }
     }
@@ -138,7 +138,6 @@ export function Todo(props) {
     const Badge = () => {
         <div className='p-1 w-3 h-2 bg-red-100'></div>
     }
-    console.log(props.user)
     return (
         <Layout>
             <div className="flex w-full">
@@ -178,7 +177,7 @@ export function Todo(props) {
 
 
                                     <td>
-                                        {pack.recieved && !pack.rejected && <button type="button" onClick={() => openReciveModal(pack)} className={pack.collected ? "bg-green-900 shadow-2 px-1 py-1 rounded-md m-2 text-white" : "bg-green-300 shadow-2 px-1 py-1 rounded-md m-2"}>{pack.collected ?"Collected":"Collect"}</button>}
+                                        {pack.recieved && !pack.rejected && <button type="button" onClick={() => openReciveModal(pack)} className={pack.collected ? "bg-green-900 shadow-2 px-1 py-1 rounded-md m-2 text-white" : "bg-green-300 shadow-2 px-1 py-1 rounded-md m-2"}>{pack.collected ? "Collected" : "Collect"}</button>}
                                         {!pack.collected && !pack.recieved && <button type="button" onClick={() => submitRecieve(pack._id)} className="bg-green-400 shadow-2 px-1 py-1 rounded-md m-2">Recieve</button>}
                                         {!pack.collected && !pack.rejected && !pack.recieved && <button type="button" onClick={() => openModal(pack)} className={item.rejected ? "bg-grey-400 shadow-2 px-1 py-1 rounded-md m-2" : "bg-red-400 shadow-2 px-1 py-1 rounded-md m-2"}>Reject</button>}
                                     </td>

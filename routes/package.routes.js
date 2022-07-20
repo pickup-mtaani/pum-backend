@@ -17,7 +17,7 @@ router.post('/package', [authMiddleware, authorized], async (req, res) => {
     try {
         const Thrift = await Thrifter.findOne({ user_id: req.user._id })
         // user_id
-        console.log(Thrift)
+        res
         const UserObj = await User.findById(Thrift.user_id)
 
         const body = req.body;
@@ -34,7 +34,7 @@ router.post('/package', [authMiddleware, authorized], async (req, res) => {
         return res.status(200).json({ message: 'Package successfully Saved', newPackage });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 
@@ -54,7 +54,7 @@ router.post('/package/:id/recieve', [authMiddleware, authorized], async (req, re
         return res.status(200).json({ message: 'Package successfully Recieved', RecievedPack });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 
@@ -76,7 +76,7 @@ router.post('/package/:id/collect', [authMiddleware, authorized], async (req, re
         return res.status(200).json({ message: 'Package successfully Recieved', RecievedPack });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 
@@ -84,8 +84,8 @@ router.post('/package/:id/collect', [authMiddleware, authorized], async (req, re
 
 router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res) => {
     try {
-        console.log(req.params.id)
-     
+
+
         const Pack = await Package.findById(req.params.id).populate('thrifter_id')
         const Thrifter = await User.findById(Pack.thrifter_id.user_id)
 
@@ -96,7 +96,7 @@ router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res
         return res.status(200).json({ message: 'Package successfully rejectesd', RecievedPack });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 
@@ -110,7 +110,7 @@ router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res
 //         return res.status(200).json({ message: 'Package Rejected  and thriter notified', RecievedPack });
 
 //     } catch (error) {
-//         console.log(error)
+//         
 //         return res.status(400).json({ success: false, message: 'operation failed ', error });
 //     }
 
@@ -124,7 +124,7 @@ router.get('/packages', async (req, res) => {
         return res.status(200).json({ message: 'Fetched Sucessfully', Packages });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

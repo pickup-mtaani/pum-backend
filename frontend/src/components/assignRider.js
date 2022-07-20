@@ -12,7 +12,7 @@ function AssignRider() {
     const getCurent = async () => {
         socket.on('current-user', async (data) => {
 
-             setUser(data)
+            setUser(data)
 
         })
     }
@@ -20,12 +20,12 @@ function AssignRider() {
         // getCurent()
 
         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function(position) {
+            navigator.geolocation.watchPosition(function (position) {
                 console.log('changing position')
-              console.log("Latitude is :", position.coords.latitude);
-              console.log("Longitude is :", position.coords.longitude);
+                console.log("Latitude is :", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
             });
-          }
+        }
         navigator.geolocation.getCurrentPosition(function (position) {
             user.coords = {
                 latitude: position.coords.latitude,
@@ -33,7 +33,7 @@ function AssignRider() {
             }
             socket.on('position-change', async (user) => {
                 // setPosition(data)
-                console.log(user)
+                // console.log(user)
             })
         });
 

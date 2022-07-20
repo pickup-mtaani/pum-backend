@@ -38,7 +38,7 @@ router.post('/sale', [authMiddleware, authorized], async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

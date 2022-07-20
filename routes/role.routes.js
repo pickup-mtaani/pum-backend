@@ -4,7 +4,7 @@ var { authMiddleware, authorized } = require('middlewere/authorization.middlewer
 const router = express.Router();
 
 router.post('/roled', async (req, res) => {
-   
+
     try {
 
         const Exists = await Role.findOne({ name: req.body.name });
@@ -17,7 +17,7 @@ router.post('/roled', async (req, res) => {
             return res.status(200).json({ message: 'Saved' });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -29,7 +29,7 @@ router.get('/roles', async (req, res) => {
         return res.status(200).json({ message: 'roles', roles });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -42,7 +42,7 @@ router.put('/role/:id', async (req, res) => {
 
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -56,7 +56,7 @@ router.get('/role/:id', async (req, res) => {
 
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

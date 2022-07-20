@@ -59,7 +59,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             return res.status(200).json({ message: 'Saved', product_created });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -99,7 +99,7 @@ router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
         return res.status(200).json({ message: 'Successfull Update ', prod });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -147,7 +147,7 @@ router.put('/product/:id/update_images', upload.array('images'), [authMiddleware
         return res.status(200).json({ message: 'Images Updated Successfully', update });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });

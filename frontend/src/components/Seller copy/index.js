@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { FetchAdmins } from '../../redux/actions/auth.actions'
+import { FetchAdmins, registerUser } from '../../redux/actions/auth.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -11,6 +11,9 @@ import Modal from '../common/modal'
 import Date_range from './modals/date_range.modal'
 import Add_admin from './modals/add_admin.modal'
 function Users(props) {
+  let initialState = {
+    name: '', email: "", phone_number: '', password: ''
+  }
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
   const [date, setDate] = useState("")
@@ -18,8 +21,8 @@ function Users(props) {
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
-  const [showModal, setShowModal] = useState(true);
-
+  const [showModal, setShowModal] = useState(false);
+  const [item, setItem] = useState(initialState);
   const filteredItems = props.admins.filter(
     item => item.name.toLowerCase().includes(filterText.toLowerCase()),
   );
@@ -30,11 +33,23 @@ function Users(props) {
     );
     setFilterData(filtered)
   }
-
+  const changeInput = (e) => {
+    const { name, value } = e.target !== undefined ? e.target : e;
+    setItem((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
   const filter_BY_date = async (e) => {
 
     await props.FetchAdmins({ date: new Date(e) })
 
+  }
+  const submit = async () => {
+    await props.registerUser(item)
+    await props.FetchAdmins()
+    setItem(initialState)
+    setShowModal(false)
   }
   const subHeaderComponentMemo = React.useMemo(() => {
 
@@ -51,7 +66,6 @@ function Users(props) {
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-
         <button onClick={() => setShowModal(true)} className="border py-1 px-2 border-slate-200 mx-2 rounded-md flex gap-x-2 bg-green-200 justify-center items-center"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex justify-center items-center border" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
         </svg>ADD </button>
@@ -84,7 +98,12 @@ function Users(props) {
         />
       </div>
       <Date_range toggle={() => setShowModal(false)} show={showModal} />
-      <Add_admin show={showModal} toggle={() => setShowModal(false)} />
+      <Add_admin
+        show={showModal}
+        changeInput={(e) => changeInput(e)}
+        submit={() => submit()}
+        toggle={() => setShowModal(false)}
+      />
     </Layout>
   )
 }
@@ -101,5 +120,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { FetchAdmins })(Users)
+export default connect(mapStateToProps, { FetchAdmins, registerUser })(Users)
 

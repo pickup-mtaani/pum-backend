@@ -17,14 +17,7 @@ function AddAdmin() {
 function Add_admin(props) {
     const { toggle, show } = props
     return (
-        // <Modal
-        //     show={show}
-        //     modalTitle="Add Admin"
-        //     toggle={toggle}
-        //     body={AddAdmin}
-        // >
 
-        // </Modal>
         <>
 
             {
@@ -49,19 +42,19 @@ function Add_admin(props) {
                                         <div className="w-full flex flex-col gap-y-2 ">
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Name</div>
-                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" name="name" />
+                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin Name" name="name" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Phone</div>
-                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" name="name" />
+                                                <input type="text" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin phone number" name="phone_number" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Email</div>
-                                                <input type="email" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" name="name" />
+                                                <input type="email" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="admin email" name="email" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Password</div>
-                                                <input type="password" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" name="name" />
+                                                <input type="password" autoComplete="off" className=" border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
                                             </div>
 
                                         </div>
@@ -77,7 +70,7 @@ function Add_admin(props) {
                                         <button
                                             className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                                             type="button"
-                                            onClick={props.toggle}
+                                            onClick={props.submit}
                                         >
                                             Submit
                                         </button>

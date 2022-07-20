@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -93,7 +93,7 @@ router.post('/social-login', async (req, res) => {
         const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
         return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -134,7 +134,7 @@ router.post('/register', async (req, res) => {
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -148,7 +148,7 @@ router.post('/:id/resend-token', async (req, res) => {
         await SendMessage(textbody)
         return res.status(200).json({ success: false, message: 'Activation resent ' });
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -170,7 +170,7 @@ router.post('/:id/update_password', async (req, res) => {
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -201,7 +201,7 @@ router.put('/reset-password', async (req, res) => {
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -252,7 +252,7 @@ router.post('/recover_account', async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -279,7 +279,7 @@ router.put('/update-user', async (req, res) => {
         return res.status(200).json({ update_user });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -294,7 +294,7 @@ router.put('/user/:id/activate', async (req, res) => {
             return res.status(200).json({ message: 'User Activated successfully and can now login !!' });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -342,7 +342,7 @@ router.post('/user/delete', async (req, res) => {
 
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -355,35 +355,39 @@ router.get('/user/:id', async (req, res) => {
         return res.status(200).json({ message: 'User Fetched Successfully !!', userObj });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
 
 });
 router.get('/users', async (req, res) => {
+    
     try {
-        const { page, limit, date } = req.query
+        const { page, limit, start_date, end_date } = req.query
+        console.log(end_date)
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
         let Users
-        if (date) {
-            const today = moment(date).startOf('day')
+        if (start_date !== undefined && end_date !== undefined) {
+            const today = moment(start_date).startOf('day')
+            const endDay = moment(end_date).endOf('day')
             Users = await User.find({
                 createdAt: {
                     $gte: today.toDate(),
-                    $lte: moment(today).endOf('day').toDate()
+                    $lte: endDay.toDate()
                 }
             }).populate('role').skip(skip).limit(PAGE_SIZE);
         }
         else {
-            Users = await User.find({}).populate('role').skip(skip).limit(PAGE_SIZE);
+            console.log("first")
+            Users = await User.find().populate('role').skip(skip).limit(PAGE_SIZE);
         }
 
         return res.status(200).json({ message: 'Users Fetched Successfully !!', Users });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

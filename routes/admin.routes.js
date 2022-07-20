@@ -35,7 +35,7 @@ router.post('/register', [authMiddleware, authorized], async (req, res) => {
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -63,12 +63,11 @@ router.post('/login', async (req, res) => {
             if (!password_match) {
                 return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', user });
             }
-            console.log(req.body)
             const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'Operation failed ', error });
     }
 
@@ -96,7 +95,7 @@ router.get('/', [authMiddleware, authorized], async (req, res) => {
         return res.status(200).json({ message: 'Admins Fetched Successfully !!', Admins });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

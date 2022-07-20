@@ -25,7 +25,7 @@ router.post('/shelf_location', [authMiddleware, authorized], async (req, res) =>
             return res.status(200).json({ message: 'Saved' });
         }
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 
@@ -36,7 +36,7 @@ router.get('/shelf_locations', async (req, res) => {
         return res.status(200).json({ success: true, message: 'fetched ', locations });
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

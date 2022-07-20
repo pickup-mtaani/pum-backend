@@ -12,13 +12,18 @@ import Date_range from './modals/date_range.modal'
 function Users(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
-  const [date, setDate] = useState("")
+  
+  const [date, setDate] = useState({
+    start_date: '',
+    end_date: ""
+  })
+
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
-  
+
   const filteredItems = props.users.filter(
     item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
   );
@@ -29,10 +34,20 @@ function Users(props) {
     );
     setFilterData(filtered)
   }
+  const setTime = async (e) => {
+    const { value, name } = e.target;
+    if (value === "Today") {
+      setDate({
+        start_date: new Date(),
+        end_date: new Date()
+      })
+      await filter_BY_date()
+    }
 
-  const filter_BY_date = async (e) => {
-
-    await props.FetchUsers({ date: new Date(e) })
+  }
+  const filter_BY_date = async () => {
+    
+    await props.FetchUsers({ date: date })
 
   }
   const subHeaderComponentMemo = React.useMemo(() => {
@@ -44,28 +59,29 @@ function Users(props) {
 
           searchValue={searchValue}
           date={date}
+          setTime={setTime}
           download={() => DownloadFile(() =>
             props.FetchUsers({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-        <select className="border py-1 px-2 border-slate-200 mx-2 rounded-md " onChange={(e) =>setShowModal(true)}>
+        <select className="border py-1 px-2 border-slate-200 mx-2 rounded-md " onChange={(e) => setTime(e)}>
           <option >Filters</option>
           <option value="Today">Today</option>
           <option value="Monthly">Monthly</option>
           <option value="Yearly">Yearly</option>
         </select>
-        <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} />
+        {/* <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} /> */}
         {/* <AddButton toggleCanvarse={toggleCanvarse} />
         <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
         /> */}
 
       </>
     );
-  }, [searchValue, date]);
+  }, [searchValue, date,setTime]);
 
   useEffect(() => {
-    props.FetchUsers()
+    props.FetchUsers({ date })
   }, [])
   return (
     <Layout>

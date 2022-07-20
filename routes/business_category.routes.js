@@ -23,7 +23,7 @@ router.post('/busines-category', [authMiddleware, authorized], async (req, res) 
         }
 
     } catch (error) {
-        console.log(error)
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
@@ -31,9 +31,9 @@ router.post('/busines-category', [authMiddleware, authorized], async (req, res) 
 });
 
 
-router.get('/busines-categories',  async (req, res) => {
+router.get('/busines-categories', async (req, res) => {
     try {
-        const Categories = await Category.find({deleted_at:null});
+        const Categories = await Category.find({ deleted_at: null });
         return res.status(200).json({ success: true, message: 'Categories fetched successfull', Categories });
     } catch (error) {
         return res.status(400).json({ success: false, message: 'operation failed ', error });

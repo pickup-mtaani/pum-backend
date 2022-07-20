@@ -96,11 +96,11 @@ export const DownloadFromApi = async ({ BasefileURL, ext, fileName }) => {
         { type: 'application/xlsx' });
       //Build a URL from the file
       const fileURL = URL.createObjectURL(file);
-    
+
       dload({ fileURL, ext, fileName })
       // window.open(fileURL);
     })
     .catch(error => {
-      console.log(error);
+      ;
     });
 }

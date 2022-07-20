@@ -40,7 +40,7 @@ function Login(props) {
       await props.registerUser(user)
       toggleRegistering();
     } catch (error) {
-      console.log(error)
+
     }
 
   };
@@ -62,12 +62,12 @@ function Login(props) {
     if (userInfor) {
       return navigate("/dashboard");
     }
-    else  {
+    else {
       return navigate("/");
     }
 
-  },[error])
- 
+  }, [error])
+
   return (
     <div className="h-screen w-screen bg-slate-900 flex justify-center items-center">
       {registering ? (

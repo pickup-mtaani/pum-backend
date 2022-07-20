@@ -29,7 +29,6 @@ function UserDetails(props) {
         fetchData(id)
 
     }, [])
-    console.log(Bussiness)
     return (
         <Layout>
             <div className="w-full h-full mt-20">
