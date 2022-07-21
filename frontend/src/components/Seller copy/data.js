@@ -5,12 +5,7 @@ export const Sellers_columns = [
       sortable: true,
       name: 'Full Name',
       minWidth: '225px',
-      selector: row => (
-        <Link to={`/seller/${row.name}`}
-          state={{ id: row._id }}
-        >
-          {`${row.name}`}</Link>
-      )
+      selector: row => row.name
     },
     {
       sortable: true,

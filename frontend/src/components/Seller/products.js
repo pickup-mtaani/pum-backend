@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { FetchUsers } from '../../redux/actions/auth.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
-import { Link } from 'react-router-dom'
-import Layout from '../../views/Layouts'
+import {
+  get_seller_products
+} from "../../redux/actions/products.actions";
+
+import Image_modal from './modals/image_modal'
 function Products(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
+  const [image, setImage] = useState([])
+  const [active, setActive] = useState(0)
+  const [showImage, setShowImage] = useState(false)
   const [date, setDate] = useState("")
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
+
+  const OPenImagView = async (image) => {
+    console.log(image)
+    setShowImage(true)
+    setImage(image.Images)
+    setActive(image.id)
+  }
+  
   const serverSideColumns = [
     {
       sortable: true,
@@ -37,9 +49,23 @@ function Products(props) {
       minWidth: '250px',
       selector: (row) => (
         <div className="flex gap-x-1">
-         {row.colors.map((color,i)=>(
-          <div style={{width:12,height:12,borderRadius:"50%",backgroundColor:color,borderColor:"black",borderWidth:"1px"}} ></div>
-         ))}
+          {row.colors.map((color, i) => (
+            <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: color, borderColor: "black", borderWidth: "1px" }} ></div>
+          ))}
+        </div>
+      )
+    },
+    {
+      sortable: true,
+      name: 'colors',
+      minWidth: '250px',
+      selector: (row) => (
+        <div className="flex gap-x-1">
+          {row.images.map((image, i) => (
+            <div style={{ width: 20, height: 20, borderRadius: "20%", borderColor: "black", borderWidth: "1px" }} onClick={() => OPenImagView({ Images: row.images, id: i })} >
+              <img src={image} alt="" />
+            </div>
+          ))}
         </div>
       )
     },
@@ -55,17 +81,14 @@ function Products(props) {
   //   );
   const onChangeFilter = (e) => {
     setFilterText(e)
-    // const filtered = filteredItems.filter(
-    //   item => item.title && item.title.toLowerCase().includes(filterText.toLowerCase()),
-    // );
-    // setFilterData(filtered)
+
+    const filtered = props.data.filter(
+      item => item.product_name && item.product_name.toLowerCase().includes(filterText.toLowerCase()),
+    );
+    setFilterData(filtered)
   }
 
-  const filter_BY_date = async (e) => {
 
-    await props.FetchUsers({ date: new Date(e) })
-
-  }
   const subHeaderComponentMemo = React.useMemo(() => {
 
     return (
@@ -76,11 +99,11 @@ function Products(props) {
           searchValue={searchValue}
           date={date}
           download={() => DownloadFile(() =>
-            props.FetchUsers({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
-            `${totalRows > 0 ? totalRows : "all"}_users`
+            props.get_seller_products({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
+            `${totalRows > 0 ? totalRows : "all"}_products`
           )}
         />
-        <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} />
+        {/* <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} /> */}
         {/* <AddButton toggleCanvarse={toggleCanvarse} />
         <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
         /> */}
@@ -92,7 +115,7 @@ function Products(props) {
   useEffect(() => {
     // props.FetchUsers({ date: date })
   }, [])
-
+  console.log(props.data)
   return (
     <div className="w-full mx-1">
       <DataTable
@@ -110,7 +133,13 @@ function Products(props) {
         paginationTotalRows={totalRows}
       // onChangeRowsPerPage={handlePerRowsChange}
       />
+      <Image_modal
 
+        show={showImage}
+        image={image}
+        active={active}
+        toggle={() => setShowImage(false)}
+      />
 
     </div>
   )
@@ -123,10 +152,11 @@ const mapStateToProps = (state) => {
   return {
     users: state.userDetails.users,
     // lastId: state.userDetails.lastId,
+
     loading: state.userDetails.loading,
     // error: state.userDetails.error,
   };
 };
 
-export default connect(mapStateToProps, { FetchUsers })(Products)
+export default connect(mapStateToProps, { get_seller_products })(Products)
 

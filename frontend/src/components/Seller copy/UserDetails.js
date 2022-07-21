@@ -29,9 +29,10 @@ function UserDetails(props) {
         fetchData(id)
 
     }, [])
+    // console.log("Bussiness")
     return (
         <Layout>
-            <div className="w-full h-full mt-20">
+            {/* <div className="w-full h-full mt-20">
                 <div className="h-56 mx-2 bg-red-300 relative z-0 flex  border-4 border-white ">
                     <div className="w-3/4">
 
@@ -58,8 +59,8 @@ function UserDetails(props) {
             </div>
             <div className=" mx-2 flex mt-12 py-5">
                 <Products data={SellerProducts} />
-            </div>
-          
+            </div> */}
+
         </Layout>
     )
 }

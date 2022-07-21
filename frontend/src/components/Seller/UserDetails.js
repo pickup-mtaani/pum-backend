@@ -49,9 +49,9 @@ function UserDetails(props) {
                     </div>
                     <div className=" absolute inset-0  z-10 mx-2 flex py-5 gap-x-2  justify-center items-center -bottom-60">
                         <DashboardItems item={{ title: "Products", value: SellerProducts.length }} />
-                        <DashboardItems item={{ title: "Riders", value: 4 }} />
-                        <DashboardItems item={{ title: "Total Sales", value: "1200", percent: 6 }} />
-                        <DashboardItems item={{ title: "sales this week", value: '20', percent: 1 }} />
+                        <DashboardItems item={{ title: "", value: "" }} />
+                        <DashboardItems item={{ title: "", value: "", percent: "" }} />
+                        <DashboardItems item={{ title: "", value: '', percent: "" }} />
                     </div>
                 </div>
 
