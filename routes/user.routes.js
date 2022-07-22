@@ -290,8 +290,9 @@ router.put('/user/:id/activate', async (req, res) => {
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
         }
         else {
-            await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
-            return res.status(200).json({ message: 'User Activated successfully and can now login !!' });
+            let userObj = await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
+            const token = await jwt.sign({ email: userObj.email, _id: user._id }, process.env.JWT_KEY);
+            return res.status(200).json({ message: 'User Activated successfully and can now login !!', token });
         }
     } catch (error) {
 
@@ -362,7 +363,7 @@ router.get('/user/:id', async (req, res) => {
 
 });
 router.get('/users', async (req, res) => {
-    
+
     try {
         const { page, limit, start_date, end_date } = req.query
         console.log(end_date)
