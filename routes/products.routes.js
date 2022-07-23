@@ -3,6 +3,7 @@ var Product = require('models/products.model')
 var Stock = require('models/stocks.model')
 const imagemin = require('imagemin');
 const imageminMozJpeg = require('imagemin-mozjpeg')
+var Category = require('models/business_categories.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 var path = require('path');
@@ -51,6 +52,14 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                     ]
                 })
 
+            }
+            if (req.body.other) {
+                const body = req.body;
+                body.createdBy = req.user._id
+                body.name = req.body.other
+                const newCategory = new Category(body)
+                const category = await newCategory.save()
+                body.category = category._id
             }
             const body = req.body
             body.createdBy = req.user._id
