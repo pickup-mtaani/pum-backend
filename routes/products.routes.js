@@ -53,14 +53,14 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 })
 
             }
-            if (req.body.other) {
-                const body = req.body;
-                body.createdBy = req.user._id
-                body.name = req.body.other
-                const newCategory = new Category(body)
-                const category = await newCategory.save()
-                body.category = category._id
-            }
+            // if (req.body.other) {
+            //     const body = req.body;
+            //     body.createdBy = req.user._id
+            //     body.name = req.body.other
+            //     const newCategory = new Category(body)
+            //     const category = await newCategory.save()
+            //     body.category = category._id
+            // }
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles
@@ -72,7 +72,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             return res.status(200).json({ message: 'Saved', product_created });
         }
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
