@@ -5,6 +5,10 @@ const StockSchema = new Schema({
         type: String,
         required: true
     },
+    unit: {
+        type: String,
+        // required: true
+    },
     business: {
         type: Schema.Types.ObjectId,
         ref: 'business'

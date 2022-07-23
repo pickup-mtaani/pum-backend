@@ -71,10 +71,7 @@ function Users(props) {
           <option value="Monthly">Monthly</option>
           <option value="Yearly">Yearly</option>
         </select>
-        {/* <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} /> */}
-        {/* <AddButton toggleCanvarse={toggleCanvarse} />
-        <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
-        /> */}
+        
 
       </>
     );

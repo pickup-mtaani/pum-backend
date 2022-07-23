@@ -45,7 +45,7 @@ function Layout(props) {
 
     })
     return (
-        <div className="w-screen h-screen flex bg-slate-100">
+        <div className="w-screen  flex bg-slate-100">
             <div className="w-1/5 h-screen flex flex-col bg-slate-100">
                 <div className="w-full  bg-slate-100 my-5 p-10 h-10 flex justify-center items-center  shadow-sm">
                     <img src={Logo} alt="" height={10} width={150} />
@@ -75,7 +75,7 @@ function Layout(props) {
                             {JSON.parse(localStorage.getItem('userInfo')) ? <h2 onClick={() => logout()}>Logout</h2> : <h2>Login</h2>}
                         </div>
                     </div>
-                    <div className="w-full flex flex-col mt-10 ">
+                    <div className="w-full px-10 h-full flex flex-col mt-10 ">
                         {props.children}
                     </div>
 

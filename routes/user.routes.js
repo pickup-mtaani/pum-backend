@@ -121,7 +121,7 @@ router.post('/register', async (req, res) => {
         const mailOptions = {
             from: '"Pickup mtaani" <bradcoupers@gmail.com>',
             to: `${req.body.email}`,
-            subject: 'Pickup Mtaani Account Recovery',
+            subject: 'Pickup Mtaani Account Activation',
             template: 'application',
             context: {
                 email: `${req.body.email}`,
@@ -208,17 +208,17 @@ router.put('/reset-password', async (req, res) => {
 router.post('/recover_account', async (req, res) => {
     try {
         const body = req.body
-        if (req.body.phone_number.charAt(0) === "0") {
-            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-        }
-        if (!req.body.phone_number && !req.body.email) {
-            return res.status(401).json({ message: 'Kindly enter your email or phone number' });
-        }
-        else if (req.body.phone_number) {
+
+        if (req.body.phone_number) {
             req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             const user = await User.findOne({ phone_number: body.phone_number });
+
             if (!user) {
                 return res.status(401).json({ message: 'The phone Number you entered is not registered ' });
+            }
+
+            if (req.body.phone_number.charAt(0) === "0") {
+                req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
             }
 
             let verification_code = MakeActivationCode(5)
@@ -226,6 +226,9 @@ router.post('/recover_account', async (req, res) => {
             const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
             await SendMessage(textbody)
             return res.status(200).json({ message: `A recovery Text has been sent to  ${req.body.phone_number}` });
+        }
+        else if (!req.body.phone_number && !req.body.email) {
+            return res.status(401).json({ message: 'Kindly enter your email or phone number' });
         }
         else if (req.body.email) {
             const user = await User.findOne({ email: req.body.email });
@@ -252,7 +255,7 @@ router.post('/recover_account', async (req, res) => {
         }
 
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });

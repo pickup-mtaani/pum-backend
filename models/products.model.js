@@ -30,12 +30,16 @@ const ProductSchema = new Schema({
         type: Number,
         required: true
     },
+    unit: {
+        type: String,
+        // required: true
+    },
     min_order: {
         type: Number,
         required: true
     },
     size: {
-        type: String,
+        type: Array,
 
     },
     createdBy: {

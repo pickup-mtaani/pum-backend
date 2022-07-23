@@ -1,6 +1,6 @@
 const express = require('express');
 var Business = require('models/business.model')
-var BusinessDetails = require('models/business_details.model')
+
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 const fs = require('fs');
