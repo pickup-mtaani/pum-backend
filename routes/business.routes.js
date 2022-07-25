@@ -78,15 +78,17 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/business/:id', [authMiddleware, authorized], async (req, res) => {
+router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Bus = await Business.findOne({ createdBy: req.user.id }).populate('category')
+        const Bus = await Business.findOne({ createdBy: req.user._id }).populate('category')
         return res.status(200).json({ message: 'fetched successfully', Bus });
     } catch (error) {
 
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+
+
 
 router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
     try {

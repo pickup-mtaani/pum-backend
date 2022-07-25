@@ -107,6 +107,21 @@ router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const { page, limit } = req.query
+        const PAGE_SIZE = limit;
+        const skip = (page - 1) * PAGE_SIZE;
+        const products = await Product.find({ deleted_at: null, business: req.params.id }).populate('category').skip(skip)
+            .limit(PAGE_SIZE);
+
+        return res.status(200).json({ message: 'Successfull pulled ', products });
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
 router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
