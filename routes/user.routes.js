@@ -48,6 +48,9 @@ router.post('/login', async (req, res) => {
 
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
             const mail = await User.findOne({ email: req.body.phone_number }).populate('role');
+            if (!user) {
+                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
+            }
             if (user && !user.activated) {
                 return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message', user });
             }
@@ -93,7 +96,7 @@ router.post('/social-login', async (req, res) => {
         const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
         return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -369,7 +372,6 @@ router.get('/users', async (req, res) => {
 
     try {
         const { page, limit, start_date, end_date } = req.query
-        console.log(end_date)
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
         let Users
@@ -384,7 +386,6 @@ router.get('/users', async (req, res) => {
             }).populate('role').skip(skip).limit(PAGE_SIZE);
         }
         else {
-            console.log("first")
             Users = await User.find().populate('role').skip(skip).limit(PAGE_SIZE);
         }
 
