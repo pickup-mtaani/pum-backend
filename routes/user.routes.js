@@ -85,7 +85,7 @@ router.post('/social-login', async (req, res) => {
         const user = await User.findOne({ email: req.body.email });
         if (user) {
             const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-            return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role.name });
+            return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id });
         }
         const body = req.body
         body.verification_code = MakeActivationCode(5)
