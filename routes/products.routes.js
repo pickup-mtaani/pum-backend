@@ -83,9 +83,9 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
         const skip = (page - 1) * PAGE_SIZE;
         const products = await Product.find({ deleted_at: null, createdBy: req.user._id }).populate('category').skip(skip)
             .limit(PAGE_SIZE);
-        let stocks = await Stock.find({ createdBy: req.user._id }).populate('product');
+        // let stocks = await Stock.find({ createdBy: req.user._id }).populate('product');
 
-        return res.status(200).json({ message: 'Successfull pulled ', stocks })
+        return res.status(200).json({ message: 'Successfull pulled ', products })
 
     } catch (error) {
 

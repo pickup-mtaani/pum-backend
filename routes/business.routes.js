@@ -80,7 +80,7 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/business/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Bus = await Business.findOne({ createdBy: req.params.id }).populate('category')
+        const Bus = await Business.findOne({ createdBy: req.user.id }).populate('category')
         return res.status(200).json({ message: 'fetched successfully', Bus });
     } catch (error) {
 

@@ -5,11 +5,11 @@ const ProductSchema = new Schema({
         type: String,
         required: true
     },
-    businesses: [{
+    business: {
         type: Schema.Types.ObjectId,
         ref: 'business'
     }
-    ],
+    ,
     category: {
         type: Schema.Types.ObjectId,
         ref: 'business_category'
