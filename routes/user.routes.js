@@ -85,7 +85,7 @@ router.post('/social-login', async (req, res) => {
         const user = await User.findOne({ email: req.body.email });
         if (user) {
             const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-            return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id });
+            return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id});
         }
         const body = req.body
         body.verification_code = MakeActivationCode(5)
@@ -94,9 +94,9 @@ router.post('/social-login', async (req, res) => {
         let NewUser = new User(body);
         let savedUser = await NewUser.save();
         const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
-        return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id, role: savedUser.role.name });
+        return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id });
     } catch (error) {
-        console.log(error)
+console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
