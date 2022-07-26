@@ -79,9 +79,9 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
 });
 router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Bussiness = await Business.find();
+        const bussiness = await Business.find();
 
-        return res.status(200).json({ message: 'Businesses Fetched Successfully !!', Bussiness });
+        return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
 
     } catch (error) {
         console.log(error.response)
