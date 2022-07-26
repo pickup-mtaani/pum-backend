@@ -16,6 +16,7 @@ import Products from './products'
 function UserDetails(props) {
     const [Bussiness, setBussiness] = useState({})
     const [SellerProducts, setProducts] = useState({})
+    const [activeTab, setActiveTab] = useState(0);
     const location = useLocation()
 
     const fetchData = async (id) => {
@@ -24,6 +25,17 @@ function UserDetails(props) {
         setBussiness(result)
         setProducts(products_array)
     }
+    let Tabs = [
+        {
+            name: "Product", component: (<Products data={SellerProducts} />)
+
+        },
+        {
+
+            name: "Product", component: <div>Keendy</div>
+
+        }
+    ]
     useEffect(() => {
         const { id } = location.state
         fetchData(id)
@@ -31,19 +43,20 @@ function UserDetails(props) {
     }, [])
     return (
         <Layout>
-            <div className="w-full h-full mt-20">
-                <div className="h-56 mx-2 bg-red-300 relative z-0 flex  border-4 border-white ">
+            {/* <div className="w-full h-full mt-20">
+                <div className="h-6 mx-2 bg-red-300 relative z-0 flex  border-4 border-white ">
                     <div className="w-3/4">
 
                     </div>
                     <div className="w-1/4 pt-20 flex flex-col">
                         <h1 className="font-bold uppercase text-primary-500">{Bussiness?.name}</h1>
-                        <h2 className="italic text-white"> {Bussiness?.category?.name}</h2>
-                        <h2 className="italic text-white"><span>Mpesa:</span> {Bussiness?.Mpesa_No}/<span>Till:</span> {Bussiness?.till_No}</h2>
+                        <h2 className="italic "> {Bussiness?.category?.name}</h2>
+                        <h2 className="italic "><span>Mpesa:</span> hgcg{Bussiness?.Mpesa_No}/<span>Till:</span> hn{Bussiness?.till_No}</h2>
                     </div>
                     <div className="absolute inset-0  z-10 -top-14 left-20 ">
                         <div className="w-40 h-40  rounded-full flex justify-center items-center">
                             <img src={Bussiness?.logo} alt="" className="w-36 h-36  rounded-full border-4 border-white flex justify-center items-center" />
+                            <button className="btn">Hello daisyUI</button>
                         </div>
 
                     </div>
@@ -55,11 +68,18 @@ function UserDetails(props) {
                     </div>
                 </div>
 
+            </div> */}
+            <div class="tabs tabs-boxed ">
+
+                {Tabs.map((tab, i) => (
+                    <div class={`tab  ${i === activeTab ? "tab-active" : null}`} onClick={() => setActiveTab(i)}>{tab.name}</div>
+                ))}
+
             </div>
             <div className=" mx-2 flex mt-12 py-5">
-                <Products data={SellerProducts} />
+                {Tabs[activeTab].component}
             </div>
-          
+
         </Layout>
     )
 }

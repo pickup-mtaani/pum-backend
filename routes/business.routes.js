@@ -6,6 +6,7 @@ var multer = require('multer');
 const fs = require('fs');
 var path = require('path');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+var Category = require('models/business_categories.model')
 const { validateBusinesInput } = require('../va;lidations/business.validations');
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -31,29 +32,48 @@ var upload = multer({
 });
 
 
-router.post('/business', upload.single('logo'), async (req, res) => {
+router.post('/business', [authMiddleware, authorized], upload.single('logo'), async (req, res) => {
 
     try {
         const url = req.protocol + '://' + req.get('host');
+        let category_id
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.body.user_id });
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
         }
+        if (req.body.other) {
+            const body = req.body;
+            body.createdBy = req.user._id
+            body.business_catgory_name = req.body.other
+            const newCategory = new Category(body)
+            const New_category = await newCategory.save()
+            body.category = New_category._id
+        }
+
         const { errors, isValid } = validateBusinesInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        else {
-            const body = req.body
-            body.createdBy = req.body.user_id
-            body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
-            const newBusiness = new Business(body)
-            const biz = await newBusiness.save()
-            return res.status(200).json({ message: 'Saved', biz });
-        }
-    } catch (error) {
 
+        if (req.body.other) {
+            const body = req.body;
+            body.createdBy = req.user._id
+            body.business_catgory_name = req.body.other
+            const newCategory = new Category(body)
+            const New_category = await newCategory.save()
+            body.category = New_category._id
+        }
+        category_id = req.body.category
+        const body = req.body
+        body.createdBy = req.body.user_id
+        body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
+        const newBusiness = new Business(body)
+        const biz = await newBusiness.save()
+        return res.status(200).json({ message: 'Saved', biz });
+
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });

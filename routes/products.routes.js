@@ -53,14 +53,14 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 })
 
             }
-            // if (req.body.other) {
-            //     const body = req.body;
-            //     body.createdBy = req.user._id
-            //     body.name = req.body.other
-            //     const newCategory = new Category(body)
-            //     const category = await newCategory.save()
-            //     body.category = category._id
-            // }
+            if (req.body.other) {
+                const body = req.body;
+                body.createdBy = req.user._id
+                body.name = req.body.other
+                const newCategory = new Category(body)
+                const category = await newCategory.save()
+                body.category = category._id
+            }
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles
@@ -92,23 +92,24 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+// router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
+//     try {
+//         const { page, limit } = req.query
+//         const PAGE_SIZE = limit;
+//         const skip = (page - 1) * PAGE_SIZE;
+//         const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).populate('category').skip(skip)
+//             .limit(PAGE_SIZE);
+
+//         return res.status(200).json({ message: 'Successfull pulled ', products });
+
+//     } catch (error) {
+
+//         return res.status(400).json({ success: false, message: 'operation failed ', error });
+//     }
+// });
 router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const PAGE_SIZE = limit;
-        const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).populate('category').skip(skip)
-            .limit(PAGE_SIZE);
-
-        return res.status(200).json({ message: 'Successfull pulled ', products });
-
-    } catch (error) {
-
-        return res.status(400).json({ success: false, message: 'operation failed ', error });
-    }
-});
-router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
-    try {
+        console.log('ken')
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;

@@ -28,19 +28,19 @@ module.exports.validateRegisterInput = (data) => {
     if (Validator.isEmpty(data.password)) {
         errors.password = 'Password is required';
     }
-    if (!isUpper(data.password)) {
-        errors.password = 'Password Must contain Both Upper and Lower case Characters  ';
-    }
-    if (!isSpecial(data.password)) {
-        errors.password = 'Password Must contain at least one special characters  ';
-    }
+    // if (!isUpper(data.password)) {
+    //     errors.password = 'Password Must contain Both Upper and Lower case Characters  ';
+    // }
+    // if (!isSpecial(data.password)) {
+    //     errors.password = 'Password Must contain at least one special characters  ';
+    // }
 
-    if (!Validator.isLength(data.password, { min: 8, max: 30 })) {
-        errors.password = 'Password must be more than 8 characters long';
-    }
-    if (!NumericalExists(data.password)) {
-        errors.password = 'Password Must have at least one Numerical value';
-    }
+    // if (!Validator.isLength(data.password, { min: 8, max: 30 })) {
+    //     errors.password = 'Password must be more than 8 characters long';
+    // }
+    // if (!NumericalExists(data.password)) {
+    //     errors.password = 'Password Must have at least one Numerical value';
+    // }
 
     if (!Validator.isLength(data.phone_number, { min: 10, max: 14 })) {
         errors.phone_number = 'phone Number  must have at least  10 characters ';
@@ -75,20 +75,20 @@ module.exports.validateAdminRegisterInput = (data) => {
     if (Validator.isEmpty(data.password)) {
         errors.password = 'Password is required';
     }
-    if (!isUpper(data.password)) {
-        errors.password = 'Password Must contain Both Upper and Lower case Characters  ';
-    }
+    // if (!isUpper(data.password)) {
+    //     errors.password = 'Password Must contain Both Upper and Lower case Characters  ';
+    // }
    
-    if (!isSpecial(data.password)) {
-        errors.password = 'Password Must contain at least one special characters  ';
-    }
+    // if (!isSpecial(data.password)) {
+    //     errors.password = 'Password Must contain at least one special characters  ';
+    // }
 
-    if (!Validator.isLength(data.password, { min: 8, max: 30 })) {
-        errors.password = 'Password must be more than 8 characters long';
-    }
-    if (!NumericalExists(data.password)) {
-        errors.password = 'Password Must have at least one Numerical value';
-    }
+    // if (!Validator.isLength(data.password, { min: 8, max: 30 })) {
+    //     errors.password = 'Password must be more than 8 characters long';
+    // }
+    // if (!NumericalExists(data.password)) {
+    //     errors.password = 'Password Must have at least one Numerical value';
+    // }
 
     if (!Validator.isLength(data.phone_number, { min: 10, max: 14 })) {
         errors.phone_number = 'phone Number  must have at least  10 characters ';
@@ -130,22 +130,22 @@ module.exports.validatePasswordInput = (data) => {
     if (Validator.isEmpty(data.confirm_password)) {
         errors.password = 'password confirmation  field is required';
     }
-    if (!isUpper(data.new_password)) {
-        errors.new_password = 'Password Must contain Both Upper and Lower case Characters  ';
-    }
-    if (data.new_password !== data.confirm_password) {
-        errors.new_password = 'Password Mismatch the confirm password  ';
-    }
-    if (!isSpecial(data.new_password)) {
-        errors.new_password = 'Password Must contain at least one special characters  ';
-    }
+    // if (!isUpper(data.new_password)) {
+    //     errors.new_password = 'Password Must contain Both Upper and Lower case Characters  ';
+    // }
+    // if (data.new_password !== data.confirm_password) {
+    //     errors.new_password = 'Password Mismatch the confirm password  ';
+    // }
+    // if (!isSpecial(data.new_password)) {
+    //     errors.new_password = 'Password Must contain at least one special characters  ';
+    // }
 
-    if (!Validator.isLength(data.new_password, { min: 8, max: 30 })) {
-        errors.new_password = 'Password must be more than 8 characters long';
-    }
-    if (!NumericalExists(data.new_password)) {
-        errors.new_password = 'Password Must have at least one Numerical value';
-    }
+    // if (!Validator.isLength(data.new_password, { min: 8, max: 30 })) {
+    //     errors.new_password = 'Password must be more than 8 characters long';
+    // }
+    // if (!NumericalExists(data.new_password)) {
+    //     errors.new_password = 'Password Must have at least one Numerical value';
+    // }
     return {
         errors,
         isValid: isEmpty(errors)
