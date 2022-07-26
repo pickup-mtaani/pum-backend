@@ -61,6 +61,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 const category = await newCategory.save()
                 body.category = category._id
             }
+            console.log(req.body)
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles
@@ -69,6 +70,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             body.product = product_created._id
             let newStock = new Stock(body)
             await newStock.save()
+            console.log(newStock)
             return res.status(200).json({ message: 'Saved', product_created });
         }
     } catch (error) {
@@ -109,7 +111,7 @@ router.get('/products', upload.array('images'), [authMiddleware, authorized], as
 // });
 router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        console.log('ken')
+
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
