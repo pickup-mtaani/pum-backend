@@ -77,17 +77,17 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
-    try {
-        const bussiness = await Business.find();
+// router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
+//     try {
+//         const bussiness = await Business.find();
 
-        return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
+//         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
 
-    } catch (error) {
-        console.log(error.response)
-        return res.status(400).json({ success: false, message: 'operation failed ', error });
-    }
-});
+//     } catch (error) {
+//         console.log(error.response)
+//         return res.status(400).json({ success: false, message: 'operation failed ', error });
+//     }
+// });
 router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         const body = req.body
