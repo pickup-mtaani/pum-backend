@@ -50,7 +50,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
 
         if (req.body.other) {
             const body = req.body;
-            body.createdBy = req.user._id
+            body.createdBy = req.body.user_id
             body.name = req.body.other
             const newCategory = new Category(body)
             const New_category = await newCategory.save()
@@ -58,7 +58,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
         }
         category_id = req.body.category
         const body = req.body
-        body.createdBy = req.user._id
+        body.createdBy = req.body.user_id
         body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
         const newBusiness = new Business(body)
         const biz = await newBusiness.save()
@@ -70,9 +70,9 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
     }
 });
 router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
-   
+
     try {
-        console.log( req.params.id)
+        console.log(req.params.id)
         const bussiness = await Business.find({ deleted_at: null, createdBy: req.params.id });
 
         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
@@ -94,8 +94,8 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const bussiness  = await Business.find({ createdBy: req.user._id }).populate('category')
-        return res.status(200).json({ message: 'fetched successfully', bussiness  });
+        const bussiness = await Business.find({ createdBy: req.user._id }).populate('category')
+        return res.status(200).json({ message: 'fetched successfully', bussiness });
     } catch (error) {
 
         return res.status(400).json({ success: false, message: 'operation failed ', error });
