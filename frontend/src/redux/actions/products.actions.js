@@ -21,7 +21,7 @@ export const get_all_products = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_PRODUCTS" });
-        const { data } = await axios.get(`/api/productsiness/${id}`);
+        const { data } = await axios.get(`/api/products/${id}`);
         let payload = [];
         payload = data.products;
         dispatch({ type: "FETCH_PRODUCTS_SUCCESSFUL", payload });

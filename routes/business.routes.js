@@ -37,7 +37,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
     try {
         const url = req.protocol + '://' + req.get('host');
         let category_id
-        const Exists = await Business.findOne({ name: req.body.name, createdBy: req.body.user_id });
+        const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
         }
@@ -66,7 +66,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
         }
         category_id = req.body.category
         const body = req.body
-        body.createdBy = req.body.user_id
+        body.createdBy = req.user._id
         body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
         const newBusiness = new Business(body)
         const biz = await newBusiness.save()
@@ -77,17 +77,19 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-// router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
-//     try {
-//         const bussiness = await Business.find();
+router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
+   
+    try {
+        console.log( req.params.id)
+        const bussiness = await Business.find({ deleted_at: null, createdBy: req.params.id });
 
-//         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
+        return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
 
-//     } catch (error) {
-//         console.log(error.response)
-//         return res.status(400).json({ success: false, message: 'operation failed ', error });
-//     }
-// });
+    } catch (error) {
+        console.log(error.response)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
 router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         const body = req.body

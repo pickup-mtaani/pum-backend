@@ -9,21 +9,20 @@ import {
     get_seller_bussiness
 } from "../../redux/actions/bussiness.actions";
 import {
-    get_seller_products, get_all_products
+    get_seller_products
 } from "../../redux/actions/products.actions";
 import Products from './products'
 import Bussiness from './bussiness'
 
 function UserDetails(props) {
-
+   
     const [activeTab, setActiveTab] = useState(0);
-    const [id, setId] = useState("");
     const location = useLocation()
 
     let Tabs = [
         {
             name: "Business",
-            component: (<Bussiness />),
+            component: (<Bussiness  />),
             icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
@@ -35,25 +34,18 @@ function UserDetails(props) {
 
         }
     ]
-    const fetchProducts = async (id) => {
-        setId(id)
-        setActiveTab(1)
-        await props.get_all_products(id)
-
-    }
 
     const fetchBis = async (id) => {
         await props.get_seller_bussiness(id)
-    }
+      }
     useEffect(() => {
         const { id } = location.state
-
+        
         fetchBis(id)
-
         // props.get_seller_bussiness(id)
 
     }, [])
-
+   
     return (
         <Layout>
             {/* <div className="w-full h-full mt-20">
@@ -109,4 +101,4 @@ const mapStateToProps = (state) => {
 
 };
 
-export default connect(mapStateToProps, { get_seller_bussiness, get_seller_products, get_all_products })(UserDetails);
+export default connect(mapStateToProps, { get_seller_bussiness, get_seller_products })(UserDetails);

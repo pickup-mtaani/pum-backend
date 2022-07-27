@@ -14,6 +14,7 @@ import Sellers from "./components/Seller";
 import Admin from "./components/Seller copy";
 import UserDetails from "./components/Seller/UserDetails";
 import Product_details from "./components/Seller/product_details";
+import Products from "./components/Seller/products";
 
 const App = () => {
   let routes = useRoutes([
@@ -21,7 +22,7 @@ const App = () => {
     { path: "/sellers", element: <Sellers /> },
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/seller/:id", element: <UserDetails /> },
-    { path: "/seller/:id/:slug", element: < Product_details /> },
+    { path: "/seller/:bussiness_id/products", element: <Products /> },
     { path: "/administrators", element: < Admin /> },
 
     // ...
