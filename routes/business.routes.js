@@ -47,7 +47,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-
+        console.log(req.body)
         if (req.body.other) {
             const body = req.body;
             body.createdBy = req.body.user_id
