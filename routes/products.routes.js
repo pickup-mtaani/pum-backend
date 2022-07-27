@@ -56,7 +56,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             if (req.body.other) {
                 const body = req.body;
                 body.createdBy = req.user._id
-                body.business_catgory_name = req.body.other
+                body.name = req.body.other
                 const newCategory = new Category(body)
                 const category = await newCategory.save()
                 body.category = category._id

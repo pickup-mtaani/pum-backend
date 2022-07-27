@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 
 const BizCaSchema = new Schema({
     
-    business_catgory_name: {
+   name: {
         type: String,
         required: true
     },
