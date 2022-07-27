@@ -102,8 +102,8 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const bussinesses = await Business.find({ createdBy: req.user._id }).populate('category')
-        return res.status(200).json({ message: 'fetched successfully', bussinesses });
+        const bussiness  = await Business.find({ createdBy: req.user._id }).populate('category')
+        return res.status(200).json({ message: 'fetched successfully', bussiness  });
     } catch (error) {
 
         return res.status(400).json({ success: false, message: 'operation failed ', error });
