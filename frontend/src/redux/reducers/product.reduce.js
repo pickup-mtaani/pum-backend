@@ -1,5 +1,5 @@
 const initialState = {
-  package: {},
+  products: [],
   errors: [],
   error: "",
   packages: [],
@@ -27,17 +27,18 @@ export default function store(state = initialState, action) {
         error: action.payload,
       };
 
-    case "REJECT_PACKAGE":
+    case "FETCH_PRODUCTS":
       return {
         ...state,
         loading: true,
       };
-    case "REJECT_PACKAGE_SUCCESSFUL":
+    case "FETCH_PRODUCTS_SUCCESSFUL":
       return {
         ...state,
         loading: false,
+        products: action.payload,
       };
-    case "REJECT_PACKAGE_FAIL":
+    case "FETCH_PRODUCTS_FAIL":
       return {
         ...state,
         loading: true,

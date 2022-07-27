@@ -41,10 +41,8 @@ function Bussiness(props) {
     {
       sortable: true,
       name: 'Name',
-      selector: row => (<Link to={`/seller/${row.name.replace(/ /g,"_")}/products`}
-        state={{ id: row._id }}
-      >
-        {` ${row.name}`}</Link>)
+      selector: row => (<div onClick={()=>props.fetchProducts(row._id)}>
+        {` ${row.name}`}</div>)
 
 
     },

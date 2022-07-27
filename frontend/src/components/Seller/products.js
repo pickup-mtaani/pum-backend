@@ -166,7 +166,7 @@ Products.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-    users: state.userDetails.users,
+    products: state.products.products,
     // lastId: state.userDetails.lastId,
 
     loading: state.userDetails.loading,
