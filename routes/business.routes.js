@@ -41,14 +41,6 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this business !!' });
         }
-        if (req.body.other) {
-            const body = req.body;
-            body.createdBy = req.user._id
-            body.business_catgory_name = req.body.other
-            const newCategory = new Category(body)
-            const New_category = await newCategory.save()
-            body.category = New_category._id
-        }
 
         const { errors, isValid } = validateBusinesInput(req.body);
         if (!isValid) {
