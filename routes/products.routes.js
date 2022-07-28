@@ -115,7 +115,7 @@ router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
         const skip = (page - 1) * PAGE_SIZE;
         const products = await Product.find({ deleted_at: null, business: req.params.id }).populate('category').skip(skip)
             .limit(PAGE_SIZE);
-
+        console.log(products)
         return res.status(200).json({ message: 'Successfull pulled ', products });
 
     } catch (error) {

@@ -47,7 +47,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        console.log(req.body)
+
         if (req.body.other) {
             const body = req.body;
             body.createdBy = req.body.user_id
@@ -72,9 +72,8 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
 router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
 
     try {
-        console.log(req.params.id)
+       
         const bussiness = await Business.find({ deleted_at: null, createdBy: req.params.id });
-
         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
 
     } catch (error) {

@@ -76,21 +76,21 @@ function Products(props) {
       minWidth: '150px',
       selector: row => row.price
     },
-    {
-      sortable: true,
-      name: 'Actions',
-      minWidth: '250px',
-      selector: (row) => (<Link to={`${row._id}`}
-        state={{ id: row._id, product: row }}
+    // {
+    //   sortable: true,
+    //   name: 'Actions',
+    //   minWidth: '250px',
+    //   selector: (row) => (<Link to={`${row._id}`}
+    //     state={{ id: row._id, product: row }}
 
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      </Link>
-      )
-    },
+    //   >
+    //     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    //       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    //       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    //     </svg>
+    //   </Link>
+    //   )
+    // },
   ]
   //   const filteredItems = props.P.filter(
   //     item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
@@ -119,10 +119,7 @@ function Products(props) {
             `${totalRows > 0 ? totalRows : "all"}_products`
           )}
         />
-        {/* <input type="date" onChange={e => filter_BY_date(e.target.value)} placeholder="Select a date" style={{ marginRight: 20, borderColor: "red" }} /> */}
-        {/* <AddButton toggleCanvarse={toggleCanvarse} />
-        <FilterContainer array={[{ value: 'status', label: 'Status' }]} changeSelect={changeSelect} 
-        /> */}
+       
 
       </>
     );
@@ -131,13 +128,13 @@ function Products(props) {
   useEffect(() => {
     // props.FetchUsers({ date: date })
   }, [])
-  console.log(props.data)
+  console.log(props.products)
   return (
     <div className="w-full mx-1">
       <DataTable
         //title="PortFolio Reports"
         columns={serverSideColumns}
-        data={props.data}
+        data={props.products}
         pagination
         paginationServer
         progressPending={props.loading}

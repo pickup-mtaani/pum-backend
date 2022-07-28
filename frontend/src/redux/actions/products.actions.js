@@ -23,7 +23,6 @@ export const get_all_products = (id) => async (dispatch) => {
         dispatch({ type: "FETCH_PRODUCTS" });
         const { data } = await axios.get(`/api/products/${id}`);
         let payload = [];
-        console.log(payload)
         payload = data.products;
         dispatch({ type: "FETCH_PRODUCTS_SUCCESSFUL", payload });
         return payload;
