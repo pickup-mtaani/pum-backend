@@ -9,6 +9,10 @@ const thrifterLocationSchema = new Schema({
         type: String,
         required: true
     },
+    agent_area: {
+        type: String,
+        
+    },
     agent_description: {
         type: String,
         required: true

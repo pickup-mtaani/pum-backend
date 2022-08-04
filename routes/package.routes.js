@@ -15,22 +15,11 @@ const router = express.Router();
 
 router.post('/package', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Thrift = await Thrifter.findOne({ user_id: req.user._id })
-        // user_id
-        res
-        const UserObj = await User.findById(Thrift.user_id)
-
         const body = req.body;
-        body.thrifter_id = Thrift._id
         body.receipt_no = `PM-${Makeid(5)}`
+        body.createdBy = req.user._id
         const newPackage = new Package(req.body)
         await newPackage.save()
-        const Custodian = await Location.findOne({ _id: body.current_custodian }).populate('user_id')
-        const textObj = { address: `${Custodian.user_id.phone_number}`, Body: `Hi ${UserObj.username}\n ${Thrift.name} Will be delivering a package in  a ${body.pack_color} package ` }
-
-        const recObj = { address: `${body.recipient_phone}`, Body: `Hi ${newPackage.recipient_name}\n ${Thrift.name} Has dispatched a packege to  ${Custodian.agent_location}\nkindly wait for a confirmation  to pick it later today ` }
-        // await SendMessage(textObj)
-        // await SendMessage(recObj)
         return res.status(200).json({ message: 'Package successfully Saved', newPackage });
 
     } catch (error) {
