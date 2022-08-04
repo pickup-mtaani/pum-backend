@@ -21,7 +21,7 @@ router.post('/register', [authMiddleware, authorized], async (req, res) => {
         const user = await Admin.findOne({ email: req.body.email });
         const phone = await Admin.findOne({ phone_number: req.body.phone_number });
         if (user || phone) {
-            return res.status(402).json({ message: 'Admin Exists !!', user });
+            return res.status(402).json({ message: 'Admin Exists !!' });
         }
         const { errors, isValid } = validateAdminRegisterInput(req.body);
         if (!isValid) {
@@ -102,7 +102,7 @@ router.get('/', [authMiddleware, authorized], async (req, res) => {
 
 });
 
-router.put('/admin/reset-password', async (req, res) => {
+router.put('/reset-password', async (req, res) => {
     try {
         const body = req.body
         const { errors, isValid } = validatePasswordInput(req.body);

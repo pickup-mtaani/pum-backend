@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
                 return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
             }
             if (user && !user.activated) {
-                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message', user });
+                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
             }
             const { errors, isValid } = validateLoginInput(req.body);
             if (!isValid) {
@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
             if (user) {
                 const password_match = user.comparePassword(req.body.password, user.hashPassword);
                 if (!password_match) {
-                    return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', user });
+                    return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
                 }
                 const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
                 const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })

@@ -1,7 +1,7 @@
 const express = require('express');
 var Package = require('models/package.modal.js')
 var Thrifter = require('models/thrifter.model.js')
-var Location = require('models/thrifter_location.model.js')
+var Product = require('models/products.model.js')
 var User = require('models/user.model.js')
 var Reject = require('models/Rejected_parcels.model')
 var Reciever = require('models/reciever.model')
@@ -15,7 +15,13 @@ const router = express.Router();
 
 router.post('/package', [authMiddleware, authorized], async (req, res) => {
     try {
+
         const body = req.body;
+        if (body.product) {
+            const product = await Product.findById(body.product)
+            body.packageName = product.product_name
+            body.package_value = product.price
+        }
         body.receipt_no = `PM-${Makeid(5)}`
         body.createdBy = req.user._id
         const newPackage = new Package(req.body)
