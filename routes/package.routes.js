@@ -113,13 +113,13 @@ router.post('/package/:id/reject', [authMiddleware, authorized], async (req, res
 
 router.get('/packages', async (req, res) => {
     try {
-        const Packages = await Package.find().populate(['thrifter_id', 'current_custodian'])
-
+        const packages = await Package.find( ).populate(['createdBy','senderAgentID','receieverAgentID','businessId']).sort({ createdAt: -1})
+        
         // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Fetched Sucessfully', Packages });
+        return res.status(200).json({ message: 'Fetched Sucessfully', packages });
 
     } catch (error) {
-
+console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

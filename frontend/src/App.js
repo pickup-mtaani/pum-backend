@@ -15,7 +15,7 @@ import Admin from "./components/Seller copy";
 import UserDetails from "./components/Seller/UserDetails";
 import Product_details from "./components/Seller/product_details";
 import Products from "./components/Seller/products";
-
+import Packages from "./components/packages"
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -23,6 +23,7 @@ const App = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/seller/:id", element: <UserDetails /> },
     { path: "/seller/:bussiness_id/products", element: <Products /> },
+    { path: "/packages", element: <Packages /> },
     { path: "/administrators", element: < Admin /> },
 
     // ...

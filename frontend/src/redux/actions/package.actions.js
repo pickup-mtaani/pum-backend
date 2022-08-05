@@ -5,11 +5,8 @@ export const getParcels = () => async (dispatch) => {
 
     dispatch({ type: "FETCH_TODOS" });
     let payload = [];
-    const response = await axios.get(`/api/packages`);
-
-    const { data } = response;
-
-    payload = data.Packages;
+    const  { data } = await axios.get(`/api/packages`);
+    payload = data.packages;
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
     return;
   } catch (error) {
