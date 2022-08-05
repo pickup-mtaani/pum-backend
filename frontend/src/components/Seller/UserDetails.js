@@ -14,6 +14,7 @@ import {
 import {getBissinessParcels} from '../../redux/actions/package.actions'
 import Products from './products'
 import Bussiness from './bussiness'
+import Packages from './packages'
 
 function UserDetails(props) {
 
@@ -43,6 +44,11 @@ function UserDetails(props) {
         {
 
             name: "Product", component: <Products fetchProducts={fetchProducts} />
+
+        },
+        {
+
+            name: "Packages", component: <Packages fetchProducts={fetchProducts} />
 
         }
     ]

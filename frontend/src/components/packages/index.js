@@ -18,6 +18,18 @@ function Users(props) {
     },
     {
       sortable: true,
+      name: 'Package Type',
+      minWidth: '250px',
+      selector: row => (<>{row.isProduct?"Product":"Package"}</>)
+    },
+    {
+      sortable: true,
+      name: 'Delivery Fee',
+      minWidth: '250px',
+      selector: row => (<>{row.id?"200":"180"}</>)
+    },
+    {
+      sortable: true,
       name: 'Package value',
       minWidth: '250px',
       selector: row => row.package_value
@@ -42,13 +54,13 @@ function Users(props) {
    
     {
       sortable: true,
-      name: 'Reciever',
+      name: 'Reciever Agent',
       minWidth: '150px',
       selector: row => row.receieverAgentID?.name
     },
     {
       sortable: true,
-      name: 'Sender',
+      name: 'Sender Agent',
       minWidth: '150px',
       selector: row => row.senderAgentID?.name
     },

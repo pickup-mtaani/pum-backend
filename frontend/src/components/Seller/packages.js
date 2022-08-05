@@ -21,12 +21,7 @@ function Packages(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
 
-  const OPenImagView = async (image) => {
-    console.log(image);
-    setShowImage(true);
-    setImage(image.Images);
-    setActive(image.id);
-  };
+ 
 
    const columns = [
      {
@@ -119,7 +114,7 @@ function Packages(props) {
   useEffect(() => {
     // props.FetchUsers({ date: date })
   }, []);
-  console.log(props.products);
+ 
   return (
     <div className="w-full mx-1">
       <DataTable
