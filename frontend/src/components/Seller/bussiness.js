@@ -32,26 +32,33 @@ function Bussiness(props) {
   const serverSideColumns = [
     {
       sortable: false,
-      name: 'Logo',
-      minWidth: '5px',
-      minWidth: '5px',
-      selector: row => <img src={row.logo} alt='' height="30px" width="30px" />
-
+      name: "Logo",
+      minWidth: "5px",
+      minWidth: "5px",
+      selector: (row) => (
+        <img src={row.logo} alt="" height="30px" width="30px" />
+      ),
     },
     {
       sortable: true,
-      name: 'Name',
-      selector: row => (<div onClick={()=>props.fetchProducts(row._id)}>
-        {` ${row.name}`}</div>)
-
-
+      name: "Name",
+      selector: (row) => (
+        <div onClick={() => props.fetchProducts(row._id)}>{` ${row.name}`}</div>
+      ),
     },
     {
       sortable: true,
-      name: 'Stock',
+      name: "Name",
+      selector: (row) => (
+        <div onClick={() => props.fetchProducts(row._id)}>{` ${row.name}`}</div>
+      ),
+    },
+    {
+      sortable: true,
+      name: "Stock",
       // minWidth: '50px',
       // maxWidth: '70px',
-      selector: row => row.what_u_sale
+      selector: (row) => row.what_u_sale,
     },
     // {
     //   sortable: true,
@@ -59,8 +66,7 @@ function Bussiness(props) {
     //   minWidth: '250px',
 
     // },
-
-  ]
+  ];
   // const filteredItems = props.P.filter(
   //   item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
   // );

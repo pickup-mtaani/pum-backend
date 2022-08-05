@@ -11,6 +11,7 @@ import {
 import {
     get_seller_products, get_all_products
 } from "../../redux/actions/products.actions";
+import {getBissinessParcels} from '../../redux/actions/package.actions'
 import Products from './products'
 import Bussiness from './bussiness'
 
@@ -25,6 +26,11 @@ function UserDetails(props) {
         await props.get_all_products(id)
 
     }
+    const fetchPackages = async (id) => {
+      setId(id);
+      setActiveTab(2);
+      await props.getBissinessParcels(id);
+    };
     let Tabs = [
         {
             name: "Business",

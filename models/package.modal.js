@@ -1,52 +1,56 @@
-var mongoose = require('mongoose');
-const bcrypt = require('bcryptjs')
-
+var mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
 
-
-const ParcelSchema = new Schema({
+const ParcelSchema = new Schema(
+  {
     customerName: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
+
     customerPhoneNumber: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     businessId: {
-        type: Schema.Types.ObjectId,
-        ref: 'business'
+      type: Schema.Types.ObjectId,
+      ref: "business",
     },
 
     packageName: {
-        type: String,
-        ref: 'user'
+      type: String,
+      ref: "user",
     },
     description: {
-        type: String,
-        ref: 'user'
+      type: String,
+      ref: "user",
     },
     package_value: {
-        type: String,
-        // required: true
+      type: String,
+      // required: true
     },
 
     receipt_no: {
-        type: String,
-        // required: true
+      type: String,
+      // required: true
     },
     senderAgentID: {
-        type: Schema.Types.ObjectId,
-        ref: 'agent'
+      type: Schema.Types.ObjectId,
+      ref: "agent",
     },
     receieverAgentID: {
-        type: Schema.Types.ObjectId,
-        ref: 'agent'
+      type: Schema.Types.ObjectId,
+      ref: "agent",
     },
     createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+    isProduct: {
+      type: Boolean,
+      default: false,
     },
 
     // pack_color: {
@@ -98,11 +102,9 @@ const ParcelSchema = new Schema({
     //     type: Date,
     //     default: null
     // },
+  },
+  { timestamps: true }
+);
 
-
-}, { timestamps: true });
-
-
-
-const User = mongoose.model('package', ParcelSchema);
-module.exports = User
+const User = mongoose.model("package", ParcelSchema);
+module.exports = User;
