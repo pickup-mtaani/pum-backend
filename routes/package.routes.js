@@ -3,6 +3,7 @@ var Package = require("models/package.modal.js");
 var Thrifter = require("models/thrifter.model.js");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
+var Business = require("models/business.model.js");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
 var {
@@ -23,6 +24,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       body.isProduct = true;
       body.package_value = product.price;
     }
+    
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     const newPackage = new Package(req.body);
@@ -193,6 +195,7 @@ router.get("/packages", async (req, res) => {
 
 router.get("/packages/:id", async (req, res) => {
   try {
+  
     const packages = await Package.find({ businessId :req.params.id})
       .populate([
         "createdBy",
@@ -211,5 +214,26 @@ router.get("/packages/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/packages/bussiness/:id", async (req, res) => {
+  try {
+    const packages = await Package.find({ businessId :req.params.id})
+      .populate([
+        "createdBy",
+        "senderAgentID",
+        "receieverAgentID",
+      
+      ])
+      .sort({ createdAt: -1 });
+
+    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 
 module.exports = router;

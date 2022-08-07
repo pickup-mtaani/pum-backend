@@ -26,7 +26,7 @@ function Users(props) {
       sortable: true,
       name: 'Delivery Fee',
       minWidth: '250px',
-      selector: row => (<>{row.id?"200":"180"}</>)
+      selector: row => (<>{row.isProduct?"200":"180"}</>)
     },
     {
       sortable: true,

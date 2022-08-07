@@ -22,12 +22,6 @@ function Bussiness(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
 
-  const OPenImagView = async (image) => {
-    console.log(image)
-    setShowImage(true)
-    setImage(image.Images)
-    setActive(image.id)
-  }
 
   const serverSideColumns = [
     {
@@ -43,33 +37,18 @@ function Bussiness(props) {
       sortable: true,
       name: "Name",
       selector: (row) => (
-        <div onClick={() => props.fetchProducts(row._id)}>{` ${row.name}`}</div>
+        <div onClick={() => props.fetchProducts({ id: row._id, name: row.name })}>{` ${row.name}`}</div>
       ),
     },
+
     {
       sortable: true,
-      name: "Name",
-      selector: (row) => (
-        <div onClick={() => props.fetchProducts(row._id)}>{` ${row.name}`}</div>
-      ),
-    },
-    {
-      sortable: true,
-      name: "Stock",
-      // minWidth: '50px',
-      // maxWidth: '70px',
+      name: "Deals in",
       selector: (row) => row.what_u_sale,
     },
-    // {
-    //   sortable: true,
-    //   name: 'Location',
-    //   minWidth: '250px',
+   
 
-    // },
   ];
-  // const filteredItems = props.P.filter(
-  //   item => item.f_name && item.f_name.toLowerCase().includes(filterText.toLowerCase()),
-  // );
   const onChangeFilter = (e) => {
     setFilterText(e)
 
@@ -103,11 +82,11 @@ function Bussiness(props) {
   useEffect(() => {
 
   }, [])
-  console.log(props.bussinesses[0])
   return (
     <div className="w-full mx-1">
+
       <DataTable
-        //title="PortFolio Reports"
+        title={`${props.name}\`s Businesses`}
         columns={serverSideColumns}
         data={props.bussinesses}
         pagination
@@ -140,6 +119,7 @@ const mapStateToProps = (state) => {
   return {
     bussinesses: state.bussiness.bussinsses,
     loading: state.bussiness.loading,
+    products: state.products.products,
     // error: state.userDetails.error,
   };
 };
