@@ -1,5 +1,6 @@
 const express = require("express");
-var Package = require("models/package.modal.js");
+var Package = require("models/agent_agent_delivery.modal.js");
+var Doorstep = require("models/doorStep_delivery.model");
 var Thrifter = require("models/thrifter.model.js");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
@@ -25,11 +26,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     }
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
-    const newPackage = new Package(req.body);
+    if(body.delivery_type === "door_step"){
+      const newPackage = new Package(req.body);
+      await newPackage.save();
+      return res.status(200).json({ message: "Package successfully Saved", newPackage });
+    }else {
+    const newPackage = new Doorstep(req.body);
     await newPackage.save();
-    return res
-      .status(200)
-      .json({ message: "Package successfully Saved", newPackage });
+    return res.status(200).json({ message: "Package successfully Saved", newPackage });
+    }
+    
+   
   } catch (error) {
     return res
       .status(400)
