@@ -25,7 +25,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       body.isProduct = true;
       body.package_value = product.price;
     }
-    
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if(body.delivery_type === "door_step"){
@@ -181,6 +180,12 @@ router.post(
 
 router.get("/packages", async (req, res) => {
   try {
+    const door_step_deliveries = await Doorstep.find()
+    .populate([
+      "createdBy",
+      "businessId",
+    ])
+    .sort({ createdAt: -1 });
     const packages = await Package.find()
       .populate([
         "createdBy",
@@ -191,7 +196,7 @@ router.get("/packages", async (req, res) => {
       .sort({ createdAt: -1 });
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", packages });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages,door_step_deliveries });
   } catch (error) {
     console.log(error);
     return res

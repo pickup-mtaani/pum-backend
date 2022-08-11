@@ -28,7 +28,7 @@ const ParcelSchema = new Schema(
       type: String,
     },
     
-   delivery_fee:{
+   total_fee:{
     type: Number,
     default:180
    },

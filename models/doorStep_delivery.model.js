@@ -31,7 +31,7 @@ const doorstepSchema = new Schema(
       // required: true
     },
     
-   delivery_fee:{
+   total_fee:{
     type: Number,
     default:180
    },
