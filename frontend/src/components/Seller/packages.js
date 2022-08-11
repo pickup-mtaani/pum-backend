@@ -114,11 +114,11 @@ function Packages(props) {
   useEffect(() => {
     // props.FetchUsers({ date: date })
   }, []);
- 
+ console.log(props.packages)
   return (
     <div className="w-full mx-1">
       <DataTable
-        //title="PortFolio Reports"
+        title={`${props.name}\`s Packages`}
         columns={columns}
         data={props.packages}
         pagination
@@ -146,11 +146,8 @@ Packages.propTypes = {};
 
 const mapStateToProps = (state) => {
   return {
-    products: state.products.products,
-    // lastId: state.userDetails.lastId,
-
-    loading: state.userDetails.loading,
-    // error: state.userDetails.error,
+    packages: state.PackageDetails.packages,
+    loading: state.PackageDetails.loading
   };
 };
 
