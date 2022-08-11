@@ -29,11 +29,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if(body.delivery_type === "door_step"){
-      const newPackage = new Package(req.body);
+      const newPackage = new Doorstep(req.body);
       await newPackage.save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     }else {
-    const newPackage = new Doorstep(req.body);
+    const newPackage = new Package(req.body);
     await newPackage.save();
     return res.status(200).json({ message: "Package successfully Saved", newPackage });
     }
