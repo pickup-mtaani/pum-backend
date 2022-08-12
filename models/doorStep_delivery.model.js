@@ -56,6 +56,10 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "rider",
     },
+  payment_option: {
+      type: String,
+            enum: ['customer','vender','collection'],
+    },
     location: {
           type: String,    
      
