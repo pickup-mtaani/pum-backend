@@ -90,7 +90,7 @@ function Users(props) {
       sortable: true,
       name: 'Delivery Fee',
       minWidth: '250px',
-      selector: row => (<>{row.isProduct ? "200" : "180"}</>)
+      selector: row => (<>{row.payment_amount}</>)
     },
     {
       sortable: true,
@@ -122,12 +122,7 @@ function Users(props) {
       minWidth: '250px',
       selector: row => row.payment_option
     },
-    {
-      sortable: true,
-      name: 'Destination',
-      minWidth: '150px',
-      selector: row => row.customer_location
-    },
+    
     {
       sortable: true,
       name: 'Location',
@@ -136,7 +131,7 @@ function Users(props) {
     },
     {
       sortable: true,
-      name: 'House Details',
+      name: 'Destination',
       minWidth: '150px',
       selector: row => row.house_no
     },

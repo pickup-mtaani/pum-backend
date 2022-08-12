@@ -185,7 +185,7 @@ router.get("/packages", async (req, res) => {
       "createdBy",
       "businessId",
     ])
-    .sort({ createdAt: -1 }).limit(1);
+    .sort({ createdAt: -1 }).limit(10);
     const packages = await Package.find()
       .populate([
         "createdBy",
