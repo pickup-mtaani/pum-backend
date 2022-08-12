@@ -9,7 +9,10 @@ const doorstepSchema = new Schema(
       type: String,
       required: true,
     },
-
+    payment_phone_number: {
+      type: String,
+      required: true,
+    },
     customerPhoneNumber: {
       type: String,
       required: true,
@@ -31,7 +34,7 @@ const doorstepSchema = new Schema(
       // required: true
     },
     
-   total_fee:{
+   payment_amount:{
     type: Number,
     default:180
    },
@@ -53,6 +56,19 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "rider",
     },
+    loc: {
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true,
+      },
+      coordinates: {
+          type: [Number],
+          require: true,
+      }
+
+  },
+
     isProduct: {
       type: Boolean,
       default: false,
