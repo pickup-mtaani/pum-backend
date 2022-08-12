@@ -56,17 +56,9 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "rider",
     },
-    loc: {
-      type: {
-          type: String,
-          enum: ['Point'],
-          required: true,
-      },
-      coordinates: {
-          type: [Number],
-          require: true,
-      }
-
+    location: {
+          type: String,    
+     
   },
 
     isProduct: {
