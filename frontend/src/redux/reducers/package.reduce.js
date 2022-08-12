@@ -3,6 +3,7 @@ const initialState = {
   errors: [],
   error: "",
   packages: [],
+  to_door_packages: [],
   loading: true,
 };
 
@@ -83,7 +84,8 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        packages: action.payload,
+        packages: action.payload.packages,
+        to_door_packages:action.payload.door_step_deliveries
       };
     case "FETCH_TODOS_FAIL":
       return {

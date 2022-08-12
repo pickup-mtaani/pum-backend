@@ -42,7 +42,6 @@ export const registerUser = (dat) => async (dispatch) => {
 };
 export const FetchUsers = (dat) => async (dispatch) => {
   const { date } = dat
- console.log(date)
   try {
     await setAuthToken(axios)
     dispatch({ type: "FETCH_USERS" });

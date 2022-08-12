@@ -20,13 +20,13 @@ function Users(props) {
       sortable: true,
       name: 'Package Type',
       minWidth: '250px',
-      selector: row => (<>{row.isProduct?"Product":"Package"}</>)
+      selector: row => (<>{row.isProduct ? "Product" : "Package"}</>)
     },
     {
       sortable: true,
       name: 'Delivery Fee',
       minWidth: '250px',
-      selector: row => (<>{row.isProduct?"200":"180"}</>)
+      selector: row => (<>{row.isProduct ? "200" : "180"}</>)
     },
     {
       sortable: true,
@@ -44,14 +44,15 @@ function Users(props) {
       sortable: true,
       name: 'Customer Full Name',
       minWidth: '225px',
-      selector: row =>row.customerName},
+      selector: row => row.customerName
+    },
     {
       sortable: true,
       name: 'Customer Phone Number',
       minWidth: '250px',
       selector: row => row.customerPhoneNumber
     },
-   
+
     {
       sortable: true,
       name: 'Reciever Agent',
@@ -70,7 +71,82 @@ function Users(props) {
       minWidth: '150px',
       selector: row => row.businessId?.name
     },
-   
+
+  ]
+  const door_step_columns = [
+    {
+      sortable: true,
+      name: 'Package Name',
+      minWidth: '250px',
+      selector: row => row.packageName
+    },
+    {
+      sortable: true,
+      name: 'Package Type',
+      minWidth: '250px',
+      selector: row => (<>{row.isProduct ? "Product" : "Package"}</>)
+    },
+    {
+      sortable: true,
+      name: 'Delivery Fee',
+      minWidth: '250px',
+      selector: row => (<>{row.isProduct ? "200" : "180"}</>)
+    },
+    {
+      sortable: true,
+      name: 'Package value',
+      minWidth: '250px',
+      selector: row => row.package_value
+    },
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.receipt_no
+    },
+    {
+      sortable: true,
+      name: 'Customer Full Name',
+      minWidth: '225px',
+      selector: row => row.customerName
+    },
+    {
+      sortable: true,
+      name: 'Customer Phone Number',
+      minWidth: '250px',
+      selector: row => row.customerPhoneNumber
+    },
+    {
+      sortable: true,
+      name: 'Payment Options',
+      minWidth: '250px',
+      selector: row => row.payment_option
+    },
+    {
+      sortable: true,
+      name: 'Destination',
+      minWidth: '150px',
+      selector: row => row.customer_location
+    },
+    {
+      sortable: true,
+      name: 'Location',
+      minWidth: '150px',
+      selector: row => row.location
+    },
+    {
+      sortable: true,
+      name: 'House Details',
+      minWidth: '150px',
+      selector: row => row.house_no
+    },
+    {
+      sortable: true,
+      name: 'Seller',
+      minWidth: '150px',
+      selector: row => row.businessId?.name
+    },
+
   ]
   let initialState = {
     name: '', email: "", phone_number: '', password: ''
@@ -122,21 +198,21 @@ function Users(props) {
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-        
+
 
       </>
     );
   }, [searchValue, date, showModal]);
 
   useEffect(() => {
-    props.getParcels()
+    props.getParcels({ limit: 10 })
   }, [])
 
   return (
     <Layout>
       <div className=" mx-2">
         <DataTable
-          // title=""
+          title=" Agent to Agent Delivery"
           columns={columns}
           data={filteredItems}
           pagination
@@ -151,7 +227,25 @@ function Users(props) {
         // onChangeRowsPerPage={handlePerRowsChange}
         />
       </div>
-     
+
+      <div className=" mx-2 my-10">
+        <DataTable
+          title="Door Step Delivery"
+          columns={door_step_columns}
+          data={props.to_door_packages}
+          pagination
+          paginationServer
+          progressPending={props.loading}
+          paginationResetDefaultPage={resetPaginationToggle}
+          subHeader
+          subHeaderComponent={subHeaderComponentMemo}
+          persistTableHead
+          // onChangePage={handlePageChange}
+          paginationTotalRows={totalRows}
+        // onChangeRowsPerPage={handlePerRowsChange}
+        />
+      </div>
+
     </Layout>
   )
 }
@@ -161,9 +255,10 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-  
+
     packages: state.PackageDetails.packages,
-    loading: state.PackageDetails.loading
+    loading: state.PackageDetails.loading,
+    to_door_packages: state.PackageDetails.to_door_packages
     // error: state.userDetails.error,
   };
 };

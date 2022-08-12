@@ -185,7 +185,7 @@ router.get("/packages", async (req, res) => {
       "createdBy",
       "businessId",
     ])
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 }).limit(1);
     const packages = await Package.find()
       .populate([
         "createdBy",
@@ -193,7 +193,7 @@ router.get("/packages", async (req, res) => {
         "receieverAgentID",
         "businessId",
       ])
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }).limit(5);
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages,door_step_deliveries });

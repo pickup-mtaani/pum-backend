@@ -58,7 +58,7 @@ const doorstepSchema = new Schema(
     },
   payment_option: {
       type: String,
-            enum: ['customer','vender','collection'],
+            enum: ['customer','vendor','collection'],
     },
     location: {
           type: String,    
