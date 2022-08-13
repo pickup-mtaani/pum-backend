@@ -186,7 +186,13 @@ router.get("/packages", async (req, res) => {
     const door_step_deliveries = await Doorstep.find()
       .populate([
         "createdBy",
-        "businessId",
+        "businessId", "rider"
+      ])
+      .sort({ createdAt: -1 }).limit(10);
+    const rented_deliveries = await Rent.find()
+      .populate([
+        "createdBy",
+        "businessId", "from_agent_shelf", "to_agent_shelf", "rider"
       ])
       .sort({ createdAt: -1 }).limit(10);
     const packages = await Package.find()
@@ -199,7 +205,7 @@ router.get("/packages", async (req, res) => {
       .sort({ createdAt: -1 }).limit(5);
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
     console.log(error);
     return res
@@ -219,6 +225,12 @@ router.get("/packages/:id", async (req, res) => {
 
       ])
       .sort({ createdAt: -1 });
+    const rented_deliveries = await Rent.find({ businessId: req.params.id })
+      .populate([
+        "createdBy",
+        "businessId", "from_agent_shelf", "to_agent_shelf", "rider"
+      ])
+      .sort({ createdAt: -1 }).limit(10);
     const door_step_deliveries = await Doorstep.find({ businessId: req.params.id })
       .populate([
         "createdBy",
@@ -226,7 +238,7 @@ router.get("/packages/:id", async (req, res) => {
       ])
       .sort({ createdAt: -1 }).limit(10);
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
     console.log(error);
     return res
