@@ -204,7 +204,6 @@ router.get("/packages", async (req, res) => {
       ])
       .sort({ createdAt: -1 }).limit(5);
 
-    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
     console.log(error);
