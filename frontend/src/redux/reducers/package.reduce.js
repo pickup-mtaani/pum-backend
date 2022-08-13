@@ -4,6 +4,7 @@ const initialState = {
   error: "",
   packages: [],
   to_door_packages: [],
+  rented_shelf_packages: [],
   loading: true,
 };
 
@@ -26,23 +27,23 @@ export default function store(state = initialState, action) {
         error: action.payload,
       };
 
-      case "REJECT_PACKAGE":
-        return {
-          ...state,
-          loading: true,
-        };
-      case "REJECT_PACKAGE_SUCCESSFUL":
-        return {
-          ...state,
-          loading: false,
-        };
-      case "REJECT_PACKAGE_FAIL":
-        return {
-          ...state,
-          loading: true,
-          error: action.payload,
-        };
-  
+    case "REJECT_PACKAGE":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "REJECT_PACKAGE_SUCCESSFUL":
+      return {
+        ...state,
+        loading: false,
+      };
+    case "REJECT_PACKAGE_FAIL":
+      return {
+        ...state,
+        loading: true,
+        error: action.payload,
+      };
+
     case "ADD_PACKAGE":
       return {
         ...state,
@@ -85,7 +86,8 @@ export default function store(state = initialState, action) {
         ...state,
         loading: false,
         packages: action.payload.packages,
-        to_door_packages:action.payload.door_step_deliveries
+        to_door_packages: action.payload.door_step_deliveries,
+        rented_shelf_packages:action.payload.rented_deliveries
       };
     case "FETCH_TODOS_FAIL":
       return {

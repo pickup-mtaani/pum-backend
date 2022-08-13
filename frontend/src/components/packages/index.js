@@ -6,12 +6,12 @@ import { getParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import { delivery_columns, door_step_columns } from './data'
+import { delivery_columns, door_step_columns, rent_shelf_columns } from './data'
 
 function Users(props) {
 
- 
- 
+
+
   let initialState = {
     name: '', email: "", phone_number: '', password: ''
   }
@@ -109,6 +109,23 @@ function Users(props) {
         // onChangeRowsPerPage={handlePerRowsChange}
         />
       </div>
+      <div className=" mx-2 my-10">
+        <DataTable
+          title="Rent A shelf Delivery"
+          columns={rent_shelf_columns}
+          data={props.rent_shelf}
+          pagination
+          paginationServer
+          progressPending={props.loading}
+          paginationResetDefaultPage={resetPaginationToggle}
+          subHeader
+          subHeaderComponent={subHeaderComponentMemo}
+          persistTableHead
+          // onChangePage={handlePageChange}
+          paginationTotalRows={totalRows}
+        // onChangeRowsPerPage={handlePerRowsChange}
+        />
+      </div>
 
     </Layout>
   )
@@ -122,7 +139,8 @@ const mapStateToProps = (state) => {
 
     packages: state.PackageDetails.packages,
     loading: state.PackageDetails.loading,
-    to_door_packages: state.PackageDetails.to_door_packages
+    to_door_packages: state.PackageDetails.to_door_packages,
+    rent_shelf: state.PackageDetails.rented_shelf_packages
     // error: state.userDetails.error,
   };
 };
