@@ -18,7 +18,7 @@ export const getBissinessParcels = (id) => async (dispatch) => {
     dispatch({ type: "FETCH_TODOS" });
     let payload = [];
     const { data } = await axios.get(`/api/packages/${id}`);
-    payload = data.packages;
+    payload = data;
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
     return;
   } catch (error) { }

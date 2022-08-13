@@ -52,7 +52,7 @@ function Layout(props) {
     })
     return (
         <div className="w-screen  flex bg-slate-100">
-            <div className="w-1/5 h-screen flex flex-col bg-slate-100">
+            <div className="w-1/6 h-screen flex flex-col bg-slate-100">
                 <div className="w-full  bg-slate-100 my-5 p-10 h-10 flex justify-center items-center  shadow-sm">
                     <img src={Logo} alt="" height={10} width={150} />
                 </div>
@@ -67,7 +67,7 @@ function Layout(props) {
 
             </div>
 
-            <div className="w-4/5  flex  ">
+            <div className="w-5/6  flex  ">
                 <div className="w-full flex flex-col">
                     <div className="w-full h-14  flex pt-10">
                         <div className="w-3/4 flex justify-center items-center font-bold ">Welcome {JSON.parse(localStorage.getItem('userInfo')) && JSON.parse(localStorage.getItem('userInfo')).email}</div>

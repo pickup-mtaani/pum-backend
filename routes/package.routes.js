@@ -1,6 +1,7 @@
 const express = require("express");
 var Package = require("models/agent_agent_delivery.modal.js");
 var Doorstep = require("models/doorStep_delivery.model");
+var Rent = require("models/rent_a_shelf_delivery.model");
 var Thrifter = require("models/thrifter.model.js");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
@@ -27,17 +28,21 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     }
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
-    if(body.delivery_type === "door_step"){
+    if (body.delivery_type === "door_step") {
       const newPackage = new Doorstep(req.body);
       await newPackage.save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
-    }else {
-    const newPackage = new Package(req.body);
-    await newPackage.save();
-    return res.status(200).json({ message: "Package successfully Saved", newPackage });
+    } else if (body.delivery_type === "rent_a_shelf") {
+      const newPackage = new Rent(req.body);
+      await newPackage.save();
+      return res.status(200).json({ message: "Package successfully Saved", newPackage });
+    } else {
+      const newPackage = new Package(req.body);
+      await newPackage.save();
+      return res.status(200).json({ message: "Package successfully Saved", newPackage });
     }
-    
-   
+
+
   } catch (error) {
     return res
       .status(400)
@@ -65,13 +70,11 @@ router.post(
       );
       const smsBody = {
         address: `${Pack.recipient_phone}`,
-        Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${
-          Pack.thrifter_id.name
-        } at ${
-          Pack.current_custodian.agent_location
-        } before the close of Day ${moment(
-          new Date().setDate(new Date().getDate() + 3)
-        ).format("ddd MMM YY")}`,
+        Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${Pack.thrifter_id.name
+          } at ${Pack.current_custodian.agent_location
+          } before the close of Day ${moment(
+            new Date().setDate(new Date().getDate() + 3)
+          ).format("ddd MMM YY")}`,
       };
       // const body = req.body
 
@@ -181,11 +184,11 @@ router.post(
 router.get("/packages", async (req, res) => {
   try {
     const door_step_deliveries = await Doorstep.find()
-    .populate([
-      "createdBy",
-      "businessId",
-    ])
-    .sort({ createdAt: -1 }).limit(10);
+      .populate([
+        "createdBy",
+        "businessId",
+      ])
+      .sort({ createdAt: -1 }).limit(10);
     const packages = await Package.find()
       .populate([
         "createdBy",
@@ -196,7 +199,7 @@ router.get("/packages", async (req, res) => {
       .sort({ createdAt: -1 }).limit(5);
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", packages,door_step_deliveries });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries });
   } catch (error) {
     console.log(error);
     return res
@@ -207,18 +210,23 @@ router.get("/packages", async (req, res) => {
 
 router.get("/packages/:id", async (req, res) => {
   try {
-  
-    const packages = await Package.find({ businessId :req.params.id})
+
+    const packages = await Package.find({ businessId: req.params.id })
       .populate([
         "createdBy",
         "senderAgentID",
         "receieverAgentID",
-      
+
       ])
       .sort({ createdAt: -1 });
-
+    const door_step_deliveries = await Doorstep.find({ businessId: req.params.id })
+      .populate([
+        "createdBy",
+        "businessId",
+      ])
+      .sort({ createdAt: -1 }).limit(10);
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", packages });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries });
   } catch (error) {
     console.log(error);
     return res
@@ -228,12 +236,12 @@ router.get("/packages/:id", async (req, res) => {
 });
 router.get("/packages/bussiness/:id", async (req, res) => {
   try {
-    const packages = await Package.find({ businessId :req.params.id})
+    const packages = await Package.find({ businessId: req.params.id })
       .populate([
         "createdBy",
         "senderAgentID",
         "receieverAgentID",
-      
+
       ])
       .sort({ createdAt: -1 });
 

@@ -8,6 +8,7 @@ import { get_seller_products } from "../../redux/actions/products.actions";
 
 import Image_modal from "./modals/image_modal";
 import { Link } from "react-router-dom";
+import { delivery_columns, door_step_columns } from "../packages/data";
 function Packages(props) {
   const [filterText, setFilterText] = React.useState("");
   const [searchValue, setSearchValue] = useState("");
@@ -119,8 +120,23 @@ function Packages(props) {
     <div className="w-full mx-1">
       <DataTable
         title={`${props.name}\`s Packages`}
-        columns={columns}
+        columns={delivery_columns}
         data={props.packages}
+        pagination
+        paginationServer
+        progressPending={props.loading}
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
+        // onChangePage={handlePageChange}
+        paginationTotalRows={totalRows}
+        // onChangeRowsPerPage={handlePerRowsChange}
+      />
+       <DataTable
+        title={`${props.name}\`s Packages`}
+        columns={door_step_columns}
+        data={props.to_door_packages}
         pagination
         paginationServer
         progressPending={props.loading}
@@ -147,7 +163,9 @@ Packages.propTypes = {};
 const mapStateToProps = (state) => {
   return {
     packages: state.PackageDetails.packages,
-    loading: state.PackageDetails.loading
+    loading: state.PackageDetails.loading,
+    
+    to_door_packages: state.PackageDetails.to_door_packages
   };
 };
 

@@ -11,7 +11,7 @@ import AssignRider from "./components/assignRider";
 import Layouts from "./views/Layouts";
 import Dashboard from "./components/dashboard";
 import Sellers from "./components/Seller";
-import Admin from "./components/Seller copy";
+import Admin from "./components/Admin";
 import UserDetails from "./components/Seller/UserDetails";
 import Product_details from "./components/Seller/product_details";
 import Products from "./components/Seller/products";
