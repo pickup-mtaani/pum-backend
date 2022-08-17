@@ -11,11 +11,12 @@ import AssignRider from "./components/assignRider";
 import Layouts from "./views/Layouts";
 import Dashboard from "./components/dashboard";
 import Sellers from "./components/Seller";
-import Admin from "./components/Seller copy";
+import Admin from "./components/Admin";
 import UserDetails from "./components/Seller/UserDetails";
 import Product_details from "./components/Seller/product_details";
 import Products from "./components/Seller/products";
 import Packages from "./components/packages"
+import Riders from "./components/Riders";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -24,6 +25,7 @@ const App = () => {
     { path: "/seller/:id", element: <UserDetails /> },
     { path: "/seller/:bussiness_id/products", element: <Products /> },
     { path: "/packages", element: <Packages /> },
+    { path: "/riders", element: <Riders /> },
     { path: "/administrators", element: < Admin /> },
 
     // ...

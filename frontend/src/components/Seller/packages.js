@@ -8,6 +8,7 @@ import { get_seller_products } from "../../redux/actions/products.actions";
 
 import Image_modal from "./modals/image_modal";
 import { Link } from "react-router-dom";
+import { delivery_columns, door_step_columns, rent_shelf_columns } from "../packages/data";
 function Packages(props) {
   const [filterText, setFilterText] = React.useState("");
   const [searchValue, setSearchValue] = useState("");
@@ -119,7 +120,7 @@ function Packages(props) {
     <div className="w-full mx-1">
       <DataTable
         title={`${props.name}\`s Packages`}
-        columns={columns}
+        columns={delivery_columns}
         data={props.packages}
         pagination
         paginationServer
@@ -132,6 +133,38 @@ function Packages(props) {
         paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
       />
+       <DataTable
+        title={`${props.name}\`s Door Step Packages`}
+        columns={door_step_columns}
+        data={props.to_door_packages}
+        pagination
+        paginationServer
+        progressPending={props.loading}
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
+        // onChangePage={handlePageChange}
+        paginationTotalRows={totalRows}
+        // onChangeRowsPerPage={handlePerRowsChange}
+      />
+       <div className=" mx-2 my-10">
+        <DataTable
+          title="Rent A shelf Delivery"
+          columns={rent_shelf_columns}
+          data={props.rent_shelf}
+          pagination
+          paginationServer
+          progressPending={props.loading}
+          paginationResetDefaultPage={resetPaginationToggle}
+          subHeader
+          subHeaderComponent={subHeaderComponentMemo}
+          persistTableHead
+          // onChangePage={handlePageChange}
+          paginationTotalRows={totalRows}
+        // onChangeRowsPerPage={handlePerRowsChange}
+        />
+      </div>
       <Image_modal
         show={showImage}
         image={image}
@@ -147,7 +180,9 @@ Packages.propTypes = {};
 const mapStateToProps = (state) => {
   return {
     packages: state.PackageDetails.packages,
-    loading: state.PackageDetails.loading
+    loading: state.PackageDetails.loading,
+    rent_shelf: state.PackageDetails.rented_shelf_packages,
+    to_door_packages: state.PackageDetails.to_door_packages
   };
 };
 

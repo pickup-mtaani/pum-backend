@@ -45,6 +45,14 @@ const doorstepSchema = new Schema(
     customer_location: {
       type: String,
     },
+    from_agent_shelf: {
+      type: Schema.Types.ObjectId,
+        ref: "thrifter_location",
+    },
+    to_agent_shelf: {
+      type: Schema.Types.ObjectId,
+        ref: "agent",
+    },
     house_no: {
       type: String,
     },
@@ -73,5 +81,5 @@ const doorstepSchema = new Schema(
   { timestamps: true }
 );
 
-const Doorstep = mongoose.model("doorstep_delivery", doorstepSchema);
+const Doorstep = mongoose.model("rent_a_shelf_deliveries", doorstepSchema);
 module.exports = Doorstep;

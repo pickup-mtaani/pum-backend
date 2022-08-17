@@ -31,20 +31,8 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
 
 router.get('/agents', [authMiddleware, authorized], async (req, res) => {
     try {
-
-        const Exists = await Agent.findOne({ name: req.body.name });
-        if (Exists) {
-            return res.status(400).json({ message: 'Agent Exists !!' });
-        }
-        else {
-            const body = req.body
-            body.createdBy = req.user._id
-            const newAgent = new Agent(body)
-            const saved = await newAgent.save()
-            return res.status(200).json({ message: 'Agent Added successfully', saved: saved });
-        }
-
-
+        const Agents = await Agent.find();
+            return res.status(200).json({ message: 'Agents fetched  successfully', Agents });
     } catch (error) {
 
         return res.status(400).json({ success: false, message: 'operation failed ', error });
