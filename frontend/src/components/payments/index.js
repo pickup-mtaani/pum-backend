@@ -11,8 +11,8 @@ const socket = io("localhost:4000");
 function Payments(props) {
 
   const columns = [
-   
-  
+
+
     {
       sortable: true,
       name: 'Phone number',
@@ -23,7 +23,7 @@ function Payments(props) {
       sortable: true,
       name: 'Transaction Code',
       minWidth: '250px',
-      wrap:true,
+      wrap: true,
       selector: row => row.log
     },
     {
@@ -32,9 +32,9 @@ function Payments(props) {
       minWidth: '225px',
       selector: row => row.delivery_rate
     },
-   
+
   ]
- 
+
   let initialState = {
     name: '', email: "", phone_number: '', password: ''
   }
@@ -97,7 +97,32 @@ function Payments(props) {
 
   useEffect(() => {
     socket.on('connection');
-    socket.emit('track_rider', { rider_id: '12345', user_id: "1322" });
+    // socket.emit('start-ride', { rider_id: '12345' });
+    // socket.on('room-created', data => {
+    //   console.log('Room created: ', data);
+    // });
+
+
+    socket.emit('track_rider', { rider_id: '12345', user_id: 344555 });
+
+    socket.on('user-joined', data => {
+      console.log('user joined!', data);
+    });
+
+    socket.on('get-users', data => {
+      console.log('Get users:', data);
+    });
+
+    // getCurrentLocation();
+    // socket.emit('position-change', {coordinates: crd});
+
+    socket.on('position-changed', async ({ coordinates }) => {
+      console.log('coordinates', coordinates);
+      // setCurrentLocation({
+      //   longitude: coordinates?.longitude,
+      //   latitude: coordinates?.latitude,
+      // });
+    });
 
     // socket.on('user-joined', data => {
     //     console.log('user joined!', data);
@@ -115,16 +140,15 @@ function Payments(props) {
     // });
 
 
-    
 
 
 
-})
+
+  })
 
 
-  console.log(props.payments[0]?.log);
-  // let MBody =props.payments[0]?.log
-  // const {Body}=MBody;
+  if (props?.payments[0]) console.log(JSON.parse(props?.payments[0]?.log)?.Body?.stkCallback?.CallbackMetadata);
+
 
   return (
     <Layout>
@@ -146,7 +170,7 @@ function Payments(props) {
         />
       </div>
 
-      
+
 
     </Layout>
   )
