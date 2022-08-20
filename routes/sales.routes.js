@@ -50,15 +50,20 @@ router.post('/sale', [authMiddleware, authorized], async (req, res) => {
 
 });
 
-router.post('/mpesa-callback', [authMiddleware, authorized], async (req, res, next) => {
-    console(JSON.stringify(req.body))
-    const Mpeslog = await new MpesaLogs({ log: JSON.stringify(req.body), user: req.user._id }).save()
-    return res.status(200).json({ success: false, message: `payment made`, body: req.body, log: Mpeslog });
+router.post('/mpesa-callback', async (req, res, next) => {
+    console.log(JSON.stringify(req.body))
+    const Mpeslog = await new MpesaLogs({ log: JSON.stringify(req.body)}).save()
+    return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body, log: Mpeslog });
+})
+router.get('/mpesa-payments', async (req, res, next) => {
+  console.log(JSON.stringify(req.body))
+  const mpeslog = await  MpesaLogs.find()
+  return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
 })
 
 
 
-router.post('/stk/response', async function (req, res) {
+router.post('/mpesa_payment/stk', async function (req, res) {
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${req.body.No}`;
     while (s.charAt(0) === '0') {
@@ -92,13 +97,19 @@ router.post('/stk/response', async function (req, res) {
             "PartyA": 254720141534,
             "PartyB": 174379,
             "PhoneNumber": 254720141534,
-            "CallBackURL": "https://31f0-217-21-116-210.in.ngrok.io/api/mpesa-callback",
+            "CallBackURL": "https://fde9-2c0f-fe38-224d-191b-7735-95f7-6f26-2629.in.ngrok.io/api/mpesa-callback",
             "AccountReference": "Pick-up delivery",
             "TransactionDesc": "Payment delivery of  ***" 
           })
         })
-          .then(response => response.text())
-          .then(result => console.log(result))
+          .then(response => {
+            console.log(response.text)
+            response.text()})
+          .then(result => 
+            {
+                return res.status(200).json({ success: true, message: `payment made`, result });}
+
+            )
           .catch(error => console.log(error));
     
       })

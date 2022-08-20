@@ -17,6 +17,7 @@ import Product_details from "./components/Seller/product_details";
 import Products from "./components/Seller/products";
 import Packages from "./components/packages"
 import Riders from "./components/Riders";
+import Payments from "./components/payments";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -26,6 +27,7 @@ const App = () => {
     { path: "/seller/:bussiness_id/products", element: <Products /> },
     { path: "/packages", element: <Packages /> },
     { path: "/riders", element: <Riders /> },
+    { path: "/mpesa-payments", element: <Payments /> },
     { path: "/administrators", element: < Admin /> },
 
     // ...
