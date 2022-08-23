@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_payments } from '../../redux/actions/riders.actions'
+
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
 const socket = io("localhost:4000");
-function Payments(props) {
+function Tracks(props) {
 
   const columns = [
 
@@ -39,7 +40,7 @@ function Payments(props) {
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
-  const [data, setFilterData] = React.useState([]);
+  const [cords, setCords] = React.useState({});
   const [showModal, setShowModal] = useState(false);
   const [Mpesadata, setMData] = useState([]);
   // const filteredItems = props.riders.filter(
@@ -63,7 +64,7 @@ function Payments(props) {
           onChangeFilter={onChangeFilter}
 
           searchValue={searchValue}
-         
+
           showModal={showModal}
           download={() => DownloadFile(() =>
             props.FetchAdmins({ limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
@@ -75,22 +76,13 @@ function Payments(props) {
       </>
     );
   }, [searchValue, showModal]);
-
-  useEffect(() => {
-    props.get_payments()
-    let Data = []
-    for (let i = 0; i < props.payments.length; i++) {
-       
-        Data.push(
-          Object.assign({}, JSON.parse(props?.payments[i]?.log)?.Body?.stkCallback?.CallbackMetadata.Item)
-          )
-          setMData(Data)
-      // console.log(JSON.parse(props?.payments[i]?.log)?.Body?.stkCallback?.CallbackMetadata);
-
-    }
-    
-  }, [])
-
+  const start_rider = () => {
+    socket.on('connection');
+    socket.emit('start-ride', { rider_id: '12345' });
+    socket.on('room-created', data => {
+      console.log('Room created: ', data);
+    });
+  }
   useEffect(() => {
     socket.on('connection');
     // socket.emit('start-ride', { rider_id: '12345' });
@@ -112,6 +104,7 @@ function Payments(props) {
 
     socket.on('position-changed', async ({ coordinates }) => {
       console.log('coordinates', coordinates);
+      setCords(coordinates)
     });
 
   })
@@ -123,21 +116,9 @@ function Payments(props) {
   return (
     <Layout>
       <div className=" mx-2">
-        <DataTable
-          // title=" Agent to Agent Delivery"
-          columns={columns}
-          data={props.payments}
-          pagination
-          paginationServer
-          progressPending={props.loading}
-          paginationResetDefaultPage={resetPaginationToggle}
-          subHeader
-          subHeaderComponent={subHeaderComponentMemo}
-          persistTableHead
-          // onChangePage={handlePageChange}
-          paginationTotalRows={totalRows}
-        // onChangeRowsPerPage={handlePerRowsChange}
-        />
+        <button onClick={() => start_rider()}>start Ride</button>
+       <h1>latitude:{cords.latitude}</h1>
+       <h1>Longitude:{cords.longitude}</h1>
       </div>
 
 
@@ -156,5 +137,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_payments })(Payments)
+export default connect(mapStateToProps, { get_payments })(Tracks)
 

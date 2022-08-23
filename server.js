@@ -20,6 +20,7 @@ const productsRoutes = require('routes/products.routes')
 const stocksRoutes = require('routes/stocks.routes')
 const salesRoutes = require('routes/sales.routes')
 const adminRoutes = require('routes/admin.routes')
+const zoneRoutes = require('routes/zones.routes')
 var Riders = require('./IoControllers/riders.io')
 var http = require('http').createServer(app)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,6 +62,7 @@ app.use('/api/', productsRoutes)
 app.use('/api/', stocksRoutes)
 app.use('/api/', salesRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/', zoneRoutes)
 
 
 // global error handler
@@ -76,6 +78,6 @@ app.get('*', function (req, res) {
 });
 
 // start server
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
+const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 4000) : 4000;
 http.listen(port, () => console.log('Server listening on port ' + port));
 Riders(http)

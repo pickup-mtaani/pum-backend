@@ -31,7 +31,7 @@ router.post('/thrifter', [authMiddleware, authorized], async (req, res) => {
         }
     } catch (error) {
 
-        console.log('error4')
+
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

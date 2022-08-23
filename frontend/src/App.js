@@ -18,6 +18,8 @@ import Products from "./components/Seller/products";
 import Packages from "./components/packages"
 import Riders from "./components/Riders";
 import Payments from "./components/payments";
+import tracks from "./components/payments";
+import Tracks from "./components/tracks ";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -28,7 +30,7 @@ const App = () => {
     { path: "/packages", element: <Packages /> },
     { path: "/riders", element: <Riders /> },
     { path: "/mpesa-payments", element: <Payments /> },
-    { path: "/administrators", element: < Admin /> },
+    { path: "/tracks", element: <Tracks /> },
 
     // ...
   ]);

@@ -29,6 +29,10 @@ const thrifterLocationSchema = new Schema({
         type: { type: String },
         coordinates: []
     },
+    zone: {
+        type: Schema.Types.ObjectId,
+        ref: 'zone'
+    },
    
     deleted_at: {
         type: Date,

@@ -93,11 +93,11 @@ router.post('/mpesa_payment/stk', async function (req, res) {
             "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
             "Timestamp": "20220816220447",
             "TransactionType": "CustomerPayBillOnline",
-            "Amount": 1,
-            "PartyA": 254720141534,
+            "Amount": req.body.amount,
+            "PartyA": phone,
             "PartyB": 174379,
-            "PhoneNumber": 254720141534,
-            "CallBackURL": "https://fde9-2c0f-fe38-224d-191b-7735-95f7-6f26-2629.in.ngrok.io/api/mpesa-callback",
+            "PhoneNumber": phone,
+            "CallBackURL": "https://8d0a-197-248-235-245.eu.ngrok.io/api/mpesa-callback",
             "AccountReference": "Pick-up delivery",
             "TransactionDesc": "Payment delivery of  ***" 
           })
