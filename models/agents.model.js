@@ -11,6 +11,10 @@ const AgentSchema = new Schema({
         type: String,
         required: true
     },
+    zone: {
+        type: Schema.Types.ObjectId,
+        ref: 'zone'
+    },
    
     loc: {
         type: { type: String },

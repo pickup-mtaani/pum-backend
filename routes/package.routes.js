@@ -2,7 +2,7 @@ const express = require("express");
 var Package = require("models/agent_agent_delivery.modal.js");
 var Doorstep = require("models/doorStep_delivery.model");
 var Rent = require("models/rent_a_shelf_delivery.model");
-var Thrifter = require("models/thrifter.model.js");
+var Agent = require("models/agents.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
 var Business = require("models/business.model.js");
@@ -91,6 +91,36 @@ router.post(
     }
   }
 );
+router.post(
+  "/package/delivery-charge",
+  async (req, res) => {
+    try {
+      let price = 0
+      const { senderAgentID, receieverAgentID } = req.body
+      const sender = await Agent.findOne({ _id: senderAgentID }).populate('zone')
+      const receiver = await Agent.findOne({ _id: receieverAgentID }).populate('zone')
+      if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
+        price = 180
+      } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
+        price = 380
+
+      } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A" || sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C") {
+        price = 280
+      }
+      else{
+        price=10
+      }
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "operation failed ", error });
+    }
+  }
+);
+
 router.post(
   "/package/:id/collect",
   [authMiddleware, authorized],

@@ -15,6 +15,7 @@ const AdminSchema = new Schema({
         // required: true
     },
     
+    
     deleted_at: {
         type: Date,
         default: null
