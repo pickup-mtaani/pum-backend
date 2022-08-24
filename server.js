@@ -78,6 +78,9 @@ app.get('*', function (req, res) {
 });
 
 // start server
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 4000) : 4000;
+// const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 4000) : 4000;
+// http.listen(port, () => console.log('Server listening on port ' + port));
+const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80):80;
 http.listen(port, () => console.log('Server listening on port ' + port));
+
 Riders(http)
