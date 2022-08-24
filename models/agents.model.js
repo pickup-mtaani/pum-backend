@@ -15,17 +15,17 @@ const AgentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'zone'
     },
-   
+
     loc: {
-        type: { type: String },
-        coordinates: []
+        type: String,
+
     },
 
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    
+
     deleted_at: {
         type: Date,
         default: null

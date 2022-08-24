@@ -71,6 +71,7 @@ router.post('/mpesa_payment/stk', async function (req, res) {
 
     }
     const code = "254";
+    let amount = parseInt(req.body.amount)
     let phone = `${code}${s}`;
     const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`,'utf-8').toString('base64')}`;
     axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
@@ -93,7 +94,7 @@ router.post('/mpesa_payment/stk', async function (req, res) {
             "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
             "Timestamp": "20220816220447",
             "TransactionType": "CustomerPayBillOnline",
-            "Amount": req.body.amount,
+            "Amount": amount,
             "PartyA": phone,
             "PartyB": 174379,
             "PhoneNumber": phone,

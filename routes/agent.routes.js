@@ -31,7 +31,7 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
 
 router.get('/agents', [authMiddleware, authorized], async (req, res) => {
     try {
-        const Agents = await Agent.find();
+        const Agents = await Agent.find().populate('zone');
             return res.status(200).json({ message: 'Agents fetched  successfully', Agents });
     } catch (error) {
 
