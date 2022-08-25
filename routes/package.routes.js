@@ -1,10 +1,11 @@
 const express = require("express");
-var Package = require("models/agent_agent_delivery.modal.js");
+var AgentPackage = require("models/agent_agent_delivery.modal.js");
 var Doorstep = require("models/doorStep_delivery.model");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Agent = require("models/agents.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
+var Sent_package = require("models/package.modal.js");
 var Business = require("models/business.model.js");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
@@ -20,6 +21,7 @@ const router = express.Router();
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
     const body = req.body;
+    // console.log(req.body)
     if (body.product) {
       const product = await Product.findById(body.product);
       body.packageName = product.product_name;
@@ -37,13 +39,34 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       await newPackage.save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else {
-      const newPackage = new Package(req.body);
-      await newPackage.save();
-      return res.status(200).json({ message: "Package successfully Saved", newPackage });
+    let packagesArr = []
+    const { packages, ...rest } = req.body
+    for (let i = 0; i < packages.length; i++) {
+
+      body.customerName = packages[i].customerName
+      body.customerPhoneNumber = packages[i].customerPhoneNumber
+      body.packageName = packages[i].packageName
+      body.description = packages[i].description
+      body.package_value = packages[i].package_value
+      // body.isProduct=packages[i].
+      body.total_fee = packages[i].total_fee
+      body.delivery_fee = packages[i].delivery_fee
+      body.receieverAgentID = packages[i].receieverAgentID
+      body.senderAgentID = packages[i].senderAgentID
+      const newPackage = new Sent_package(packages[i]);
+      const savedPackage = await newPackage.save();
+      packagesArr.push(savedPackage._id)
+    }
+    console.log(packagesArr)
+    const newPackage = new AgentPackage({ rest, packages: packagesArr });
+    // req.body.packages = packagesArr
+    await newPackage.save();
+    return res.status(200).json({ message: "Package successfully Saved" ,newPackage});
     }
 
 
   } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
@@ -107,8 +130,8 @@ router.post(
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A" || sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C") {
         price = 280
       }
-      else{
-        price=10
+      else {
+        price = 10
       }
       return res
         .status(200)

@@ -3,58 +3,35 @@ const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
 
-const ParcelSchema = new Schema(
+const AgentSchema = new Schema(
   {
-    customerName: {
-      type: String,
-      required: true,
-    },
 
-    customerPhoneNumber: {
-      type: String,
-      required: true,
-    },
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",
     },
-    packageName: {
-      type: String,
+    total_payment: {
+      type: Number,
+      default: 180
     },
-    description: {
-      type: String,
-    },
-    package_value: {
-      type: String,
-    },
-    
-   total_fee:{
-    type: Number,
-    default:180
-   },
     receipt_no: {
       type: String,
       // required: true
-    },
-    senderAgentID: {
-      type: Schema.Types.ObjectId,
-      ref: "agent",
-    },
-    receieverAgentID: {
-      type: Schema.Types.ObjectId,
-      ref: "agent",
     },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-    isProduct: {
-      type: Boolean,
-      default: false,
-    },
+    packages:
+      [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "sent_packages",
+        }
+      ]
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("package", ParcelSchema);
-module.exports = User;
+const Agent = mongoose.model("agent_agent_packages", AgentSchema);
+module.exports = Agent;
