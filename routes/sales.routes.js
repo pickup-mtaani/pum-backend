@@ -145,7 +145,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
           "PartyA": phone,
           "PartyB": 174379,
           "PhoneNumber": phone,
-          "CallBackURL": "http://178.62.228.130:4000/api/mpesa-callback",
+          "CallBackURL": "http://3.23.185.115:80/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })
