@@ -6,119 +6,181 @@ var Location = require('models/thrifter_location.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 var fetch = require('node-fetch')
-var axios =require( 'axios')
-var { Headers}= fetch
+var axios = require('axios')
+var { Headers } = fetch
 const { SendMessage } = require('../helpers/sms.helper');
 var unirest = require("unirest");
-var MpesaLogs =require("./../models/mpesa_logs.model");
+var MpesaLogs = require("./../models/mpesa_logs.model");
 router.post('/sale', [authMiddleware, authorized], async (req, res) => {
-    try {
-        Exists = await Stock.findOne({ business: req.body.business, product: req.body.product }).populate(['business', 'createdBy', 'product']);
-        const newqty = parseInt(Exists.qty) - parseInt(req.body.qty)
-        const Agent = await Location.findById(Exists.business.shelf_location).populate("user_id")
-        if (newqty < 0) {
-            return res.status(400).json({ success: false, message: 'Current stock is not enough kindly Restock ' });
-        } else {
-            const body = req.body
-            body.createdBy = req.user._id
-            const newSale = new Sale(body)
-            const saved = await newSale.save()
-            await Stock.findOneAndUpdate({ _id: Exists._id }, { qty: newqty }, { new: true, useFindAndModify: false })
+  try {
+    Exists = await Stock.findOne({ business: req.body.business, product: req.body.product }).populate(['business', 'createdBy', 'product']);
+    const newqty = parseInt(Exists.qty) - parseInt(req.body.qty)
+    const Agent = await Location.findById(Exists.business.shelf_location).populate("user_id")
+    if (newqty < 0) {
+      return res.status(400).json({ success: false, message: 'Current stock is not enough kindly Restock ' });
+    } else {
+      const body = req.body
+      body.createdBy = req.user._id
+      const newSale = new Sale(body)
+      const saved = await newSale.save()
+      await Stock.findOneAndUpdate({ _id: Exists._id }, { qty: newqty }, { new: true, useFindAndModify: false })
 
-            const Business = await User.findById(Exists.business.createdBy)
-            const Sold = await Sale.findOne({ _id: saved._id }).populate(['business', 'createdBy', 'product']);
-            const Agency = await User.findById(Agent.user_id._id)
+      const Business = await User.findById(Exists.business.createdBy)
+      const Sold = await Sale.findOne({ _id: saved._id }).populate(['business', 'createdBy', 'product']);
+      const Agency = await User.findById(Agent.user_id._id)
 
 
-            if (Exists.business.createdBy !== req.user._id) {
-                const TextObj = { address: `${Business.phone_number}`, Body: `Hi ${Business.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out and your new stock is ${newqty} ` }
-                await SendMessage(TextObj)
-                return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
-            } else {
-                const TextObj = { address: `${Agency.phone_number}`, Body: `Hi ${Agency.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out by ${Business.username} and the new stock is ${newqty} ` }
-                await SendMessage(TextObj)
-                return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
-            }
-
-        }
-
-    } catch (error) {
-
-        return res.status(400).json({ success: false, message: 'operation failed ', error });
+      if (Exists.business.createdBy !== req.user._id) {
+        const TextObj = { address: `${Business.phone_number}`, Body: `Hi ${Business.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out and your new stock is ${newqty} ` }
+        await SendMessage(TextObj)
+        return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
+      } else {
+        const TextObj = { address: `${Agency.phone_number}`, Body: `Hi ${Agency.username}\n${saved.qty} Pc(s) of  ${Sold.product.product_name}  has been Sold out by ${Business.username} and the new stock is ${newqty} ` }
+        await SendMessage(TextObj)
+        return res.status(200).json({ message: 'Sale Added successfully', saved: saved });
+      }
 
     }
+
+  } catch (error) {
+
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+  }
 
 });
 
-router.post('/mpesa-callback', async (req, res, next) => {
-    console.log(JSON.stringify(req.body))
-    const Mpeslog = await new MpesaLogs({ log: JSON.stringify(req.body)}).save()
-    return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body, log: Mpeslog });
+router.get('/mpesa-test', async (req, res, next) => {
+  // console.log(JSON.stringify(req.body))
+  const Log1 = {
+    "Body": {
+      "stkCallback": {
+        "MerchantRequestID": "118821-60188018-1",
+        "CheckoutRequestID": "ws_CO_20082022115843215720141534",
+        "ResultCode": 1032,
+        "ResultDesc": "Request cancelled by user"
+      }
+    }
+  }
+  const Log = {
+    "Body": {
+      "stkCallback": {
+        "MerchantRequestID": "1316-121863694-1",
+        "CheckoutRequestID": "ws_CO_20082022044743062720141534",
+        "ResultCode": 0,
+        "ResultDesc": "The service request is processed successfully.",
+        "CallbackMetadata": {
+          "Item": [
+            {
+              "Name": "Amount",
+              "Value": 1
+            },
+            {
+              "Name": "MpesaReceiptNumber",
+              "Value": "QHK8HJ5QHO"
+            },
+            {
+              "Name": "Balance"
+            },
+            {
+              "Name": "TransactionDate",
+              "Value": 20220820044804
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": 254720141534
+            }
+          ]
+        }
+      }
+    }
+  }
+  const data = Log
+  // const Mpeslog = await new MpesaLogs({ log: JSON.stringify(req.body) }).save()
+  return res.status(200).json({ success: true, message: `payments fetched successfully`, data: data.Body.stkCallback.CallbackMetadata.Item[0].Value });
 })
 router.get('/mpesa-payments', async (req, res, next) => {
-  console.log(JSON.stringify(req.body))
-  const mpeslog = await  MpesaLogs.find()
+  const mpeslog = await MpesaLogs.find().populate('user')
   return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
 })
 
+router.post('/mpesa-callback', async (req, res, next) => {
 
+  const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body.stkCallback.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body.stkCallback.ResultDesc, ResponseCode: req.body.Body.stkCallback.ResultCode,MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
 
-router.post('/mpesa_payment/stk', async function (req, res) {
-    let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
-    var s = `${req.body.No}`;
-    while (s.charAt(0) === '0') {
-        s = s.substring(1);
+  return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
+})
 
+router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (req, res) {
+  let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
+  var s = `${req.body.No}`;
+  while (s.charAt(0) === '0') {
+    s = s.substring(1);
+  }
+  const code = "254";
+  let amount = parseInt(req.body.amount)
+  let phone = `${code}${s}`;
+  const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`, 'utf-8').toString('base64')}`;
+  axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+    headers: {
+      Authorization
     }
-    const code = "254";
-    let amount = parseInt(req.body.amount)
-    let phone = `${code}${s}`;
-    const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`,'utf-8').toString('base64')}`;
-    axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
-      headers: {
-          Authorization
-        }
-      })
-      .then((response) => {
-        let token = response.data.access_token;
-        console.log(token);
-        let headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("Authorization", `Bearer ${token}`);
-        
-        fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            "BusinessShortCode": 174379,
-            "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
-            "Timestamp": "20220816220447",
-            "TransactionType": "CustomerPayBillOnline",
-            "Amount": amount,
-            "PartyA": phone,
-            "PartyB": 174379,
-            "PhoneNumber": phone,
-            "CallBackURL": "https://8d0a-197-248-235-245.eu.ngrok.io/api/mpesa-callback",
-            "AccountReference": "Pick-up delivery",
-            "TransactionDesc": "Payment delivery of  ***" 
-          })
-        })
-          .then(response => {
-            console.log(response.text)
-            response.text()})
-          .then(result => 
-            {
-                return res.status(200).json({ success: true, message: `payment made`, result });}
+  })
+    .then((response) => {
+      let token = response.data.access_token;
 
-            )
-          .catch(error => console.log(error));
-    
+      let headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      headers.append("Authorization", `Bearer ${token}`);
+
+      fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          "BusinessShortCode": 174379,
+          "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
+          "Timestamp": "20220816220447",
+          "TransactionType": "CustomerPayBillOnline",
+          "Amount": amount,
+          "PartyA": phone,
+          "PartyB": 174379,
+          "PhoneNumber": phone,
+          "CallBackURL": "https://e8f3-217-21-116-210.in.ngrok.io/api/mpesa-callback",
+          "AccountReference": "Pick-up delivery",
+          "TransactionDesc": "Payment delivery of  ***"
+        })
       })
-    return
-// console.log("token"+token);
-    
-    
-   
+        .then(response => {
+          // console.log("response.tex" + JSON.stringify(response));
+
+          return response.json()
+        })
+        .then(async result => {
+          let data = result
+          const body = {
+            MerchantRequestID: data.MerchantRequestID,
+            CheckoutRequestID: data.CheckoutRequestID,
+            phone_number: phone,
+            amount:amount,
+            ResponseCode: data.ResponseCode,
+            user: req.user._id,
+            log: ''
+          }
+          await new MpesaLogs(body).save()
+          // data.Body.stkCallback.CallbackMetadata.Item[0].Value
+          // data.Body.stkCallback.CallbackMetadata.Item[0].Value
+          return res.status(200).json({ success: true, message: `payment made`, result });
+        }
+
+        )
+        .catch(error => console.log(error));
+
+    })
+  return
+  // console.log("token"+token);
+
+
+
 
 });
 

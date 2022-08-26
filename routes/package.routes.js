@@ -39,34 +39,33 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       await newPackage.save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else {
-    let packagesArr = []
-    const { packages, ...rest } = req.body
-    for (let i = 0; i < packages.length; i++) {
+      let packagesArr = []
+      const { packages, ...rest } = req.body
+      for (let i = 0; i < packages.length; i++) {
 
-      body.customerName = packages[i].customerName
-      body.customerPhoneNumber = packages[i].customerPhoneNumber
-      body.packageName = packages[i].packageName
-      body.description = packages[i].description
-      body.package_value = packages[i].package_value
-      // body.isProduct=packages[i].
-      body.total_fee = packages[i].total_fee
-      body.delivery_fee = packages[i].delivery_fee
-      body.receieverAgentID = packages[i].receieverAgentID
-      body.senderAgentID = packages[i].senderAgentID
-      const newPackage = new Sent_package(packages[i]);
-      const savedPackage = await newPackage.save();
-      packagesArr.push(savedPackage._id)
-    }
-    console.log(packagesArr)
-    const newPackage = new AgentPackage({ rest, packages: packagesArr });
-    // req.body.packages = packagesArr
-    await newPackage.save();
-    return res.status(200).json({ message: "Package successfully Saved" ,newPackage});
+        body.customerName = packages[i].customerName
+        body.customerPhoneNumber = packages[i].customerPhoneNumber
+        body.packageName = packages[i].packageName
+        body.description = packages[i].description
+        body.package_value = packages[i].package_value
+        // body.isProduct=packages[i].
+        body.total_fee = packages[i].total_fee
+        body.delivery_fee = packages[i].delivery_fee
+        body.receieverAgentID = packages[i].receieverAgentID
+        body.senderAgentID = packages[i].senderAgentID
+        const newPackage = new Sent_package(packages[i]);
+        const savedPackage = await newPackage.save();
+        packagesArr.push(savedPackage._id)
+      }
+      console.log(packagesArr)
+      const newPackage = new AgentPackage({ rest, packages: packagesArr });
+      // req.body.packages = packagesArr
+      await newPackage.save();
+      return res.status(200).json({ message: "Package successfully Saved", newPackage });
     }
 
 
   } catch (error) {
-    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
@@ -248,23 +247,39 @@ router.get("/packages", async (req, res) => {
         "businessId", "from_agent_shelf", "to_agent_shelf", "rider"
       ])
       .sort({ createdAt: -1 }).limit(10);
-    const packages = await Package.find()
+    const packages = await AgentPackage.find()
       .populate([
         "createdBy",
-        "senderAgentID",
-        "receieverAgentID",
+        "packages",
         "businessId",
       ])
-      .sort({ createdAt: -1 }).limit(5);
+      .sort({ createdAt: -1 }).limit(100);
 
     return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
-    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    const packages = await AgentPackage.find({ createdBy: req.user._id })
+      .populate([
+        "packages",
+        "businessId",
+      ])
+      .sort({ createdAt: -1 }).limit(100);
+
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 
 router.get("/packages/:id", async (req, res) => {
   try {
@@ -292,7 +307,6 @@ router.get("/packages/:id", async (req, res) => {
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
-    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
@@ -312,7 +326,6 @@ router.get("/packages/bussiness/:id", async (req, res) => {
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages });
   } catch (error) {
-    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

@@ -6,7 +6,8 @@ import { getParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import { delivery_columns, door_step_columns, rent_shelf_columns } from './data'
+import { door_step_columns, rent_shelf_columns } from './data'
+import PackageDetail from './packageDetails.modal'
 
 function Users(props) {
 
@@ -20,32 +21,62 @@ function Users(props) {
   const [date, setDate] = useState("")
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
+
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [item, setItem] = useState(initialState);
-  const filteredItems = props.packages.filter(
-    item => item.customerName.toLowerCase().includes(filterText.toLowerCase()),
-  );
+  const [item, setItem] = useState([]);
+
   const onChangeFilter = (e) => {
     setFilterText(e)
-    const filtered = filteredItems.filter(
-      item => item.customerName && item.customerName.toLowerCase().includes(filterText.toLowerCase()),
-    );
-    setFilterData(filtered)
-  }
-  const changeInput = (e) => {
-    const { name, value } = e.target !== undefined ? e.target : e;
-    setItem((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }
-  const filter_BY_date = async (e) => {
-
-    await props.FetchAdmins({ date: new Date(e) })
 
   }
+  const delivery_columns = [
+    {
+      sortable: true,
+      name: 'Packages Sent',
+      minWidth: '250px',
+      selector: row => (<>
+        {row.packages.map((pack, i) => (
+          <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
+            {pack.packageName}
+          </div>
+        ))}
+
+      </>)
+    },
+
+    {
+      sortable: true,
+      name: 'Total Fee Paid',
+      minWidth: '250px',
+      selector: row => row.total_payment
+    },
+
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.receipt_no
+    },
+
+    {
+      sortable: true,
+      name: 'Seller',
+      minWidth: '150px',
+      selector: row => row.businessId?.name
+    },
+    {
+      sortable: true,
+      name: 'Seller',
+      minWidth: '150px',
+      selector: row => <>
+      <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
+      </>
+    },
+
+
+  ]
 
   const subHeaderComponentMemo = React.useMemo(() => {
 
@@ -78,7 +109,7 @@ function Users(props) {
         <DataTable
           title=" Agent to Agent Delivery"
           columns={delivery_columns}
-          data={filteredItems}
+          data={props.packages}
           pagination
           paginationServer
           progressPending={props.loading}
@@ -126,6 +157,14 @@ function Users(props) {
         // onChangeRowsPerPage={handlePerRowsChange}
         />
       </div>
+
+      <PackageDetail
+        show={showModal}
+        data={item}
+        // changeInput={(e) => changeInput(e)}
+        // submit={() => submit()}
+        toggle={() => setShowModal(false)}
+      />
 
     </Layout>
   )

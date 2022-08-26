@@ -10,7 +10,33 @@ const MpesaLogsSchema = new Schema({
         type: String
 
     },
-    user:{
+    MerchantRequestID: {
+
+        type: String
+
+    },
+    CheckoutRequestID: {
+
+        type: String
+
+    },
+    phone_number: {
+        type: String
+    },
+    ResponseCode: {
+        type: Number
+    },
+    MpesaReceiptNumber: {
+        type: String
+    },
+    amount: {
+        type: Number
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    ResultDesc:{
         type:String
     },
     createdAt: {

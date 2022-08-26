@@ -7,6 +7,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
+import moment from 'moment'
 const socket = io("localhost:4000");
 function Payments(props) {
 
@@ -15,21 +16,51 @@ function Payments(props) {
     {
       sortable: true,
       name: 'Phone number',
-      minWidth: '250px',
-      selector: row => row[0]?.value
+      minWidth: '10px',
+
+      selector: row => row.phone_number
     },
     {
       sortable: true,
       name: 'Transaction Code',
-      minWidth: '250px',
+      minWidth: '100px',
       wrap: true,
-      selector: row => row.log
+      selector: row => row.MpesaReceiptNumber
     },
     {
       sortable: true,
       name: 'amount',
-      minWidth: '225px',
-      selector: row => row.delivery_rate
+      minWidth: '105px',
+      maxWidth: '50px',
+      selector: row => row.amount
+    },
+    {
+      sortable: true,
+      name: 'Payment BY',
+      minWidth: '105px',
+      selector: row => <>{row.user?.l_name} {row.user?.f_name}</>
+    },
+    {
+      sortable: true,
+      name: 'Customer phone Number',
+      minWidth: '105px',
+      selector: row => <>{row.user?.phone_number}</>
+    },
+    {
+      sortable: true,
+      name: 'state',
+      minWidth: '105px',
+      wrap: true,
+      selector: row => <div className="flex items-between " style={{ color: row.ResultDesc !== "The service request is processed successfully." ? "red" : "green" }}>
+        {row.ResultDesc}
+        
+      </div>
+    },
+    {
+      sortable: true,
+      name: 'Date Paid',
+      minWidth: '105px',
+      selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
     },
 
   ]
@@ -42,28 +73,18 @@ function Payments(props) {
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
   const [Mpesadata, setMData] = useState([]);
-  // const filteredItems = props.riders.filter(
-  //   item => item.customerName.toLowerCase().includes(filterText.toLowerCase()),
-  // );
+
   const onChangeFilter = (e) => {
-    // setFilterText(e)
-    // const filtered = filteredItems.filter(
-    //   item => item.rider_name && item.rider_name.toLowerCase().includes(filterText.toLowerCase()),
-    // );
-    // setFilterData(filtered)
+ 
   }
-
-
-
   const subHeaderComponentMemo = React.useMemo(() => {
-
     return (
       <>
         <Search_filter_component
           onChangeFilter={onChangeFilter}
 
           searchValue={searchValue}
-         
+
           showModal={showModal}
           download={() => DownloadFile(() =>
             props.FetchAdmins({ limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
@@ -78,48 +99,37 @@ function Payments(props) {
 
   useEffect(() => {
     props.get_payments()
-    let Data = []
-    for (let i = 0; i < props.payments.length; i++) {
-       
-        Data.push(
-          Object.assign({}, JSON.parse(props?.payments[i]?.log)?.Body?.stkCallback?.CallbackMetadata.Item)
-          )
-          setMData(Data)
-      // console.log(JSON.parse(props?.payments[i]?.log)?.Body?.stkCallback?.CallbackMetadata);
 
-    }
-    
   }, [])
 
-  useEffect(() => {
-    socket.on('connection');
-    // socket.emit('start-ride', { rider_id: '12345' });
-    // socket.on('room-created', data => {
-    //   console.log('Room created: ', data);
-    // });
+  // useEffect(() => {
+  //   socket.on('connection');
+  //   // socket.emit('start-ride', { rider_id: '12345' });
+  //   // socket.on('room-created', data => {
+  //   //   console.log('Room created: ', data);
+  //   // });
 
 
-    socket.emit('track_rider', { rider_id: '12345', user_id: 344555 });
+  //   socket.emit('track_rider', { rider_id: '12345', user_id: 344555 });
 
-    socket.on('user-joined', data => {
-      console.log('user joined!', data);
-    });
+  //   socket.on('user-joined', data => {
+  //     console.log('user joined!', data);
+  //   });
 
-    socket.on('get-users', data => {
-      console.log('Get users:', data);
-    });
+  //   socket.on('get-users', data => {
+  //     console.log('Get users:', data);
+  //   });
 
 
-    socket.on('position-changed', async ({ coordinates }) => {
-      console.log('coordinates', coordinates);
-    });
+  //   socket.on('position-changed', async ({ coordinates }) => {
+  //     console.log('coordinates', coordinates);
+  //   });
 
-  })
+  // })
 
 
   // if (props?.payments[0]) console.log(JSON.parse(props?.payments[0]?.log)?.Body?.stkCallback?.CallbackMetadata);
 
-  console.log(Mpesadata[0])
   return (
     <Layout>
       <div className=" mx-2">

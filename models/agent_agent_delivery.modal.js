@@ -26,7 +26,7 @@ const AgentSchema = new Schema(
       [
         {
           type: Schema.Types.ObjectId,
-          ref: "sent_packages",
+          ref: "agent_agent_sent_packages",
         }
       ]
   },
