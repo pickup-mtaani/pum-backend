@@ -105,15 +105,21 @@ router.get('/mpesa-payments', async (req, res, next) => {
 })
 
 router.post('/mpesa-callback', async (req, res, next) => {
-
   try {
-    const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
-
-    return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
+    const Update = await MpesaLogs.findOneAndUpdate(
+      { MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
+      }, {
+      log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
+      ResponseCode: req.body.Body?.stkCallback?.ResultCode,
+      MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
+    }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ success: true, message: `payments made successfully`, body: req.body });
   } catch (error) {
     console.log(error)
   }
 })
+
+
 
 router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (req, res) {
   let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
@@ -132,11 +138,9 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
   })
     .then((response) => {
       let token = response.data.access_token;
-
       let headers = new Headers();
       headers.append("Content-Type", "application/json");
       headers.append("Authorization", `Bearer ${token}`);
-
       fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
         method: 'POST',
         headers,
@@ -149,7 +153,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
           "PartyA": phone,
           "PartyB": 174379,
           "PhoneNumber": phone,
-          "CallBackURL": "http://3.23.185.115/api/mpesa-callback",
+          "CallBackURL": " https://e986-217-21-116-214.in.ngrok.io/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })

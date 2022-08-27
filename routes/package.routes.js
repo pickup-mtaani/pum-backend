@@ -1,11 +1,12 @@
 const express = require("express");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
-var Doorstep = require("models/doorStep_delivery.model");
+var Doorstep_pack = require("models/doorStep_delivery.model");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Agent = require("models/agents.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
 var Sent_package = require("models/package.modal.js");
+var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Business = require("models/business.model.js");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
@@ -21,18 +22,25 @@ const router = express.Router();
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
     const body = req.body;
-    // console.log(req.body)
-    if (body.product) {
-      const product = await Product.findById(body.product);
-      body.packageName = product.product_name;
-      body.isProduct = true;
-      body.package_value = product.price;
-    }
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
-      const newPackage = new Doorstep(req.body);
-      await newPackage.save();
+      let packagesArr = []
+      const { packages, ...rest } = req.body
+      for (let i = 0; i < packages.length; i++) {
+        if (packages[i].product) {
+          const product = await Product.findById(packages[i].product);
+          packages[i].packageName = product.product_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = product.price;
+        }
+       
+        const savedPackage = await new Door_step_Sent_package(packages[i]).save();
+        packagesArr.push(savedPackage._id)
+      }
+
+      const newPackage = await new Doorstep_pack({ rest, packages: packagesArr,payment_phone_number:req.body.payment_phone_number }).save();
+    
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else if (body.delivery_type === "rent_a_shelf") {
       const newPackage = new Rent(req.body);
@@ -42,22 +50,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       let packagesArr = []
       const { packages, ...rest } = req.body
       for (let i = 0; i < packages.length; i++) {
-
-        body.customerName = packages[i].customerName
-        body.customerPhoneNumber = packages[i].customerPhoneNumber
-        body.packageName = packages[i].packageName
-        body.description = packages[i].description
-        body.package_value = packages[i].package_value
-        // body.isProduct=packages[i].
-        body.total_fee = packages[i].total_fee
-        body.delivery_fee = packages[i].delivery_fee
-        body.receieverAgentID = packages[i].receieverAgentID
-        body.senderAgentID = packages[i].senderAgentID
+        if (packages[i].product) {
+          const product = await Product.findById(packages[i].product);
+          packages[i].packageName = product.product_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = product.price;
+        }
+      
         const newPackage = new Sent_package(packages[i]);
         const savedPackage = await newPackage.save();
         packagesArr.push(savedPackage._id)
       }
-      console.log(rest)
       const newPackage = new AgentPackage({ rest, packages: packagesArr });
       // req.body.packages = packagesArr
       await newPackage.save();
@@ -66,9 +69,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
 
   } catch (error) {
+    console.log(error)
     return res
       .status(400)
-      .json({ success: false, message: "operation failed ", error });
+      .json({ success: false, message: " failed  to send package", error });
   }
 });
 
@@ -120,21 +124,21 @@ router.post(
       let price = 100
       const { senderAgentID, receieverAgentID } = req.body
 
-      console.log(senderAgentID, receieverAgentID )
+      console.log(senderAgentID, receieverAgentID)
       const sender = await Agent.findOne({ _id: senderAgentID }).populate('zone')
       const receiver = await Agent.findOne({ _id: receieverAgentID }).populate('zone')
       if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
         price = 1
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
-        price = 1
+        price = 200
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A" || sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C") {
-        price = 1
-      }else if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone A" ) {
+        price = 200
+      } else if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone A") {
         price = 100
-      } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A" ) {
-        price = 1
-      }else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C" ) {
-        price = 1
+      } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
+        price = 180
+      } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C") {
+        price = 250
       }
       console.log(price)
       return res

@@ -5,41 +5,43 @@ const Schema = mongoose.Schema;
 
 const doorstepSchema = new Schema(
   {
-
-    payment_phone_number: {
+    customerName: {
       type: String,
-      // required: true,
+      required: true,
+    },
+    
+    customerPhoneNumber: {
+      type: String,
+      required: true,
     },
 
-    businessId: {
-      type: Schema.Types.ObjectId,
-      ref: "business",
+    packageName: {
+      type: String,
+
     },
-    packages:
-      [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "doorStep_delivery_packages.model",
-        }
-      ]
-    ,
-    total_payment_amount: {
-      type: Number,
-      // default:180
+    description: {
+      type: String,
+
     },
-    receipt_no: {
+    package_value: {
       type: String,
       // required: true
+    },
+
+    payment_amount: {
+      type: Number,
+      default: 180
+    },
+
+    customer_location: {
+      type: String,
     },
 
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-    rider: {
-      type: Schema.Types.ObjectId,
-      ref: "rider",
-    },
+
     payment_option: {
       type: String,
       enum: ['customer', 'vendor', 'collection'],
@@ -57,5 +59,5 @@ const doorstepSchema = new Schema(
   { timestamps: true }
 );
 
-const Doorstep = mongoose.model("doorStep_delivery", doorstepSchema);
+const Doorstep = mongoose.model("doorStep_delivery_packages", doorstepSchema);
 module.exports = Doorstep;
