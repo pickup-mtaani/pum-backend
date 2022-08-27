@@ -53,22 +53,22 @@ function Users(props) {
       selector: row => row.total_payment
     },
 
-    {
-      sortable: true,
-      name: 'Reciept',
-      minWidth: '250px',
-      selector: row => row.receipt_no
-    },
+    // {
+    //   sortable: true,
+    //   name: 'Reciept',
+    //   minWidth: '250px',
+    //   selector: row => row.receipt_no
+    // },
 
+    // {
+    //   sortable: true,
+    //   name: 'Seller',
+    //   minWidth: '150px',
+    //   selector: row => row.businessId?.name
+    // },
     {
       sortable: true,
-      name: 'Seller',
-      minWidth: '150px',
-      selector: row => row.businessId?.name
-    },
-    {
-      sortable: true,
-      name: 'Seller',
+      name: 'Details',
       minWidth: '150px',
       selector: row => <>
         <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
@@ -97,21 +97,30 @@ function Users(props) {
       sortable: true,
       name: 'Total Payment',
       minWidth: '250px',
-      selector: row => (<>{row.payment_phone_number}</>)
+      selector: row => 180
+    },
+    {
+      sortable: true,
+      name: 'Details',
+      minWidth: '150px',
+      selector: row => <>
+        <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
+      </>
     },
 
-    {
-      sortable: true,
-      name: 'Reciept',
-      minWidth: '250px',
-      selector: row => row.receipt_no
-    },
-    {
-      sortable: true,
-      name: 'Seller',
-      minWidth: '150px',
-      selector: row => row.businessId?.name
-    },
+
+    // {
+    //   sortable: true,
+    //   name: 'Reciept',
+    //   minWidth: '250px',
+    //   selector: row => row.receipt_no
+    // },
+    // {
+    //   sortable: true,
+    //   name: 'Seller',
+    //   minWidth: '150px',
+    //   selector: row => row.businessId?.name
+    // },
 
   ]
 
