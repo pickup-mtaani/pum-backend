@@ -106,9 +106,13 @@ router.get('/mpesa-payments', async (req, res, next) => {
 
 router.post('/mpesa-callback', async (req, res, next) => {
 
-  const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body.stkCallback.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body.stkCallback.ResultDesc, ResponseCode: req.body.Body.stkCallback.ResultCode,MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
+  try {
+    const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
 
-  return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
+    return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (req, res) {
@@ -145,7 +149,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
           "PartyA": phone,
           "PartyB": 174379,
           "PhoneNumber": phone,
-          "CallBackURL": "http://3.23.185.115:80/api/mpesa-callback",
+          "CallBackURL": "http://3.23.185.115/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })
@@ -161,7 +165,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
             MerchantRequestID: data.MerchantRequestID,
             CheckoutRequestID: data.CheckoutRequestID,
             phone_number: phone,
-            amount:amount,
+            amount: amount,
             ResponseCode: data.ResponseCode,
             user: req.user._id,
             log: ''

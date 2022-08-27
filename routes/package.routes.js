@@ -57,7 +57,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await newPackage.save();
         packagesArr.push(savedPackage._id)
       }
-      console.log(packagesArr)
+      console.log(rest)
       const newPackage = new AgentPackage({ rest, packages: packagesArr });
       // req.body.packages = packagesArr
       await newPackage.save();
@@ -117,25 +117,31 @@ router.post(
   "/package/delivery-charge",
   async (req, res) => {
     try {
-      let price = 0
+      let price = 100
       const { senderAgentID, receieverAgentID } = req.body
+
+      console.log(senderAgentID, receieverAgentID )
       const sender = await Agent.findOne({ _id: senderAgentID }).populate('zone')
       const receiver = await Agent.findOne({ _id: receieverAgentID }).populate('zone')
       if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
-        price = 180
+        price = 1
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
-        price = 380
-
+        price = 1
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A" || sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C") {
-        price = 280
+        price = 1
+      }else if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone A" ) {
+        price = 100
+      } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A" ) {
+        price = 1
+      }else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C" ) {
+        price = 1
       }
-      else {
-        price = 10
-      }
+      console.log(price)
       return res
         .status(200)
         .json({ message: "price set successfully ", price });
     } catch (error) {
+      console.log(error)
       return res
         .status(400)
         .json({ success: false, message: "operation failed ", error });
