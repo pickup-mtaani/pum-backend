@@ -6,7 +6,7 @@ import { getParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import { door_step_columns, rent_shelf_columns } from './data'
+import { rent_shelf_columns } from './data'
 import PackageDetail from './packageDetails.modal'
 
 function Users(props) {
@@ -71,10 +71,47 @@ function Users(props) {
       name: 'Seller',
       minWidth: '150px',
       selector: row => <>
-      <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
+        <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
       </>
     },
 
+
+  ]
+
+  const door_step_columns = [
+
+    {
+      sortable: true,
+      name: 'Packages Sent',
+      minWidth: '250px',
+      selector: row => (<>
+        {row.packages.map((pack, i) => (
+          <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
+            {pack.packageName}
+          </div>
+        ))}
+
+      </>)
+    },
+    {
+      sortable: true,
+      name: 'Total Payment',
+      minWidth: '250px',
+      selector: row => (<>{row.payment_phone_number}</>)
+    },
+
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.receipt_no
+    },
+    {
+      sortable: true,
+      name: 'Seller',
+      minWidth: '150px',
+      selector: row => row.businessId?.name
+    },
 
   ]
 
@@ -102,7 +139,7 @@ function Users(props) {
   useEffect(() => {
     props.getParcels({ limit: 10 })
   }, [])
-
+  console.log(props.to_door_packages[0])
   return (
     <Layout>
       <div className=" mx-2">

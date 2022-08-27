@@ -34,13 +34,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
-       
+
         const savedPackage = await new Door_step_Sent_package(packages[i]).save();
         packagesArr.push(savedPackage._id)
       }
 
-      const newPackage = await new Doorstep_pack({ rest, packages: packagesArr,payment_phone_number:req.body.payment_phone_number }).save();
-    
+      const newPackage = await new Doorstep_pack({ rest, packages: packagesArr, payment_phone_number: req.body.payment_phone_number }).save();
+
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else if (body.delivery_type === "rent_a_shelf") {
       const newPackage = new Rent(req.body);
@@ -56,7 +56,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
-      
+
         const newPackage = new Sent_package(packages[i]);
         const savedPackage = await newPackage.save();
         packagesArr.push(savedPackage._id)
@@ -245,10 +245,10 @@ router.post(
 
 router.get("/packages", async (req, res) => {
   try {
-    const door_step_deliveries = await Doorstep.find()
+    const door_step_deliveries = await Doorstep_pack.find()
       .populate([
         "createdBy",
-        "businessId", "rider"
+        "businessId", "rider","packages"
       ])
       .sort({ createdAt: -1 }).limit(10);
     const rented_deliveries = await Rent.find()
@@ -267,6 +267,7 @@ router.get("/packages", async (req, res) => {
 
     return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
   } catch (error) {
+    console.log(error)
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

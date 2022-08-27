@@ -19,7 +19,7 @@ const doorstepSchema = new Schema(
       [
         {
           type: Schema.Types.ObjectId,
-          ref: "doorStep_delivery_packages.model",
+          ref: "doorStep_delivery_packages",
         }
       ]
     ,
