@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
-const socket = io("localhost:4000");
+const socket = io("3.23.185.115:4000");
 function AssignRider() {
 
     const [position, setPosition] = useState({

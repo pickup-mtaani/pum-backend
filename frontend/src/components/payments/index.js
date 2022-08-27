@@ -8,7 +8,7 @@ import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
 import moment from 'moment'
-const socket = io("localhost:4000");
+const socket = io("3.23.185.115:4000");
 function Payments(props) {
 
   const columns = [
