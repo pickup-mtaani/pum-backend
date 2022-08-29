@@ -153,7 +153,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
           "PartyA": phone,
           "PartyB": 174379,
           "PhoneNumber": phone,
-          "CallBackURL": " https://e986-217-21-116-214.in.ngrok.io/api/mpesa-callback",
+          "CallBackURL": "https://f97d-217-21-116-214.in.ngrok.io/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })

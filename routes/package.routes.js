@@ -34,13 +34,18 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
-
         const savedPackage = await new Door_step_Sent_package(packages[i]).save();
         packagesArr.push(savedPackage._id)
       }
-
-      const newPackage = await new Doorstep_pack({ rest, packages: packagesArr, payment_phone_number: req.body.payment_phone_number }).save();
-
+      const newPackage = await new Doorstep_pack({
+        rest, packages: packagesArr,
+        payment_phone_number: req.body.payment_phone_number,
+        businessId: req.body.businessId,
+        total_payment_amount: req.body.total_payment_amount,
+        delivery_type: req.body.delivery_type,
+        receipt_no: req.body.receipt_no,
+        createdBy: req.user._id
+      }).save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else if (body.delivery_type === "rent_a_shelf") {
       const newPackage = new Rent(req.body);
@@ -128,7 +133,7 @@ router.post(
       const sender = await Agent.findOne({ _id: senderAgentID }).populate('zone')
       const receiver = await Agent.findOne({ _id: receieverAgentID }).populate('zone')
       if (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
-        price = 1
+        price = 100
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B" || sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
         price = 200
       } else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A" || sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C") {
@@ -248,7 +253,7 @@ router.get("/packages", async (req, res) => {
     const door_step_deliveries = await Doorstep_pack.find()
       .populate([
         "createdBy",
-        "businessId", "rider","packages"
+        "businessId", "rider", "packages"
       ])
       .sort({ createdAt: -1 }).limit(10);
     const rented_deliveries = await Rent.find()
@@ -276,15 +281,17 @@ router.get("/packages", async (req, res) => {
 router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    const packages = await AgentPackage.find({ createdBy: req.user._id })
+    const agent_packages = await AgentPackage.find({ createdBy: req.user._id })
       .populate([
         "packages",
-        "businessId",
       ])
       .sort({ createdAt: -1 }).limit(100);
-
-    return res.status(200).json({ message: "Fetched Sucessfully", packages, });
+    const doorstep_packages = await Doorstep_pack.find({ createdBy: req.user._id })
+      .populate("packages", ("customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"))
+      .sort({ createdAt: -1 }).limit(100).populate("-createdBy");
+    return res.status(200).json({ message: "Fetched Sucessfully", agent_packages, doorstep_packages });
   } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
