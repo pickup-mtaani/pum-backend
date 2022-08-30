@@ -130,6 +130,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
   const code = "254";
   let amount = parseInt(req.body.amount)
   let phone = `${code}${s}`;
+
   const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`, 'utf-8').toString('base64')}`;
   axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
     headers: {
@@ -153,7 +154,7 @@ router.post('/mpesa_payment/stk', [authMiddleware, authorized], async function (
           "PartyA": phone,
           "PartyB": 174379,
           "PhoneNumber": phone,
-          "CallBackURL": "https://f97d-217-21-116-214.in.ngrok.io/api/mpesa-callback",
+          "CallBackURL": "https://stagingapi.pickupmtaani.com/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })
