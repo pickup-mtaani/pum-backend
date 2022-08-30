@@ -37,6 +37,11 @@ const PackageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "agent",
     },
+    state: {
+      type: String,
+            enum: ["pending","delivered","cancelled","on-transit"],
+            default:"pending"
+    },
     isProduct: {
       type: Boolean,
       default: false,

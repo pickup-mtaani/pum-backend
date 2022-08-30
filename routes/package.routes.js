@@ -58,6 +58,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
+        packages[i].location="6304d87a5be36ab5bfb66e2e"
         const savedPackage = await new Rent_a_shelf_deliveries(packages[i]).save();
         packagesArr.push(savedPackage._id)
       }

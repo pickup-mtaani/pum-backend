@@ -5,11 +5,16 @@ const Schema = mongoose.Schema;
 
 const doorstepSchema = new Schema(
   {
-   
+
     packageName: {
       type: String,
     },
-  
+    state: {
+      type: String,
+      enum: ["pending", "delivered", "cancelled", "on-transit"],
+      default: "pending"
+    },
+
     package_value: {
       type: String,
       // required: true
@@ -18,7 +23,7 @@ const doorstepSchema = new Schema(
       type: String,
       required: true,
     },
-   
+
     customerPhoneNumber: {
       type: String,
       required: true,
@@ -28,7 +33,11 @@ const doorstepSchema = new Schema(
       type: Number,
       default: 180
     },
-    
+    location: {
+      type: Schema.Types.ObjectId,
+      ref: "thrifter_location",
+    },
+    // 6304d87a5be36ab5bfb66e2e
     customer_location: {
       type: String,
     },
@@ -36,7 +45,7 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-   
+
     isProduct: {
       type: Boolean,
       default: false,

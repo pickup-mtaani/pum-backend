@@ -23,6 +23,11 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+    state: {
+      type: String,
+            enum: ["pending","delivered","cancelled","on-transit"],
+            default:"pending"
+    },
     package_value: {
       type: String,
       // required: true
