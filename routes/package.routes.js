@@ -2,6 +2,7 @@ const express = require("express");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
 var Doorstep_pack = require("models/doorStep_delivery.model");
 var Rent = require("models/rent_a_shelf_delivery.model");
+var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
@@ -47,10 +48,34 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         createdBy: req.user._id
       }).save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
-    } else if (body.delivery_type === "rent_a_shelf") {
-      const newPackage = new Rent(req.body);
-      await newPackage.save();
+    } else if (body.delivery_type === "shelf") {
+      let packagesArr = []
+      const { packages, ...rest } = req.body
+      for (let i = 0; i < packages.length; i++) {
+        if (packages[i].product) {
+          const product = await Product.findById(packages[i].product);
+          packages[i].packageName = product.product_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = product.price;
+        }
+        const savedPackage = await new Rent_a_shelf_deliveries(packages[i]).save();
+        packagesArr.push(savedPackage._id)
+      }
+      const newPackage = await new Rent({
+        rest, packages: packagesArr,
+        customerName: req.body.customerName,
+        customerPhoneNumber: req.body.customerPhoneNumber,
+        businessId: req.body.businessId,
+        total_payment_amount: req.body.total_payment_amount,
+        payment_phone_number: req.body.payment_phone_number,
+        receipt_no: req.body.receipt_no,
+        createdBy: req.user._id
+      }).save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
+      // const newPackage = new Rent(req.body);
+
+      // await newPackage.save();
+      // return res.status(200).json({ message: "Package successfully Saved", newPackage });
     } else {
       let packagesArr = []
       const { packages, ...rest } = req.body
@@ -269,8 +294,14 @@ router.get("/packages", async (req, res) => {
         "businessId",
       ])
       .sort({ createdAt: -1 }).limit(100);
-
-    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries });
+      const shelves = await Rent_a_shelf_deliveries.find()
+      .populate([
+        "createdBy",
+        "packages",
+        "businessId",
+      ])
+      .sort({ createdAt: -1 }).limit(100);
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries, shelves});
   } catch (error) {
     console.log(error)
     return res
@@ -288,8 +319,10 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
       .sort({ createdAt: -1 }).limit(100);
     const doorstep_packages = await Doorstep_pack.find({ createdBy: req.user._id })
       .populate("packages", ("customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"))
-      .sort({ createdAt: -1 }).limit(100).populate("-createdBy");
-    return res.status(200).json({ message: "Fetched Sucessfully", agent_packages, doorstep_packages });
+      .sort({ createdAt: -1 }).limit(100);
+      const shelves = await Rent.find()
+      .populate("packages", ("customerPhoneNumber  package_value packageName customerName _id"))
+    return res.status(200).json({ message: "Fetched Sucessfully", agent_packages, doorstep_packages,shelves });
   } catch (error) {
     console.log(error);
     return res
