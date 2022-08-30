@@ -20,6 +20,7 @@ import Riders from "./components/Riders";
 import Payments from "./components/payments";
 import tracks from "./components/payments";
 import Tracks from "./components/tracks ";
+import 'mapbox-gl/dist/mapbox-gl.css';
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },

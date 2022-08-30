@@ -58,7 +58,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
-        packages[i].location="6304d87a5be36ab5bfb66e2e"
+        packages[i].location = "6304d87a5be36ab5bfb66e2e"
         const savedPackage = await new Rent_a_shelf_deliveries(packages[i]).save();
         packagesArr.push(savedPackage._id)
       }
@@ -92,7 +92,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await newPackage.save();
         packagesArr.push(savedPackage._id)
       }
-      const newPackage = new AgentPackage({ rest, packages: packagesArr });
+      const newPackage = new AgentPackage({
+        rest, packages: packagesArr, receipt_no: req.body.receipt_no,
+        createdBy: req.user._id
+      });
       // req.body.packages = packagesArr
       await newPackage.save();
       return res.status(200).json({ message: "Package successfully Saved", newPackage });
@@ -295,14 +298,14 @@ router.get("/packages", async (req, res) => {
         "businessId",
       ])
       .sort({ createdAt: -1 }).limit(100);
-      const shelves = await Rent_a_shelf_deliveries.find()
+    const shelves = await Rent_a_shelf_deliveries.find()
       .populate([
         "createdBy",
         "packages",
         "businessId",
       ])
       .sort({ createdAt: -1 }).limit(100);
-    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries, shelves});
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, door_step_deliveries, rented_deliveries, shelves });
   } catch (error) {
     console.log(error)
     return res
@@ -321,9 +324,9 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
     const doorstep_packages = await Doorstep_pack.find({ createdBy: req.user._id })
       .populate("packages", ("customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"))
       .sort({ createdAt: -1 }).limit(100);
-      const shelves = await Rent.find()
+    const shelves = await Rent.find()
       .populate("packages", ("customerPhoneNumber  package_value packageName customerName _id"))
-    return res.status(200).json({ message: "Fetched Sucessfully", agent_packages, doorstep_packages,shelves });
+    return res.status(200).json({ message: "Fetched Sucessfully", agent_packages, doorstep_packages, shelves });
   } catch (error) {
     console.log(error);
     return res
