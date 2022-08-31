@@ -1,16 +1,18 @@
 import axios, { setAuthToken } from "./axiosService";
 
 export const getParcels = (data1) => async (dispatch) => {
+
   try {
     const { limit } = data1
     dispatch({ type: "FETCH_TODOS" });
     let payload = [];
     const { data } = await axios.get(`/api/packages?limit=${limit}`);
     payload = data;
+   console.log(data);
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
-    return;
+    return payload;
   } catch (error) {
-    ;
+  console.log(error)
   }
 };
 export const getBissinessParcels = (id) => async (dispatch) => {

@@ -7,7 +7,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import ReactMapGl, { Marker, Popup } from 'react-map-gl';
-import PIN from './unnamed.jpg'
+import PIN from './pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 
 

@@ -19,6 +19,7 @@ function Users(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
   const [date, setDate] = useState("")
+  const [data1, setData] = useState("")
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
 
@@ -44,6 +45,12 @@ function Users(props) {
         ))}
 
       </>)
+    },
+    {
+      sortable: true,
+      name: 'Payment Status',
+      minWidth: '250px',
+      selector: row => row.payment_status
     },
 
     {
@@ -101,6 +108,12 @@ function Users(props) {
     },
     {
       sortable: true,
+      name: 'Payment Status',
+      minWidth: '250px',
+      selector: row => row.payment_status
+    },
+    {
+      sortable: true,
       name: 'Details',
       minWidth: '150px',
       selector: row => <>
@@ -144,11 +157,16 @@ function Users(props) {
       </>
     );
   }, [searchValue, date, showModal]);
+const fetch = async()=>{
+ let result = await props.getParcels({ limit: 10 })
+ console.log(result);
+ setData(result);
 
+}
   useEffect(() => {
-    props.getParcels({ limit: 10 })
+   fetch()
   }, [])
-  console.log(props.to_door_packages[0])
+  
   return (
     <Layout>
       <div className=" mx-2">
@@ -169,7 +187,7 @@ function Users(props) {
         />
       </div>
 
-      <div className=" mx-2 my-10">
+     <div className=" mx-2 my-10">
         <DataTable
           title="Door Step Delivery"
           columns={door_step_columns}
@@ -202,7 +220,7 @@ function Users(props) {
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-      </div>
+      </div> 
 
       <PackageDetail
         show={showModal}

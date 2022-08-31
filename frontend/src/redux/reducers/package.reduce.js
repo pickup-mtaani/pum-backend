@@ -85,7 +85,7 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        packages: action.payload.packages,
+        packages: action.payload.agent_packages,
         to_door_packages: action.payload.door_step_deliveries,
         rented_shelf_packages: action.payload.rented_deliveries
       };

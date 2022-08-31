@@ -28,6 +28,12 @@ export const delivery_columns = [
     minWidth: '250px',
     selector: row => row.receipt_no
   },
+  {
+    sortable: true,
+    name: 'Payment Status',
+    minWidth: '250px',
+    selector: row => row.payment_status
+  },
 
   {
     sortable: true,
@@ -115,6 +121,7 @@ export const rent_shelf_columns = [
     minWidth: '250px',
     selector: row => row.packageName
   },
+
   {
     sortable: true,
     name: 'Package Type',
