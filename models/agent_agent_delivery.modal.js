@@ -9,6 +9,10 @@ const AgentSchema = new Schema(
       type: String,
       default: "agent",
     },
+    payment_phone_number: {
+      type: String,
+     
+    },
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",

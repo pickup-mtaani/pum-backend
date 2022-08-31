@@ -117,6 +117,7 @@ router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
 router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
     try {
         const Biz = await Business.findById(req.params.id)
+    
         fs.unlink(__dirname + './../uploads/bussiness_logo/' + path.basename(Biz.logo), async (err) => {
             if (err) throw err;
             if (req.file) {

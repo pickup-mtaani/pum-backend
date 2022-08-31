@@ -23,6 +23,7 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
+    console.log(req.body)
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
@@ -51,7 +52,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
       }).save();
-      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount,req.user._id,newPackage._id,"doorstep")
+      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, newPackage._id, "doorstep")
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -87,6 +88,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
     } else {
+      console.log(req.body)
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
@@ -106,10 +108,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages: packagesArr,
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
+        // payment_phone_number: req.body.payment_phone_number,
       });
       // req.body.packages = packagesArr
       await newPackage.save();
-      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount,req.user._id,newPackage._id,"agent")
+      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, newPackage._id, "agent")
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -142,13 +145,11 @@ router.post(
       );
       const smsBody = {
         address: `${Pack.recipient_phone}`,
-        Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${
-          Pack.thrifter_id.name
-        } at ${
-          Pack.current_custodian.agent_location
-        } before the close of Day ${moment(
-          new Date().setDate(new Date().getDate() + 3)
-        ).format("ddd MMM YY")}`,
+        Body: `Hello ${Pack.recipient_name}, Kindly Collect your Parcel from ${Pack.thrifter_id.name
+          } at ${Pack.current_custodian.agent_location
+          } before the close of Day ${moment(
+            new Date().setDate(new Date().getDate() + 3)
+          ).format("ddd MMM YY")}`,
       };
       // const body = req.body
 
@@ -308,35 +309,42 @@ router.post(
 
 router.get("/packages", async (req, res) => {
   try {
-    const door_step_deliveries = await Doorstep_pack.find()
-      .populate(["createdBy", "businessId", "rider", "packages"])
-      .sort({ createdAt: -1 })
-      .limit(10);
-    const rented_deliveries = await Rent.find()
-      .populate([
-        "createdBy",
-        "businessId",
-        "from_agent_shelf",
-        "to_agent_shelf",
-        "rider",
-      ])
-      .sort({ createdAt: -1 })
-      .limit(10);
-    const packages = await AgentPackage.find()
-      .populate(["createdBy", "packages", "businessId"])
+    const agent_packages = await AgentPackage.find()
+      .populate({
+        path: "packages",
+        populate: [
+          {
+            path: "receieverAgentID",
+            select: "loc",
+          },
+          {
+            path: "senderAgentID",
+            select: "loc",
+          },
+        ],
+      })
       .sort({ createdAt: -1 })
       .limit(100);
-    const shelves = await Rent_a_shelf_deliveries.find()
-      .populate(["createdBy", "packages", "businessId"])
+
+    const doorstep_packages = await Doorstep_pack.find({
+
+    })
+      .populate(
+        "packages",
+        "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+      )
       .sort({ createdAt: -1 })
       .limit(100);
+    const shelves = await Rent.find().populate(
+      "packages",
+      "customerPhoneNumber  package_value packageName customerName _id"
+    );
     return res
       .status(200)
       .json({
         message: "Fetched Sucessfully",
-        packages,
-        door_step_deliveries,
-        rented_deliveries,
+        agent_packages,
+        doorstep_packages,
         shelves,
       });
   } catch (error) {
@@ -365,7 +373,7 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
       })
       .sort({ createdAt: -1 })
       .limit(100);
-      
+
     const doorstep_packages = await Doorstep_pack.find({
       createdBy: req.user._id,
     })
