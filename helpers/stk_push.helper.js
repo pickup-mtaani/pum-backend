@@ -37,7 +37,7 @@ const Mpesa_stk = (No, amount,user,package,typeofDelivery) => {
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "https://bd75-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
+                    "CallBackURL": "http://stagingapi.pickupmtaani.com/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })
