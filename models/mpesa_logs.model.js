@@ -15,6 +15,12 @@ const MpesaLogsSchema = new Schema({
         type: String
 
     },
+    type: {
+        type: String
+    },
+    package: {
+        type: String
+    },
     CheckoutRequestID: {
 
         type: String

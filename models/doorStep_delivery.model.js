@@ -11,6 +11,10 @@ const doorstepSchema = new Schema(
       // required: true,
     },
 
+    type: {
+      type: String,
+      default: "doorstep",
+    },
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",
@@ -26,6 +30,10 @@ const doorstepSchema = new Schema(
     total_payment_amount: {
       type: Number,
       // default:180
+    },
+    payment_status: {
+      type: String,
+      default: "Not Paid"
     },
     receipt_no: {
       type: String,

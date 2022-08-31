@@ -51,6 +51,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
       }).save();
+      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount,req.user._id,newPackage._id,"doorstep")
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -108,7 +109,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       });
       // req.body.packages = packagesArr
       await newPackage.save();
-      // Mpesa_stk("0716017221", 1);
+      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount,req.user._id,newPackage._id,"agent")
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -364,7 +365,7 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
       })
       .sort({ createdAt: -1 })
       .limit(100);
-      console.log(agent_packages)
+      
     const doorstep_packages = await Doorstep_pack.find({
       createdBy: req.user._id,
     })

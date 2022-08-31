@@ -3,6 +3,8 @@ var Sale = require('models/sales.model')
 var Stock = require('models/stocks.model')
 var User = require('models/user.model')
 var Location = require('models/thrifter_location.model')
+var AgentPackage = require("models/agent_agent_delivery.modal.js");
+var Doorstep_pack = require("models/doorStep_delivery.model");
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 var fetch = require('node-fetch')
@@ -50,55 +52,7 @@ router.post('/sale', [authMiddleware, authorized], async (req, res) => {
 
 });
 
-router.get('/mpesa-test', async (req, res, next) => {
-  // console.log(JSON.stringify(req.body))
-  const Log1 = {
-    "Body": {
-      "stkCallback": {
-        "MerchantRequestID": "118821-60188018-1",
-        "CheckoutRequestID": "ws_CO_20082022115843215720141534",
-        "ResultCode": 1032,
-        "ResultDesc": "Request cancelled by user"
-      }
-    }
-  }
-  const Log = {
-    "Body": {
-      "stkCallback": {
-        "MerchantRequestID": "1316-121863694-1",
-        "CheckoutRequestID": "ws_CO_20082022044743062720141534",
-        "ResultCode": 0,
-        "ResultDesc": "The service request is processed successfully.",
-        "CallbackMetadata": {
-          "Item": [
-            {
-              "Name": "Amount",
-              "Value": 1
-            },
-            {
-              "Name": "MpesaReceiptNumber",
-              "Value": "QHK8HJ5QHO"
-            },
-            {
-              "Name": "Balance"
-            },
-            {
-              "Name": "TransactionDate",
-              "Value": 20220820044804
-            },
-            {
-              "Name": "PhoneNumber",
-              "Value": 254720141534
-            }
-          ]
-        }
-      }
-    }
-  }
-  const data = Log
-  // const Mpeslog = await new MpesaLogs({ log: JSON.stringify(req.body) }).save()
-  return res.status(200).json({ success: true, message: `payments fetched successfully`, data: data.Body.stkCallback.CallbackMetadata.Item[0].Value });
-})
+
 router.get('/mpesa-payments', async (req, res, next) => {
   const mpeslog = await MpesaLogs.find().populate('user')
   return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
@@ -106,13 +60,36 @@ router.get('/mpesa-payments', async (req, res, next) => {
 
 router.post('/mpesa-callback', async (req, res, next) => {
   try {
+    const LogedMpesa = await MpesaLogs.findOne(
+      { MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID })
+      
+    if (LogedMpesa.type === "doorstep") {
+      const UpdatePackage = await Doorstep_pack.findOneAndUpdate(
+        {
+          _id: LogedMpesa.package
+        }, {
+        payment_status: req.body.Body?.stkCallback?.ResultDesc,
+      }, { new: true, useFindAndModify: false })
+    }
+    else if (LogedMpesa.type === "agent") {
+      const UpdatePackage = await AgentPackage.findOneAndUpdate(
+        {
+          _id: LogedMpesa.package
+        }, {
+        payment_status: req.body.Body?.stkCallback?.ResultDesc,
+      }, { new: true, useFindAndModify: false })
+    }
+
     const Update = await MpesaLogs.findOneAndUpdate(
-      { MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
+      {
+        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
       }, {
       log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
       ResponseCode: req.body.Body?.stkCallback?.ResultCode,
       MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
     }, { new: true, useFindAndModify: false })
+
+    console.log(LogedMpesa)
     return res.status(200).json({ success: true, message: `payments made successfully`, body: req.body });
   } catch (error) {
     console.log(error)

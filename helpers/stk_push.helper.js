@@ -1,8 +1,10 @@
 var fetch = require('node-fetch')
 var axios = require('axios')
+const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
-const Mpesa_stk = (No, amount,user) => {
+const Mpesa_stk = (No, amount,user,package,typeofDelivery) => {
+    
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
     while (s.charAt(0) === '0') {
@@ -35,7 +37,7 @@ const Mpesa_stk = (No, amount,user) => {
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "https://stagingapi.pickupmtaani.com/api/mpesa-callback",
+                    "CallBackURL": "https://bd75-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })
@@ -53,13 +55,15 @@ const Mpesa_stk = (No, amount,user) => {
                         phone_number: phone,
                         amount: amount,
                         ResponseCode: data.ResponseCode,
+                        package:package,
+                        type:typeofDelivery,
                         user: user,
                         log: ''
                     }
-                    await new MpesaLogs(body).save()
+                    await new mpesa_logsModel(body).save()
                     // data.Body.stkCallback.CallbackMetadata.Item[0].Value
                     // data.Body.stkCallback.CallbackMetadata.Item[0].Value
-                    return res.status(200).json({ success: true, message: `payment made`, result });
+                    return  result ;
                 }
 
                 )

@@ -65,11 +65,13 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
             const biz = await newBusiness.save()
             return res.status(200).json({ message: 'Saved', biz });
         }
+        
         category_id = req.body.category
         const body = req.body
         body.createdBy = req.body.user_id
         const newBusiness = new Business(body)
         const biz = await newBusiness.save()
+        
         return res.status(200).json({ message: 'Saved', biz });
 
 
