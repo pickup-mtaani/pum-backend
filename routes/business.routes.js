@@ -56,13 +56,22 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
             const New_category = await newCategory.save()
             body.category = New_category._id
         }
+        if (req.file) {
+            category_id = req.body.category
+            const body = req.body
+            body.createdBy = req.body.user_id
+            body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
+            const newBusiness = new Business(body)
+            const biz = await newBusiness.save()
+            return res.status(200).json({ message: 'Saved', biz });
+        }
         category_id = req.body.category
         const body = req.body
         body.createdBy = req.body.user_id
-        body.logo = url + '/uploads/bussiness_logo/' + req.file.filename
         const newBusiness = new Business(body)
         const biz = await newBusiness.save()
         return res.status(200).json({ message: 'Saved', biz });
+
 
     } catch (error) {
         console.log(error)
@@ -72,7 +81,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
 router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
 
     try {
-       
+
         const bussiness = await Business.find({ deleted_at: null, createdBy: req.params.id });
         return res.status(200).json({ message: 'Businesses Fetched Successfully !!', bussiness });
 
