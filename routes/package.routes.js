@@ -108,7 +108,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages: packagesArr,
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
-        // payment_phone_number: req.body.payment_phone_number,
+        payment_phone_number: req.body.payment_phone_number,
+        businessId: req.body.businessId,
+        total_payment_amount:req.body.total_payment_amount
+
       });
       // req.body.packages = packagesArr
       await newPackage.save();
@@ -322,9 +325,9 @@ router.get("/packages", async (req, res) => {
             select: "loc",
           },
         ],
-      })
+      }).populate('businessId')
       .sort({ createdAt: -1 })
-      .limit(100);
+      .limit(10);
 
     const doorstep_packages = await Doorstep_pack.find({
 
@@ -332,13 +335,14 @@ router.get("/packages", async (req, res) => {
       .populate(
         "packages",
         "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
-      )
+      ).populate('businessId')
       .sort({ createdAt: -1 })
-      .limit(100);
+      .limit(10);
     const shelves = await Rent.find().populate(
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
-    );
+    ).populate('businessId').sort({ createdAt: -1 })
+    .limit(10);;
     return res
       .status(200)
       .json({
