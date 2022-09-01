@@ -86,8 +86,8 @@ export default function store(state = initialState, action) {
         ...state,
         loading: false,
         packages: action.payload.agent_packages,
-        to_door_packages: action.payload.door_step_deliveries,
-        rented_shelf_packages: action.payload.rented_deliveries
+        to_door_packages: action.payload.doorstep_packages,
+        rented_shelf_packages: action.payload.shelves
       };
     case "FETCH_TODOS_FAIL":
       return {

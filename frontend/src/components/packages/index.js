@@ -6,9 +6,8 @@ import { getParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import { rent_shelf_columns } from './data'
 import PackageDetail from './packageDetails.modal'
-
+import moment from 'moment'
 function Users(props) {
 
 
@@ -32,6 +31,43 @@ function Users(props) {
     setFilterText(e)
 
   }
+
+  const rent_shelf_columns = [
+    {
+      sortable: true,
+      name: 'Business Name',
+      minWidth: '250px',
+      selector: row => row.businessId?.name
+    },
+
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.receipt_no
+    },
+    {
+      sortable: true,
+      name: 'Stored At ',
+      minWidth: '250px',
+      selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      sortable: true,
+      name: 'Packages',
+      minWidth: '250px',
+      selector: row => (<>
+        {row.packages.map((pack, i) => (
+          <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
+            <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
+          </div>
+        ))}
+
+      </>)
+    },
+
+
+  ]
   const delivery_columns = [
     {
       sortable: true,
@@ -40,7 +76,7 @@ function Users(props) {
       selector: row => (<>
         {row.packages.map((pack, i) => (
           <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-            {pack.packageName}
+            <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
           </div>
         ))}
 
@@ -60,19 +96,18 @@ function Users(props) {
       selector: row => row.total_payment
     },
 
-    // {
-    //   sortable: true,
-    //   name: 'Reciept',
-    //   minWidth: '250px',
-    //   selector: row => row.receipt_no
-    // },
-
-    // {
-    //   sortable: true,
-    //   name: 'Seller',
-    //   minWidth: '150px',
-    //   selector: row => row.businessId?.name
-    // },
+    {
+      sortable: true,
+      name: 'Business Name',
+      minWidth: '250px',
+      selector: row => row.businessId?.name
+    },
+    {
+      sortable: true,
+      name: 'Sent At ',
+      minWidth: '250px',
+      selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+    },
     {
       sortable: true,
       name: 'Details',
@@ -94,7 +129,7 @@ function Users(props) {
       selector: row => (<>
         {row.packages.map((pack, i) => (
           <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-            {pack.packageName}
+            <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
           </div>
         ))}
 
@@ -104,13 +139,26 @@ function Users(props) {
       sortable: true,
       name: 'Total Payment',
       minWidth: '250px',
-      selector: row => 180
+      // total_payment_amount: total_payment_amount
+      selector: row => row.total_payment_amount
     },
     {
       sortable: true,
       name: 'Payment Status',
       minWidth: '250px',
       selector: row => row.payment_status
+    },
+    {
+      sortable: true,
+      name: 'Business Name',
+      minWidth: '250px',
+      selector: row => row.businessId?.name
+    },
+    {
+      sortable: true,
+      name: 'Sent At ',
+      minWidth: '250px',
+      selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       sortable: true,
@@ -122,18 +170,7 @@ function Users(props) {
     },
 
 
-    // {
-    //   sortable: true,
-    //   name: 'Reciept',
-    //   minWidth: '250px',
-    //   selector: row => row.receipt_no
-    // },
-    // {
-    //   sortable: true,
-    //   name: 'Seller',
-    //   minWidth: '150px',
-    //   selector: row => row.businessId?.name
-    // },
+
 
   ]
 
@@ -157,16 +194,16 @@ function Users(props) {
       </>
     );
   }, [searchValue, date, showModal]);
-const fetch = async()=>{
- let result = await props.getParcels({ limit: 10 })
- console.log(result);
- setData(result);
+  const fetch = async () => {
+    let result = await props.getParcels({ limit: 10 })
+    console.log(result);
+    setData(result);
 
-}
+  }
   useEffect(() => {
-   fetch()
+    fetch()
   }, [])
-  
+
   return (
     <Layout>
       <div className=" mx-2">
@@ -187,7 +224,7 @@ const fetch = async()=>{
         />
       </div>
 
-     <div className=" mx-2 my-10">
+      <div className=" mx-2 my-10">
         <DataTable
           title="Door Step Delivery"
           columns={door_step_columns}
@@ -220,7 +257,7 @@ const fetch = async()=>{
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-      </div> 
+      </div>
 
       <PackageDetail
         show={showModal}

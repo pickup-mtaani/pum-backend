@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// const base = "http://localhost:4000";
-const base = "http://stagingapi.pickupmtaani.com/";
 const axiosService = axios.create({
-  baseURL: `${base}`,
+  baseURL: process.env.REACT_APP_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

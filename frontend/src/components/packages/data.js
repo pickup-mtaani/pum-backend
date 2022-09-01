@@ -117,9 +117,9 @@ export const door_step_columns = [
 export const rent_shelf_columns = [
   {
     sortable: true,
-    name: 'Package Name',
+    name: 'Business Name',
     minWidth: '250px',
-    selector: row => row.packageName
+    selector: row => row.businessId?.name
   },
 
   {
