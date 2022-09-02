@@ -96,12 +96,12 @@ function Users(props) {
       selector: row => row.total_payment
     },
 
-    {
-      sortable: true,
-      name: 'Business Name',
-      minWidth: '250px',
-      selector: row => row.businessId?.name
-    },
+    // {
+    //   sortable: true,
+    //   name: 'Business Name',
+    //   minWidth: '250px',
+    //   selector: row => row.businessId?.name
+    // },
     {
       sortable: true,
       name: 'Sent At ',
@@ -168,9 +168,6 @@ function Users(props) {
         <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
       </>
     },
-
-
-
 
   ]
 
