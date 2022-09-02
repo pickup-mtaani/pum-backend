@@ -65,13 +65,13 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
             const biz = await newBusiness.save()
             return res.status(200).json({ message: 'Saved', biz });
         }
-        
+
         category_id = req.body.category
         const body = req.body
         body.createdBy = req.body.user_id
         const newBusiness = new Business(body)
         const biz = await newBusiness.save()
-        
+
         return res.status(200).json({ message: 'Saved', biz });
 
 
@@ -117,19 +117,32 @@ router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
 router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, authorized], async (req, res) => {
     try {
         const Biz = await Business.findById(req.params.id)
-    
-        fs.unlink(__dirname + './../uploads/bussiness_logo/' + path.basename(Biz.logo), async (err) => {
-            if (err) throw err;
+        // console.log(Biz);
+        // if (Biz.logo) {
+        //     fs.unlink(__dirname + './../uploads/bussiness_logo/' + path.basename(Biz.logo), async (err) => {
+        //         if (err) throw err;
+        //         if (req.file) {
+        //             const url = req.protocol + '://' + req.get('host');
+        //             const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
+        //             return res.status(200).json({ message: 'Logo Updated Successfully', update });
+        //         } else {
+        //             return res.status(200).json({ message: 'Logo Deleted Successfully' });
+        //         }
+        //     });
+        // }else{
             if (req.file) {
                 const url = req.protocol + '://' + req.get('host');
-                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { Logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
+                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
                 return res.status(200).json({ message: 'Logo Updated Successfully', update });
             } else {
-                return res.status(200).json({ message: 'Logo Deleted Successfully' });
-            }
-        });
-    } catch (error) {
+                const url = req.protocol + '://' + req.get('host');
+                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: null }, { new: true, useFindAndModify: false })
+                return res.status(200).json({ message: 'Logo deleteed Successfully', update });
+            } 
+        // }
 
+
+    } catch (error) {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });

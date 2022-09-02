@@ -67,7 +67,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price;
         }
         packages[i].location = "6304d87a5be36ab5bfb66e2e";
-        console.log(packages[i]);
+       
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -328,10 +328,7 @@ router.get("/packages", async (req, res) => {
       }).populate('businessId')
       .sort({ createdAt: -1 })
       .limit(10);
-
-    const doorstep_packages = await Doorstep_pack.find({
-
-    })
+    const doorstep_packages = await Doorstep_pack.find({ })
       .populate(
         "packages",
         "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
