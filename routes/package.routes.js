@@ -356,9 +356,9 @@ router.get("/packages", async (req, res) => {
   }
 });
 
-router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
+router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await AgentPackage.find({ createdBy: req.user._id })
+    const agent_packages = await AgentPackage.find({ createdBy: req.user._id ,businessId:req.params.id})
       .populate({
         path: "packages",
         populate: [
@@ -376,7 +376,7 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
       .limit(100);
 
     const doorstep_packages = await Doorstep_pack.find({
-      createdBy: req.user._id,
+      createdBy: req.user._id,businessId:req.params.id
     })
       .populate(
         "packages",
@@ -384,7 +384,7 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
       )
       .sort({ createdAt: -1 })
       .limit(100);
-    const shelves = await Rent.find().populate(
+    const shelves = await Rent.find({businessId:req.params.id,createdBy:req.user._id}).populate(
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
     );
@@ -400,7 +400,7 @@ router.get("/user-packages", [authMiddleware, authorized], async (req, res) => {
     console.log(error);
     return res
       .status(400)
-      .json({ success: false, message: "operation failed ", error });
+      .json({ success: false, message: "operationhj failed ", error });
   }
 });
 
