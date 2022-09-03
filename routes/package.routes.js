@@ -364,11 +364,11 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         populate: [
           {
             path: "receieverAgentID",
-            select: "loc",
+            select: "lat lng",
           },
           {
             path: "senderAgentID",
-            select: "loc",
+            select: "lat lng",
           },
         ],
       })
