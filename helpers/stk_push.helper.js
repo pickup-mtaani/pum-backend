@@ -37,7 +37,7 @@ const Mpesa_stk = (No, amount,user,package,typeofDelivery) => {
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "http://stagingapi.pickupmtaani.com/api/mpesa-callback",
+                    "CallBackURL": "https://stagingapi.pickupmtaani.com/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })

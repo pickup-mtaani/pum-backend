@@ -67,12 +67,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price;
         }
         packages[i].location = "6304d87a5be36ab5bfb66e2e";
-       
+
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
         packagesArr.push(savedPackage._id);
       }
+
       const newPackage = await new Rent({
         rest,
         packages: packagesArr,
@@ -84,11 +85,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
       }).save();
+
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
     } else {
-      console.log(req.body)
+     
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
@@ -110,7 +112,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         createdBy: req.user._id,
         payment_phone_number: req.body.payment_phone_number,
         businessId: req.body.businessId,
-        total_payment_amount:req.body.total_payment_amount
+        total_payment_amount: req.body.total_payment_amount
 
       });
       // req.body.packages = packagesArr
@@ -328,7 +330,7 @@ router.get("/packages", async (req, res) => {
       }).populate('businessId')
       .sort({ createdAt: -1 })
       .limit(10);
-    const doorstep_packages = await Doorstep_pack.find({ })
+    const doorstep_packages = await Doorstep_pack.find({})
       .populate(
         "packages",
         "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
@@ -339,7 +341,7 @@ router.get("/packages", async (req, res) => {
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
     ).populate('businessId').sort({ createdAt: -1 })
-    .limit(10);;
+      .limit(10);;
     return res
       .status(200)
       .json({
@@ -358,7 +360,7 @@ router.get("/packages", async (req, res) => {
 
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await AgentPackage.find({ createdBy: req.user._id ,businessId:req.params.id})
+    const agent_packages = await AgentPackage.find({ createdBy: req.user._id, businessId: req.params.id })
       .populate({
         path: "packages",
         populate: [
@@ -376,7 +378,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       .limit(100);
 
     const doorstep_packages = await Doorstep_pack.find({
-      createdBy: req.user._id,businessId:req.params.id
+      createdBy: req.user._id, businessId: req.params.id
     })
       .populate(
         "packages",
@@ -384,7 +386,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       )
       .sort({ createdAt: -1 })
       .limit(100);
-    const shelves = await Rent.find({businessId:req.params.id,createdBy:req.user._id}).populate(
+    const shelves = await Rent.find({ businessId: req.params.id, createdBy: req.user._id }).populate(
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
     );
