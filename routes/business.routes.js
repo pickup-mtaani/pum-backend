@@ -1,6 +1,6 @@
 const express = require('express');
 var Business = require('models/business.model')
-
+var BUssinessDeatails = require('models/business_details.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 const fs = require('fs');
@@ -34,7 +34,9 @@ var upload = multer({
 
 router.post('/business', [authMiddleware, authorized], upload.single('logo'), async (req, res) => {
 
+
     try {
+        console.log(req.body)
         const url = req.protocol + '://' + req.get('host');
         let category_id
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
@@ -130,15 +132,15 @@ router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, 
         //         }
         //     });
         // }else{
-            if (req.file) {
-                const url = req.protocol + '://' + req.get('host');
-                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
-                return res.status(200).json({ message: 'Logo Updated Successfully', update });
-            } else {
-                const url = req.protocol + '://' + req.get('host');
-                const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: null }, { new: true, useFindAndModify: false })
-                return res.status(200).json({ message: 'Logo deleteed Successfully', update });
-            } 
+        if (req.file) {
+            const url = req.protocol + '://' + req.get('host');
+            const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: url + '/uploads/bussiness_logo/' + req.file.filename }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Logo Updated Successfully', update });
+        } else {
+            const url = req.protocol + '://' + req.get('host');
+            const update = await Business.findOneAndUpdate({ _id: req.params.id }, { logo: null }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Logo deleteed Successfully', update });
+        }
         // }
 
 
@@ -148,10 +150,21 @@ router.put('/business/:id/update_logo', upload.single('logo'), [authMiddleware, 
 });
 
 router.post('/business/:id/details', async (req, res) => {
+
     try {
+
         let body = req.body
-        const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, body, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Saved successfully', Edited })
+        const exists = await BUssinessDeatails.findOne({ business: req.params.id })
+        if (exists) {
+            const Edited = await BUssinessDeatails.findOneAndUpdate({ business: req.params.id }, body, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Saved successfully', Edited })
+        } else {
+            const newDetails = new BUssinessDeatails(body)
+            await newDetails.save()
+            return res.status(200).json({ message: 'Saved successfully', newDetails })
+        }
+
+
 
     } catch (error) {
 

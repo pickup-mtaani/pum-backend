@@ -6,13 +6,27 @@ const Schema = mongoose.Schema;
 
 
 const BizDetailsSchema = new Schema({
-    till_No: {
+    recieve_payment_till_No: {
+        type: Number,
+        // required: true
+    },
+    payment_mpesa_No: {
         type: Number,
         required: true
     },
-    Mpesa_No: {
+    recieve_payment_mpesa_No: {
         type: Number,
-        required: true
+        // required: true
+    },
+    recieve_payment_paybill_no: {
+        no: {
+            type: Number,
+            // required: true
+        },
+        account: {
+            type: Number,
+            required: true
+        }
     },
     loc: {
         type: { type: String },

@@ -15,10 +15,8 @@ const BizSchema = new Schema({
         type: String,
         // required: true
     },
-    what_u_sale: {
-        type: String,
-        required: true
-    },
+   
+
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'
