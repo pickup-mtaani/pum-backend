@@ -35,7 +35,7 @@ const RiderSchema = new Schema({
         type: String,
         required: true
     },
-    bike_plate_photo: {
+    bike_reg_plate: {
         type: String,
         // required: true
     },

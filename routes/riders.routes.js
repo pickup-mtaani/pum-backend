@@ -8,6 +8,76 @@ const { SendMessage } = require('../helpers/sms.helper');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { validatePasswordInput, validateLoginInput } = require('../va;lidations/user.validations');
 var jwt = require('jsonwebtoken');
+
+const { v4: uuidv4 } = require('uuid');
+var multer = require('multer');
+const fs = require('fs');
+var path = require('path');
+const storagerider_id_front = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + './../uploads/Ids');
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + '-' + fileName)
+  }
+});
+
+var uploadrider_id_front = multer({
+  storage: storagerider_id_front,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
+
+const storagerider_licence_photo = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + './../uploads/licence');
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + '-' + fileName)
+  }
+});
+
+var uploadrider_licence_photo = multer({
+  storage: storagerider_licence_photo,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + './../uploads/rider_avatar');
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + '-' + fileName)
+  }
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
 router.post('/register-rider', async (req, res) => {
   try {
     const body = req.body
@@ -118,6 +188,106 @@ router.put('/rider/reset-password', async (req, res) => {
   }
 });
 
+
+router.post('/update-rider-avatar', [authMiddleware, authorized], upload.single('rider_avatar'), async (req, res) => {
+
+
+  try {
+
+    const url = req.protocol + '://' + req.get('host');
+
+
+    if (req.file) {
+
+      const body = req.body
+      body.rider_avatar = url + '/uploads/rider_avatar/' + req.file.filename
+
+      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_avatar: req.body.rider_avatar }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+
+    }
+
+
+
+    return res.status(200).json({ message: 'Saved', biz });
+
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+});
+router.post('/update-rider-id-front', [authMiddleware, authorized], uploadrider_id_front.single('rider_id_front'), async (req, res) => {
+
+
+  try {
+
+    const url = req.protocol + '://' + req.get('host');
+
+
+    if (req.file) {
+
+      const body = req.body
+      body.rider_id_front = url + '/uploads/Ids/' + req.file.filename
+
+      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_id_front: req.body.rider_id_front }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+
+    }
+
+
+
+    return res.status(200).json({ message: 'Saved', biz });
+
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+});
+router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_licence_photo.single('rider_licence_photo'), async (req, res) => {
+
+
+  try {
+
+    const url = req.protocol + '://' + req.get('host');
+
+
+    if (req.file) {
+
+      const body = req.body
+      body.rider_licence_photo = url + '/uploads/licence/' + req.file.filename
+
+      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_licence_photo: req.body.rider_licence_photo }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+
+    }
+
+
+
+    return res.status(200).json({ message: 'Saved', biz });
+
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+});
+
+router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
+
+  console.log(req.body)
+  try {
+    const body = req.body
+
+    const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, body, { new: true, useFindAndModify: false })
+    return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+});
 router.post('/rider', [authMiddleware, authorized], async (req, res) => {
   try {
     const body = req.body
@@ -135,7 +305,7 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
 });
 
 
-router.get("/riders", [authMiddleware, authorized], async (req, res) => {
+router.get("/riders", async (req, res) => {
   try {
     const riders = await Rider.find({})
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
