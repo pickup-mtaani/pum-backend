@@ -96,7 +96,7 @@ router.post('/register-rider', async (req, res) => {
 
 });
 
-router.post('/:id/resend-token', async (req, res) => {
+router.post('/rider/:id/resend-token', async (req, res) => {
   try {
     const rider = await Rider.findById(req.params.id);
     const textbody = { address: `${rider.rider_phone_number}`, Body: `Hi ${rider.rider_name}\nYour Activation Code for Pickup mtaani  app is  ${rider.verification_code} ` }
@@ -276,7 +276,6 @@ router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_l
 
 router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 
-  console.log(req.body)
   try {
     const body = req.body
 
