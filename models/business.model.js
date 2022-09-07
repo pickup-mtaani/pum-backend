@@ -15,7 +15,7 @@ const BizSchema = new Schema({
         type: String,
         // required: true
     },
-   
+
 
     createdBy: {
         type: Schema.Types.ObjectId,
@@ -37,6 +37,19 @@ const BizSchema = new Schema({
     loc: {
         type: { type: String },
         coordinates: []
+    },
+
+    loc: {
+        lat: {
+            type: String,
+            // required: true
+        },
+        lng: {
+            type: String,
+        },
+        name: {
+            type: String,
+        }
     },
     agent: {
         type: Schema.Types.ObjectId,

@@ -90,7 +90,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
     } else {
-     
+
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
