@@ -6,12 +6,14 @@ var User = require('models/user.model')
 var Role = require('models/roles.model')
 var moment = require('moment');
 var jwt = require('jsonwebtoken');
+var Rider = require('models/rider.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
 const Format_phone_number = require('../helpers/phone_number_formater');
+const { request } = require('express');
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
@@ -44,6 +46,33 @@ router.post('/login', async (req, res) => {
 
             return
         }
+        else if (req.body.role === "rider") {
+            const user = await Rider.findOne({ rider_phone_number: req.body.phone_number })
+
+            if (!user) {
+                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
+            }
+            if (user && !user.activated) {
+                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
+            }
+            const { errors, isValid } = validateLoginInput(req.body);
+            if (!isValid) {
+                let error = Object.values(errors)[0]
+                return res.status(400).json({ message: error });
+            }
+
+            if (user) {
+                // const password_match = user.comparePassword(req.body.password, user.hashPassword);
+                // if (!password_match) {
+                //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
+                // }
+                const token = await jwt.sign({ rider_phone_number: user.rider_phone_number, _id: user._id }, process.env.JWT_KEY);
+                const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
+
+                return res.status(200).json({ token, key: process.env.JWT_KEY, rider_phone_number: user.rider_phone_number, _id: user._id });
+
+            }
+        }
         else {
 
             const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
@@ -73,7 +102,7 @@ router.post('/login', async (req, res) => {
             }
         }
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
