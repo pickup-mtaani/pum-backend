@@ -8,7 +8,7 @@ const { SendMessage } = require('../helpers/sms.helper');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { validatePasswordInput, validateLoginInput } = require('../va;lidations/user.validations');
 var jwt = require('jsonwebtoken');
-
+var User = require('models/user.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 const fs = require('fs');
@@ -80,8 +80,17 @@ var upload = multer({
 });
 router.post('/register-rider', async (req, res) => {
   try {
-    const body = req.body
     req.body.rider_phone_number = await Format_phone_number(req.body.rider_phone_number) //format the phone number
+    const user = await User.findOne({ phone_number: req.body.rider_phone_number })
+
+    const rider = await Rider.findOne({ rider_phone_number: req.body.rider_phone_number })
+
+    if (user || rider) {
+      return res.status(400).json({ success: false, message: 'The phone No you entered is already used by another account' });
+    }
+
+    const body = req.body
+
     body.verification_code = MakeActivationCode(5)
     body.hashPassword = bcrypt.hashSync(body.password, 10);
     const newRider = new Rider(body)

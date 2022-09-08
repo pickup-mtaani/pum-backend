@@ -24,9 +24,16 @@ router.post('/login', async (req, res) => {
 
     try {
         let oldDb = req.query.olddb
-        const user = await User.findOne({ email: req.body.email });
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-        if (oldDb && !user) {
+        let user = {}
+        if (await User.findOne({ phone_number: req.body.phone_number })) {
+            user = await User.findOne({ phone_number: req.body.phone_number })
+        }
+        else if (await Rider.findOne({ phone_number: req.body.rider_phone_number })) {
+            user = await Rider.findOne({ rider_phone_number: req.body.phone_number })
+        }
+
+        else if (oldDb && !user) {
 
             // con.query(`SELECT * FROM user WHERE email =` + mysql.escape(req.body.email), async function (err, result, fields) {
             //     if (err) throw err;
@@ -37,7 +44,7 @@ router.post('/login', async (req, res) => {
             //     body.user_id = result[0].id
             //    
             //     body.office = result[0].office
-            //     body.hashPassword = bcrypt.hashSync(body.password, 10);
+            //     body.hashPassword = bcrypt.hashSync(body.passuword, 10);
             //     let NewUser = new User(body);
             //     const brancht = await NewUser.save();
             //     const token = await jwt.sign({ email: NewUser.email, email: NewUser.email, _id: NewUser._id }, process.env.JWT_KEY);
@@ -46,61 +53,32 @@ router.post('/login', async (req, res) => {
 
             return
         }
-        else if (req.body.role === "rider") {
-            const user = await Rider.findOne({ rider_phone_number: req.body.phone_number })
 
-            if (!user) {
-                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
-            }
-            if (user && !user.activated) {
-                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
-            }
-            const { errors, isValid } = validateLoginInput(req.body);
-            if (!isValid) {
-                let error = Object.values(errors)[0]
-                return res.status(400).json({ message: error });
-            }
-
-            if (user) {
-                // const password_match = user.comparePassword(req.body.password, user.hashPassword);
-                // if (!password_match) {
-                //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-                // }
-                const token = await jwt.sign({ rider_phone_number: user.rider_phone_number, _id: user._id }, process.env.JWT_KEY);
-                const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-
-                return res.status(200).json({ token, key: process.env.JWT_KEY, rider_phone_number: user.rider_phone_number, _id: user._id });
-
-            }
+        else if (user && !user.activated) {
+            return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
         }
-        else {
 
-            const user = await User.findOne({ phone_number: req.body.phone_number }).populate('role');
-            const mail = await User.findOne({ email: req.body.phone_number }).populate('role');
-            if (!user) {
-                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
-            }
-            if (user && !user.activated) {
-                return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
-            }
-            const { errors, isValid } = validateLoginInput(req.body);
-            if (!isValid) {
-                let error = Object.values(errors)[0]
-                return res.status(400).json({ message: error });
-            }
-
-            if (user) {
-                const password_match = user.comparePassword(req.body.password, user.hashPassword);
-                if (!password_match) {
-                    return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-                }
-                const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-                const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-
-                return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
-
-            }
+        else if (!user) {
+            return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
         }
+        const { errors, isValid } = validateLoginInput(req.body);
+        if (!isValid) {
+            let error = Object.values(errors)[0]
+            return res.status(400).json({ message: error });
+        }
+
+        if (user) {
+            // const password_match = user.comparePassword(req.body.password, user.hashPassword);
+            // if (!password_match) {
+            //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
+            // }
+            const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+            const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
+
+            return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
+
+        }
+
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });

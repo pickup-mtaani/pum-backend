@@ -62,15 +62,21 @@ function Users(props) {
     },
     {
       sortable: true,
+      name: 'Bikes Reg No',
+      minWidth: '250px',
+      selector: row => row.bike_reg_plate
+    },
+    {
+      sortable: true,
       name: 'Rate',
       minWidth: '225px',
-      selector: row => row.delivery_rate
+      selector: row => row.delivery_rate ? row.delivery_rate : 200
     },
     {
       sortable: true,
       name: 'Charge Per KM',
       minWidth: '250px',
-      selector: row => row.charger_per_km
+      selector: row => row.charger_per_km ? row.charger_per_km : 120
     },
   ]
 
@@ -126,7 +132,7 @@ function Users(props) {
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-        <ReactMapGl
+        {/* <ReactMapGl
           {...viewPoints}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
@@ -175,7 +181,7 @@ function Users(props) {
             />
           </Marker>
 
-        </ReactMapGl>
+        </ReactMapGl> */}
       </div>
 
 
