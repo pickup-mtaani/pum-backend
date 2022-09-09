@@ -3,8 +3,8 @@ var axios = require('axios')
 const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
-const Mpesa_stk = (No, amount,user,package,typeofDelivery) => {
-    
+const Mpesa_stk = (No, amount, user, typeofDelivery) => {
+
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
     while (s.charAt(0) === '0') {
@@ -55,15 +55,15 @@ const Mpesa_stk = (No, amount,user,package,typeofDelivery) => {
                         phone_number: phone,
                         amount: amount,
                         ResponseCode: data.ResponseCode,
-                        package:package,
-                        type:typeofDelivery,
+
+                        type: typeofDelivery,
                         user: user,
                         log: ''
                     }
                     await new mpesa_logsModel(body).save()
                     // data.Body.stkCallback.CallbackMetadata.Item[0].Value
                     // data.Body.stkCallback.CallbackMetadata.Item[0].Value
-                    return  result ;
+                    return result;
                 }
 
                 )
