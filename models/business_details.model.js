@@ -25,7 +25,7 @@ const BizDetailsSchema = new Schema({
         },
         account: {
             type: Number,
-            required: true
+            // required: true
         }
     },
     loc: {
