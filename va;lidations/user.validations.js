@@ -52,6 +52,42 @@ module.exports.validateRegisterInput = (data) => {
         isValid: isEmpty(errors)
     }
 }
+
+module.exports.validateRiderRegisterInput = (data) => {
+    let errors = {};
+
+    data.rider_name = !isEmpty(data.rider_name) && data.rider_name !== undefined ? data.rider_name : '';
+    data.email = !isEmpty(data.email) && data.email !== undefined ? data.email : '';
+    data.phone_number = !isEmpty(data.phone_number) && data.phone_number !== undefined ? data.phone_number : '';
+    data.password = !isEmpty(data.password) && data.password !== undefined ? data.password : '';
+
+    if (!Validator.isLength(data.rider_name, { min: 2, max: 30 })) {
+        errors.rider_name = 'Riders name must be between 2 to 30 chars';
+    }
+
+    if (Validator.isEmpty(data.phone_number)) {
+        errors.phone_number = 'phone number  field is required';
+    }
+
+    if (!Validator.isLength(data.password, { min: 8, })) {
+        errors.password = 'Password must be at least 8 characters';
+    }
+
+    if (Validator.isEmpty(data.password)) {
+        errors.password = 'Password is required';
+    }
+
+
+    if (!Validator.isLength(data.phone_number, { min: 10, max: 14 })) {
+        errors.phone_number = 'phone Number  must have at least  10 characters ';
+    }
+
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    }
+}
 module.exports.validateAdminRegisterInput = (data) => {
     let errors = {};
 
@@ -63,7 +99,7 @@ module.exports.validateAdminRegisterInput = (data) => {
     if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
         errors.name = 'Name must be between 2 to 30 chars';
     }
-   
+
     if (Validator.isEmpty(data.phone_number)) {
         errors.phone_number = 'phone number  field is required';
     }
@@ -78,7 +114,7 @@ module.exports.validateAdminRegisterInput = (data) => {
     // if (!isUpper(data.password)) {
     //     errors.password = 'Password Must contain Both Upper and Lower case Characters  ';
     // }
-   
+
     // if (!isSpecial(data.password)) {
     //     errors.password = 'Password Must contain at least one special characters  ';
     // }

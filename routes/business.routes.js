@@ -106,7 +106,7 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
     try {
-        const bussiness = await Business.find({ createdBy: req.user._id }).populate('category')
+        const bussiness = await Business.find({ createdBy: req.user._id }).populate(['category', "details"])
         return res.status(200).json({ message: 'fetched successfully', bussiness });
     } catch (error) {
 
@@ -154,14 +154,18 @@ router.post('/business/:id/details', async (req, res) => {
     try {
 
         let body = req.body
+
         const exists = await BUssinessDeatails.findOne({ business: req.params.id })
         if (exists) {
             const Edited = await BUssinessDeatails.findOneAndUpdate({ business: req.params.id }, body, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'Saved successfully', Edited })
         } else {
             const newDetails = new BUssinessDeatails(body)
-            await newDetails.save()
+            const savedDetails = await newDetails.save()
+            await Business.findOneAndUpdate({ _id: req.params.id }, { details: savedDetails._id }, { new: true, useFindAndModify: false })
+
             return res.status(200).json({ message: 'Saved successfully', newDetails })
+
         }
 
 

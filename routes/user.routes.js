@@ -53,12 +53,12 @@ router.post('/login', async (req, res) => {
 
             return
         }
-
-        else if (user && !user.activated) {
+        console.log(user)
+        if (user && user.activated === false) {
             return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
         }
 
-        else if (!user) {
+        if (!user) {
             return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
         }
         const { errors, isValid } = validateLoginInput(req.body);
@@ -67,11 +67,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: error });
         }
 
-        if (user) {
-            // const password_match = user.comparePassword(req.body.password, user.hashPassword);
-            // if (!password_match) {
-            //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-            // }
+        if (user && user.activated) {
+            const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+            if (!password_match) {
+                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
+            }
             const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
@@ -364,13 +364,18 @@ router.post('/user/delete', async (req, res) => {
 
 });
 router.get('/user/:id', async (req, res) => {
-
     try {
-        const userObj = await User.findById(req.params.id)
-        return res.status(200).json({ message: 'User Fetched Successfully !!', userObj });
+        let user
+        if (await User.findById(req.params.id)) {
+            user = await User.findById(req.params.id)
+        }
+        else if (await Rider.findById(req.params.id)) {
+            user = await Rider.findById(req.params.id)
+        }
+
+        return res.status(200).json({ message: 'User Fetched Successfully !!', user });
 
     } catch (error) {
-
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

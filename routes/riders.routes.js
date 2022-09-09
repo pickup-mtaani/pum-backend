@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 const Format_phone_number = require('../helpers/phone_number_formater');
-const { validatePasswordInput, validateLoginInput } = require('../va;lidations/user.validations');
+const { validatePasswordInput, validateLoginInput, validateRiderRegisterInput } = require('../va;lidations/user.validations');
 var jwt = require('jsonwebtoken');
 var User = require('models/user.model')
 const { v4: uuidv4 } = require('uuid');
@@ -82,26 +82,35 @@ var upload = multer({
 
 router.post('/register-rider', async (req, res) => {
   try {
-    req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-    const user = await User.findOne({ phone_number: req.body.phone_number })
+    let user
+    let rider
+    if (req.body.phone_number) {
+      req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+      user = await User.findOne({ phone_number: req.body.phone_number })
 
-    const rider = await Rider.findOne({ phone_number: req.body.phone_number })
-
+      rider = await Rider.findOne({ phone_number: req.body.phone_number })
+    }
     if (user || rider) {
       return res.status(400).json({ success: false, message: 'The phone No you entered is already used by another account' });
     }
-
+    const { errors, isValid } = validateRiderRegisterInput(req.body);
+    if (!isValid) {
+      let error = Object.values(errors)[0]
+      return res.status(400).json({ message: error });
+    }
     const body = req.body
 
     body.verification_code = MakeActivationCode(5)
     body.hashPassword = bcrypt.hashSync(body.password, 10);
     const newRider = new Rider(body)
     const saved = await newRider.save()
+
     const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.rider_name}\nYour Activation Code for Pickup mtaani rider app is  ${body.verification_code} ` }
-    await SendMessage(textbody)
+    // await SendMessage(textbody)
     return res.status(200).json({ message: 'Rider Added successfully', saved: saved });
 
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ success: false, message: 'operation failed ', error });
   }
 

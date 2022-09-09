@@ -26,6 +26,11 @@ const BizSchema = new Schema({
         ref: 'business_category'
     },
 
+    details: {
+        type: Schema.Types.ObjectId,
+        ref: 'business_details'
+    },
+
     till_No: {
         type: Number,
         // required: true
