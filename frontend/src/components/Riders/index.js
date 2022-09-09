@@ -52,13 +52,13 @@ function Users(props) {
       sortable: true,
       name: 'Phone number',
       minWidth: '250px',
-      selector: row => row.rider_phone_number
+      selector: row => row.phone_number
     },
     {
       sortable: true,
       name: 'ID',
       minWidth: '250px',
-      selector: row => row.rider_ID_number
+      selector: row => row.id_number
     },
     {
       sortable: true,

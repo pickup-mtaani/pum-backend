@@ -47,9 +47,14 @@ const UserSchema = new Schema({
         type: Date,
     },
     role: {
-        type: Schema.Types.ObjectId,
-        ref: 'role'
+        type: String,
+        default: "seller"
     },
+    // role: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'role'
+    // },
+
 
     hashPassword: {
         type: String,
@@ -57,7 +62,7 @@ const UserSchema = new Schema({
     },
     username: {
         type: String,
-        
+
     },
     email: {
         type: String,

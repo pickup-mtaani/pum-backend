@@ -7,11 +7,15 @@ const RiderSchema = new Schema({
         type: String,
         required: true
     },
-    rider_phone_number: {
+    phone_number: {
         type: String,
         // required: true
     },
-    rider_ID_number: {
+    role: {
+        type: String,
+        default: "rider"
+    },
+    id_number: {
         type: String,
         // required: true
     },

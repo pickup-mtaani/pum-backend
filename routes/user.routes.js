@@ -29,8 +29,8 @@ router.post('/login', async (req, res) => {
         if (await User.findOne({ phone_number: req.body.phone_number })) {
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
-        else if (await Rider.findOne({ phone_number: req.body.rider_phone_number })) {
-            user = await Rider.findOne({ rider_phone_number: req.body.phone_number })
+        else if (await Rider.findOne({ phone_number: req.body.phone_number })) {
+            user = await Rider.findOne({ phone_number: req.body.phone_number })
         }
 
         else if (oldDb && !user) {
@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
             const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
-            return res.status(200).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id, role: user.role });
+            return res.status(200).json({ token, key: process.env.JWT_KEY, user });
 
         }
 
