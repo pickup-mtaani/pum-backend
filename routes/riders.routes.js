@@ -78,6 +78,8 @@ var upload = multer({
     }
   }
 });
+
+
 router.post('/register-rider', async (req, res) => {
   try {
     req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
@@ -291,6 +293,32 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
     const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, body, { new: true, useFindAndModify: false })
     return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
 
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+});
+
+
+
+router.post('/rider-social-login', async (req, res) => {
+
+  try {
+    let user = await Rider.findOne({ email: req.body.email });
+
+    if (user) {
+      const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+      return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id });
+    } else {
+      const body = req.body
+      body.verification_code = MakeActivationCode(5)
+      body.activated = true
+      body.hashPassword = bcrypt.hashSync("password", 10);
+      let NewUser = new Rider(body);
+      let savedUser = await NewUser.save();
+      const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
+      return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id });
+    }
   } catch (error) {
     console.log(error)
     return res.status(400).json({ success: false, message: 'operation failed ', error });

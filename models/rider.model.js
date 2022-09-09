@@ -31,6 +31,10 @@ const RiderSchema = new Schema({
         type: String,
         // required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
     rider_id_front: {
         type: String,
         // required: true
