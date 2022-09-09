@@ -366,7 +366,7 @@ router.post('/user/delete', async (req, res) => {
 router.get('/user/:id', async (req, res) => {
 
     try {
-        const userObj = await User.findById(req.params.id).populate('role').populate('role')
+        const userObj = await User.findById(req.params.id)
         return res.status(200).json({ message: 'User Fetched Successfully !!', userObj });
 
     } catch (error) {
@@ -391,10 +391,10 @@ router.get('/users', async (req, res) => {
                     $gte: today.toDate(),
                     $lte: endDay.toDate()
                 }
-            }).populate('role').skip(skip).limit(PAGE_SIZE);
+            }).skip(skip).limit(PAGE_SIZE);
         }
         else {
-            Users = await User.find().populate('role').skip(skip).limit(PAGE_SIZE);
+            Users = await User.find().skip(skip).limit(PAGE_SIZE);
         }
 
         return res.status(200).json({ message: 'Users Fetched Successfully !!', Users });
