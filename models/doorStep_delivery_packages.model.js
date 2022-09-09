@@ -5,58 +5,6 @@ const Schema = mongoose.Schema;
 
 const doorstepSchema = new Schema(
   {
-
-
-    payment_phone_number: {
-      type: String,
-      // required: true,
-    },
-
-    type: {
-      type: String,
-      default: "doorstep",
-    },
-    businessId: {
-      type: Schema.Types.ObjectId,
-      ref: "business",
-    },
-
-    total_payment_amount: {
-      type: Number,
-      // default:180
-    },
-    payment_status: {
-      type: String,
-      default: "Not Paid"
-    },
-    receipt_no: {
-      type: String,
-      // required: true
-    },
-
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    },
-    rider: {
-      type: Schema.Types.ObjectId,
-      ref: "rider",
-    },
-    payment_option: {
-      type: String,
-      enum: ['customer', 'vendor', 'collection'],
-    },
-    location: {
-      type: String,
-
-    },
-
-    isProduct: {
-      type: Boolean,
-      default: false,
-    },
-
-
     customerName: {
       type: String,
       required: true,
@@ -94,7 +42,10 @@ const doorstepSchema = new Schema(
       type: String,
     },
 
-
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
 
     payment_option: {
       type: String,
