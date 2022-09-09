@@ -23,7 +23,7 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.body)
+
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
@@ -37,6 +37,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
         }
+        packages[i].payment_phone_number = req.body.payment_phone_number,
+          packages[i].businessId = req.body.businessId,
+          packages[i].total_payment_amount = req.body.total_payment_amount,
+          packages[i].delivery_type = req.body.delivery_type,
+          packages[i].receipt_no = req.body.receipt_no,
+          packages[i].createdBy = req.user._id
         const savedPackage = await new Door_step_Sent_package(
           packages[i]
         ).save();
