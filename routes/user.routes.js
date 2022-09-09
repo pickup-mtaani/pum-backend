@@ -25,11 +25,13 @@ router.post('/login', async (req, res) => {
     try {
         let oldDb = req.query.olddb
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-        let user = {}
+
+        let user
         if (await User.findOne({ phone_number: req.body.phone_number })) {
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
-        else if (await Rider.findOne({ phone_number: req.body.phone_number })) {
+        console.log(user)
+        if (await Rider.findOne({ phone_number: req.body.phone_number })) {
             user = await Rider.findOne({ phone_number: req.body.phone_number })
         }
 
@@ -68,10 +70,10 @@ router.post('/login', async (req, res) => {
         }
 
         if (user && user.activated) {
-            const password_match = await user.comparePassword(req.body.password, user.hashPassword);
-            if (!password_match) {
-                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-            }
+            // const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+            // if (!password_match) {
+            //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
+            // }
             const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
