@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
+import { get_riders, assignRider } from '../../redux/actions/riders.actions'
 import { getParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import PackageDetail from './packageDetails.modal'
+import PackageDetail from './AssignRiderModal'
 import moment from 'moment'
 function Users(props) {
 
@@ -69,18 +70,43 @@ function Users(props) {
 
   ]
   const delivery_columns = [
+
+
     {
       sortable: true,
-      name: 'Packages Sent',
+      name: 'Name',
       minWidth: '250px',
-      selector: row => (<>
-        {row.packages.map((pack, i) => (
-          <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-            <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-          </div>
-        ))}
-
-      </>)
+      selector: row => row.packageName
+    },
+    {
+      sortable: true,
+      name: 'Value',
+      minWidth: '250px',
+      selector: row => row.package_value
+    },
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.receipt_no
+    },
+    {
+      sortable: true,
+      name: 'Reciept',
+      minWidth: '250px',
+      selector: row => row.customerName
+    },
+    {
+      sortable: true,
+      name: 'Customer Phone',
+      minWidth: '250px',
+      selector: row => row.customerPhoneNumber
+    },
+    {
+      sortable: true,
+      name: 'Delivery Fee',
+      minWidth: '250px',
+      selector: row => row.delivery_fee
     },
     {
       sortable: true,
@@ -93,7 +119,7 @@ function Users(props) {
       sortable: true,
       name: 'Total Fee Paid',
       minWidth: '250px',
-      selector: row => row.total_payment
+      selector: row => row.total_fee
     },
 
     // {
@@ -110,10 +136,13 @@ function Users(props) {
     },
     {
       sortable: true,
-      name: 'Details',
+      name: 'Assign Rider',
       minWidth: '150px',
       selector: row => <>
-        <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
+        <div className='px-2 py-10 '>
+          <button style={{ backgroundColor: row.state !== "assigned" ? "green" : "red", padding: 5 }} onClick={() => { setShowModal(true); setItem(row) }}>{row.state !== "assigned" ? "Assign" : 'Already Assigned'} </button>
+
+        </div>
       </>
     },
 
@@ -122,19 +151,19 @@ function Users(props) {
 
   const door_step_columns = [
 
-    {
-      sortable: true,
-      name: 'Packages Sent',
-      minWidth: '250px',
-      selector: row => (<>
-        {row.packages.map((pack, i) => (
-          <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-            <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-          </div>
-        ))}
+    // {
+    //   sortable: true,
+    //   name: 'Packages Sent',
+    //   minWidth: '250px',
+    //   selector: row => (<>
+    //     {row.packages.map((pack, i) => (
+    //       <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
+    //         <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
+    //       </div>
+    //     ))}
 
-      </>)
-    },
+    //   </>)
+    // },
     {
       sortable: true,
       name: 'Total Payment',
@@ -193,6 +222,7 @@ function Users(props) {
   }, [searchValue, date, showModal]);
   const fetch = async () => {
     let result = await props.getParcels({ limit: 10 })
+    await props.get_riders()
     console.log(result);
     setData(result);
 
@@ -200,14 +230,14 @@ function Users(props) {
   useEffect(() => {
     fetch()
   }, [])
-
+  console.log(props.packages)
   return (
     <Layout>
       <div className=" mx-2">
         <DataTable
           title=" Agent to Agent Delivery"
           columns={delivery_columns}
-          data={props.packages}
+          data={props?.packages}
           pagination
           paginationServer
           progressPending={props.loading}
@@ -259,6 +289,7 @@ function Users(props) {
       <PackageDetail
         show={showModal}
         data={item}
+        riders={props.riders}
         // changeInput={(e) => changeInput(e)}
         // submit={() => submit()}
         toggle={() => setShowModal(false)}
@@ -273,7 +304,7 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-
+    riders: state.ridersDetails.riders,
     packages: state.PackageDetails.packages,
     loading: state.PackageDetails.loading,
     to_door_packages: state.PackageDetails.to_door_packages,
@@ -282,5 +313,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { getParcels })(Users)
+export default connect(mapStateToProps, { getParcels, get_riders, assignRider })(Users)
 

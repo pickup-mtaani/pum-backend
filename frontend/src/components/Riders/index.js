@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_riders } from '../../redux/actions/riders.actions'
+import { get_riders, fetchpackages } from '../../redux/actions/riders.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import ReactMapGl, { Marker, Popup } from 'react-map-gl';
 import PIN from './pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
+import AssignedPackModal from './AssignedPackModal'
 
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
@@ -24,6 +25,7 @@ function Users(props) {
   const [popupMark, setlocapopup] = useState({
 
   })
+  const [showModal, setShowModal] = useState(false);
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const mapContainer = useRef(null);
@@ -40,6 +42,14 @@ function Users(props) {
     setFilterText(e)
 
   }
+
+  const fetchUserPackages = async (row) => {
+    setShowModal(true);
+    setItem(row)
+    let result = await props.fetchpackages(row._id)
+    setFilterData(result)
+  }
+
   const columns = [
     {
       sortable: true,
@@ -77,6 +87,14 @@ function Users(props) {
       name: 'Charge Per KM',
       minWidth: '250px',
       selector: row => row.charger_per_km ? row.charger_per_km : 120
+    },
+    {
+      sortable: true,
+      name: 'My packages',
+      minWidth: '150px',
+      selector: row => <>
+        <button onClick={() => fetchUserPackages(row)}>Packages </button>
+      </>
     },
   ]
 
@@ -184,6 +202,14 @@ function Users(props) {
         </ReactMapGl> */}
       </div>
 
+      <AssignedPackModal
+        show={showModal}
+        data={data}
+        riders={props.riders}
+        // changeInput={(e) => changeInput(e)}
+        // submit={() => submit()}
+        toggle={() => setShowModal(false)}
+      />
 
 
     </Layout>
@@ -202,5 +228,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_riders })(Users)
+export default connect(mapStateToProps, { get_riders, fetchpackages })(Users)
 

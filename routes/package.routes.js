@@ -1,6 +1,4 @@
 const express = require("express");
-var AgentPackage = require("models/agent_agent_delivery.modal.js");
-var Doorstep_pack = require("models/doorStep_delivery.model");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
@@ -8,7 +6,6 @@ var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
-var Business = require("models/business.model.js");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
 var {
@@ -23,13 +20,12 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.body)
+
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
-      let packagesArr = [];
-      const { packages, ...rest } = req.body;
+      const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -39,10 +35,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `PM-${Makeid(5)}`;
-        const savedPackage = await new Door_step_Sent_package(
-          packages[i]
-        ).save();
-
+        const newPackage = await new Door_step_Sent_package(packages[i]).save();
       }
 
       Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -85,8 +78,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
 
-
-      const { packages, ...rest } = req.body;
+      const { packages } = req.body
       for (let i = 0; i < packages.length; i++) {
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -96,12 +88,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `PM-${Makeid(5)}`;
-        const newPackage = new Sent_package(packages[i]);
-        const savedPackage = await newPackage.save();
+        const newPackage = await new Sent_package(packages[i]).save();
 
       }
 
-      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent")
+      await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent")
       return res
         .status(200)
         .json({ message: "Package successfully Saved" });
@@ -298,34 +289,24 @@ router.post(
 
 router.get("/packages", async (req, res) => {
   try {
-    const agent_packages = await AgentPackage.find()
-      .populate({
-        path: "packages",
-        populate: [
-          {
-            path: "receieverAgentID",
-            select: "loc",
-          },
-          {
-            path: "senderAgentID",
-            select: "loc",
-          },
-        ],
-      }).populate('businessId')
+    const agent_packages = await Sent_package.find({})
+
       .sort({ createdAt: -1 })
-      .limit(10);
-    const doorstep_packages = await Doorstep_pack.find({})
+      .limit(100);
+
+    const doorstep_packages = await Door_step_Sent_package.find({
+      businessId: req.params.id
+    })
       .populate(
-        "packages",
+
         "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
-      ).populate('businessId')
+      )
       .sort({ createdAt: -1 })
-      .limit(10);
-    const shelves = await Rent.find().populate(
+      .limit(100);
+    const shelves = await Rent.find({}).populate(
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
-    ).populate('businessId').sort({ createdAt: -1 })
-      .limit(10);;
+    );
     return res
       .status(200)
       .json({

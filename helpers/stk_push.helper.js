@@ -3,7 +3,7 @@ var axios = require('axios')
 const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
-const Mpesa_stk = (No, amount, user, typeofDelivery) => {
+const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
 
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
@@ -70,7 +70,7 @@ const Mpesa_stk = (No, amount, user, typeofDelivery) => {
                 .catch(error => console.log(error));
 
         })
-    return
+    // return/
     // console.log("token"+token);
 }
 
