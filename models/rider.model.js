@@ -75,6 +75,8 @@ const RiderSchema = new Schema({
 
 }, { timestamps: true });
 
-
+RiderSchema.methods.comparePassword = (password, hashPassword) => {
+    return bcrypt.compareSync(password, hashPassword);
+};
 
 module.exports = mongoose.model('rider', RiderSchema);

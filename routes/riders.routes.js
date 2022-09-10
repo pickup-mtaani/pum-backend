@@ -1,5 +1,6 @@
 const express = require('express');
 var Rider = require('models/rider.model')
+var Rider_Package = require('models/rider_package.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -106,7 +107,7 @@ router.post('/register-rider', async (req, res) => {
     const saved = await newRider.save()
 
     const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.rider_name}\nYour Activation Code for Pickup mtaani rider app is  ${body.verification_code} ` }
-    // await SendMessage(textbody)
+    await SendMessage(textbody)
     return res.status(200).json({ message: 'Rider Added successfully', saved: saved });
 
   } catch (error) {
@@ -354,6 +355,46 @@ router.get("/riders", async (req, res) => {
   try {
     const riders = await Rider.find({})
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.post("/assign-riders", async (req, res) => {
+  try {
+    const riders = await new Rider_Package(req.body).save()
+    return res.status(200).json({ message: "Fetched Sucessfully", riders });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/assigned-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const packages = await Rider_Package.find({ rider: req.user._id }).populate({
+      path: "package",
+      populate: [
+        {
+          path: "receieverAgentID",
+          // select: "loc",
+        },
+        {
+          path: "senderAgentID",
+          // select: "loc",
+        },
+        {
+          path: "createdBy",
+          // select: "loc",
+        },
+      ],
+    })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages });
   } catch (error) {
     console.log(error);
     return res

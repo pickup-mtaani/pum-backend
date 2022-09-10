@@ -30,7 +30,6 @@ router.post('/login', async (req, res) => {
         if (await User.findOne({ phone_number: req.body.phone_number })) {
             user = await User.findOne({ phone_number: req.body.phone_number })
         }
-        console.log(user)
         if (await Rider.findOne({ phone_number: req.body.phone_number })) {
             user = await Rider.findOne({ phone_number: req.body.phone_number })
         }
@@ -70,10 +69,11 @@ router.post('/login', async (req, res) => {
         }
 
         if (user && user.activated) {
-            // const password_match = await user.comparePassword(req.body.password, user.hashPassword);
-            // if (!password_match) {
-            //     return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-            // }
+
+            const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+            if (!password_match) {
+                return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
+            }
             const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
@@ -167,6 +167,7 @@ router.post('/:id/resend-token', async (req, res) => {
 });
 router.post('/:id/update_password', async (req, res) => {
     try {
+        console.log(req.body)
         const body = req.body
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
@@ -183,7 +184,7 @@ router.post('/:id/update_password', async (req, res) => {
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
-
+        console.log(error);
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -195,36 +196,38 @@ router.put('/reset-password', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        let user
+
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+        let user = await User.findOne({ phone_number: req.body.phone_number }) || await Rider.findOne({ phone_number: req.body.phone_number });
         if (req.body.email) {
-            user = await User.findOne({ email: req.body.email })
-        } else {
-            req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-            user = await User.findOne({ phone_number: req.body.phone_number })
+            user = await User.findOne({ email: req.body.email }) || await Rider.findOne({ email: req.body.email })
         }
         if (!user) {
             return res.status(400).json({ success: false, message: 'User Not Found ' });
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
         if (req.body.email) {
-            const Update = await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
+            const Update = await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false }) || await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
             return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
         }
-        const Update = await User.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
+
+        const Update = await Rider.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false }) || await User.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
         return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
     } catch (error) {
-
+        console.log(error);
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
 router.post('/recover_account', async (req, res) => {
+
     try {
+
         const body = req.body
 
         if (req.body.phone_number) {
             req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-            const user = await User.findOne({ phone_number: body.phone_number });
+            const user = await User.findOne({ phone_number: body.phone_number }) || await Rider.findOne({ phone_number: req.body.phone_number });
 
             if (!user) {
                 return res.status(401).json({ message: 'The phone Number you entered is not registered ' });
@@ -301,7 +304,8 @@ router.put('/update-user', async (req, res) => {
 });
 router.put('/user/:id/activate', async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.id });
+        const user = await User.findOne({ _id: req.params.id }) || await Rider.findOne({ phone_number: req.body.phone_number });
+
         if (parseInt(user.verification_code) !== parseInt(req.body.code)) {
             return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
         }
@@ -322,7 +326,7 @@ router.put('/user/re-activate', async (req, res) => {
         let user = {}
         if (req.body.phone_number) {
             req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-            user = await User.findOne({ phone_number: req.body.phone_number });
+            user = await User.findOne({ phone_number: req.body.phone_number }) || await Rider.findOne({ phone_number: req.body.phone_number });
         }
         else if (req.body.email) {
             user = await User.findOne({ email: req.body.email });

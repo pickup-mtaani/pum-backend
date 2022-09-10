@@ -4,6 +4,37 @@ const Schema = mongoose.Schema;
 
 const PackageSchema = new Schema(
   {
+
+
+    type: {
+      type: String,
+      default: "agent",
+    },
+    payment_phone_number: {
+      type: String,
+
+    },
+    businessId: {
+      type: Schema.Types.ObjectId,
+      ref: "business",
+    },
+    total_payment: {
+      type: Number,
+      default: 180
+    },
+    payment_status: {
+      type: String,
+      default: "Not Paid"
+    },
+    receipt_no: {
+      type: String,
+      // required: true
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+
     customerName: {
       type: String,
       required: true,
@@ -39,8 +70,8 @@ const PackageSchema = new Schema(
     },
     state: {
       type: String,
-            enum: ["pending","delivered","cancelled","on-transit"],
-            default:"pending"
+      enum: ["pending", "delivered", "cancelled", "on-transit"],
+      default: "pending"
     },
     isProduct: {
       type: Boolean,
