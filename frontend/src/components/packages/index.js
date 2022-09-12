@@ -69,6 +69,24 @@ function Users(props) {
 
 
   ]
+
+  const conditionalRowStyles = [
+    {
+      when: row => row.state !== "assigned",
+      style: {
+        backgroundColor: 'green',
+        color: 'white',
+        '&:hover': {
+          cursor: 'pointer',
+        },
+      },
+    },
+    // You can also pass a callback to style for additional customization
+    {
+      when: row => row.state === "assigned",
+      style: row => ({ backgroundColor: row.isSpecial ? 'pink' : 'inerit' }),
+    },
+  ];
   const delivery_columns = [
 
 
@@ -149,7 +167,7 @@ function Users(props) {
 
   ]
 
-  const door_step_columns = [
+  const columns = [
 
     // {
     //   sortable: true,
@@ -223,14 +241,14 @@ function Users(props) {
   const fetch = async () => {
     let result = await props.getParcels({ limit: 10 })
     await props.get_riders()
-    console.log(result);
+
     setData(result);
 
   }
   useEffect(() => {
     fetch()
   }, [])
-  console.log(props.packages)
+
   return (
     <Layout>
       <div className=" mx-2">
@@ -241,6 +259,7 @@ function Users(props) {
           pagination
           paginationServer
           progressPending={props.loading}
+          conditionalRowStyles={conditionalRowStyles}
           paginationResetDefaultPage={resetPaginationToggle}
           subHeader
           subHeaderComponent={subHeaderComponentMemo}
@@ -254,7 +273,7 @@ function Users(props) {
       <div className=" mx-2 my-10">
         <DataTable
           title="Door Step Delivery"
-          columns={door_step_columns}
+          columns={columns}
           data={props.to_door_packages}
           pagination
           paginationServer
@@ -290,6 +309,7 @@ function Users(props) {
         show={showModal}
         data={item}
         riders={props.riders}
+        fetch={() => fetch()}
         // changeInput={(e) => changeInput(e)}
         // submit={() => submit()}
         toggle={() => setShowModal(false)}

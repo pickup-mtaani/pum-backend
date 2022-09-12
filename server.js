@@ -21,6 +21,7 @@ const stocksRoutes = require('routes/stocks.routes')
 const salesRoutes = require('routes/sales.routes')
 const adminRoutes = require('routes/admin.routes')
 const zoneRoutes = require('routes/zones.routes')
+const convRoutes = require('routes/conversation.routes')
 var Riders = require('./IoControllers/riders.io')
 var http = require('http').createServer(app)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,6 +62,7 @@ app.use('/api/', RiderRoutes)
 app.use('/api/', productsRoutes)
 app.use('/api/', stocksRoutes)
 app.use('/api/', salesRoutes)
+app.use('/api/', convRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/', zoneRoutes)
 
@@ -78,13 +80,13 @@ app.get('*', function (req, res) {
 });
 app.post('/mpesa-callback', async (req, res, next) => {
     console.log(res)
-      // try {
-      //   const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
-      //   return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
-      // } catch (error) {
-      //   console.log(error)
-      // }
-    })
+    // try {
+    //   const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
+    //   return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
+    // } catch (error) {
+    //   console.log(error)
+    // }
+})
 
 // start server
 const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 4000) : 4000;

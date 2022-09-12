@@ -9,7 +9,9 @@ function AssignRiderModal(props) {
     const changeInput = async (e) => {
         const { value } = e.target;
         const data1 = { package: props.data._id, rider: value }
-        props.assignRider(data1)
+        await props.assignRider(data1)
+        await props.fetch()
+
         setRider(value);
         toggle(false)
     };
