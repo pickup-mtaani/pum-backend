@@ -82,157 +82,113 @@ var upload = multer({
 });
 
 
-router.post('/register-rider', async (req, res) => {
-  try {
-    let user
-    let rider
-    if (req.body.phone_number) {
-      req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-      user = await User.findOne({ phone_number: req.body.phone_number })
+// router.post('/register-rider', async (req, res) => {
+//   try {
+//     let user
+//     let rider
+//     if (req.body.phone_number) {
+//       req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+//       user = await User.findOne({ phone_number: req.body.phone_number })
 
-      rider = await Rider.findOne({ phone_number: req.body.phone_number })
-    }
-    if (user || rider) {
-      return res.status(400).json({ success: false, message: 'The phone No you entered is already used by another account' });
-    }
-    const { errors, isValid } = validateRiderRegisterInput(req.body);
-    if (!isValid) {
-      let error = Object.values(errors)[0]
-      return res.status(400).json({ message: error });
-    }
-    const body = req.body
+//       rider = await Rider.findOne({ phone_number: req.body.phone_number })
+//     }
+//     if (user || rider) {
+//       return res.status(400).json({ success: false, message: 'The phone No you entered is already used by another account' });
+//     }
+//     const { errors, isValid } = validateRiderRegisterInput(req.body);
+//     if (!isValid) {
+//       let error = Object.values(errors)[0]
+//       return res.status(400).json({ message: error });
+//     }
+//     const body = req.body
 
-    body.verification_code = MakeActivationCode(5)
-    body.hashPassword = bcrypt.hashSync(body.password, 10);
-    const newRider = new Rider(body)
-    const saved = await newRider.save()
+//     body.verification_code = MakeActivationCode(5)
+//     body.hashPassword = bcrypt.hashSync(body.password, 10);
+//     const newRider = new Rider(body)
+//     const saved = await newRider.save()
 
-    const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.rider_name}\nYour Activation Code for Pickup mtaani rider app is  ${body.verification_code} ` }
-    await SendMessage(textbody)
-    return res.status(200).json({ message: 'Rider Added successfully', saved: saved });
+//     const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.rider_name}\nYour Activation Code for Pickup mtaani rider app is  ${body.verification_code} ` }
+//     await SendMessage(textbody)
+//     return res.status(200).json({ message: 'Rider Added successfully', saved: saved });
 
-  } catch (error) {
-    console.log(error)
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
-  }
+//   } catch (error) {
+//     console.log(error)
+//     return res.status(400).json({ success: false, message: 'operation failed ', error });
+//   }
 
-});
+// });
 
-router.post('/rider/:id/resend-token', async (req, res) => {
-  try {
-    const rider = await Rider.findById(req.params.id);
-    const textbody = { address: `${rider.phone_number}`, Body: `Hi ${rider.rider_name}\nYour Activation Code for Pickup mtaani  app is  ${rider.verification_code} ` }
-    await SendMessage(textbody)
-    return res.status(200).json({ success: false, message: 'Activation resent ' });
-  } catch (error) {
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
-  }
-});
+// router.post('/rider/:id/resend-token', async (req, res) => {
+//   try {
+//     const rider = await Rider.findById(req.params.id);
+//     const textbody = { address: `${rider.phone_number}`, Body: `Hi ${rider.rider_name}\nYour Activation Code for Pickup mtaani  app is  ${rider.verification_code} ` }
+//     await SendMessage(textbody)
+//     return res.status(200).json({ success: false, message: 'Activation resent ' });
+//   } catch (error) {
+//     return res.status(400).json({ success: false, message: 'operation failed ', error });
+//   }
+// });
 
-router.put('/rider/:id/activate', async (req, res) => {
-  try {
-    const rider = await Rider.findOne({ _id: req.params.id });
-    if (parseInt(rider.verification_code) !== parseInt(req.body.code)) {
-      return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
-    }
-    else {
-      let riderObj = await Rider.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
-      const token = await jwt.sign({ phone_number: riderObj.phone_number, _id: rider._id }, process.env.JWT_KEY);
-      return res.status(200).json({ message: 'rider Activated successfully and can now login !!', token });
-    }
-  } catch (error) {
-    console.log(error)
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
+// router.put('/rider/:id/activate', async (req, res) => {
+//   try {
+//     const rider = await Rider.findOne({ _id: req.params.id });
+//     if (parseInt(rider.verification_code) !== parseInt(req.body.code)) {
+//       return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
+//     }
+//     else {
+//       let riderObj = await Rider.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
+//       const token = await jwt.sign({ phone_number: riderObj.phone_number, _id: rider._id }, process.env.JWT_KEY);
+//       return res.status(200).json({ message: 'rider Activated successfully and can now login !!', token });
+//     }
+//   } catch (error) {
+//     console.log(error)
+//     return res.status(400).json({ success: false, message: 'operation failed ', error });
 
-  }
+//   }
 
-});
-router.post('/rider-login', async (req, res) => {
+// });
 
-  try {
+// router.put('/rider/reset-password', async (req, res) => {
+//   try {
+//     const body = req.body
+//     const { errors, isValid } = validatePasswordInput(req.body);
+//     if (!isValid) {
+//       let error = Object.values(errors)[0]
+//       return res.status(400).json({ message: error });
+//     }
+//     let phone = await Format_phone_number(req.body.phone_number)
+//     let user = await Rider.findOne({ phone_number: phone })
 
-    req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+//     if (!user) {
+//       return res.status(400).json({ success: false, message: 'User Not Found ' });
+//     }
+//     let hashPassword = bcrypt.hashSync(body.new_password, 10);
 
-    const rider = await Rider.findOne({ phone_number: req.body.phone_number })
+//     const Update = await Rider.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
+//     return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
 
-    if (!rider) {
-      return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
-    }
-    if (rider && !rider.activated) {
-      return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
-    }
-    const { errors, isValid } = validateLoginInput(req.body);
-    if (!isValid) {
-      let error = Object.values(errors)[0]
-      return res.status(400).json({ message: error });
-    }
-
-    if (rider) {
-      // const password_match = rider.comparePassword(req.body.password, rider.hashPassword);
-      // if (!password_match) {
-      //   return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
-      // }
-      const token = jwt.sign({ phone_number: rider.phone_number, _id: rider._id }, process.env.JWT_KEY);
-      const userUpdate = await Rider.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-
-      return res.status(200).json({ token, key: process.env.JWT_KEY, phone_number: rider.phone_number, _id: rider._id });
-
-
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
-
-  }
-
-});
-router.put('/rider/reset-password', async (req, res) => {
-  try {
-    const body = req.body
-    const { errors, isValid } = validatePasswordInput(req.body);
-    if (!isValid) {
-      let error = Object.values(errors)[0]
-      return res.status(400).json({ message: error });
-    }
-    let phone = await Format_phone_number(req.body.phone_number)
-    let user = await Rider.findOne({ phone_number: phone })
-
-    if (!user) {
-      return res.status(400).json({ success: false, message: 'User Not Found ' });
-    }
-    let hashPassword = bcrypt.hashSync(body.new_password, 10);
-
-    const Update = await Rider.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
-
-  } catch (error) {
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
-  }
-});
+//   } catch (error) {
+//     return res.status(400).json({ success: false, message: 'operation failed ', error });
+//   }
+// });
 
 
 router.post('/update-rider-avatar', [authMiddleware, authorized], upload.single('rider_avatar'), async (req, res) => {
-
-
   try {
-
+    const rider = await Rider.findOne({ user: req.user._id })
     const url = req.protocol + '://' + req.get('host');
-
-
     if (req.file) {
-
       const body = req.body
       body.rider_avatar = url + '/uploads/rider_avatar/' + req.file.filename
 
-      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_avatar: req.body.rider_avatar }, { new: true, useFindAndModify: false })
-      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
-
+      if (rider) {
+        const Update = await Rider.findOneAndUpdate({ user: req.user._id }, { rider_avatar: req.body.rider_avatar }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+      } else {
+        await new Rider({ rider_avatar: req.body.rider_avatar, user: req.user._id }).save()
+        return res.status(200).json({ message: 'Saved' });
+      }
     }
-
-
-
-    return res.status(200).json({ message: 'Saved', biz });
-
 
   } catch (error) {
     console.log(error)
@@ -240,27 +196,22 @@ router.post('/update-rider-avatar', [authMiddleware, authorized], upload.single(
   }
 });
 router.post('/update-rider-id-front', [authMiddleware, authorized], uploadrider_id_front.single('rider_id_front'), async (req, res) => {
-
-
   try {
-
     const url = req.protocol + '://' + req.get('host');
-
+    const rider = await Rider.findOne({ user: req.user._id })
 
     if (req.file) {
+      if (rider) {
+        const body = req.body
+        body.rider_id_front = url + '/uploads/Ids/' + req.file.filename
 
-      const body = req.body
-      body.rider_id_front = url + '/uploads/Ids/' + req.file.filename
-
-      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_id_front: req.body.rider_id_front }, { new: true, useFindAndModify: false })
-      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
-
+        const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_id_front: req.body.rider_id_front }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+      } else {
+        await new Rider({ rider_avatar: req.body.rider_id_front, user: req.user._id }).save()
+        return res.status(200).json({ message: 'Saved' });
+      }
     }
-
-
-
-    return res.status(200).json({ message: 'Saved', biz });
-
 
   } catch (error) {
     console.log(error)
@@ -268,27 +219,23 @@ router.post('/update-rider-id-front', [authMiddleware, authorized], uploadrider_
   }
 });
 router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_licence_photo.single('rider_licence_photo'), async (req, res) => {
-
-
   try {
-
     const url = req.protocol + '://' + req.get('host');
-
+    const rider = await Rider.findOne({ user: req.user._id })
 
     if (req.file) {
+      if (rider) {
+        const body = req.body
+        body.rider_licence_photo = url + '/uploads/licence/' + req.file.filename
 
-      const body = req.body
-      body.rider_licence_photo = url + '/uploads/licence/' + req.file.filename
-
-      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_licence_photo: req.body.rider_licence_photo }, { new: true, useFindAndModify: false })
-      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
-
+        const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_licence_photo: req.body.rider_licence_photo }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+      }
+      else {
+        await new Rider({ rider_avatar: req.body.rider_licence_photo, user: req.user._id }).save()
+        return res.status(200).json({ message: 'Saved' });
+      }
     }
-
-
-
-    return res.status(200).json({ message: 'Saved', biz });
-
 
   } catch (error) {
     console.log(error)
@@ -299,42 +246,27 @@ router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_l
 router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 
   try {
+    const rider = await Rider.findOne({ user: req.user._id })
     const body = req.body
+    if (rider) {
 
-    const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, body, { new: true, useFindAndModify: false })
-    return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
-
-  } catch (error) {
-    console.log(error)
-    return res.status(400).json({ success: false, message: 'operation failed ', error });
-  }
-});
-
-
-
-router.post('/rider-social-login', async (req, res) => {
-
-  try {
-    let user = await Rider.findOne({ email: req.body.email });
-
-    if (user) {
-      const token = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
-      return res.status(201).json({ token, key: process.env.JWT_KEY, email: user.email, _id: user._id });
-    } else {
-      const body = req.body
-      body.verification_code = MakeActivationCode(5)
-      body.activated = true
-      body.hashPassword = bcrypt.hashSync("password", 10);
-      let NewUser = new Rider(body);
-      let savedUser = await NewUser.save();
-      const token = await jwt.sign({ email: req.body.email, _id: savedUser._id }, process.env.JWT_KEY);
-      return res.status(200).json({ token, key: process.env.JWT_KEY, email: savedUser.email, _id: savedUser._id });
+      const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, body, { new: true, useFindAndModify: false })
+      return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', Update });
+    }
+    else {
+      body.user = req.user._id
+      await new Rider(body).save()
+      return res.status(200).json({ message: 'Saved' });
     }
   } catch (error) {
     console.log(error)
     return res.status(400).json({ success: false, message: 'operation failed ', error });
   }
 });
+
+
+
+
 router.post('/rider', [authMiddleware, authorized], async (req, res) => {
   try {
     const body = req.body
@@ -354,7 +286,7 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
 
 router.get("/riders", async (req, res) => {
   try {
-    const riders = await Rider.find({})
+    const riders = await Rider.find({}).populate('user')
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
   } catch (error) {
     console.log(error);

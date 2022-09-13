@@ -3,18 +3,7 @@ const bcrypt = require('bcryptjs')
 const Schema = mongoose.Schema;
 const RiderSchema = new Schema({
 
-    rider_name: {
-        type: String,
-        required: true
-    },
-    phone_number: {
-        type: String,
-        // required: true
-    },
-    role: {
-        type: String,
-        default: "rider"
-    },
+
     id_number: {
         type: String,
         // required: true
@@ -23,26 +12,18 @@ const RiderSchema = new Schema({
         type: String,
         // required: true
     },
-    verification_code: {
-        type: Number,
-        // required: true
-    },
+    // required: true
+
     rider_avatar: {
         type: String,
         // required: true
     },
-    email: {
-        type: String,
-        required: true
-    },
+
     rider_id_front: {
         type: String,
         // required: true
     },
-    hashPassword: {
-        type: String,
-        required: true
-    },
+
     bike_reg_plate: {
         type: String,
         // required: true
@@ -64,6 +45,10 @@ const RiderSchema = new Schema({
         // required: true
     },
     createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    user: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },

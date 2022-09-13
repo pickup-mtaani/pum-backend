@@ -11,6 +11,7 @@ const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
+var Rider = require('models/rider.model')
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { request } = require('express');
@@ -26,15 +27,10 @@ router.post('/login', async (req, res) => {
         let oldDb = req.query.olddb
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
 
-        let user
-        if (await User.findOne({ phone_number: req.body.phone_number })) {
-            user = await User.findOne({ phone_number: req.body.phone_number })
-        }
-        if (await Rider.findOne({ phone_number: req.body.phone_number })) {
-            user = await Rider.findOne({ phone_number: req.body.phone_number })
-        }
+        let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
 
-        else if (oldDb && !user) {
+
+        if (oldDb && !userOBJ) {
 
             // con.query(`SELECT * FROM user WHERE email =` + mysql.escape(req.body.email), async function (err, result, fields) {
             //     if (err) throw err;
@@ -54,12 +50,12 @@ router.post('/login', async (req, res) => {
 
             return
         }
-        console.log(user)
-        if (user && user.activated === false) {
+
+        if (userOBJ && userOBJ.activated === false) {
             return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
         }
 
-        if (!user) {
+        if (!userOBJ) {
             return res.status(402).json({ message: 'Authentication failed with wrong credentials!!' });
         }
         const { errors, isValid } = validateLoginInput(req.body);
@@ -68,15 +64,18 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: error });
         }
 
-        if (user && user.activated) {
+        if (userOBJ && userOBJ.activated) {
 
-            const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+            const password_match = await userOBJ.comparePassword(req.body.password, userOBJ.hashPassword);
             if (!password_match) {
                 return res.status(402).json({ message: 'Authentication failed with wrong credentials!!', });
             }
-            const token = await jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_KEY);
+            const token = await jwt.sign({ email: userOBJ.email, _id: userOBJ._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-
+            let user = userUpdate
+            if (userOBJ.role === "rider") {
+                user = await Rider.findOne({ user: userOBJ._id }).populate('user')
+            }
             return res.status(200).json({ token, key: process.env.JWT_KEY, user });
 
         }

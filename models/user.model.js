@@ -6,12 +6,16 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     l_name: {
         type: String,
-        required: true
+        // required: true
     },
     f_name: {
         type: String,
         // required: true
     },
+    name: {
+        type: String,
+    },
+
     phone_number: {
         type: String
         // required: true
