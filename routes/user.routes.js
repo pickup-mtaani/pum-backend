@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
     try {
         let oldDb = req.query.olddb
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-
+        let user = {}
         let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
 
 
@@ -72,12 +72,24 @@ router.post('/login', async (req, res) => {
             }
             const token = await jwt.sign({ email: userOBJ.email, _id: userOBJ._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-            let user = userUpdate
-            if (userOBJ.role === "rider") {
-                user = await Rider.findOne({ user: userOBJ._id }).populate('user')
-            }
-            return res.status(200).json({ token, key: process.env.JWT_KEY, user });
 
+            if (userOBJ.role === "rider") {
+                const rider = await Rider.findOne({ user: userOBJ._id })
+                if (!rider) {
+                    user = userOBJ
+                } else {
+                    user.bike_reg_plate = rider.bike_reg_plate
+                    user.token = token
+                    user.rider_avatar = rider.rider_avatar
+                    user.rider_licence_photo = rider.rider_licence_photo
+                    user.rider_id_front = rider.rider_id_front
+                    user.name = userOBJ.name
+                    user.phone_number = userOBJ.phone_number
+                    user.email = userOBJ.email
+                }
+            }
+
+            return res.status(200).json({ user });
         }
 
     } catch (error) {

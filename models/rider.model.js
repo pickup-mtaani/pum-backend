@@ -28,10 +28,7 @@ const RiderSchema = new Schema({
         type: String,
         // required: true
     },
-    activated: {
-        type: Boolean,
-        default: false
-    },
+
     rider_licence_photo: {
         type: String,
         // required: true
