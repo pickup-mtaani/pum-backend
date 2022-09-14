@@ -88,6 +88,9 @@ router.post('/login', async (req, res) => {
                     user.email = userOBJ.email
                 }
             }
+            else (
+                user = userOBJ
+            )
 
             return res.status(200).json({ token, user });
         }

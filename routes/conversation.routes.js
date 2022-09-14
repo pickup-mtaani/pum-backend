@@ -36,9 +36,8 @@ router.post('/conversation', [authMiddleware, authorized], async (req, res) => {
   }
 });
 router.get('/conversations', [authMiddleware, authorized], async (req, res) => {
-  console.log('lel')
-  try {
 
+  try {
     const Conversations = await Conversation.find({
       members: { $in: [req.user._id] }
     }).populate('members')
@@ -49,9 +48,7 @@ router.get('/conversations', [authMiddleware, authorized], async (req, res) => {
   }
 });
 router.get('/messages/:id', [authMiddleware, authorized], async (req, res) => {
-  console.log('lel')
   try {
-
     const Messages = await Message.find({
       conversationId: req.params.id
     }).populate('sender')

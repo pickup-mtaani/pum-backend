@@ -12,7 +12,7 @@ module.exports.validateRegisterInput = (data) => {
     data.password = !isEmpty(data.password) && data.password !== undefined ? data.password : '';
 
     if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
-        errors.name = 'First name must be between 2 to 30 chars';
+        errors.name = 'name must be between 2 to 30 chars';
     }
 
     if (Validator.isEmpty(data.phone_number)) {
