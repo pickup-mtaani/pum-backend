@@ -18,7 +18,13 @@ const RiderSchema = new Schema({
         type: String,
         // required: true
     },
-
+    chat_mates:
+        [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "user",
+            }
+        ],
     rider_id_front: {
         type: String,
         // required: true
