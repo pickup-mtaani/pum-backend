@@ -41,7 +41,7 @@ function AssignRiderModal(props) {
                                         <select name="gender" onChange={changeInput} className="bg-transparent border-b border-slate-500 pt-5 pb-5 ">
                                             <option value="">Selected Rider</option>
                                             {props.riders.map((rider, i) => (
-                                                <option key={i} value={rider._id} onChange={changeInput}>{rider.rider_name}</option>
+                                                <option key={i} value={rider._id} onChange={changeInput}>{rider.user.name}</option>
                                             ))}
 
                                         </select>

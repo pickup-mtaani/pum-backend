@@ -259,7 +259,7 @@ function Users(props) {
           pagination
           paginationServer
           progressPending={props.loading}
-          conditionalRowStyles={conditionalRowStyles}
+          // conditionalRowStyles={conditionalRowStyles}
           paginationResetDefaultPage={resetPaginationToggle}
           subHeader
           subHeaderComponent={subHeaderComponentMemo}

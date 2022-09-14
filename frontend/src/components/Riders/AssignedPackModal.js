@@ -10,34 +10,6 @@ function AssignedPackModal(props) {
     console.log(data[0])
 
 
-    // {_id: '631ba5a3a932b018eb3c1924', rider: '631b4c17aecaec632d626671', package: {…}, deleted_at: null, createdAt: '2022-09-09T20:44:19.034Z', …}
-    // createdAt: "2022-09-09T20:44:19.034Z"
-    // deleted_at: null
-    // package:
-    // businessId: "631b12b467e2b76af15bd658"
-    // createdAt: "2022-09-09T20:15:27.301Z"
-    // createdBy: {_id: '631b128467e2b76af15bd650', l_name: 'Maina', f_name: 'Eric', verification_code: 21982, deleted_at: null, …}
-    // customerName: "New customer "
-    // customerPhoneNumber: "0722334455"
-    // delivery_fee: 200
-    // isProduct: false
-    // packageName: "Shoes"
-    // package_value: 1209
-    // payment_phone_number: "0790923387"
-    // payment_status: "Not Paid"
-    // receieverAgentID: {_id: '6312cc4366dfa8b3d1695f2e', name: 'MACHAKOS', zone: '6305fa9e2ad0d5bb37f8ef58', lng: 37.2634, lat: 1.5177, …}
-    // receipt_no: "PM-BXU6K"
-    // senderAgentID: {_id: '6312cbff66dfa8b3d1695f2b', name: 'YAYA(KILIMANI)', zone: '6305fa972ad0d5bb37f8ef55', lng: 36.787758, lat: -1.293053, …}
-    // state: "pending"
-    // total_fee: 200
-    // total_payment: 180
-    // type: "agent"
-    // updatedAt: "2022-09-09T20:15:27.301Z"
-    // __v: 0
-    // _id: "631b9edf09ed770c87cad209"
-    // [[Prototype]]: Object
-    // rider: "631b4c17aecaec632d626671"
-    // updatedAt: "2022-09-09T20:44:19.034Z"
     const door_step_columns = [
 
         {
