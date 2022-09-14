@@ -3,6 +3,7 @@ var Rider = require('models/rider.model')
 var Rider_Package = require('models/rider_package.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
+var User = require('models/user.model')
 var Package = require('models/package.modal')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
@@ -364,12 +365,16 @@ router.get("/riders", async (req, res) => {
 
 router.post("/assign-riders", async (req, res) => {
   try {
+
     const riders = await new Rider_Package(req.body).save()
     const packOwner = await Package.findById(req.body.package)
     const rider = await Rider.findOne({ user: req.body.rider })
-    let chatmates = rider.chat_mates.push(packOwner.createdBy)
-    await Rider.findOneAndUpdate({ user: req.body.rider }, { chat_mates: chatmates }, { new: true, useFindAndModify: false })
 
+    let chatmates = rider.chat_mates
+    if (!rider.chat_mates.includes(packOwner.createdBy)) {
+      chatmates.push(packOwner.createdBy)
+    }
+    await Rider.findOneAndUpdate({ user: req.body.rider }, { chat_mates: chatmates }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
   } catch (error) {
     console.log(error);
