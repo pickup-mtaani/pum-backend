@@ -74,10 +74,11 @@ router.post('/login', async (req, res) => {
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
             if (userOBJ.role === "rider") {
-                const rider = await Rider.findOne({ user: userOBJ._id })
+                const rider = await Rider.findOne({ user: userOBJ._id }).populate('chat_mates', "f_name l_name")
                 if (!rider) {
                     user = userOBJ
                 } else {
+                    user.chatmates = rider.chat_mates
                     user.bike_reg_plate = rider.bike_reg_plate
                     user.token = token
                     user.rider_avatar = rider.rider_avatar

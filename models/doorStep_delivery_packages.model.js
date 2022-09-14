@@ -1,5 +1,4 @@
 var mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
 
@@ -23,10 +22,11 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+
     state: {
       type: String,
-      enum: ["pending", "delivered", "cancelled", "on-transit"],
-      default: "pending"
+      enum: ["request", "delivered", "declined", "on-transit", "fail",],
+      default: "request"
     },
     package_value: {
       type: String,

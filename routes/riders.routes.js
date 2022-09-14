@@ -5,8 +5,10 @@ var { authMiddleware, authorized } = require('middlewere/authorization.middlewer
 const router = express.Router();
 var User = require('models/user.model')
 var Package = require('models/package.modal')
+var Conversation = require('models/conversation.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
+const Message = require("models/messages.model");
 const { validatePasswordInput, validateLoginInput, validateRiderRegisterInput } = require('../va;lidations/user.validations');
 var Sent_package = require("models/package.modal.js");
 const { v4: uuidv4 } = require('uuid');
@@ -365,17 +367,34 @@ router.get("/riders", async (req, res) => {
 
 router.post("/assign-riders", async (req, res) => {
   try {
-
     const riders = await new Rider_Package(req.body).save()
     const packOwner = await Package.findById(req.body.package)
-    const rider = await Rider.findOne({ user: req.body.rider })
+    const rider = await User.findOne({ _id: req.body.rider })
+    const exists = await Conversation.findOne({
+      "members": {
+        $all: [
+          req.body.rider, packOwner.createdBy
+        ]
+      }
+    })
 
-    let chatmates = rider.chat_mates
-    if (!rider.chat_mates.includes(packOwner.createdBy)) {
-      chatmates.push(packOwner.createdBy)
+    if (exists) {
+
+      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date() }, { new: true, useFindAndModify: false })
+      await new Message({ conversationId: exists._id, sender: req.body.rider, text: `Hi  been assigned your package kindly feel free to chat` }).save()
+
+      return res.status(200).json(exists)
+    } else {
+      const newConversation = new Conversation({
+        members: [req.body.rider, packOwner.createdBy]
+      });
+
+      const savedConversation = await newConversation.save()
     }
-    await Rider.findOneAndUpdate({ user: req.body.rider }, { chat_mates: chatmates }, { new: true, useFindAndModify: false })
-    return res.status(200).json({ message: "Fetched Sucessfully", riders });
+
+    const Update = await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned" }, { new: true, useFindAndModify: false })
+
+    return res.status(200).json({ message: "Fetched Sucessfully", Update });
   } catch (error) {
     console.log(error);
     return res

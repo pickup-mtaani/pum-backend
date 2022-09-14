@@ -2,6 +2,8 @@ const express = require("express");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
+var Unavailable = require("models/unavailable.model");
+var Declined = require("models/declined.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
 var Sent_package = require("models/package.modal.js");
@@ -286,6 +288,75 @@ router.post(
 //     }
 
 // });
+
+
+router.put("/agent/package/:id/:state", async (req, res) => {
+  try {
+    await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+
+    if (req.params.state === "unavailable") {
+      await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    return res.status(200).json({ message: "Sucessfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/agents-packages/:state", async (req, res) => {
+  try {
+    console.log(req.params.state)
+    const agent_packages = await Sent_package.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100);
+
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.put("/door-step/package/:id/:state", async (req, res) => {
+  try {
+    await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+
+    if (req.params.state === "declined") {
+      await new Declined({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    return res.status(200).json({ message: "Sucessfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/door-step-packages/:state", async (req, res) => {
+  try {
+    console.log(req.params.state)
+    const agent_packages = await Door_step_Sent_package.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100);
+
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+
 
 router.get("/packages", async (req, res) => {
   try {

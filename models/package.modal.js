@@ -70,8 +70,8 @@ const PackageSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["pending", "delivered", "cancelled", "on-transit", "assigned"],
-      default: "pending"
+      enum: ["request", "delivered", "cancelled", "on-transit", "assigned", "dropped", "picked", "unavailable"],
+      default: "request"
     },
 
     isProduct: {
