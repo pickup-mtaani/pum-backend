@@ -86,6 +86,7 @@ router.post('/login', async (req, res) => {
                     user.name = userOBJ.name
                     user.phone_number = userOBJ.phone_number
                     user.email = userOBJ.email
+                    user.role = userOBJ.role
                 }
             }
             else (
