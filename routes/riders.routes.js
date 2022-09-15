@@ -392,7 +392,7 @@ router.post("/assign-riders", async (req, res) => {
       const savedConversation = await newConversation.save()
     }
 
-    const Update = await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned" }, { new: true, useFindAndModify: false })
+    const Update = await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned", assignedTo: req.body.rider }, { new: true, useFindAndModify: false })
 
     return res.status(200).json({ message: "Fetched Sucessfully", Update });
   } catch (error) {

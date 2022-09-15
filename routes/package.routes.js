@@ -37,7 +37,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `PM-${Makeid(5)}`;
-        const newPackage = await new Door_step_Sent_package(packages[i]).save();
+        packages[i].assignedTo = packages[i].rider
+        await new Door_step_Sent_package(packages[i]).save();
+
       }
 
       Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -307,10 +309,13 @@ router.put("/agent/package/:id/:state", async (req, res) => {
   }
 });
 
-router.get("/agents-packages/:state", async (req, res) => {
+router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.params.state)
-    const agent_packages = await Sent_package.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100);
+
+    const agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'name')
+      .populate('senderAgentID', 'name')
 
     return res
       .status(200)
@@ -323,13 +328,14 @@ router.get("/agents-packages/:state", async (req, res) => {
   }
 });
 
-router.put("/door-step/package/:id/:state", async (req, res) => {
+router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
 
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }
+
     return res.status(200).json({ message: "Sucessfully" });
 
   } catch (error) {
@@ -340,10 +346,9 @@ router.put("/door-step/package/:id/:state", async (req, res) => {
   }
 });
 
-router.get("/door-step-packages/:state", async (req, res) => {
+router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.params.state)
-    const agent_packages = await Door_step_Sent_package.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100);
+    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100);
 
     return res
       .status(200)

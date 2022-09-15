@@ -32,6 +32,10 @@ const doorstepSchema = new Schema(
       type: String,
       // required: true
     },
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
 
     payment_amount: {
       type: Number,

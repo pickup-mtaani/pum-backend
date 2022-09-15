@@ -68,6 +68,10 @@ const PackageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "agent",
     },
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
     state: {
       type: String,
       enum: ["request", "delivered", "cancelled", "on-transit", "assigned", "dropped", "picked", "unavailable"],
