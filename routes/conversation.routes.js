@@ -17,7 +17,7 @@ router.post('/conversation', [authMiddleware, authorized], async (req, res) => {
 
     if (exists) {
       conversationId = exists._id
-      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date() }, { new: true, useFindAndModify: false })
+      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: req.body.text }, { new: true, useFindAndModify: false })
       await new Message({ conversationId, sender: req.user._id, text: req.body.text }).save()
       return res.status(200).json(exists)
     } else {

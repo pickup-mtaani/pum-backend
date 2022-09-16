@@ -8,6 +8,10 @@ const ConversationSchema = new mongoose.Schema(
         updated_at: {
             type: Date,
             default: new Date(),
+        },
+        last_message: {
+            type: String,
+            default: `Chat with me ${new Date()}`,
         }
     },
 

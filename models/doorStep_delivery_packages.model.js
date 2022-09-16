@@ -25,7 +25,7 @@ const doorstepSchema = new Schema(
 
     state: {
       type: String,
-      enum: ["request", "delivered", "declined", "on-transit", "fail", "assigned", "dropped", "assigned-warehouse", "warehouse-transit"],
+      enum: ["request", "delivered", "declined", "on-transit", "fail",],
       default: "request"
     },
     package_value: {

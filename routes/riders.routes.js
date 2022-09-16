@@ -380,7 +380,7 @@ router.post("/assign-riders", async (req, res) => {
 
     if (exists) {
 
-      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date() }, { new: true, useFindAndModify: false })
+      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
       await new Message({ conversationId: exists._id, sender: req.body.rider, text: `Hi  been assigned your package kindly feel free to chat` }).save()
 
       return res.status(200).json(exists)
