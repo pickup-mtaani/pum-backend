@@ -351,8 +351,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name');
-
+    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
     return res
       .status(200)
       .json(agent_packages);
