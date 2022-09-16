@@ -6,32 +6,10 @@ var { authMiddleware, authorized } = require('middlewere/authorization.middlewer
 router.post('/conversation', [authMiddleware, authorized], async (req, res) => {
 
   try {
-    let conversationId
-    const exists = await Conversation.findOne({
-      "members": {
-        $all: [
-          req.user._id, req.body.recieverId
-        ]
-      }
-    })
-
-    if (exists) {
-      conversationId = exists._id
-      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: req.body.text }, { new: true, useFindAndModify: false })
-      await new Message({ conversationId, sender: req.user._id, text: req.body.text }).save()
-      return res.status(200).json(exists)
-    } else {
-      const newConversation = new Conversation({
-        members: [req.user._id, req.body.recieverId]
-      });
-
-      const savedConversation = await newConversation.save()
-      conversationId = savedConversation._id
-      await new Message({ conversationId, sender: req.user._id, text: req.body.text }).save()
-      return res.status(200).json(savedConversation)
-
-    }
-
+    const exists = await Conversation.findOne({ _id: req.body.conversation_id })
+    await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: req.body.text }, { new: true, useFindAndModify: false })
+    await new Message({ conversationId: exists._id, sender: req.user._id, text: req.body.text }).save()
+    return res.status(200).json(exists)
   } catch (error) {
     console.log(error)
     res.status(500).json(error)

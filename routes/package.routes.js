@@ -5,6 +5,8 @@ var Agent = require("models/agents.model");
 var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
+var Conversation = require('models/conversation.model')
+const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
 var Sent_package = require("models/package.modal.js");
@@ -331,10 +333,32 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
 
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
+    const Owner = await Door_step_Sent_package.findById(req.params.id);
     await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
 
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    if (req.params.state === "on-transit") {
+      const exists = await Conversation.findOne({
+        "members": {
+          $all: [
+            req.user._id, Owner.createdBy
+          ]
+        }
+      })
+      if (exists) {
+        await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
+        await new Message({ conversationId: exists._id, sender: req.user_id, text: `Hi  been assigned your package kindly feel free to chat` }).save()
+      } else {
+        const newConversation = new Conversation({
+          members: [req.user._id, Owner.createdBy]
+        });
+
+        await newConversation.save()
+
+      }
+
     }
     if (req.params.state === "unavailable") {
       await new UnavailableDoorStep({ package: req.params.id, reason: req.body.reason }).save()
