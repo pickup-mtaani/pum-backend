@@ -3,6 +3,7 @@ var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
 var Unavailable = require("models/unavailable.model");
+var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js");
@@ -335,7 +336,9 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }
-
+    if (req.params.state === "unavailable") {
+      await new UnavailableDoorStep({ package: req.params.id, reason: req.body.reason }).save()
+    }
     return res.status(200).json({ message: "Sucessfully" });
 
   } catch (error) {
@@ -348,7 +351,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100);
+    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name');
 
     return res
       .status(200)
