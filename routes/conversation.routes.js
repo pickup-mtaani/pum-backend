@@ -22,7 +22,7 @@ router.get('/conversations', [authMiddleware, authorized], async (req, res) => {
     const Conversations = await Conversation.find({
       members: { $in: [req.user._id] },
       createdAt: { $gte: startOfToday }
-    }).populate('members', "f_name l_name name").sort({ createdAt: -1 })
+    }).populate('members', "f_name l_name name").sort({ createdAt: 1 })
     res.status(200).json(Conversations)
   } catch (error) {
     console.log(error)
