@@ -80,96 +80,6 @@ var upload = multer({
 });
 
 
-// router.post('/register-rider', async (req, res) => {
-//   try {
-//     let user
-//     let rider
-//     if (req.body.phone_number) {
-//       req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-//       user = await User.findOne({ phone_number: req.body.phone_number })
-
-//       rider = await Rider.findOne({ phone_number: req.body.phone_number })
-//     }
-//     if (user || rider) {
-//       return res.status(400).json({ success: false, message: 'The phone No you entered is already used by another account' });
-//     }
-//     const { errors, isValid } = validateRiderRegisterInput(req.body);
-//     if (!isValid) {
-//       let error = Object.values(errors)[0]
-//       return res.status(400).json({ message: error });
-//     }
-//     const body = req.body
-
-//     body.verification_code = MakeActivationCode(5)
-//     body.hashPassword = bcrypt.hashSync(body.password, 10);
-//     const newRider = new Rider(body)
-//     const saved = await newRider.save()
-
-//     const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.rider_name}\nYour Activation Code for Pickup mtaani rider app is  ${body.verification_code} ` }
-//     await SendMessage(textbody)
-//     return res.status(200).json({ message: 'Rider Added successfully', saved: saved });
-
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(400).json({ success: false, message: 'operation failed ', error });
-//   }
-
-// });
-
-// router.post('/rider/:id/resend-token', async (req, res) => {
-//   try {
-//     const rider = await Rider.findById(req.params.id);
-//     const textbody = { address: `${rider.phone_number}`, Body: `Hi ${rider.rider_name}\nYour Activation Code for Pickup mtaani  app is  ${rider.verification_code} ` }
-//     await SendMessage(textbody)
-//     return res.status(200).json({ success: false, message: 'Activation resent ' });
-//   } catch (error) {
-//     return res.status(400).json({ success: false, message: 'operation failed ', error });
-//   }
-// });
-
-// router.put('/rider/:id/activate', async (req, res) => {
-//   try {
-//     const rider = await Rider.findOne({ _id: req.params.id });
-//     if (parseInt(rider.verification_code) !== parseInt(req.body.code)) {
-//       return res.status(400).json({ message: 'Wrong Code kindly re-enter the code correctly' });
-//     }
-//     else {
-//       let riderObj = await Rider.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
-//       const token = await jwt.sign({ phone_number: riderObj.phone_number, _id: rider._id }, process.env.JWT_KEY);
-//       return res.status(200).json({ message: 'rider Activated successfully and can now login !!', token });
-//     }
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(400).json({ success: false, message: 'operation failed ', error });
-
-//   }
-
-// });
-
-// router.put('/rider/reset-password', async (req, res) => {
-//   try {
-//     const body = req.body
-//     const { errors, isValid } = validatePasswordInput(req.body);
-//     if (!isValid) {
-//       let error = Object.values(errors)[0]
-//       return res.status(400).json({ message: error });
-//     }
-//     let phone = await Format_phone_number(req.body.phone_number)
-//     let user = await Rider.findOne({ phone_number: phone })
-
-//     if (!user) {
-//       return res.status(400).json({ success: false, message: 'User Not Found ' });
-//     }
-//     let hashPassword = bcrypt.hashSync(body.new_password, 10);
-
-//     const Update = await Rider.findOneAndUpdate({ phone_number: user.phone_number }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
-//     return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
-
-//   } catch (error) {
-//     return res.status(400).json({ success: false, message: 'operation failed ', error });
-//   }
-// });
-
 
 router.post('/update-rider-avatar', [authMiddleware, authorized], upload.single('rider_avatar'), async (req, res) => {
   try {
@@ -355,7 +265,8 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
 
 router.get("/riders", async (req, res) => {
   try {
-    const riders = await Rider.find({}).populate('user')
+    // const riders = await User.find({ role: 'rider' })
+    const riders = await Rider.find().populate('user')
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
   } catch (error) {
     console.log(error);
@@ -367,9 +278,11 @@ router.get("/riders", async (req, res) => {
 
 router.post("/assign-riders", async (req, res) => {
   try {
+
     const riders = await new Rider_Package(req.body).save()
     const packOwner = await Package.findById(req.body.package)
     const rider = await User.findOne({ _id: req.body.rider })
+
     const exists = await Conversation.findOne({
       "members": {
         $all: [
@@ -382,7 +295,7 @@ router.post("/assign-riders", async (req, res) => {
 
       await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
       await new Message({ conversationId: exists._id, sender: req.body.rider, text: `Hi  been assigned your package kindly feel free to chat` }).save()
-
+      await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned", assignedTo: req.body.rider }, { new: true, useFindAndModify: false })
       return res.status(200).json(exists)
     } else {
       const newConversation = new Conversation({
@@ -390,11 +303,12 @@ router.post("/assign-riders", async (req, res) => {
       });
 
       const savedConversation = await newConversation.save()
+      await new Message({ conversationId: savedConversation._id, sender: req.body.rider, text: `Hi  been assigned your package kindly feel free to chat` }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned", assignedTo: req.body.rider }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ message: "assigned sucessfully" });
     }
 
-    const Update = await Sent_package.findOneAndUpdate({ _id: req.body.package }, { state: "assigned", assignedTo: req.body.rider }, { new: true, useFindAndModify: false })
 
-    return res.status(200).json({ message: "Fetched Sucessfully", Update });
   } catch (error) {
     console.log(error);
     return res

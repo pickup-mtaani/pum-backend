@@ -10,10 +10,11 @@ function AssignRiderModal(props) {
         const { value } = e.target;
         const data1 = { package: props.data._id, rider: value }
         await props.assignRider(data1)
+
         await props.fetch()
 
         setRider(value);
-        toggle(false)
+        await props.toggle()
     };
     return (
 
@@ -37,25 +38,15 @@ function AssignRiderModal(props) {
                                             </span>
                                         </button>
                                     </div>
-                                    <div className="relative p-6 flex justify-center items-center">
+                                    {!props.loading && <div className="relative p-6 flex justify-center items-center">
                                         <select name="gender" onChange={changeInput} className="bg-transparent border-b border-slate-500 pt-5 pb-5 ">
                                             <option value="">Selected Rider</option>
                                             {props.riders.map((rider, i) => (
-                                                <option key={i} value={rider._id} onChange={changeInput}>{rider.user.name}</option>
+                                                <option key={i} value={rider.user._id} onChange={changeInput}>{rider.user.name}</option>
                                             ))}
 
                                         </select>
-                                    </div>
-                                    <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-                                        <button
-                                            className="text-green-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
-                                            type="button"
-                                            onClick={props.toggle}
-                                        >
-                                            Ok
-                                        </button>
-
-                                    </div>
+                                    </div>}
 
                                 </div>
                             </div>

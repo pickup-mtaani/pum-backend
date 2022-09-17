@@ -405,24 +405,52 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
 
 router.get("/packages", async (req, res) => {
   try {
-    const agent_packages = await Sent_package.find({})
+    let limit
 
-      .sort({ createdAt: -1 })
-      .limit(100);
+    if (req.query.limit) {
+      limit = req.query.limit
+    }
 
-    const doorstep_packages = await Door_step_Sent_package.find({
-      businessId: req.params.id
-    })
-      .populate(
+    else {
+      limit = 100
+    }
+    let agent_packages
+    let doorstep_packages
+    if (req.query.state === "all") {
+      agent_packages = await Sent_package.find().sort({ createdAt: -1 })
+        .limit(limit).populate(
 
-        "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
-      )
-      .sort({ createdAt: -1 })
-      .limit(100);
+          "assignedTo", "name phone_number"
+        );
+      doorstep_packages = await Door_step_Sent_package.find({
+        // businessId: req.params.id
+      })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+        ).populate("assignedTo", "name phone_number").populate("businessId", "name")
+        .sort({ createdAt: -1 })
+        .limit(limit);
+    } else {
+      agent_packages = await Sent_package.find({ state: req.query.state }).sort({ createdAt: -1 })
+        .limit(limit).populate(
+
+          "assignedTo", "name phone_number"
+        );
+      doorstep_packages = await Door_step_Sent_package.find({
+        state: req.query.state
+      })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+        ).populate("assignedTo", "name phone_number").populate("businessId", "name")
+        .sort({ createdAt: -1 })
+        .limit(limit);
+    }
+
+
     const shelves = await Rent.find({}).populate(
       "packages",
       "customerPhoneNumber  package_value packageName customerName _id"
-    );
+    ).populate("businessId", "name");
     return res
       .status(200)
       .json({

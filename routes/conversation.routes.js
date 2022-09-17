@@ -40,4 +40,15 @@ router.get('/messages/:id', [authMiddleware, authorized], async (req, res) => {
     res.status(500).json(error)
   }
 });
+
+router.post('/conversations/search', async (req, res) => {
+
+  var word = req.query.word
+  var searchKey = new RegExp(`${word}`, 'i')
+  Conversation.find({ title: searchKey }, function (err, note) {
+    if (note) {
+      return res.status(200).json({ success: true, message: 'note  retrieved successfully ', note });
+    }
+  });
+})
 module.exports = router;
