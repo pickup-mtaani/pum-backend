@@ -211,7 +211,7 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 
   try {
     const rider = await Rider.findOne({ user: req.user._id })
-    console.log(rider)
+
     let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
     let user = {}
     const body = req.body
