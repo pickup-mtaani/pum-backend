@@ -21,7 +21,7 @@ router.get('/conversations', [authMiddleware, authorized], async (req, res) => {
     var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const Conversations = await Conversation.find({
       members: { $in: [req.user._id] },
-      createdAt: { $gte: startOfToday }
+      // createdAt: { $gte: startOfToday }
     }).populate('members', "f_name l_name name").sort({ createdAt: 1 })
     res.status(200).json(Conversations)
   } catch (error) {
@@ -33,7 +33,7 @@ router.get('/messages/:id', [authMiddleware, authorized], async (req, res) => {
   try {
     const Messages = await Message.find({
       conversationId: req.params.id
-    }).populate('sender').sort({ createdAt: -1 })
+    }).populate('sender').sort({ createdAt: 1 })
     res.status(200).json(Messages)
   } catch (error) {
     console.log(error)
