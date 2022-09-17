@@ -19,8 +19,8 @@ module.exports.validateRegisterInput = (data) => {
         errors.phone_number = 'phone number  field is required';
     }
 
-    if (!Validator.isLength(data.password, { min: 8, })) {
-        errors.password = 'Password must be at least 8 characters';
+    if (!Validator.isLength(data.password, { min: 6, })) {
+        errors.password = 'Password must be at least 6 characters';
     }
 
     if (Validator.isEmpty(data.password)) {
@@ -67,8 +67,8 @@ module.exports.validateRiderRegisterInput = (data) => {
         errors.phone_number = 'phone number  field is required';
     }
 
-    if (!Validator.isLength(data.password, { min: 8, })) {
-        errors.password = 'Password must be at least 8 characters';
+    if (!Validator.isLength(data.password, { min: 6, })) {
+        errors.password = 'Password must be at least 6 characters';
     }
 
     if (Validator.isEmpty(data.password)) {
@@ -102,8 +102,8 @@ module.exports.validateAdminRegisterInput = (data) => {
         errors.phone_number = 'phone number  field is required';
     }
 
-    if (!Validator.isLength(data.password, { min: 8, })) {
-        errors.password = 'Password must be at least 8 characters';
+    if (!Validator.isLength(data.password, { min: 6, })) {
+        errors.password = 'Password must be at least 6 characters';
     }
 
     if (Validator.isEmpty(data.password)) {

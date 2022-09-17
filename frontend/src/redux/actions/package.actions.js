@@ -8,8 +8,36 @@ export const getParcels = (data1) => async (dispatch) => {
     let payload = [];
     const { data } = await axios.get(`/api/packages?limit=${limit}&state=${state}`);
     payload = data;
-    console.log(data);
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
+export const getdoorstep = (data1) => async (dispatch) => {
+
+  try {
+    const { limit, state } = data1
+    dispatch({ type: "FETCH_DOORSTEP" });
+    let payload = [];
+    const { data } = await axios.get(`/api/packages?limit=${limit}&state=${state}`);
+    payload = data;
+    dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+export const getagentParcels = (data1) => async (dispatch) => {
+
+  try {
+    const { limit, state } = data1
+    dispatch({ type: "FETCH_AGENTS_PACKAGES" });
+    let payload = [];
+    const { data } = await axios.get(`/api/packages?limit=${limit}&state=${state}`);
+    payload = data;
+    dispatch({ type: "FETCH_AGENTS_PACKAGES_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
     console.log(error)

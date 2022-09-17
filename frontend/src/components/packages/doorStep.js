@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-import { getParcels } from '../../redux/actions/package.actions'
+import { getdoorstep } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -95,113 +95,28 @@ function Doorstep(props) {
     const changeInput = async (e) => {
         const { value } = e.target;
         setstate(value)
-        let result = await props.getParcels({ limit: limit, state: value })
+        let result = await props.getdoorstep({ limit: limit, state: value })
         await props.get_riders()
 
         setData(result);
     };
-    const delivery_columns = [
 
-
+    const columns = [
         {
             sortable: true,
-            name: 'Name',
+            name: 'Package',
             minWidth: '250px',
+
             selector: row => row.packageName
         },
         {
             sortable: true,
-            name: 'Value',
+            name: 'Package value',
             minWidth: '250px',
+
             selector: row => row.package_value
         },
-        {
-            sortable: true,
-            name: 'Reciept',
-            minWidth: '250px',
-            selector: row => row.receipt_no
-        },
-        {
-            sortable: true,
-            name: 'Reciept',
-            minWidth: '250px',
-            selector: row => row.customerName
-        },
-        {
-            sortable: true,
-            name: 'Customer Phone',
-            minWidth: '250px',
-            selector: row => row.customerPhoneNumber
-        },
-        {
-            sortable: true,
-            name: 'Delivery Fee',
-            minWidth: '250px',
-            selector: row => row.delivery_fee
-        },
-        {
-            sortable: true,
-            name: 'Payment Status',
-            minWidth: '250px',
-            selector: row => row.payment_status
-        },
 
-        {
-            sortable: true,
-            name: 'Total Fee Paid',
-            minWidth: '250px',
-            selector: row => row.total_fee
-        },
-
-        // {
-        //   sortable: true,
-        //   name: 'Business Name',
-        //   minWidth: '250px',
-        //   selector: row => row.businessId?.name
-        // },
-        {
-            sortable: true,
-            name: 'Sent At ',
-            minWidth: '250px',
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-            sortable: true,
-            name: 'Assign Rider',
-            minWidth: '150px',
-            selector: row => <>
-                {row.state !== "assigned" ? <div className='px-2 py-10 '>
-                    <button style={{ backgroundColor: row.state !== "assigned" ? "green" : "red", padding: 5 }} onClick={() => { setShowModal(true); setItem(row) }}>{row.state !== "assigned" ? "Assign" : 'Already Assigned'} </button>
-
-                </div> : row?.assignedTo?.name}
-            </>
-        },
-
-
-    ]
-
-    const columns = [
-
-        // {
-        //   sortable: true,
-        //   name: 'Packages Sent',
-        //   minWidth: '250px',
-        //   selector: row => (<>
-        //     {row.packages.map((pack, i) => (
-        //       <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-        //         <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-        //       </div>
-        //     ))}
-
-        //   </>)
-        // },
-        {
-            sortable: true,
-            name: 'Total Payment',
-            minWidth: '250px',
-            // total_payment_amount: total_payment_amount
-            selector: row => row.total_payment_amount
-        },
         {
             sortable: true,
             name: 'Payment Status',
@@ -222,17 +137,16 @@ function Doorstep(props) {
         },
         {
             sortable: true,
-            name: 'Details',
-            minWidth: '150px',
-            selector: row => <>
-                <button onClick={() => { setShowModal(true); setItem(row.packages) }}>View Details  </button>
-            </>
+            name: 'Assigned to ',
+            minWidth: '250px',
+            selector: row => row?.assignedTo?.name,
         },
+
 
     ]
     const handlePerRowsChange = async (newPerPage) => {
         setLimit(newPerPage)
-        let result = await props.getParcels({ limit: newPerPage, state: state })
+        let result = await props.getdoorstep({ limit: newPerPage, state: state })
         await props.get_riders()
 
         setData(result);
@@ -265,7 +179,7 @@ function Doorstep(props) {
         );
     }, [searchValue, date, showModal]);
     const fetch = async () => {
-        let result = await props.getParcels({ limit: limit, state: state })
+        let result = await props.getdoorstep({ limit: limit, state: state })
         await props.get_riders()
 
         setData(result);
@@ -305,13 +219,12 @@ Doorstep.propTypes = {}
 const mapStateToProps = (state) => {
     return {
         riders: state.ridersDetails.riders,
-        packages: state.PackageDetails.packages,
-        loading: state.PackageDetails.loading,
+
+        loading: state.PackageDetails.doorloading,
         to_door_packages: state.PackageDetails.to_door_packages,
-        rent_shelf: state.PackageDetails.rented_shelf_packages
-        // error: state.userDetails.error,
+
     };
 };
 
-export default connect(mapStateToProps, { getParcels, get_riders, assignRider })(Doorstep)
+export default connect(mapStateToProps, { getdoorstep, get_riders, assignRider })(Doorstep)
 

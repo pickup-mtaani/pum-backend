@@ -5,6 +5,8 @@ const initialState = {
   packages: [],
   to_door_packages: [],
   rented_shelf_packages: [],
+  agentloading: true,
+  doorloading: true,
   loading: true,
 };
 
@@ -76,6 +78,23 @@ export default function store(state = initialState, action) {
         loading: true,
         error: action.payload,
       };
+    case "FETCH_AGENTS_PACKAGES":
+      return {
+        ...state,
+        agentloading: true,
+      };
+    case "FETCH_AGENTS_PACKAGES_SUCCESSFUL":
+      return {
+        ...state,
+        agentloading: false,
+        packages: action.payload.agent_packages,
+      };
+    case "FETCH_AGENTS_PACKAGES_FAIL":
+      return {
+        ...state,
+        agentloading: true,
+        error: action.payload,
+      };
     case "FETCH_TODOS":
       return {
         ...state,
@@ -85,14 +104,31 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        packages: action.payload.agent_packages,
-        to_door_packages: action.payload.doorstep_packages,
+
         rented_shelf_packages: action.payload.shelves
       };
     case "FETCH_TODOS_FAIL":
       return {
         ...state,
         loading: true,
+        error: action.payload,
+      };
+    case "FETCH_DOORSTEP":
+      return {
+        ...state,
+        doorloading: true,
+      };
+    case "FETCH_DOORSTEP_SUCCESSFUL":
+      return {
+        ...state,
+        doorloading: false,
+        to_door_packages: action.payload.doorstep_packages,
+
+      };
+    case "FETCH_DOORSTEP_FAIL":
+      return {
+        ...state,
+        doorloading: true,
         error: action.payload,
       };
 

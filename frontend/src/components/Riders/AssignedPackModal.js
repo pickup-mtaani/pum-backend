@@ -16,7 +16,7 @@ function AssignedPackModal(props) {
             sortable: true,
             name: 'Name',
             minWidth: '250px',
-            // total_payment_amount: total_payment_amount
+
             selector: row => row.package?.packageName
         },
         {

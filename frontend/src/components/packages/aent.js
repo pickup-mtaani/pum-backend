@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-import { getParcels } from '../../redux/actions/package.actions'
+import { getagentParcels } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -100,7 +100,7 @@ function Agent(props) {
     const changeInput = async (e) => {
         const { value } = e.target;
         setstate(value)
-        let result = await props.getParcels({ limit: limit, state: value })
+        let result = await props.getagentParcels({ limit: limit, state: value })
         await props.get_riders()
 
         setData(result);
@@ -159,12 +159,6 @@ function Agent(props) {
             selector: row => row.total_fee
         },
 
-        // {
-        //   sortable: true,
-        //   name: 'Business Name',
-        //   minWidth: '250px',
-        //   selector: row => row.businessId?.name
-        // },
         {
             sortable: true,
             name: 'Sent At ',
@@ -189,7 +183,7 @@ function Agent(props) {
 
     const handlePerRowsChange = async (newPerPage) => {
         setLimit(newPerPage)
-        let result = await props.getParcels({ limit: newPerPage, state: state })
+        let result = await props.getagentParcels({ limit: newPerPage, state: state })
         await props.get_riders()
 
         setData(result);
@@ -222,7 +216,7 @@ function Agent(props) {
         );
     }, [searchValue, date, showModal]);
     const fetch = async () => {
-        let result = await props.getParcels({ limit: limit, state: state })
+        let result = await props.getagentParcels({ limit: limit, state: state })
         await props.get_riders()
 
         setData(result);
@@ -271,12 +265,10 @@ const mapStateToProps = (state) => {
     return {
         riders: state.ridersDetails.riders,
         packages: state.PackageDetails.packages,
-        loading: state.PackageDetails.loading,
-        to_door_packages: state.PackageDetails.to_door_packages,
-        rent_shelf: state.PackageDetails.rented_shelf_packages
-        // error: state.userDetails.error,
+        loading: state.PackageDetails.agentloading,
+
     };
 };
 
-export default connect(mapStateToProps, { getParcels, get_riders, assignRider })(Agent)
+export default connect(mapStateToProps, { getagentParcels, get_riders, assignRider })(Agent)
 
