@@ -86,6 +86,7 @@ router.post('/login', async (req, res) => {
                     user.rider_id_front = rider.rider_id_front
                     user.name = userOBJ.name
                     user.phone_number = userOBJ.phone_number
+                    user.rider_id = userOBJ._id
                     user.email = userOBJ.email
                     user.role = userOBJ.role
                 }
