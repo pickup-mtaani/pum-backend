@@ -145,6 +145,9 @@ router.post('/register', async (req, res) => {
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
         const saved = await NewUser.save();
+        if (req.body.role === "rider") {
+            await new Rider({ user: saved._id }).save()// user
+        }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         await SendMessage(textbody)
 
@@ -164,7 +167,7 @@ router.post('/register', async (req, res) => {
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
-
+        console.log(error);
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

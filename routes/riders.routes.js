@@ -83,10 +83,13 @@ var upload = multer({
 
 router.post('/update-rider-avatar', [authMiddleware, authorized], upload.single('rider_avatar'), async (req, res) => {
   try {
+
     const rider = await Rider.findOne({ user: req.user._id })
+
     let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
     const url = req.protocol + '://' + req.get('host');
     if (req.file) {
+
       const body = req.body
       body.rider_avatar = url + '/uploads/rider_avatar/' + req.file.filename
 
@@ -134,21 +137,22 @@ router.post('/update-rider-id-front', [authMiddleware, authorized], uploadrider_
         body.rider_id_front = url + '/uploads/Ids/' + req.file.filename
 
         const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_id_front: req.body.rider_id_front }, { new: true, useFindAndModify: false })
-        user.bike_reg_plate = Update.bike_reg_plate
-        user.rider_avatar = Update.rider_avatar
-        user.rider_licence_photo = Update.rider_licence_photo
-        user.rider_id_front = Update.rider_id_front
+        user.bike_reg_plate = rider?.bike_reg_plate
+        user.rider_avatar = rider?.rider_avatar
+        user.rider_licence_photo = rider?.rider_licence_photo
+        user.rider_id_front = rider?.rider_id_front
         user.name = userOBJ.name
         user.phone_number = userOBJ.phone_number
         user.email = userOBJ.email
         user.role = userOBJ.role
+
         return res.status(200).json({ success: true, message: 'Rider Updated Successfully ', user });
       } else {
         const Update = await new Rider({ rider_avatar: req.body.rider_id_front, user: req.user._id }).save()
-        user.bike_reg_plate = Update.bike_reg_plate
-        user.rider_avatar = Update.rider_avatar
-        user.rider_licence_photo = Update.rider_licence_photo
-        user.rider_id_front = Update.rider_id_front
+        user.bike_reg_plate = rider?.bike_reg_plate
+        user.rider_avatar = rider?.rider_avatar
+        user.rider_licence_photo = rider?.rider_licence_photo
+        user.rider_id_front = rider?.rider_id_front
         user.name = userOBJ.name
         user.phone_number = userOBJ.phone_number
         user.email = userOBJ.email
@@ -174,10 +178,10 @@ router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_l
         body.rider_licence_photo = url + '/uploads/licence/' + req.file.filename
 
         const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, { rider_licence_photo: req.body.rider_licence_photo }, { new: true, useFindAndModify: false })
-        user.bike_reg_plate = Update.bike_reg_plate
-        user.rider_avatar = Update.rider_avatar
-        user.rider_licence_photo = Update.rider_licence_photo
-        user.rider_id_front = Update.rider_id_front
+        user.bike_reg_plate = rider?.bike_reg_plate
+        user.rider_avatar = rider?.rider_avatar
+        user.rider_licence_photo = rider?.rider_licence_photo
+        user.rider_id_front = rider?.rider_id_front
         user.name = userOBJ.name
         user.phone_number = userOBJ.phone_number
         user.email = userOBJ.email
@@ -203,21 +207,21 @@ router.post('/update-rider-licence', [authMiddleware, authorized], uploadrider_l
     return res.status(400).json({ success: false, message: 'operation failed ', error });
   }
 });
-
 router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 
   try {
     const rider = await Rider.findOne({ user: req.user._id })
+    console.log(rider)
     let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
     let user = {}
     const body = req.body
     if (rider) {
 
       const Update = await Rider.findOneAndUpdate({ _id: req.user._id }, body, { new: true, useFindAndModify: false })
-      user.bike_reg_plate = Update.bike_reg_plate
-      user.rider_avatar = Update.rider_avatar
-      user.rider_licence_photo = Update.rider_licence_photo
-      user.rider_id_front = Update.rider_id_front
+      user.bike_reg_plate = rider?.bike_reg_plate
+      user.rider_avatar = rider?.rider_avatar
+      user.rider_licence_photo = rider?.rider_licence_photo
+      user.rider_id_front = rider?.rider_id_front
       user.name = userOBJ.name
       user.phone_number = userOBJ.phone_number
       user.email = userOBJ.email
@@ -227,10 +231,10 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
     else {
       body.user = req.user._id
       const Update = await new Rider(body).save()
-      user.bike_reg_plate = Update.bike_reg_plate
-      user.rider_avatar = Update.rider_avatar
-      user.rider_licence_photo = Update.rider_licence_photo
-      user.rider_id_front = Update.rider_id_front
+      user.bike_reg_plate = rider?.bike_reg_plate
+      user.rider_avatar = rider?.rider_avatar
+      user.rider_licence_photo = rider?.rider_licence_photo
+      user.rider_id_front = rider?.rider_id_front
       user.name = userOBJ.name
       user.phone_number = userOBJ.phone_number
       user.email = userOBJ.email
@@ -261,8 +265,6 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
   }
 
 });
-
-
 router.get("/riders", async (req, res) => {
   try {
     // const riders = await User.find({ role: 'rider' })
