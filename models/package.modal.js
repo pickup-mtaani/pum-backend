@@ -28,7 +28,7 @@ const PackageSchema = new Schema(
     },
     receipt_no: {
       type: String,
-      // required: true
+
     },
     createdBy: {
       type: Schema.Types.ObjectId,

@@ -13,7 +13,7 @@ const BizSchema = new Schema({
     },
     logo: {
         type: String,
-        // required: true
+
     },
 
 
@@ -33,11 +33,11 @@ const BizSchema = new Schema({
 
     till_No: {
         type: Number,
-        // required: true
+
     },
     Mpesa_No: {
         type: Number,
-        // required: true
+
     },
     loc: {
         type: { type: String },
@@ -47,7 +47,7 @@ const BizSchema = new Schema({
     loc: {
         lat: {
             type: String,
-            // required: true
+
         },
         lng: {
             type: String,

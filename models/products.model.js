@@ -16,11 +16,11 @@ const ProductSchema = new Schema({
     },
     images: {
         type: Array
-        // required: true
+
     },
     colors: {
         type: Array,
-        // required: true
+
     },
     price: {
         type: Number,
@@ -32,7 +32,7 @@ const ProductSchema = new Schema({
     },
     unit: {
         type: String,
-        // required: true
+
     },
     min_order: {
         type: Number,

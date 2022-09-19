@@ -7,7 +7,7 @@ const StockSchema = new Schema({
     },
     unit: {
         type: String,
-        // required: true
+
     },
     business: {
         type: Schema.Types.ObjectId,

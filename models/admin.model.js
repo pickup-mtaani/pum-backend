@@ -12,10 +12,10 @@ const AdminSchema = new Schema({
     },
     phone_number: {
         type: String
-        // required: true
+
     },
-    
-    
+
+
     deleted_at: {
         type: Date,
         default: null
@@ -28,17 +28,17 @@ const AdminSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    
+
     gender: {
         type: String,
         default: 'Not Specified'
     },
-   
+
     hashPassword: {
         type: String,
         required: true
     },
-    
+
     email: {
         type: String,
         required: true

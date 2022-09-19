@@ -1,9 +1,37 @@
 const express = require('express');
 var Agent = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+var Agent = require('models/agentAddmin.model')
+const { v4: uuidv4 } = require('uuid');
+var multer = require('multer');
+const imagemin = require('imagemin');
+const imageminMozJpeg = require('imagemin-mozjpeg');
+const fs = require('fs');
+var path = require('path');
 const router = express.Router();
 
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, __dirname + './../uploads/agents_gallery');
+    },
+    filename: (req, file, cb) => {
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, uuidv4() + '-' + fileName)
+    }
+});
+
+var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+});
 
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     try {
@@ -36,6 +64,57 @@ router.get('/agents', async (req, res) => {
 
 });
 
+
+router.post('/update_agent', [authMiddleware, authorized], upload.array('images'), async (req, res, next) => {
+
+    try {
+
+
+
+        // const { errors, isValid } = hairstyleValidation(req.body);
+
+        // if (!isValid) {
+
+        //     return res.status(400).json(errors);
+
+        // }
+
+
+        const reqFiles = [];
+        const url = req.protocol + '://' + req.get('host')
+
+        for (var i = 0; i < req.files.length; i++) {
+            reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
+
+            await imagemin(["uploads/agents_gallery/" + req.files[i].filename], {
+                destination: "uploads/agents_gallery",
+                plugins: [
+                    imageminMozJpeg({ quality: 30 })
+                ]
+            })
+
+        }
+
+        const Update = await Agent.findOneAndUpdate({ user: req.user._id }, {
+            business_name: req.body.business_name,
+            working_hours: req.body.working_hours,
+            images: reqFiles,
+            mpesa_number: req.body.mpesa_number,
+            loc: req.body.loc,
+
+        }, { new: true, useFindAndModify: false })
+        return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'an error occured ', error });
+
+    }
+
+
+
+
+});
 
 
 module.exports = router;

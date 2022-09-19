@@ -9,19 +9,19 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     l_name: {
         type: String,
-        // required: true
+
     },
     f_name: {
         type: String,
-        // required: true
+
     },
     phone_number: {
         type: Number,
-        // required: true
+
     },
     verification_code: {
         type: Number,
-        // required: true
+
     },
     deleted_at: {
         type: Date,
@@ -30,7 +30,7 @@ const UserSchema = new Schema({
 
     id_number: {
         type: String,
-        // required: true
+
     },
     gender: {
         type: String,

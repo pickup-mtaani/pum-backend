@@ -7,11 +7,11 @@ var Role = require('models/roles.model')
 var moment = require('moment');
 var jwt = require('jsonwebtoken');
 var Rider = require('models/rider.model')
+var Agent = require('models/agentAddmin.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
-var Rider = require('models/rider.model')
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { request } = require('express');
@@ -52,6 +52,9 @@ router.post('/login', async (req, res) => {
         }
 
         if (userOBJ && userOBJ.activated === false) {
+            if (userOBJ.role === "agent") {
+                return res.status(402).json({ message: 'Your Account is not Activated kindly contact support for activation' });
+            }
             return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
         }
 
@@ -146,11 +149,15 @@ router.post('/register', async (req, res) => {
         let NewUser = new User(body);
         const saved = await NewUser.save();
         if (req.body.role === "rider") {
-            await new Rider({ user: saved._id }).save()// user
+            await new Rider({ user: saved._id }).save()
+        }
+        if (req.body.role === "agent") {
+            await new Agent({ user: saved._id }).save()
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
-        await SendMessage(textbody)
-
+        if (req.body.role === "rider" || req.body.role === "rider") {
+            await SendMessage(textbody)
+        }
         const mailOptions = {
             from: '"Pickup mtaani" <bradcoupers@gmail.com>',
             to: `${req.body.email}`,

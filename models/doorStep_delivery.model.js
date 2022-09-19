@@ -8,7 +8,7 @@ const doorstepSchema = new Schema(
 
     payment_phone_number: {
       type: String,
-      // required: true,
+
     },
 
     type: {
@@ -37,7 +37,7 @@ const doorstepSchema = new Schema(
     },
     receipt_no: {
       type: String,
-      // required: true
+
     },
 
     createdBy: {

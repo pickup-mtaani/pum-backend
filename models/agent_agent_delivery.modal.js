@@ -11,7 +11,7 @@ const AgentSchema = new Schema(
     },
     payment_phone_number: {
       type: String,
-     
+
     },
     businessId: {
       type: Schema.Types.ObjectId,
@@ -27,7 +27,7 @@ const AgentSchema = new Schema(
     },
     receipt_no: {
       type: String,
-      // required: true
+
     },
     createdBy: {
       type: Schema.Types.ObjectId,

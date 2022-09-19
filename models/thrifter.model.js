@@ -12,14 +12,14 @@ const UserSchema = new Schema({
     },
     file: {
         type: String,
-        // required: true
+
     },
-   
+
     deleted_at: {
         type: Date,
         default: null
     },
-    
+
     user_id: {
         type: Schema.Types.ObjectId,
         ref: 'user'

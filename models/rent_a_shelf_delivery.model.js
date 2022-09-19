@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const doorstepSchema = new Schema(
   {
-    
+
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",
@@ -28,7 +28,7 @@ const doorstepSchema = new Schema(
     },
     receipt_no: {
       type: String,
-      // required: true
+
     },
   },
   { timestamps: true }

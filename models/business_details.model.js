@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 const BizDetailsSchema = new Schema({
     recieve_payment_till_No: {
         type: Number,
-        // required: true
+
     },
     payment_mpesa_No: {
         type: Number,
@@ -16,16 +16,16 @@ const BizDetailsSchema = new Schema({
     },
     recieve_payment_mpesa_No: {
         type: Number,
-        // required: true
+
     },
     recieve_payment_paybill_no: {
         no: {
             type: Number,
-            // required: true
+
         },
         account: {
             type: Number,
-            // required: true
+
         }
     },
     loc: {
