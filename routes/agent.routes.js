@@ -64,12 +64,9 @@ router.get('/agents', async (req, res) => {
 
 });
 
-
 router.post('/update_agent', [authMiddleware, authorized], upload.array('images'), async (req, res, next) => {
 
     try {
-
-
 
         // const { errors, isValid } = hairstyleValidation(req.body);
 
