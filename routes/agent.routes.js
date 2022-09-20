@@ -97,7 +97,7 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
             working_hours: req.body.working_hours,
             images: reqFiles,
             mpesa_number: req.body.mpesa_number,
-            loc: req.body.loc,
+            loc: JSON.parse(req.body.loc),
 
         }, { new: true, useFindAndModify: false })
         return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
