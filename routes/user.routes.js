@@ -152,6 +152,7 @@ router.post('/register', async (req, res) => {
             await new Rider({ user: saved._id }).save()
         }
         if (req.body.role === "agent") {
+            req.body.activated = true;
             await new Agent({ user: saved._id }).save()
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
