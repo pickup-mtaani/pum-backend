@@ -94,6 +94,21 @@ router.post('/login', async (req, res) => {
                     user.role = userOBJ.role
                 }
             }
+            if (userOBJ.role === "agent") {
+                const agent = await Agent.findOne({ user: userOBJ._id })
+                if (!agent) {
+                    user = userOBJ
+                } else {
+                    user.token = token
+                    user.business_name = agent.business_name
+                    user.images = agent.images
+                    user.name = userOBJ.name
+                    user.phone_number = userOBJ.phone_number
+                    user.agent_id = userOBJ._id
+                    user.email = userOBJ.email
+                    user.role = userOBJ.role
+                }
+            }
             else (
                 user = userOBJ
             )
