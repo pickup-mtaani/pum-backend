@@ -64,7 +64,7 @@ router.get('/agents', async (req, res) => {
 
 });
 
-router.post('/update_agent', [authMiddleware, authorized], upload.array('images'), async (req, res, next) => {
+router.post('/update_agent', upload.array('images'), async (req, res, next) => {
 
     try {
 
@@ -92,7 +92,7 @@ router.post('/update_agent', [authMiddleware, authorized], upload.array('images'
 
         }
 
-        const Update = await Agent.findOneAndUpdate({ user: req.user._id }, {
+        const Update = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
             business_name: req.body.business_name,
             working_hours: req.body.working_hours,
             images: reqFiles,
