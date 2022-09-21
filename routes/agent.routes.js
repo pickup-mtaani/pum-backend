@@ -1,5 +1,5 @@
 const express = require('express');
-var Agent = require('models/agents.model')
+// var Agent = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Agent = require('models/agentAddmin.model')
 const { v4: uuidv4 } = require('uuid');
@@ -51,17 +51,14 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     }
 
 });
-
 router.get('/agents', async (req, res) => {
     try {
-        const Agents = await Agent.find().populate('zone');
-        return res.status(200).json({ message: 'Agents fetched  successfully', Agents });
+
+        const agents = await Agent.find().populate('zone').populate('user');
+        return res.status(200).json({ message: 'Agents fetched  successfully', agents });
     } catch (error) {
-
         return res.status(400).json({ success: false, message: 'operation failed ', error });
-
     }
-
 });
 
 router.post('/update_agent', upload.array('images'), async (req, res, next) => {

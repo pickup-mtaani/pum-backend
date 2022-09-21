@@ -8,7 +8,7 @@ var Declined = require("models/declined.model");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
-var User = require("models/user.model.js");
+var User = require("models/user.model.js")
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
@@ -467,6 +467,42 @@ router.get("/packages", async (req, res) => {
   }
 });
 
+// $gte: moment().subtract(7, 'days').toDate() } }
+
+router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const packages = await Sent_package.find({ senderAgentID: req.user_id, state: "delivered", updatedAt: { $gte: moment().subtract(4, 'days').toDate() } })
+      .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+      .sort({ createdAt: -1 });
+
+    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const { period } = req.query
+    let packages
+    if (period === 0 || period === undefined || period === null) {
+      packages = await Sent_package.find({ senderAgentID: req.user_id })
+        .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+        .sort({ createdAt: -1 });
+    } else {
+      packages = await Sent_package.find({ senderAgentID: req.user_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+        .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+        .sort({ createdAt: -1 });
+    }
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id })

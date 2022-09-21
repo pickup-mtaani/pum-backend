@@ -19,6 +19,10 @@ const agentadminSchema = new Schema({
     working_hours: {
         type: String,
     },
+    zone: {
+        type: Schema.Types.ObjectId,
+        ref: 'zone'
+    },
     mpesa_number: {
         type: String,
     },
