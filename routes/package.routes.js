@@ -489,11 +489,11 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     let packages
     if (period === 0 || period === undefined || period === null) {
       packages = await Sent_package.find({ senderAgentID: req.user_id })
-        .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+        .populate(["createdBy", "senderAgentID", "receieverAgentID", "businessId"])
         .sort({ createdAt: -1 });
     } else {
       packages = await Sent_package.find({ senderAgentID: req.user_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
-        .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+        .populate(["createdBy", "senderAgentID", "receieverAgentID", "businessId"])
         .sort({ createdAt: -1 });
     }
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
