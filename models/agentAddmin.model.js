@@ -13,6 +13,16 @@ const agentadminSchema = new Schema({
     business_name: {
         type: String,
     },
+    opening_hours: {
+        type: String,
+    },
+    closing_hours: {
+        type: String,
+    },
+    isOpen: {
+        type: Boolean,
+        default: false
+    },
     images: {
         type: Array
     },

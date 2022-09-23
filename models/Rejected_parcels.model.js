@@ -1,25 +1,22 @@
 var mongoose = require('mongoose');
-const bcrypt = require('bcryptjs')
-
 
 const Schema = mongoose.Schema;
 
 
-const UserSchema = new Schema({
-   
+const rejectSchema = new Schema({
+
     deleted_at: {
         type: Date,
         default: null
     },
     reject_reason: {
         type: String,
-    },  
-
+        default: "not specified"
+    },
     return_reason: {
         type: String,
-    },  
+    },
 
 }, { timestamps: true });
 
-const User = mongoose.model('reason', UserSchema);
-module.exports = User
+module.exports = mongoose.model('reject_reasons', rejectSchema);

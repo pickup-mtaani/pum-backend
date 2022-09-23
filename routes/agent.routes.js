@@ -2,6 +2,7 @@ const express = require('express');
 // var Agent = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Agent = require('models/agentAddmin.model')
+var User = require('models/user.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 const imagemin = require('imagemin');
@@ -46,6 +47,19 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
             const saved = await newAgent.save()
             return res.status(200).json({ message: 'Agent Added successfully', saved: saved });
         }
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
+router.put('/open-close', [authMiddleware, authorized], async (req, res) => {
+    try {
+        let { state } = req.query
+        console.log(state)
+        const open = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
+            isOpen: state,
+        }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, open });
     } catch (error) {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
