@@ -277,7 +277,20 @@ router.get("/riders", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.put("/agent/package/:id/assign-rider", async (req, res) => {
+  try {
 
+    await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
+
+    return res.status(200).json({ message: "Sucessfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.post("/assign-riders", async (req, res) => {
   try {
 
