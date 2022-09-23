@@ -471,7 +471,7 @@ router.get("/packages", async (req, res) => {
 
 router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const packages = await Sent_package.find({ receieverAgentID: req.user_id, state: "delivered", updatedAt: { $gte: moment().subtract(4, 'days').toDate() } })
+    const packages = await Sent_package.find({ receieverAgentID: req.user_id, state: "delivered", updatedAt: { $lte: moment().subtract(4, 'days').toDate() } })
       .populate(["createdBy", "senderAgentID", "receieverAgentID"])
       .sort({ createdAt: -1 });
 
