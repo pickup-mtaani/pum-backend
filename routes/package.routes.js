@@ -469,20 +469,20 @@ router.get("/packages", async (req, res) => {
 
 // $gte: moment().subtract(7, 'days').toDate() } }
 
-// router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, res) => {
-//   try {
-//     const packages = await Sent_package.find({ senderAgentID: req.user_id, state: "delivered", updatedAt: { $gte: moment().subtract(4, 'days').toDate() } })
-//       .populate(["createdBy", "senderAgentID", "receieverAgentID"])
-//       .sort({ createdAt: -1 });
+router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const packages = await Sent_package.find({ receieverAgentID: req.user_id, state: "delivered", updatedAt: { $gte: moment().subtract(4, 'days').toDate() } })
+      .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+      .sort({ createdAt: -1 });
 
-//     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
-//     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-//   } catch (error) {
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "operation failed ", error });
-//   }
-// });
+    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
@@ -498,6 +498,34 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     } else {
       packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+        .populate("createdBy", "l_name f_name phone_number")
+        .populate("senderAgentID",)
+        .populate("receieverAgentID")
+        .populate("businessId", "name")
+        .sort({ createdAt: -1 });
+    }
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    const { period, state } = req.query
+    let packages
+    if (period === 0 || period === undefined || period === null) {
+      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, })
+        .populate("createdBy", "l_name f_name phone_number")
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        .populate("businessId", "name")
+        .sort({ createdAt: -1 });
+
+    } else {
+      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
