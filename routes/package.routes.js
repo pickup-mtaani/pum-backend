@@ -111,13 +111,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: " failed  to send package", error });
   }
 });
-
-
 router.post("/package/delivery-charge", async (req, res) => {
   try {
     let price = 100;
     const { senderAgentID, receieverAgentID } = req.body;
-
     console.log(senderAgentID, receieverAgentID);
     const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
     const receiver = await Agent.findOne({ _id: receieverAgentID }).populate(
@@ -154,7 +151,6 @@ router.post("/package/delivery-charge", async (req, res) => {
     ) {
       price = 250;
     }
-    console.log(price);
     return res.status(200).json({ message: "price set successfully ", price });
   } catch (error) {
     console.log(error);
@@ -163,13 +159,9 @@ router.post("/package/delivery-charge", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
-
-
 router.put("/agent/package/:id/:state", async (req, res) => {
   try {
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
-
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
@@ -177,7 +169,6 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     return res.status(200).json({ message: "Sucessfully" });
-
   } catch (error) {
     console.log(error);
     return res
@@ -185,15 +176,12 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-
     const agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name')
       .populate('receieverAgentID', 'name')
       .populate('senderAgentID', 'name')
-
     return res
       .status(200)
       .json(agent_packages);
@@ -204,12 +192,10 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const Owner = await Door_step_Sent_package.findById(req.params.id);
     await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
-
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }
@@ -246,7 +232,6 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
@@ -260,7 +245,6 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Door_step_Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
@@ -274,9 +258,6 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
-
-
 router.get("/packages", async (req, res) => {
   try {
     let limit
@@ -340,16 +321,11 @@ router.get("/packages", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
-// $gte: moment().subtract(7, 'days').toDate() } }
-
 router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const packages = await Sent_package.find({ receieverAgentID: req.user_id, state: "delivered", updatedAt: { $lte: moment().subtract(4, 'days').toDate() } })
+    const packages = await Sent_package.find({ receieverAgentID: req.user._id, state: "delivered", updatedAt: { $lte: moment().subtract(4, 'days').toDate() } })
       .populate(["createdBy", "senderAgentID", "receieverAgentID"])
       .sort({ createdAt: -1 });
-
-    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     return res
@@ -448,7 +424,6 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       .json({ success: false, message: "operationhj failed ", error });
   }
 });
-
 router.get("/packages/:id", async (req, res) => {
   try {
     const packages = await Package.find({ businessId: req.params.id })
@@ -499,5 +474,4 @@ router.get("/packages/bussiness/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 module.exports = router;
