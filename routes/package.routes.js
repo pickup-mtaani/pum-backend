@@ -9,6 +9,7 @@ var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
 var User = require("models/user.model.js")
+var Rider_Package = require('models/rider_package.model')
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
@@ -167,6 +168,10 @@ router.put("/agent/package/:id/:state", async (req, res) => {
     }
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+    }
+    if (req.params.state === "assigned") {
+      await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {

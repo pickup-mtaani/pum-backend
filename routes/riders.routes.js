@@ -277,13 +277,14 @@ router.get("/riders", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.put("/agent/package/:id/assign-rider", async (req, res) => {
+router.put("/agent/package1/:id/assign-rider", async (req, res) => {
+  console.log("req.body")
   try {
-    const riders = await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
+    await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
+    console.log("riders")
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
-
+    console.log('here')
     return res.status(200).json({ message: "Sucessfully" });
-
   } catch (error) {
     console.log(error);
     return res
