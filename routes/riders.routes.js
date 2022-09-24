@@ -279,7 +279,7 @@ router.get("/riders", async (req, res) => {
 });
 router.put("/agent/package/:id/assign-rider", async (req, res) => {
   try {
-
+    const riders = await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
 
     return res.status(200).json({ message: "Sucessfully" });
