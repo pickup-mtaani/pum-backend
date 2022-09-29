@@ -55,6 +55,12 @@ const RiderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
+    assignedpackages: {
+        type: Number,
+    },
+    assignedpackages: {
+        type: Number,
+    },
 
     deleted_at: {
         type: Date,

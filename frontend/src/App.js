@@ -20,6 +20,8 @@ import Riders from "./components/Riders";
 import Payments from "./components/payments";
 import tracks from "./components/payments";
 import Tracks from "./components/tracks ";
+import WareHouse from "./components/warehouse";
+import WareHouseActions from "./components/warehouse/actionPage";
 import 'mapbox-gl/dist/mapbox-gl.css';
 const App = () => {
   let routes = useRoutes([
@@ -32,6 +34,8 @@ const App = () => {
     { path: "/riders", element: <Riders /> },
     { path: "/mpesa-payments", element: <Payments /> },
     { path: "/tracks", element: <Tracks /> },
+    { path: "/wahehouse", element: <WareHouse /> },
+    { path: "/wahehouse/:slug", element: <WareHouseActions /> },
 
     // ...
   ]);
