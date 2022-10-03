@@ -75,6 +75,18 @@ router.get('/agents', async (req, res) => {
     }
 });
 
+router.put('/assign-zone/:id', async (req, res) => {
+    try {
+        await Agent.findOneAndUpdate({ _id: req.params.id }, {
+            zone: req.query.zone
+
+        }, { new: true, useFindAndModify: false })
+        return res.status(200).json('updated');
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
 router.post('/update_agent', upload.array('images'), async (req, res, next) => {
 
     try {

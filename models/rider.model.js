@@ -51,6 +51,10 @@ const RiderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
+    agent: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'user'

@@ -169,7 +169,7 @@ router.put("/agent/package/:id/:state", async (req, res) => {
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
-    if (req.params.state === "assigned") {
+    if (req.params.state === "assigned" || req.params.state === "warehouse-transit") {
       await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
     }
@@ -181,6 +181,7 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
@@ -362,6 +363,52 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
     }
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agent-packages-web", async (req, res) => {
+  try {
+    let packages
+    // let v = await Sent_package.find({ receieverAgentID: req.query.agent, state: req.query.state })
+    //     .populate('createdBy', 'f_name l_name name phone_number')
+    //     .populate('receieverAgentID')
+    //     .populate('senderAgentID')
+    //     .populate("businessId", "name")
+
+    //   let k = await Sent_package.find({ senderAgentID: req.query.agent, state: req.query.state })
+    //     .populate('createdBy', 'f_name l_name name phone_number')
+    //     .populate('receieverAgentID')
+    //     .populate('senderAgentID')
+    //     .populate("businessId", "name")
+
+    //   if (k !== null) {
+    //     packages = k
+    //   } else if (v !== null) {
+    //     packages = v
+    //   }
+    if (req.query.agent !== "all") {
+      packages = await Sent_package.find({ receieverAgentID: req.query.agent, state: req.query.state })
+        .populate('createdBy', 'f_name l_name name phone_number')
+        .populate('receieverAgentID')
+        .populate('senderAgentID')
+        .populate("businessId", "name") ||
+        await Sent_package.find({ senderAgentID: req.query.agent, state: req.query.state })
+          .populate('createdBy', 'f_name l_name name phone_number')
+          .populate('receieverAgentID')
+          .populate('senderAgentID')
+          .populate("businessId", "name")
+    } else {
+      packages = await Sent_package.find({ state: req.query.state })
+        .populate('createdBy', 'f_name l_name name phone_number')
+        .populate('receieverAgentID')
+        .populate('senderAgentID')
+        .populate("businessId", "name")
+    }
+
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     return res

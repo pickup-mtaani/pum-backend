@@ -2,15 +2,13 @@ import React, { useEffect, useState, useRef } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_riders, fetchpackages } from '../../redux/actions/riders.actions'
+import { get_riders, fetchpackages, assignAgent } from '../../redux/actions/riders.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import ReactMapGl, { Marker, Popup } from 'react-map-gl';
-import PIN from './pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import AssignedPackModal from './AssignedPackModal'
-
+import { get_agents } from '../../redux/actions/agents.actions'
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
 function Users(props) {
@@ -43,26 +41,20 @@ function Users(props) {
 
   }
 
-  const fetchUserPackages = async (row) => {
-    setShowModal(true);
-    setItem(row)
-    let result = await props.fetchpackages(row._id)
-    setFilterData(result)
-  }
 
   const columns = [
     {
       sortable: true,
       name: ' Name',
       minWidth: '250px',
-      selector: row => row.user.name
+      selector: row => row.user?.name
     },
 
     {
       sortable: true,
       name: 'Phone number',
       minWidth: '250px',
-      selector: row => row.user.phone_number
+      selector: row => row.user?.phone_number
     },
     {
       sortable: true,
@@ -84,21 +76,41 @@ function Users(props) {
     },
     {
       sortable: true,
-      name: 'Charge Per KM',
-      minWidth: '250px',
-      selector: row => row.charger_per_km ? row.charger_per_km : 120
+      name: 'Agent',
+      minWidth: '225px',
+      selector: row => row.agent?.name
     },
     {
       sortable: true,
-      name: 'My packages',
-      minWidth: '150px',
-      selector: row => <>
-        <button onClick={() => fetchUserPackages(row)}>Packages </button>
-      </>
-    },
+      name: 'Assign agent ',
+      minWidth: '250px',
+      selector: row => (
+        <>
+          <select name="current_custodian" onChange={(e) => assignagentRider(e, row._id)} className="my-2">
+            <option>Select an agent </option>
+            {props.agents.map((loc, i) => (
+              <option value={loc.user._id}>{loc.user?.name}</option>
+            ))}
+            {/* agent_location */}
+          </select>
+        </>
+      )
+    }
+    // {
+    //   sortable: true,
+    //   name: 'My packages',
+    //   minWidth: '150px',
+    //   selector: row => <>
+    //     <button onClick={() => fetchUserPackages(row)}>Packages </button>
+    //   </>
+    // },
   ]
 
+  const assignagentRider = async (e, id) => {
 
+    await props.assignAgent(e.target.value, id)
+    await props.get_riders()
+  }
 
   const subHeaderComponentMemo = React.useMemo(() => {
 
@@ -122,6 +134,7 @@ function Users(props) {
 
   useEffect(() => {
     props.get_riders({ limit: 10 })
+    props.get_agents()
     // if (map.current) return; // initialize map only once
     // map.current = new mapboxgl.Map({
     //   container: mapContainer.current,
@@ -221,12 +234,12 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-
+    agents: state.agentsData.agents,
     riders: state.ridersDetails.riders,
     loading: state.ridersDetails.loading,
 
   };
 };
 
-export default connect(mapStateToProps, { get_riders, fetchpackages })(Users)
+export default connect(mapStateToProps, { get_riders, get_agents, assignAgent, fetchpackages })(Users)
 

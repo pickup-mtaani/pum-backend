@@ -1,3 +1,4 @@
+import { $CombinedState } from "redux";
 import axios, { setAuthToken } from "./axiosService";
 
 export const getParcels = (data1) => async (dispatch) => {
@@ -28,6 +29,20 @@ export const getdoorstep = (data1) => async (dispatch) => {
     console.log(error)
   }
 };
+export const assignwarehouse = (id, state) => async (dispatch) => {
+
+  try {
+
+    dispatch({ type: "FETCH_DOORSTEP" });
+    let payload = [];
+    const { data } = await axios.put(`/api/agent/package/${id}/${state}`);
+    payload = data;
+    dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
 
 export const getagentParcels = (data1) => async (dispatch) => {
 
@@ -35,7 +50,7 @@ export const getagentParcels = (data1) => async (dispatch) => {
     const { limit, state } = data1
     dispatch({ type: "FETCH_AGENTS_PACKAGES" });
     let payload = [];
-    const { data } = await axios.get(`/api/packages?limit=${limit}&state=${state}`);
+    const { data } = await axios.get(`/ api / packages ? limit = ${limit} & state=${state}`);
     payload = data;
     dispatch({ type: "FETCH_AGENTS_PACKAGES_SUCCESSFUL", payload });
     return payload;
@@ -47,7 +62,7 @@ export const getBissinessParcels = (id) => async (dispatch) => {
   try {
     dispatch({ type: "FETCH_TODOS" });
     let payload = [];
-    const { data } = await axios.get(`/api/packages/${id}`);
+    const { data } = await axios.get(`/ api / packages / ${id}`);
     payload = data;
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
     return;
@@ -59,7 +74,7 @@ export const recieve = (id) => async (dispatch) => {
     await setAuthToken(axios);
     dispatch({ type: "RECIEVE_PACKAGE" });
 
-    const response = await axios.post(`/api/package/${id}/recieve`);
+    const response = await axios.post(`/ api / package / ${id} / recieve`);
     let payload = [];
     payload = response;
     dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
@@ -87,7 +102,7 @@ export const collect = (id, data) => async (dispatch) => {
     await setAuthToken(axios);
     dispatch({ type: "RECIEVE_PACKAGE" });
 
-    const response = await axios.post(`/api/package/${id}/collect`, data);
+    const response = await axios.post(`/ api / package / ${id} / collect`, data);
     let payload = [];
     payload = response;
     dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
@@ -117,7 +132,7 @@ export const reject = (id, data) => async (dispatch) => {
     await setAuthToken(axios);
     dispatch({ type: "REJECT_PACKAGE" });
 
-    const response = await axios.post(`/api/package/${id}/reject`, data);
+    const response = await axios.post(`/ api / package / ${id} / reject`, data);
     let payload = [];
     payload = response;
     dispatch({ type: "REJECT_PACKAGE_SUCCESSFUL", payload });
@@ -145,7 +160,7 @@ export const postPackage = (data) => async (dispatch) => {
 
   try {
     dispatch({ type: "ADD_PACKAGE" });
-    const response = await axios.post(`/api/package`, data);
+    const response = await axios.post(`/ api / package`, data);
     let payload = [];
     payload = response;
     dispatch({ type: "ADD_PACKAGE_SUCCESSFUL", payload });
@@ -162,7 +177,7 @@ export const deleteTodo = (id) => async (dispatch) => {
   try {
     dispatch({ type: "DELETE_TODO" });
 
-    const response = await axios.delete(`/api/todos/${id}`);
+    const response = await axios.delete(`/ api / todos / ${id}`);
     let payload = [];
     payload = response;
     dispatch({ type: "DELETE_TODO_SUCCESSFUL", payload });

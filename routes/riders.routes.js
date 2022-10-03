@@ -249,6 +249,20 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 
 
 
+router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
+  try {
+
+
+    let t = await Rider.findOneAndUpdate({ _id: req.params.agent }, { agent: req.params.id }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ message: "Sucessfully", t });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(400)
+
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 router.post('/rider', [authMiddleware, authorized], async (req, res) => {
   try {
@@ -268,7 +282,7 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
 router.get("/riders", async (req, res) => {
   try {
     // const riders = await User.find({ role: 'rider' })
-    const riders = await Rider.find().populate('user')
+    const riders = await Rider.find().populate('user').populate('agent')
     return res.status(200).json({ message: "Fetched Sucessfully", riders });
   } catch (error) {
     console.log(error);

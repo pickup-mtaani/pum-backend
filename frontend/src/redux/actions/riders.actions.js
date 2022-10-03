@@ -9,11 +9,27 @@ export const get_riders = () => async (dispatch) => {
         const { data } = await axios.get(`/api/riders`);
         let payload = [];
         payload = data.riders;
+        // alert(JSON.stringify(payload));
         dispatch({ type: "FETCH_RIDERS_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
         console.log(error)
         dispatch({ type: "FETCH_RIDERS_FAIL" });
+        ;
+    }
+};
+export const assignAgent = (id, agent) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+
+        const { data } = await axios.put(`/api/assign-agent-rider/${id}/${agent}`);
+        let payload = [];
+
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_PAYMENTS_FAIL" });
         ;
     }
 };
