@@ -13,9 +13,6 @@ function Agent(props) {
 
 
 
-    let initialState = {
-        name: '', email: "", phone_number: '', password: ''
-    }
     const [filterText, setFilterText] = React.useState('');
     const [searchValue, setSearchValue] = useState("")
     const [date, setDate] = useState("")
@@ -36,42 +33,6 @@ function Agent(props) {
 
     }
 
-    const rent_shelf_columns = [
-        {
-            sortable: true,
-            name: 'Business Name',
-            minWidth: '250px',
-            selector: row => row.businessId?.name
-        },
-
-        {
-            sortable: true,
-            name: 'Reciept',
-            minWidth: '250px',
-            selector: row => row.receipt_no
-        },
-        {
-            sortable: true,
-            name: 'Stored At ',
-            minWidth: '250px',
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-            sortable: true,
-            name: 'Packages',
-            minWidth: '250px',
-            selector: row => (<>
-                {row.packages.map((pack, i) => (
-                    <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-                        <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-                    </div>
-                ))}
-
-            </>)
-        },
-
-
-    ]
 
     const conditionalRowStyles = [
         {

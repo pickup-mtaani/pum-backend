@@ -9,6 +9,23 @@ const initialState = {
 
 export default function store(state = initialState, action) {
     switch (action.type) {
+        case "FETCH_AGENTS_PACK":
+            return {
+                ...state,
+                loading: true,
+            };
+        case "FETCH_AGENTS_PACK_SUCCESSFUL":
+            return {
+                ...state,
+                loading: false,
+                packs: action.payload,
+            };
+        case "FETCH_AGENTS_PACK_FAIL":
+            return {
+                ...state,
+                loading: true,
+                error: action.payload,
+            };
         case "FETCH_AGENTS":
             return {
                 ...state,

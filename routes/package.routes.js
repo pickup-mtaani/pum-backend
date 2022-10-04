@@ -529,4 +529,19 @@ router.get("/packages/bussiness/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+router.get("/packages/agent/:id", async (req, res) => {
+  try {
+    const packages = await Sent_package.find({ receieverAgentID: req.params.id, state: "picked-from-sender" })
+      .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+      .sort({ createdAt: -1 });
+
+    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 module.exports = router;

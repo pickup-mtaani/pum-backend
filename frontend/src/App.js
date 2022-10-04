@@ -34,7 +34,7 @@ const App = () => {
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
     { path: "/agents", element: <Agents /> },
-    { path: "/agent/:name", element: <WareHouseActions /> },
+    { path: "/agent/:name", element: <AgentsDetails /> },
 
     // ...
   ]);

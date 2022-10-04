@@ -50,9 +50,22 @@ export const getagentParcels = (data1) => async (dispatch) => {
     const { limit, state } = data1
     dispatch({ type: "FETCH_AGENTS_PACKAGES" });
     let payload = [];
-    const { data } = await axios.get(`/ api / packages ? limit = ${limit} & state=${state}`);
+    const { data } = await axios.get(`/api/packages?limit = ${limit} & state=${state}`);
     payload = data;
     dispatch({ type: "FETCH_AGENTS_PACKAGES_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+export const getagentPackage = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: "FETCH_AGENTS_PACK" });
+    let payload = [];
+    const { data } = await axios.get(`/api/packages/agent/${id}`);
+    payload = data.packages;
+    dispatch({ type: "FETCH_AGENTS_PACK_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
     console.log(error)
@@ -69,92 +82,6 @@ export const getBissinessParcels = (id) => async (dispatch) => {
   } catch (error) { }
 };
 
-export const recieve = (id) => async (dispatch) => {
-  try {
-    await setAuthToken(axios);
-    dispatch({ type: "RECIEVE_PACKAGE" });
-
-    const response = await axios.post(`/ api / package / ${id} / recieve`);
-    let payload = [];
-    payload = response;
-    dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
-    return payload;
-  } catch (error) {
-    ;
-    let payload = "";
-    if (error.response === undefined) {
-      payload = "timeout";
-      dispatch({ type: "RECIEVE_PACKAGE_FAIL", payload });
-      throw error;
-    } else {
-      var obj = error.response.data;
-      payload =
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : obj[Object.keys(obj)[0]];
-      dispatch({ type: "RECIEVE_PACKAGE_FAIL", payload });
-      throw error;
-    }
-  }
-};
-export const collect = (id, data) => async (dispatch) => {
-  try {
-    await setAuthToken(axios);
-    dispatch({ type: "RECIEVE_PACKAGE" });
-
-    const response = await axios.post(`/ api / package / ${id} / collect`, data);
-    let payload = [];
-    payload = response;
-    dispatch({ type: "RECIEVE_PACKAGE_SUCCESSFUL", payload });
-    return payload;
-  } catch (error) {
-    ;
-    let payload = "";
-    if (error.response === undefined) {
-      payload = "timeout";
-      dispatch({ type: "RECIEVE_PACKAGE_FAIL", payload });
-      throw error;
-    } else {
-      var obj = error.response.data;
-      payload =
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : obj[Object.keys(obj)[0]];
-      dispatch({ type: "RECIEVE_PACKAGE_FAIL", payload });
-      throw error;
-    }
-  }
-};
-
-export const reject = (id, data) => async (dispatch) => {
-  try {
-
-    await setAuthToken(axios);
-    dispatch({ type: "REJECT_PACKAGE" });
-
-    const response = await axios.post(`/ api / package / ${id} / reject`, data);
-    let payload = [];
-    payload = response;
-    dispatch({ type: "REJECT_PACKAGE_SUCCESSFUL", payload });
-
-    return payload;
-  } catch (error) {
-    let payload = "";
-    if (error.response === undefined) {
-      payload = "timeout";
-      dispatch({ type: "REJECT_PACKAGE_FAIL", payload });
-      throw error;
-    } else {
-      var obj = error.response.data;
-      payload =
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : obj[Object.keys(obj)[0]];
-      dispatch({ type: "REJECT_PACKAGE_FAIL", payload });
-      throw error;
-    }
-  }
-};
 
 export const postPackage = (data) => async (dispatch) => {
 

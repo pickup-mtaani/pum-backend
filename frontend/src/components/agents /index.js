@@ -19,7 +19,16 @@ function Payments(props) {
 
       selector: row =>
       (<>
-        <Link to={`/agent/${row?.user?.name.replace(/\s/g, '')}`}>{row.user?.name}</Link>
+        <Link
+          to={{
+            pathname: `/agent/${row?.user?.name.replace(/\s/g, '')}`
+          }}
+          state={{
+            agent: row?.user?.name,
+            id: row?.user?._id,
+          }}
+        >{row.user?.name}
+        </Link>
       </>)
 
     },

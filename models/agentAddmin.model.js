@@ -26,6 +26,10 @@ const agentadminSchema = new Schema({
     images: {
         type: Array
     },
+    hasShelf: {
+        type: Boolean,
+        default: false
+    },
     working_hours: {
         type: String,
     },
