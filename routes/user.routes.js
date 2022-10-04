@@ -101,6 +101,7 @@ router.post('/login', async (req, res) => {
                 } else {
                     user.token = token
                     user.business_name = agent.business_name
+                    user.hasShelf = agent.hasShelf
                     user.images = agent.images
                     user.name = userOBJ.name
                     user.phone_number = userOBJ.phone_number
