@@ -20,6 +20,8 @@ function Riderpage(props) {
 
     }
     const packAction = async (id, state, rider) => {
+        alert(JSON.stringify(rider))
+        // return
         await props.assignwarehouse(id, state, rider)
         setData(await props.fetchpackages("dropped", location?.state?.agent))
     }
@@ -49,7 +51,7 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                {location?.state?.lis === "on-transit" ? <button onClick={() => packAction(row._id, "recieved-warehouse", row.assignedTo)}>Recieve package { }</button> : location?.state?.lis === "recieved-warehouse" ? <button onClick={() => packAction(row._id, "assigned-warehouse", row.assignedTo)}>Assign Package  </button> : null}
+                {location?.state?.lis === "on-transit" ? <button onClick={() => packAction(row._id, "recieved-warehouse", location?.state?.id)}>Recieve package { }</button> : location?.state?.lis === "recieved-warehouse" ? <button onClick={() => packAction(row._id, "assigned-warehouse", location?.state?.id)}>Assign Package  </button> : null}
             </>)
         },
 

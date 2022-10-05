@@ -76,6 +76,7 @@ export function DashboardRider(props) {
                 state={{
 
                     lis: props.path,
+                    id: props?.rider?.user?._id,
                     rider: props.name,
                     agent: props.agent?._id,
                     title: props.title

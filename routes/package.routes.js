@@ -170,9 +170,9 @@ router.put("/agent/package/:id/:state", async (req, res) => {
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
-    if (req.params.state === "assigned" || req.params.state === "warehouse-transit") {
+    if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
-      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
@@ -374,23 +374,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 router.get("/agent-packages-web", async (req, res) => {
   try {
     let packages
-    // let v = await Sent_package.find({ receieverAgentID: req.query.agent, state: req.query.state })
-    //     .populate('createdBy', 'f_name l_name name phone_number')
-    //     .populate('receieverAgentID')
-    //     .populate('senderAgentID')
-    //     .populate("businessId", "name")
 
-    //   let k = await Sent_package.find({ senderAgentID: req.query.agent, state: req.query.state })
-    //     .populate('createdBy', 'f_name l_name name phone_number')
-    //     .populate('receieverAgentID')
-    //     .populate('senderAgentID')
-    //     .populate("businessId", "name")
-
-    //   if (k !== null) {
-    //     packages = k
-    //   } else if (v !== null) {
-    //     packages = v
-    //   }
     if (req.query.agent !== "all") {
       packages = await Sent_package.find({ assignedTo: req.query.agent, state: req.query.state })
         .populate('createdBy', 'f_name l_name name phone_number')
@@ -526,7 +510,6 @@ router.get("/packages/bussiness/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/packages/agent/:id", async (req, res) => {
   try {
     const packages = await Sent_package.find({ receieverAgentID: req.params.id, state: "picked-from-sender" })
