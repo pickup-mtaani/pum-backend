@@ -29,7 +29,7 @@ function ActionPage(props) {
             <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
                     {props.riders.map((rider, i) => (
-                        <DashboardRider key={i} rider={rider} title={location?.state?.title} path={location?.state?.lis} agent={rider?.agent} name={rider?.user?.name} />
+                        <DashboardRider key={i} rider={rider} title={location?.state?.title} path={location?.state?.lis} agent={rider?.user?._id} name={rider?.user?.name} />
                     ))}
                 </div>
             </div>

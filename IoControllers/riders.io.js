@@ -41,7 +41,7 @@ const rider_coordinates = [
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://localhost:3000", "https://learnnia.com"],
+      origin: ["https://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
     },
   });
   let riders = [];

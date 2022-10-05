@@ -19,8 +19,8 @@ function Riderpage(props) {
         setData1(resr)
 
     }
-    const packAction = async (id, state) => {
-        await props.assignwarehouse(id, state)
+    const packAction = async (id, state, rider) => {
+        await props.assignwarehouse(id, state, rider)
         setData(await props.fetchpackages("dropped", location?.state?.agent))
     }
     useEffect(() => {
@@ -49,12 +49,12 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                {location?.state?.lis === "on-transit" ? <button onClick={() => packAction(row._id, "recieved-warehouse")}>Recieve package { }</button> : location?.state?.lis === "recieved-warehouse" ? <button onClick={() => packAction(row._id, "assigned-warehouse")}>Assign Package  </button> : null}
+                {location?.state?.lis === "on-transit" ? <button onClick={() => packAction(row._id, "recieved-warehouse", row.assignedTo)}>Recieve package { }</button> : location?.state?.lis === "recieved-warehouse" ? <button onClick={() => packAction(row._id, "assigned-warehouse", row.assignedTo)}>Assign Package  </button> : null}
             </>)
         },
 
     ]
-
+    // console.log(JSON.stringify(data))
 
     return (
         <Layout>

@@ -162,6 +162,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 });
 router.put("/agent/package/:id/:state", async (req, res) => {
   try {
+
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
@@ -170,8 +171,8 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "assigned" || req.params.state === "warehouse-transit") {
-      await new Rider_Package({ package: req.params.id, rider: "632181644f413c3816858218" }).save()
-      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
+      await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "assigned", assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
@@ -391,16 +392,12 @@ router.get("/agent-packages-web", async (req, res) => {
     //     packages = v
     //   }
     if (req.query.agent !== "all") {
-      packages = await Sent_package.find({ receieverAgentID: req.query.agent, state: req.query.state })
+      packages = await Sent_package.find({ assignedTo: req.query.agent, state: req.query.state })
         .populate('createdBy', 'f_name l_name name phone_number')
         .populate('receieverAgentID')
         .populate('senderAgentID')
-        .populate("businessId", "name") ||
-        await Sent_package.find({ senderAgentID: req.query.agent, state: req.query.state })
-          .populate('createdBy', 'f_name l_name name phone_number')
-          .populate('receieverAgentID')
-          .populate('senderAgentID')
-          .populate("businessId", "name")
+        .populate("businessId", "name")
+
     } else {
       packages = await Sent_package.find({ state: req.query.state })
         .populate('createdBy', 'f_name l_name name phone_number')

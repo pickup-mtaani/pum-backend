@@ -29,13 +29,13 @@ export const getdoorstep = (data1) => async (dispatch) => {
     console.log(error)
   }
 };
-export const assignwarehouse = (id, state) => async (dispatch) => {
+export const assignwarehouse = (id, state, rider) => async (dispatch) => {
 
   try {
 
     dispatch({ type: "FETCH_DOORSTEP" });
     let payload = [];
-    const { data } = await axios.put(`/api/agent/package/${id}/${state}`);
+    const { data } = await axios.put(`/api/agent/package/${id}/${state}?rider=${rider}`);
     payload = data;
     dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
     return payload;
