@@ -2,6 +2,7 @@ const express = require("express");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
+var AgentDetails = require("models/agentAddmin.model");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
@@ -29,6 +30,8 @@ const router = express.Router();
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
     let Location = await Bussiness.findOne({ createdBy: req.user._id })
+    let agent = await AgentDetails.findOne({ user: Location.agent })
+    console.log(agent)
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
@@ -42,7 +45,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
-        packages[i].origin = Location?.loc
+        packages[i].origin = agent?.loc
         packages[i].destination = {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
