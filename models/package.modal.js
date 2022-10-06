@@ -73,7 +73,7 @@ const PackageSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["request", "delivered", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "dropped", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit"],
+      enum: ["request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "dropped", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit"],
       default: "request"
     },
 

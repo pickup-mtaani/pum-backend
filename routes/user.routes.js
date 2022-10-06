@@ -101,6 +101,10 @@ router.post('/login', async (req, res) => {
                 } else {
                     user.token = token
                     user.business_name = agent.business_name
+                    user.opening_hours = agent.opening_hours
+                    user.closing_hours = agent.closing_hours
+                    user.mpesa_number = agent.mpesa_number
+                    user.location = agent.loc
                     user.hasShelf = agent.hasShelf
                     user.images = agent.images
                     user.name = userOBJ.name
@@ -215,7 +219,6 @@ router.post('/:id/resend-token', async (req, res) => {
 });
 router.post('/:id/update_password', async (req, res) => {
     try {
-        console.log(req.body)
         const body = req.body
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
@@ -247,6 +250,11 @@ router.put('/reset-password', async (req, res) => {
 
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         let user = await User.findOne({ phone_number: req.body.phone_number }) || await Rider.findOne({ phone_number: req.body.phone_number });
+        const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+        if (!password_match) {
+            return res.status(400).json({ success: false, message: 'Kindly enter the exact previous password ' });
+        }
+
         if (req.body.email) {
             user = await User.findOne({ email: req.body.email }) || await Rider.findOne({ email: req.body.email })
         }

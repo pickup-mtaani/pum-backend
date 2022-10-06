@@ -2,6 +2,7 @@ const express = require("express");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
+var Collected = require("models/collected.model");
 var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
@@ -174,6 +175,12 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
+    if (req.params.state === "collected") {
+      req.body.package = req.params.id
+      req.body.dispatchedBy = req.user._id
+      await new Collected(req.body).save()
+      // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+    }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
     console.log(error);
@@ -182,7 +189,6 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
