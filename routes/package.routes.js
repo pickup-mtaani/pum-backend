@@ -6,6 +6,7 @@ var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
+var Bussiness = require("models/business.model");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
@@ -27,7 +28,7 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
-
+    let Location = await Bussiness.findOne({ createdBy: req.user._id })
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
@@ -41,10 +42,15 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
+        packages[i].origin = Location?.loc
+        packages[i].destination = {
+          name: body?.packages[i]?.destination?.name,
+          lat: body?.packages[i]?.destination?.latitude,
+          lng: body?.packages[i]?.destination?.longitude
+        }
         packages[i].receipt_no = `PM-${Makeid(5)}`;
         packages[i].assignedTo = packages[i].rider
         await new Door_step_Sent_package(packages[i]).save();
-
       }
 
       Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -113,6 +119,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: " failed  to send package", error });
   }
 });
+
 router.post("/package/delivery-charge", async (req, res) => {
   try {
     let price = 100;
@@ -161,9 +168,9 @@ router.post("/package/delivery-charge", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.put("/agent/package/:id/:state", async (req, res) => {
+router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-
+    const { type } = req.query
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
@@ -189,6 +196,50 @@ router.put("/agent/package/:id/:state", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+    if (req.params.state === "unavailable") {
+      await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    if (req.params.state === "rejected") {
+      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+    }
+    if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
+      await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+    }
+    if (req.params.state === "collected") {
+      req.body.package = req.params.id
+      req.body.dispatchedBy = req.user._id
+      await new Collected(req.body).save()
+      // await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+    }
+    return res.status(200).json({ message: "Sucessfully" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100)
+      .populate('location')
+    // .populate('receieverAgentID', 'name')
+    // .populate('senderAgentID', 'name')
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
@@ -205,6 +256,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const Owner = await Door_step_Sent_package.findById(req.params.id);

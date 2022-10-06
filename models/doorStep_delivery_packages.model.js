@@ -55,7 +55,20 @@ const doorstepSchema = new Schema(
       type: String,
       enum: ['customer', 'vendor', 'collection'],
     },
-    location: {
+    origin: {
+      lat: {
+        type: String,
+
+      },
+      lng: {
+        type: String,
+      },
+      name: {
+        type: String,
+      }
+
+    },
+    destination: {
       lat: {
         type: String,
 

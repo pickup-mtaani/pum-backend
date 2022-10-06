@@ -39,10 +39,10 @@ const BizSchema = new Schema({
         type: Number,
 
     },
-    loc: {
-        type: { type: String },
-        coordinates: []
-    },
+    // loc: {
+    //     type: { type: String },
+    //     coordinates: []
+    // },
 
     loc: {
         lat: {
@@ -58,7 +58,7 @@ const BizSchema = new Schema({
     },
     agent: {
         type: Schema.Types.ObjectId,
-        ref: 'thrifter_location'
+        ref: 'user'
     },
     deleted_at: {
         type: Date,
