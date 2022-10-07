@@ -42,7 +42,7 @@ const BizDetailsSchema = new Schema({
     },
     agent: {
         type: Schema.Types.ObjectId,
-        ref: 'agent'
+        ref: 'agents_details '
     },
     deleted_at: {
         type: Date,

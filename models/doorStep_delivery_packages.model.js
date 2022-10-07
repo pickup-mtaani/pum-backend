@@ -25,7 +25,7 @@ const doorstepSchema = new Schema(
 
     state: {
       type: String,
-      enum: ["request", "delivered", "declined", "on-transit", "fail",],
+      enum: ["request", "delivered", "declined", "assigned", "picked-from-sender", "on-transit", "fail",],
       default: "request"
     },
     package_value: {
@@ -112,7 +112,10 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
-
+    agent: {
+      type: Schema.Types.ObjectId,
+      ref: "agents_details ",
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "user",

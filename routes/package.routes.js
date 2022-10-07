@@ -8,6 +8,7 @@ var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
+var BussinessDetails = require("models/business_details.model");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
@@ -29,15 +30,21 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
-    let Location = await Bussiness.findOne({ createdBy: req.user._id })
-    let agent = await AgentDetails.findOne({ user: Location.agent })
-    console.log(agent)
+
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
+        const currentBusiness = await Bussiness.findById(packages[i].businessId).populate(
+          {
+            path: "details",
+            populate: {
+              path: "agent"
+            }
+          })
+
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -45,15 +52,18 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
-        packages[i].origin = agent?.loc
+        packages[i].origin = currentBusiness?.details?.agent?.loc
+        packages[i].agent = currentBusiness?.details?.agent?._id
         packages[i].destination = {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
         }
+
         packages[i].receipt_no = `PM-${Makeid(5)}`;
         packages[i].assignedTo = packages[i].rider
         await new Door_step_Sent_package(packages[i]).save();
+
       }
 
       Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -72,7 +82,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price;
         }
         packages[i].location = "6304d87a5be36ab5bfb66e2e";
-
+        packages[i].createdBy = req.user._id;
+        packages[i].businessId = req.body.businessId;
+        packages[i].receipt_no = `PM-${Makeid(5)}`;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -231,8 +243,9 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
   try {
     const agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state }).sort({ createdAt: -1 }).limit(100)
       .populate('location')
-    // .populate('receieverAgentID', 'name')
-    // .populate('senderAgentID', 'name')
+      .populate('businessId')
+      .populate('createdBy')
+
     return res
       .status(200)
       .json(agent_packages);
@@ -259,7 +272,6 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const Owner = await Door_step_Sent_package.findById(req.params.id);
@@ -313,6 +325,21 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/agent/door-step-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agentobj = await AgentDetails.findOne({ user: req.user._id });
+    console.log(req.user._id);
+    const agent_packages = await Door_step_Sent_package.find({ agent: agentobj?._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Door_step_Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
@@ -342,7 +369,6 @@ router.get("/packages", async (req, res) => {
     if (req.query.state === "all") {
       agent_packages = await Sent_package.find().sort({ createdAt: -1 })
         .limit(limit).populate(
-
           "assignedTo", "name phone_number"
         );
       doorstep_packages = await Door_step_Sent_package.find({
@@ -487,17 +513,19 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
   }
 });
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
+
   try {
     const agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id })
 
       .sort({ createdAt: -1 })
+      .populate("senderAgentID")
+      .populate("receieverAgentID")
       .limit(100);
 
     const doorstep_packages = await Door_step_Sent_package.find({
       createdBy: req.user._id, businessId: req.params.id
     })
       .populate(
-
         "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
       )
       .sort({ createdAt: -1 })
@@ -521,37 +549,77 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       .json({ success: false, message: "operationhj failed ", error });
   }
 });
-router.get("/packages/:id", async (req, res) => {
+// router.get("/packages/:id", async (req, res) => {
+//   try {
+
+//     const packages = await Package.find({ businessId: req.params.id })
+//       .populate(["createdBy", "senderAgentID", "receieverAgentID"])
+//       .sort({ createdAt: -1 });
+//     const rented_deliveries = await Rent.find({ businessId: req.params.id })
+//       .populate([
+//         "createdBy",
+//         "businessId",
+//         "from_agent_shelf",
+//         "to_agent_shelf",
+//         "rider",
+//       ])
+//       .sort({ createdAt: -1 })
+//       .limit(10);
+//     const door_step_deliveries = await Doorstep.find({
+//       businessId: req.params.id,
+//     })
+//       .populate(["createdBy", "businessId"])
+//       .sort({ createdAt: -1 })
+//       .limit(10);
+//     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+//     return res
+//       .status(200)
+//       .json({
+//         message: "Fetched Sucessfully",
+//         packages,
+//         door_step_deliveries,
+//         rented_deliveries,
+//       });
+//   } catch (error) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "operation failed ", error });
+//   }
+// });
+router.get("/package/:id", async (req, res) => {
   try {
-    const packages = await Package.find({ businessId: req.params.id })
-      .populate(["createdBy", "senderAgentID", "receieverAgentID"])
-      .sort({ createdAt: -1 });
-    const rented_deliveries = await Rent.find({ businessId: req.params.id })
-      .populate([
-        "createdBy",
-        "businessId",
-        "from_agent_shelf",
-        "to_agent_shelf",
-        "rider",
-      ])
-      .sort({ createdAt: -1 })
-      .limit(10);
-    const door_step_deliveries = await Doorstep.find({
-      businessId: req.params.id,
-    })
-      .populate(["createdBy", "businessId"])
-      .sort({ createdAt: -1 })
-      .limit(10);
-    // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
+
+    const package = await Sent_package.findById(req.params.id)
+
+    const sender = await AgentDetails.findOne({ user: package.senderAgentID })
+    const reciever = await AgentDetails.findOne({ user: package.receieverAgentID })
+
+    // await Door_step_Sent_package.findById(req.params.id)
+    //   .populate([
+    //     "createdBy",
+    //     "businessId",
+    //     "from_agent_shelf",
+    //     "to_agent_shelf",
+    //     "rider",
+    //   ])
+    //   .sort({ createdAt: -1 })
+    //   .limit(10)
+    // || await Rent.find({
+    //   businessId: req.params.id,
+    // })
+    //   .populate(["createdBy", "businessId"])
+    //   .sort({ createdAt: -1 })
+    //   .limit(10);
+
     return res
       .status(200)
       .json({
-        message: "Fetched Sucessfully",
-        packages,
-        door_step_deliveries,
-        rented_deliveries,
+
+        package, sender: sender.business_name, reciever: reciever.business_name
+
       });
   } catch (error) {
+    console.log(error)
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

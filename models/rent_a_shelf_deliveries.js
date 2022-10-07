@@ -15,8 +15,15 @@ const doorstepSchema = new Schema(
       enum: ["rejected", "expired", "picked-from-seller", "collected", "request"],
       default: "request"
     },
-
+    businessId: {
+      type: Schema.Types.ObjectId,
+      ref: 'business'
+    },
     package_value: {
+      type: String,
+
+    },
+    receipt_no: {
       type: String,
 
     },
