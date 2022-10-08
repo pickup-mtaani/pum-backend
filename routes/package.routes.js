@@ -226,9 +226,10 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "collected") {
+
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
-      await new Collected(req.body).save()
+      // await new Collected(req.body).save()
       // await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     return res.status(200).json({ message: "Sucessfully" });
@@ -314,7 +315,9 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 });
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
+    const agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name phone_number,');
+    console.log(JSON.stringify(agent_packages))
     return res
       .status(200)
       .json(agent_packages);

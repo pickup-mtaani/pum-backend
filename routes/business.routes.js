@@ -36,7 +36,7 @@ router.post('/business', [authMiddleware, authorized], upload.single('logo'), as
 
 
     try {
-        console.log(req.body)
+
         const url = req.protocol + '://' + req.get('host');
         let category_id
         const Exists = await Business.findOne({ name: req.body.name, createdBy: req.user._id });
