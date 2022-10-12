@@ -55,7 +55,6 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
-
     let agent_packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
