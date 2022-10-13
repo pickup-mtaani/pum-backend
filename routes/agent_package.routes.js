@@ -206,19 +206,11 @@ router.get("/agent-packages-web", async (req, res) => {
   }
 });
 router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req, res) => {
+
   try {
     const { period, state } = req.query
     let packages
     if (period === 0 || period === undefined || period === null) {
-      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, })
-        .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID")
-        .populate("receieverAgentID")
-        .populate("businessId", "name")
-        .sort({ createdAt: -1 });
-      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-
-    } else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
@@ -229,9 +221,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
 
     } else if (req.query.searchKey) {
-      console.log("========================")
-      console.log(req.query.searchKey);
-      console.log("========================")
+
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
