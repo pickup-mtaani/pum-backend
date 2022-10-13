@@ -56,7 +56,7 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
   try {
 
     let agent_packages
-    const blended = await Door_step_Sent_package.find({ assignedTo: req.user._id, $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
+    const blended = await Door_step_Sent_package.find({ $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,');
 
     if (req.query.searchKey) {
