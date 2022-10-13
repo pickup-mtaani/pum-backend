@@ -58,6 +58,8 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
     let agent_packages
     const blended = await Door_step_Sent_package.find({ $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,');
+    const agent = await Door_step_Sent_package.find({ $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name phone_number,');
 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
@@ -65,14 +67,14 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
         .populate('createdBy', 'f_name l_name name phone_number,');
       return res
         .status(200)
-        .json({ agent_packages, blended });
+        .json({ agent_packages, blended, agent });
     } else {
 
       agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name phone_number,');
       return res
         .status(200)
-        .json({ agent_packages, blended });
+        .json({ agent_packages, blended, agent });
     }
   } catch (error) {
     console.log(error);
