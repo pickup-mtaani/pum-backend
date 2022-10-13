@@ -2,6 +2,7 @@ const express = require("express");
 var AgentDetails = require("models/agentAddmin.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
+var moment = require("moment");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
@@ -53,24 +54,28 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
   }
 });
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
-  try {
 
-    let agent_packages
-    const blended = await Door_step_Sent_package.find({ $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
+  try {
+    let period = 1000
+    if (req.query.period) {
+      period = req.query.period
+    }
+    console.log("period: " + period);
+    const blended = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,');
-    const agent = await Door_step_Sent_package.find({ $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
+    const agent = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,');
 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name phone_number,');
       return res
         .status(200)
         .json({ agent_packages, blended, agent });
     } else {
 
-      agent_packages = await Door_step_Sent_package.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name phone_number,');
       return res
         .status(200)
