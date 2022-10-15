@@ -7,7 +7,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import moment from 'moment'
-// const socket = io("3.23.185.115:4000");
+// const socket = io("https://stagingapi.pickupmtaani.com");
 function Payments(props) {
 
   const columns = [
@@ -52,7 +52,7 @@ function Payments(props) {
       wrap: true,
       selector: row => <div className="flex items-between " style={{ color: row.ResultDesc !== "The service request is processed successfully." ? "red" : "green" }}>
         {row.ResultDesc}
-        
+
       </div>
     },
     {
@@ -74,7 +74,7 @@ function Payments(props) {
   const [Mpesadata, setMData] = useState([]);
 
   const onChangeFilter = (e) => {
- 
+
   }
   const subHeaderComponentMemo = React.useMemo(() => {
     return (

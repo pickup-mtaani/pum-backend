@@ -22,24 +22,25 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
-
     state: {
       type: String,
       enum: ["request", "delivered", "declined", "assigned", "picked-from-sender", "on-transit", "fail",],
       default: "request"
     },
     package_value: {
-      type: String,
-
+      type: Number,
+    },
+    delivery_fee: {
+      type: Number,
     },
     assignedTo: {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
 
-    payment_amount: {
+    total_payment: {
       type: Number,
-      default: 180
+
     },
 
     customer_location: {
@@ -100,10 +101,6 @@ const doorstepSchema = new Schema(
       ref: "business",
     },
 
-    total_payment_amount: {
-      type: Number,
-      // default:180
-    },
     payment_status: {
       type: String,
       default: "Not Paid"
@@ -128,8 +125,6 @@ const doorstepSchema = new Schema(
       type: String,
       enum: ['customer', 'vendor', 'collection'],
     },
-
-
 
   },
   { timestamps: true }

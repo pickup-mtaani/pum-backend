@@ -8,7 +8,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
-const socket = io("3.23.185.115:4000");
+const socket = io("https://stagingapi.pickupmtaani.com");
 function Tracks(props) {
 
   const columns = [
@@ -117,8 +117,8 @@ function Tracks(props) {
     <Layout>
       <div className=" mx-2">
         <button onClick={() => start_rider()}>start Ride</button>
-       <h1>latitude:{cords.latitude}</h1>
-       <h1>Longitude:{cords.longitude}</h1>
+        <h1>latitude:{cords.latitude}</h1>
+        <h1>Longitude:{cords.longitude}</h1>
       </div>
 
 

@@ -69,9 +69,7 @@ export const assignRider = (data1) => async (dispatch) => {
 };
 
 export const fetchpackages = (id) => async (dispatch) => {
-
     try {
-
         await setAuthToken(axios);
         dispatch({ type: "FETCH_PAYMENTS" });
         const { data } = await axios.get(`/api/assigned-packages/${id}`);

@@ -1,6 +1,7 @@
 const express = require("express");
 var AgentDetails = require("models/agentAddmin.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
+var Commision = require("models/commission.model");
 var Declined = require("models/declined.model");
 var moment = require("moment");
 var Conversation = require('models/conversation.model')
@@ -11,6 +12,10 @@ var {
   authorized,
 } = require("middlewere/authorization.middlewere");
 
+
+function getRandomNumberBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 const router = express.Router();
 
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
@@ -19,6 +24,11 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    if (req.params.state === "picked-from-sender") {
+      const package = await Door_step_Sent_package.findById(req.params.id);
+      let payments = getRandomNumberBetween(100, 200)
+      await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "on-transit") {
       const exists = await Conversation.findOne({

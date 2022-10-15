@@ -39,7 +39,7 @@ const doorstepSchema = new Schema(
 
     payment_amount: {
       type: Number,
-      default: 180
+
     },
     location: {
       type: Schema.Types.ObjectId,

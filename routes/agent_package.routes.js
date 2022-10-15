@@ -1,23 +1,10 @@
 const express = require("express");
-var Rent = require("models/rent_a_shelf_delivery.model");
-var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
-var Agent = require("models/agents.model");
-var AgentDetails = require("models/agentAddmin.model");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
-var UnavailableDoorStep = require("models/unavailable_doorstep.model");
-var Declined = require("models/declined.model");
-var Bussiness = require("models/business.model");
-var BussinessDetails = require("models/business_details.model");
-var Conversation = require('models/conversation.model')
-const Message = require("models/messages.model");
-var Product = require("models/products.model.js");
-var User = require("models/user.model.js")
 var Rider_Package = require('models/rider_package.model')
 var Sent_package = require("models/package.modal.js");
-var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
-var Reciever = require("models/reciever.model");
+var mongoose = require('mongoose')
 var {
   authMiddleware,
   authorized,
@@ -25,14 +12,24 @@ var {
 const { Makeid } = require("../helpers/randomNo.helper");
 const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
-const Mpesa_stk = require("../helpers/stk_push.helper");
+var Commision = require("models/commission.model");
 const router = express.Router();
+
+
+function getRandomNumberBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const { type } = req.query
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
+    }
+    if (req.params.state === "picked-from-sender") {
+      // const package = await Door_step_Sent_package.findById(req.params.id);
+      let payments = getRandomNumberBetween(100, 200)
+      await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
@@ -269,6 +266,47 @@ router.get("/packages/agent/:id", async (req, res) => {
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages });
   } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/commisions", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const commisionArr = await Commision.find({
+      agent: req.user._id,
+    })
+      .populate(["agent_package", "doorstep_package", "agent"])
+      .populate({
+        path: 'doorstep_package',
+        populate: {
+          path: 'businessId',
+        }
+      })
+      .populate({
+        path: 'agent_package',
+        populate: {
+          path: 'businessId',
+        }
+      })
+
+    let grouped_commission = {}
+    commisionArr.forEach(e => {
+      // const [year, month] = e.createdAt.split('-')
+      const date = new Date(e.createdAt).toISOString()
+      const year = date.split('-')[0]
+      const month = date.split('-')[1]
+
+      grouped_commission[year] ??= {};
+      grouped_commission[year][month] ??= [];
+      grouped_commission[year][month].push(e);
+    });
+
+
+    return res.status(200).json(grouped_commission);
+  } catch (error) {
+    console.log(error)
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

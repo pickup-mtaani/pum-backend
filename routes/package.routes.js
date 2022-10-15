@@ -259,7 +259,7 @@ router.get("/packages", async (req, res) => {
         // businessId: req.params.id
       })
         .populate(
-          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
         ).populate("assignedTo", "name phone_number").populate("businessId", "name")
         .sort({ createdAt: -1 })
         .limit(limit);
@@ -273,7 +273,7 @@ router.get("/packages", async (req, res) => {
         state: req.query.state
       })
         .populate(
-          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
         ).populate("assignedTo", "name phone_number").populate("businessId", "name")
         .sort({ createdAt: -1 })
         .limit(limit);
@@ -318,13 +318,13 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }]
       })
         .populate(
-          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves = await Rent.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).populate(
-        "packages",
-        "customerPhoneNumber  package_value packageName customerName _id"
+      shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).populate(
+
+
       );
     } else {
       agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id, })
@@ -338,13 +338,12 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         createdBy: req.user._id, businessId: req.params.id
       })
         .populate(
-          "customerPhoneNumber packageName package_value package_value packageName payment_amount customerName"
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves = await Rent.find({ businessId: req.params.id, createdBy: req.user._id }).populate(
-        "packages",
-        "customerPhoneNumber  package_value packageName customerName _id"
+      shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id }).populate(
+
       );
     }
     return res
@@ -365,14 +364,15 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
 router.get("/package/:id", async (req, res) => {
   try {
     const package = await Sent_package.findById(req.params.id)
-    const sender = await AgentDetails.findOne({ user: package.senderAgentID })
-    const reciever = await AgentDetails.findOne({ user: package.receieverAgentID })
+    // console.log(package);
+    const sender = await AgentDetails.findOne({ $or: [{ user: package?.senderAgentID }, { user: package?.receieverAgentID }] })
+    // const reciever
 
     return res
       .status(200)
       .json({
 
-        package, sender: sender.business_name, reciever: reciever.business_name
+        package, sender: sender.business_name,
 
       });
   } catch (error) {

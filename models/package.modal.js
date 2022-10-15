@@ -20,7 +20,7 @@ const PackageSchema = new Schema(
     },
     total_payment: {
       type: Number,
-      default: 180
+
     },
     payment_status: {
       type: String,
@@ -53,11 +53,11 @@ const PackageSchema = new Schema(
     },
     total_fee: {
       type: Number,
-      default: 180
+
     },
     delivery_fee: {
       type: Number,
-      default: 180
+
     },
     senderAgentID: {
       type: Schema.Types.ObjectId,

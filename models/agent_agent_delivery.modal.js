@@ -19,7 +19,7 @@ const AgentSchema = new Schema(
     },
     total_payment: {
       type: Number,
-      default: 180
+
     },
     payment_status: {
       type: String,

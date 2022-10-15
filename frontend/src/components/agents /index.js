@@ -8,7 +8,7 @@ import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
-// const socket = io("3.23.185.115:4000");
+// const socket = io("https://stagingapi.pickupmtaani.com");
 function Payments(props) {
 
   const columns = [
