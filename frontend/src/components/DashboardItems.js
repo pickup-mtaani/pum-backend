@@ -85,9 +85,9 @@ export function DashboardRider(props) {
             >  <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
                     <div className="h-full w-full flex justify-center items-center">
                         <h1 className="font-bold text-gray-400 text-2xs pr-10">{props?.rider?.user?.name}</h1>
-                        {/* <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
+                        <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
                             {props?.obj?.value}
-                        </div> */}
+                        </div>
                     </div>
                 </div>
             </Link>

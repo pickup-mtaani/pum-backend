@@ -16,7 +16,6 @@ function AssignedPackModal(props) {
             sortable: true,
             name: 'Name',
             minWidth: '250px',
-
             selector: row => row.package?.packageName
         },
         {

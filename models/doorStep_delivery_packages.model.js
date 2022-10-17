@@ -24,7 +24,9 @@ const doorstepSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["request", "delivered", "declined", "assigned", "picked-from-sender", "on-transit", "fail",],
+      enum: ["request", "delivered", "declined", "assigned", ,
+        "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit",
+        "on-transit", "fail",],
       default: "request"
     },
     package_value: {
@@ -80,18 +82,14 @@ const doorstepSchema = new Schema(
       name: {
         type: String,
       }
-
     },
-
     isProduct: {
       type: Boolean,
       default: false,
     },
-
     payment_phone_number: {
       type: String,
     },
-
     type: {
       type: String,
       default: "doorstep",
