@@ -376,7 +376,7 @@ class Create extends Component {
 
         } catch (error) {
             const errObj = error.response.data;
-            // alert(JSON.stringify(error))
+            //alert(JSON.stringify(error))
 
 
             this.setState({
@@ -505,7 +505,7 @@ class Create extends Component {
 
             const response = await axios.get(`/hairstyle/page/5e96b66adf2eac658652e0b4/all`)
             const data = response.data.styles;
-            // //alert(JSON.stringify(data))
+            //alert(JSON.stringify(data))
             var newlist = this.state.styles.concat(data);
             return this.setState({
                 hairstyles: newlist,
@@ -605,7 +605,7 @@ class Create extends Component {
             this.setState({
                 logo: { uri: image.path }
             });
-            // alert(JSON.stringify(image));
+            //alert(JSON.stringify(image));
             return;
         });
     }
@@ -641,7 +641,7 @@ class Create extends Component {
         const userid = await AsyncStorage.getItem("id");
         const dev = await DeviceInfo.isHeadphonesConnected()
         if (dev) {
-            alert('kindly switch on your ')
+            //alert('kindly switch on your ')
         }
         this.setState({
             user_id: this.props.user.user._id
@@ -1232,7 +1232,7 @@ salon.amenities.forEach((amenity, i) => {
 export const createSalon = (salon) => async dispatch => {
     try {
 
-        // alert(JSON.stringify(salon));
+        //alert(JSON.stringify(salon));
 
         var formData = new FormData();
 

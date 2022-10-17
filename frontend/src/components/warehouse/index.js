@@ -24,7 +24,7 @@ const Index = props => {
         <Layout>
             <div className='flex w-full gap-x-20 '>
                 <WHItem noCount={false} obj={{ title: 'DOOR STEP PACKAGES', pathname: "/wahehouse/doorstep/packages", value: collect.length, state: "on-transit", data: collect }} />
-                <WHItem noCount={false} obj={{ title: 'AGENT PACKAGES', pathname: "wahehouse/agent-agent/packages", value: assign.length, state: "recieved-warehouse", data: collect }} />
+                <WHItem noCount={false} obj={{ title: 'AGENT PACKAGES', pathname: "/wahehouse/agent-agent/packages", value: assign.length, state: "recieved-warehouse", data: collect }} />
             </div>
             {/* <div className='flex w-full gap-x-20 mt-20'>
                 <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />

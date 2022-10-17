@@ -26,8 +26,6 @@ function DashboardItems(props) {
         </div>
     )
 }
-
-
 export function DashboardWHItem(props) {
     return (
         <div className="bg-white  w-1/2  ">
@@ -48,7 +46,7 @@ export function DashboardWHItem(props) {
                     </div>
                     {props.noCount && <div className="h-full w-2/6 flex justify-center items-center">
                         <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
-                            {props.obj.value}
+                            {props.obj.value ? props.obj.value : 0}
                         </div>
                     </div>}
                 </div>
@@ -61,7 +59,7 @@ export function WHItem(props) {
         <div className="bg-white  w-1/2  ">
             <Link
                 to={{
-                    pathname: `${props.pathname}`,
+                    pathname: `${props.obj.pathname}`,
                 }}
                 state={{
                     title: props.obj.title,
@@ -113,7 +111,7 @@ export function DashboardRider(props) {
                     <div className="h-full w-full flex justify-center items-center">
                         <h1 className="font-bold text-gray-400 text-2xs pr-10">{props?.rider?.user?.name}</h1>
                         <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
-                            {props?.obj?.value}
+                            {props?.rider.no_of_packages}
                         </div>
                     </div>
                 </div>
@@ -122,5 +120,4 @@ export function DashboardRider(props) {
         </div>
     )
 }
-
 export default DashboardItems

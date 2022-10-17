@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, assign, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import Layout from '../../../views/Layouts'
 import { DashboardWHItem } from '../../DashboardItems'
 const Index = props => {
@@ -10,10 +10,14 @@ const Index = props => {
     const [doorStep, setDoorstep] = useState([])
     const [assignDoorstep, setAssignDoorStep] = useState([])
     const fetch = async () => {
-        setCollections(await props.fetchpackages('on-transit'))
-        setAssign(await props.fetchpackages('recieved-warehouse'))
-        setDoorstep(await props.fetchpackages('assigned'))
-        setAssignDoorStep(await props.fetchpackages('assigned'))
+        try {
+            setCollections(await props.fetchdoorpackages('on-transit'))
+            setAssign(await props.fetchdoorpackages('recieved-warehouse'))
+            setDoorstep(await props.fetchdoorpackages('assigned'))
+            setAssignDoorStep(await props.fetchdoorpackages('assigned'))
+        } catch (error) {
+            //alert(JSON.stringify(error));
+        }
     }
 
     useEffect(() => {
@@ -23,8 +27,8 @@ const Index = props => {
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'DOOR STEP PACKAGES', value: collect.length, state: "on-transit", data: collect }} />
-                <DashboardWHItem obj={{ title: 'AGENT PACKAGES', value: assign.length, state: "recieved-warehouse", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Collect From Riders', value: collect.length, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Assign to Riders', value: assign.length, state: "recieved-warehouse", data: collect }} />
             </div>
             {/* <div className='flex w-full gap-x-20 mt-20'>
                 <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />
@@ -47,5 +51,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages })(Index)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchdoorpackages })(Index)
 

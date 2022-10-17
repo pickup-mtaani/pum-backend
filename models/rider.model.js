@@ -47,6 +47,11 @@ const RiderSchema = new Schema({
         type: Number,
 
     },
+    no_of_packages: {
+        type: Number,
+        default: 0
+
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'

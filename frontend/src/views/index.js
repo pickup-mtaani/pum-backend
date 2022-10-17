@@ -54,7 +54,7 @@ export function Todo(props) {
             // setShowThrift(false)
         } catch (error) {
             // setShowThrift(false)
-            //    alert(error)
+            //    //alert(error)
             //    
         }
     }

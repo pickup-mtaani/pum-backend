@@ -23,8 +23,8 @@ const Index = props => {
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'DOOR STEP PACKAGES', value: collect.length, state: "on-transit", data: collect }} />
-                <DashboardWHItem obj={{ title: 'AGENT PACKAGES', value: assign.length, state: "recieved-warehouse", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Collect From Riders', value: collect.length, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Assign to Riders', value: assign.length, state: "recieved-warehouse", data: collect }} />
             </div>
             {/* <div className='flex w-full gap-x-20 mt-20'>
                 <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />

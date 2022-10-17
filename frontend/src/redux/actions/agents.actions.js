@@ -9,7 +9,7 @@ export const get_agents = () => async (dispatch) => {
         const { data } = await axios.get(`/api/agents`);
         let payload = [];
         payload = data.agents;
-        // alert(JSON.stringify(payload))
+        //alert(JSON.stringify(payload))
         dispatch({ type: "FETCH_AGENTS_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
@@ -26,7 +26,7 @@ export const get_zones = () => async (dispatch) => {
         const { data } = await axios.get(`/api/zones`);
         let payload = [];
         payload = data.Zones;
-        // alert(JSON.stringify(data))
+        //alert(JSON.stringify(data))
         dispatch({ type: "FETCH_ZONES_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
@@ -53,7 +53,7 @@ export const assign = (id, zone) => async (dispatch) => {
 };
 
 export const fetchpackages = (state, agent) => async (dispatch) => {
-    // alert(JSON.stringify(agent))
+    //alert(JSON.stringify(agent))
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
@@ -70,6 +70,23 @@ export const fetchpackages = (state, agent) => async (dispatch) => {
     }
 };
 
+export const fetchdoorpackages = (state, agent) => async (dispatch) => {
+    //alert(JSON.stringify(agent))
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/door-step-packages?state=${state}&agent=${agent ? agent : "all"}`);
+        let payload = [];
+        payload = data.packages;
+
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
 // export const fetchpackages = (id) => async (dispatch) => {
 
 //     try {

@@ -9,7 +9,7 @@ export const getParcels = (data1) => async (dispatch) => {
     let payload = [];
     const { data } = await axios.get(`/api/packages?limit=${limit}&state=${state}`);
     payload = data;
-    alert(JSON.stringify(payload));
+    //alert(JSON.stringify(payload));
     dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
     return payload;
   } catch (error) {
