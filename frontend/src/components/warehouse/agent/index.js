@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages } from '../../redux/actions/agents.actions'
-import Layout from '../../views/Layouts'
-import { DashboardWHItem, WHItem } from '../DashboardItems'
+import { get_agents, get_zones, assign, fetchpackages } from '../../../redux/actions/agents.actions'
+import Layout from '../../../views/Layouts'
+import { DashboardWHItem } from '../../DashboardItems'
 const Index = props => {
     const [collect, setCollections] = useState([])
     const [assign, setAssign] = useState([])
@@ -23,8 +23,8 @@ const Index = props => {
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <WHItem noCount={false} obj={{ title: 'DOOR STEP PACKAGES', pathname: "/wahehouse/doorstep/packages", value: collect.length, state: "on-transit", data: collect }} />
-                <WHItem noCount={false} obj={{ title: 'AGENT PACKAGES', pathname: "wahehouse/agent-agent/packages", value: assign.length, state: "recieved-warehouse", data: collect }} />
+                <DashboardWHItem obj={{ title: 'DOOR STEP PACKAGES', value: collect.length, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'AGENT PACKAGES', value: assign.length, state: "recieved-warehouse", data: collect }} />
             </div>
             {/* <div className='flex w-full gap-x-20 mt-20'>
                 <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />

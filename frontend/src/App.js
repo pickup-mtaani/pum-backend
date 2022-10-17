@@ -14,6 +14,8 @@ import Payments from "./components/payments";
 import Tracks from "./components/tracks ";
 import WareHouse from "./components/warehouse";
 import Agents from "./components/agents ";
+import WHdoorstep from "./components/warehouse/doorstep";
+import WHAgent from "./components/warehouse/agent";
 
 import WareHouseActions from "./components/warehouse/actionPage";
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -33,6 +35,8 @@ const App = () => {
     { path: "/wahehouse", element: <WareHouse /> },
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
+    { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },
+    { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/agents", element: <Agents /> },
     { path: "/agent/:name", element: <AgentsDetails /> },
 

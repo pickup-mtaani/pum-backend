@@ -35,8 +35,9 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
-      await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
-      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+      await new Rider_Package({ package: req.params.id, rider: req.query.rider ? req.query.rider : "632181644f413c3816858218" }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
+
     }
     if (req.params.state === "collected") {
       req.body.package = req.params.id
@@ -61,6 +62,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'name')
         .populate('senderAgentID', 'name')
+        .populate('businessId')
       return res
         .status(200)
         .json(agent_packages);
@@ -69,6 +71,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'name')
         .populate('senderAgentID', 'name')
+        .populate('businessId')
       return res
         .status(200)
         .json(agent_packages);
