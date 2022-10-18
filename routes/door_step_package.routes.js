@@ -113,6 +113,19 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 
 module.exports = router;

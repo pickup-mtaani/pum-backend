@@ -4,34 +4,33 @@ import { connect } from 'react-redux'
 import { get_agents, get_zones, assign, fetchpackages } from '../../../redux/actions/agents.actions'
 import Layout from '../../../views/Layouts'
 import { DashboardWHItem } from '../../DashboardItems'
+import { useLocation } from 'react-router-dom'
 const Index = props => {
     const [collect, setCollections] = useState([])
     const [assign, setAssign] = useState([])
     const [doorStep, setDoorstep] = useState([])
     const [assignDoorstep, setAssignDoorStep] = useState([])
+    const location = useLocation()
     const fetch = async () => {
+
         setCollections(await props.fetchpackages('on-transit'))
         setAssign(await props.fetchpackages('recieved-warehouse'))
         setDoorstep(await props.fetchpackages('assigned'))
         setAssignDoorStep(await props.fetchpackages('assigned'))
     }
 
+
+
     useEffect(() => {
         fetch()
     }, [])
-
+    console.log(location?.state)
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'Collect From Riders', value: collect.length, state: "on-transit", data: collect }} />
-                <DashboardWHItem obj={{ title: 'Assign to Riders', value: assign.length, state: "recieved-warehouse", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Collect From Riders', value: location?.state?.data?.dropped, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Assign to Riders', value: location?.state?.data?.recieved, state: "recieved-warehouse", data: collect }} />
             </div>
-            {/* <div className='flex w-full gap-x-20 mt-20'>
-                <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />
-                <DashboardWHItem obj={{ title: 'Assign Doorstep to Riders', value: assignDoorstep.length, }} />
-            </div> */}
-
-
 
         </Layout>
     )

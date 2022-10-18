@@ -48,7 +48,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       await new Collected(req.body).save()
-      // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {

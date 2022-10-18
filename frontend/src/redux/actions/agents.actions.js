@@ -60,7 +60,7 @@ export const fetchpackages = (state, agent) => async (dispatch) => {
         const { data } = await axios.get(`/api/agent-packages-web?state=${state}&agent=${agent ? agent : "all"}`);
         let payload = [];
         payload = data.packages;
-
+        console.log(payload);
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
@@ -75,12 +75,11 @@ export const fetchdoorpackages = (state, agent) => async (dispatch) => {
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
-        const { data } = await axios.get(`/api/door-step-packages?state=${state}&agent=${agent ? agent : "all"}`);
+        const { data } = await axios.get(`/api/wh-door-step-packages?state=${state}`);
         let payload = [];
-        payload = data.packages;
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
-        return payload;
+        return data;
     } catch (error) {
         console.log(error)
         dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });

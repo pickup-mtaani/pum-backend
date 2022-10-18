@@ -44,11 +44,11 @@ export function DashboardWHItem(props) {
                             <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
                         </div>
                     </div>
-                    {props.noCount && <div className="h-full w-2/6 flex justify-center items-center">
+                    <div className="h-full w-2/6 flex justify-center items-center">
                         <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
                             {props.obj.value ? props.obj.value : 0}
                         </div>
-                    </div>}
+                    </div>
                 </div>
             </Link>
         </div >
@@ -63,19 +63,26 @@ export function WHItem(props) {
                 }}
                 state={{
                     title: props.obj.title,
-                    lis: props.obj.state
+                    lis: props.obj.state,
+                    data: props.obj.value
                 }}
-            > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
+            > <div className="bg-white h-48 p-10  w-full  rounded-xl shadow-sm flex">
                     <div className="h-full w-4/6 ">
                         <div className=" w-full flex flex-col p-3">
                             <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
                         </div>
                     </div>
-                    {props.noCount && <div className="h-full w-2/6 flex justify-center items-center">
-                        <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
-                            {props.obj.value}
+                    <div className="h-full w-2/6 flex justify-center items-center">
+                        <div className='flex flex-col gap-y-4'>
+                            {/* <div>pckages on Transit:{props.obj.value.transit}</div> */}
+                            <div> To be recieved   :{props.obj.value.dropped}</div>
+                            <div> To be assigned to  rider :{props.obj.value.recieved}</div>
                         </div>
-                    </div>}
+
+                        {/* <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
+                            {props.obj.value}
+                        </div> */}
+                    </div>
                 </div>
             </Link>
         </div >
