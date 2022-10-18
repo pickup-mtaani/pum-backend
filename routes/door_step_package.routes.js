@@ -72,21 +72,23 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
     }
     console.log("period: " + period);
     const blended = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
-      .populate('createdBy', 'f_name l_name name phone_number,');
+      .populate('createdBy', 'f_name l_name name phone_number,')
+      .populate('businessId')
     const agent = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
-      .populate('createdBy', 'f_name l_name name phone_number,');
+      .populate('createdBy', 'f_name l_name name phone_number,')
+      .populate('businessId')
 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate('createdBy', 'f_name l_name name phone_number,');
+        .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId')
       return res
         .status(200)
         .json({ agent_packages, blended, agent });
     } else {
 
       agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
-        .populate('createdBy', 'f_name l_name name phone_number,');
+        .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId')
       return res
         .status(200)
         .json({ agent_packages, blended, agent });
