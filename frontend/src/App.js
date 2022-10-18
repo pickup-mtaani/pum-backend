@@ -21,6 +21,7 @@ import WareHouseActions from "./components/warehouse/actionPage";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/agents /agentsDetails";
+import AssignRider from "./components/assignRider";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -36,6 +37,7 @@ const App = () => {
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
     { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },
+    { path: "/track-riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/agents", element: <Agents /> },
     { path: "/agent/:name", element: <AgentsDetails /> },

@@ -8,7 +8,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
-const socket = io("https://stagingapi.pickupmtaani.com");
+const socket = io("http://localhost:4000/");
 function Tracks(props) {
 
   const columns = [

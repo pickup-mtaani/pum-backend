@@ -41,7 +41,7 @@ const rider_coordinates = [
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
+      origin: ["http://localhost:3000", "http://localhost:3000"],
     },
   });
   let riders = [];
@@ -107,9 +107,10 @@ module.exports = (http) => {
       socket.to(rider_id).emit("position-changed", { coordinates });
       // grab the coordinates
       // send the coordinates to rider's room.
-    };
+    };//console. ya on connection inatokea?
 
     socket.on("start-ride", (data) => {
+      console.log(data);
       createRoom(data?.rider_id);
       {
         const changeLoc = (coord) => {
