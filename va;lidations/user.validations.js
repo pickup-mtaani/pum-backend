@@ -11,9 +11,9 @@ module.exports.validateRegisterInput = (data) => {
     data.phone_number = !isEmpty(data.phone_number) && data.phone_number !== undefined ? data.phone_number : '';
     data.password = !isEmpty(data.password) && data.password !== undefined ? data.password : '';
 
-    if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
-        errors.name = 'name must be between 2 to 30 chars';
-    }
+    // if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
+    //     errors.name = 'name must be between 2 to 30 chars';
+    // }
 
     if (Validator.isEmpty(data.phone_number)) {
         errors.phone_number = 'phone number  field is required';
@@ -94,9 +94,9 @@ module.exports.validateAdminRegisterInput = (data) => {
     data.phone_number = !isEmpty(data.phone_number) && data.phone_number !== undefined ? data.phone_number : '';
     data.password = !isEmpty(data.password) && data.password !== undefined ? data.password : '';
 
-    if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
-        errors.name = 'Name must be between 2 to 30 chars';
-    }
+    // if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
+    //     errors.name = 'Name must be between 2 to 30 chars';
+    // }
 
     if (Validator.isEmpty(data.phone_number)) {
         errors.phone_number = 'phone number  field is required';
