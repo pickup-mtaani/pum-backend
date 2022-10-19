@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
+import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 const socket = io("http://localhost:4000/");
-function AssignRider() {
+mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
 
-    const [position, setPosition] = useState({
-        latitude: '',
-        longitude: ''
+
+function AssignRider() {
+    const [viewPoints, setViewPoints] = useState({
+        width: "100vh", height: "800px", latitude: -1.286389, longitude: 36.817223, zoom: 12
     })
+    const [position, setPosition] = useState({
+        accuracy: 15.140000343322754,
+        altitude: 1610.4000244140625,
+        heading: 0,
+        latitude: -1.301465,
+        longitude: 36.8894634,
+        speed: 0
+    })
+
     const [user, setUser] = useState({}
     )
     const getCurent = async () => {
@@ -18,7 +29,7 @@ function AssignRider() {
     }
     useEffect(() => {
         socket.on('connection');
-        socket.emit('track_rider', { rider_id: '12345', user_id: "1322" });
+        socket.emit('track_rider', { rider_id: '632181644f413c3816858218', user_id: "1322" });
 
         socket.on('user-joined', data => {
             console.log('user joined!', data);
@@ -74,10 +85,62 @@ function AssignRider() {
         });
 
     }
+
     return (
         <div>
 
             <button onClick={onAssign}>Kenn</button>
+
+            <ReactMapGl
+                {...viewPoints}
+                mapStyle="mapbox://styles/mapbox/streets-v11"
+                onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
+                mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
+            >
+                {show && <Popup
+                    latitude={position.latitude}
+                    longitude={position.longitude}
+                    closeButton={true}
+                    onClose={() => togglePopup(false)}
+                    anchor="top-right"
+                >
+                    <div>{popupMark.location}</div>
+                </Popup>
+                }
+                <Marker
+                    latitude="-1.28824"
+                    longitude="36.81404"
+                    offsetLeft={-20}
+                    offsetTop={-20}
+                >
+
+                    <img
+                        style={{ cursor: 'pointer', height: 20, width: 40 }}
+                        onclick={() => {
+                            setlocapopup({
+                                latitude: position.latitude,
+                                longitude: position.longitude,
+                                location: "Nairobi"
+                            })
+                            togglePopup(true);
+                        }}
+                        src={PIN}
+                    />
+                </Marker>
+                <Marker
+                    latitude={position.latitude}
+                    longitude={position.longitude}
+                    offsetLeft={-20}
+                    offsetTop={-20}
+                >
+                    <img
+                        style={{ cursor: 'pointer', height: 20, width: 40, objectFit: 'cover' }}
+
+                        src={PIN}
+                    />
+                </Marker>
+
+            </ReactMapGl>
         </div>
     )
 }

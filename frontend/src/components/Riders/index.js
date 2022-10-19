@@ -76,6 +76,12 @@ function Users(props) {
     },
     {
       sortable: true,
+      name: 'track rider',
+      minWidth: '225px',
+      selector: row => row.agent?.name
+    },
+    {
+      sortable: true,
       name: 'Agent',
       minWidth: '225px',
       selector: row => row.agent?.name
@@ -163,7 +169,7 @@ function Users(props) {
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-        {/* <ReactMapGl
+        <ReactMapGl
           {...viewPoints}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
@@ -212,7 +218,7 @@ function Users(props) {
             />
           </Marker>
 
-        </ReactMapGl> */}
+        </ReactMapGl>
       </div>
 
       <AssignedPackModal

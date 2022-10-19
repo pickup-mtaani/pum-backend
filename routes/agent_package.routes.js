@@ -37,7 +37,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
     if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
       await new Rider_Package({ package: req.params.id, rider: req.query.rider ? req.query.rider : "632181644f413c3816858218" }).save()
-      await Rider.findOneAndUpdate({ user: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { no_of_packages: no_of_packages + 1 }, { new: true, useFindAndModify: false })
+      // await Rider.findOneAndUpdate({ user: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { no_of_packages: no_of_packages + 1 }, { new: true, useFindAndModify: false })
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
 
     }
