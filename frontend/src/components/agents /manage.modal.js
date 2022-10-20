@@ -1,9 +1,9 @@
 import React from 'react'
-import Modal from '../../common/modal'
 
-
-function Add_admin(props) {
+function Manage(props) {
     const { toggle, show } = props
+
+    console.log(props.employees)
     return (
 
         <>
@@ -13,10 +13,10 @@ function Add_admin(props) {
                     <>
 
                         <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-width:screen">
-                            <div className="relative w-1/3 rounded-sm my-6 mx-auto max-w-3xl  ">
+                            <div className="relative w-full rounded-sm my-6 mx-auto max-w-3xl  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-xl font=bold uppercase">{props.modalTitle}</h3>
+                                        <h3 className="text-xl font=bold uppercase">{props?.data?.business_name}</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={props.toggle}
@@ -26,26 +26,30 @@ function Add_admin(props) {
                                             </span>
                                         </button>
                                     </div>
-                                    <div className="relative p-6 flex-auto">
-                                        <div className="w-full flex flex-col gap-y-2 ">
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Name</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin Name" name="name" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Phone</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin phone number" name="phone_number" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Email</div>
-                                                <input type="email" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="admin email" name="email" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Password</div>
-                                                <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
-                                            </div>
 
-                                        </div>
+                                    <div className='p-5'>
+                                        <h2 className='text-center'>Employees</h2>
+                                        <table className='w-full'>
+                                            <thead className='gap-x-1 border-b-2 border-red-200'>
+                                                <th>Name</th>
+                                                <th>Phone Number</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Action</th>
+                                            </thead>
+                                            <tbody className='gap-x-3' >
+                                                {props?.employees?.map((emp, i) => (
+                                                    <tr key={i}>
+                                                        <td>{emp?.user?.name}</td>
+                                                        <td>{emp?.user?.phone_number}</td>
+                                                        <td>{emp?.user?.email}</td>
+                                                        <td>agent</td>
+                                                        <td></td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+
                                     </div>
                                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                         <button
@@ -73,4 +77,4 @@ function Add_admin(props) {
     );
 };
 
-export default Add_admin
+export default Manage

@@ -26,7 +26,10 @@ function DashboardItems(props) {
         </div>
     )
 }
+
+
 export function DashboardWHItem(props) {
+
     return (
         <div className="bg-white  w-1/2  ">
             <Link
@@ -46,7 +49,7 @@ export function DashboardWHItem(props) {
                     </div>
                     <div className="h-full w-2/6 flex justify-center items-center">
                         <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
-                            {props.obj.value ? props.obj.value : 0}
+                            {props?.obj?.value}
                         </div>
                     </div>
                 </div>
@@ -90,16 +93,6 @@ export function WHItem(props) {
 }
 export function DashboardRider(props) {
 
-    // senderAgentID
-    // 63297ec72048eb2ffe1c3ec6
-    // receieverAgentID
-    // 632b25c533ec27c1c211fd97
-
-
-    // senderAgentID
-    // 632b25c533ec27c1c211fd97
-    // receieverAgentID
-    // 63297ec72048eb2ffe1c3ec6
     return (
         <div className="bg-white  w-80  " >
             <Link

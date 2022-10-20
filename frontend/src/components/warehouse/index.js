@@ -24,7 +24,7 @@ const Index = props => {
     useEffect(() => {
         fetch()
     }, [])
-    console.log(agent)
+
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>

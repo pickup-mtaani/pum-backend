@@ -2,20 +2,35 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages } from '../../redux/actions/agents.actions'
+import { get_agents, get_zones, get_agents_employees, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
 import { get_riders, } from '../../redux/actions/riders.actions'
 import { get_routes } from '../../redux/actions/routes.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import moment from 'moment'
+import Add_admin from './add.modal'
 import { Link } from 'react-router-dom'
+import Manage from './manage.modal'
 // const socket = io("https://stagingapi.pickupmtaani.com");
 function Agents(props) {
 
-
+  let initialState = {
+    name: '', email: "", phone_number: '', password: ''
+  }
   const [rider, setRider] = useState('')
+  const [agent, setAgent] = useState('')
+  const [datar, setData] = useState('')
+  const [employees, setEmployees] = useState([])
+  const [item, setItem] = useState(initialState);
   const assigRider = () => {
+
+  }
+
+  const toggleManage = async (row) => {
+    let result = await props.get_agents_employees(row._id)
+    setEmployees(result)
+    setShow(true); setData(row)
 
   }
   const columns = [
@@ -34,7 +49,7 @@ function Agents(props) {
             agent: row?.user?.name,
             id: row?.user?._id,
           }}
-        >{row.user?.name}
+        >{row.business_name}
         </Link>
       </>)
 
@@ -48,37 +63,52 @@ function Agents(props) {
     {
       sortable: true,
       name: 'location',
-      minWidth: '100px',
+      minWidth: '30px',
       wrap: true,
       selector: row => row.location_id?.name
     },
-    // {
-    //   sortable: true,
-    //   name: 'Rider',
-
-    //   maxWidth: '50px',
-    //   selector: row => (<>{row.rider }</>)
-    // },
     {
       sortable: true,
-      name: 'Assign Rider',
-
+      name: 'Action',
+      minWidth: '400px',
       selector: row => (
-        <div style={{ display: 'flex' }} className="gap-2">
-          <select name="gender" onChange={(event) => props.assign(event?.target?.value, row._id)} className="bg-transparent border-b border-slate-500 pt-5 pb-5 ">
-            <option value=""> Select Rider</option>
-            {props.riders?.map((rider, i) => (
-              <option key={i} value={rider.user?._id} >{rider?.user?.name}</option>
-            ))}
+        <div className='flex gap-x-2'>
+          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true); setAgent(row._id) }}>Add Employee</div>
+          <div className="" >
+            <select onChange={(event) => props.assign(event?.target?.value, row._id)} className="">
+              <option value=""> Select Rider</option>
+              {props.riders?.map((rider, i) => (
+                <option key={i} value={rider.user?._id} >{rider?.user?.name}</option>
+              ))}
 
-          </select>
+            </select>
+
+          </div>
+          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true); setAgent(row._id); setItem(row) }}>Edit</div>
+          <div className='p-2 bg-red-100' onClick={() => toggleManage(row)}>Manage</div>
 
         </div>
-      ),
+      )
     },
 
-  ]
 
+  ]
+  const changeInput = (e) => {
+    const { name, value } = e.target !== undefined ? e.target : e;
+    setItem((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+  const submit = async () => {
+    console.log("Agent" + agent)
+    console.log("item" + item)
+    await props.add_employee(agent, item)
+    await fetch()
+    setItem(initialState)
+    setShowModal(false)
+  }
   const [searchValue, setSearchValue] = useState("")
 
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
@@ -86,6 +116,8 @@ function Agents(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [show, setShow] = useState(false);
+
   const [Mpesadata, setMData] = useState([]);
 
   const onChangeFilter = (e) => {
@@ -121,7 +153,7 @@ function Agents(props) {
 
   }, [])
 
-  console.log(props.riders)
+
   return (
     <Layout>
       <div className=" mx-2">
@@ -142,8 +174,21 @@ function Agents(props) {
         />
       </div>
 
-
-
+      <Add_admin
+        show={showModal}
+        changeInput={(e) => changeInput(e)}
+        item={item}
+        submit={() => submit()}
+        toggle={() => setShowModal(false)}
+      />
+      <Manage
+        show={show}
+        changeInput={(e) => changeInput(e)}
+        data={datar}
+        employees={employees}
+        submit={() => submit()}
+        toggle={() => setShow(false)}
+      />
     </Layout>
   )
 }
@@ -159,5 +204,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_agents, get_riders, get_routes, get_zones, assign, fetchpackages })(Agents)
+export default connect(mapStateToProps, { get_agents, get_agents_employees, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
 

@@ -6,11 +6,6 @@ import { useLocation } from 'react-router-dom'
 import Layout from '../../views/Layouts'
 import { DashboardRider } from '../DashboardItems'
 
-
-// 7C:76:35:D6:D7:5B		Local
-// 4C:D3:AF:23:F3:F5		
-// 58:10:B7:6B:06:1A
-
 function ActionPage(props) {
     const location = useLocation()
 

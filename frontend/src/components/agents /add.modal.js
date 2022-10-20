@@ -1,6 +1,4 @@
 import React from 'react'
-import Modal from '../../common/modal'
-
 
 function Add_admin(props) {
     const { toggle, show } = props
@@ -16,7 +14,7 @@ function Add_admin(props) {
                             <div className="relative w-1/3 rounded-sm my-6 mx-auto max-w-3xl  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-xl font=bold uppercase">{props.modalTitle}</h3>
+                                        <h3 className="text-xl font=bold uppercase">ADD EMPLOYEE</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={props.toggle}
@@ -30,15 +28,21 @@ function Add_admin(props) {
                                         <div className="w-full flex flex-col gap-y-2 ">
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Name</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin Name" name="name" />
+                                                <input type="text"
+                                                    value={props.item.name}
+                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Phone</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Admin phone number" name="phone_number" />
+                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                    value={props.item.phone_number}
+                                                    name="phone_number" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Email</div>
-                                                <input type="email" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="admin email" name="email" />
+                                                <input type="email"
+                                                    value={props.item.email}
+                                                    autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
                                             </div>
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Password</div>

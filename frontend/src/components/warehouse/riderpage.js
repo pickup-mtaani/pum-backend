@@ -20,15 +20,12 @@ function Riderpage(props) {
 
     }
     const packAction = async (id, state, rider) => {
-        //alert(JSON.stringify(rider))
-        // return
         await props.assignwarehouse(id, state, rider)
         setData(await props.fetchpackages("dropped", location?.state?.agent))
+        await fetch("dropped", location?.state?.agent)
     }
     useEffect(() => {
         fetch("dropped", location?.state?.agent)
-        //alert(JSON.stringify(data))
-
 
     }, [])
 

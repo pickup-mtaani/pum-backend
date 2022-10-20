@@ -3,6 +3,9 @@ const express = require('express');
 var mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 var Admin = require('models/admin.model')
+var Employee = require('models/user.model')
+var Agent = require('models/agentAddmin.model')
+var AgentUser = require('models/agent_user.model')
 var Role = require('models/roles.model')
 var moment = require('moment');
 var jwt = require('jsonwebtoken');
@@ -73,6 +76,41 @@ router.post('/login', async (req, res) => {
 
 });
 
+router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, res) => {
+
+    try {
+
+
+        const body = req.body
+        req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
+        const user = await Employee.findOne({ email: req.body.email });
+        const phone = await Employee.findOne({ phone_number: req.body.phone_number });
+        if (user || phone) {
+            return res.status(402).json({ message: 'Employee Exists !!' });
+        }
+        const { errors, isValid } = validateAdminRegisterInput(req.body);
+        if (!isValid) {
+            let error = Object.values(errors)[0]
+            return res.status(400).json({ message: error });
+        }
+        body.hashPassword = bcrypt.hashSync(body.password, 10);
+        body.createdBy = req.user._id
+        body.role = "agent"
+        // body.agent = req.params.id
+        let newemployee = await new Employee(body);
+        const saved = await newemployee.save();
+
+        await new AgentUser({
+            agent: req.params.id,
+            user: saved._id
+        }).save()
+
+        return res.status(200).json({ message: 'User Saved Successfully !!', saved });
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
 router.get('/', [authMiddleware, authorized], async (req, res) => {
     try {
         const { page, limit, date } = req.query
@@ -93,6 +131,19 @@ router.get('/', [authMiddleware, authorized], async (req, res) => {
         }
 
         return res.status(200).json({ message: 'Admins Fetched Successfully !!', Admins });
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.get('/employees/:id', async (req, res) => {
+    try {
+        let emp = await AgentUser.find({ agent: req.params.id }).populate('user');
+
+        return res.status(200).json(emp);
 
     } catch (error) {
 

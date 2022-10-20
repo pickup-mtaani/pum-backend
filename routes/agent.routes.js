@@ -20,6 +20,9 @@ const storage = multer.diskStorage({
         cb(null, uuidv4() + '-' + fileName)
     }
 });
+const custom_locations = require('../helpers/agentsed.json')
+
+
 var uploadCsv = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
@@ -74,7 +77,7 @@ router.put('/open-close', [authMiddleware, authorized], async (req, res) => {
     }
 
 });
-router.post('/agents/uploads', uploadCsv.single('csv'), async (req, res) => {
+router.post('/agents-locations/uploads', uploadCsv.single('csv'), async (req, res) => {
     try {
 
         let zone1 = await Zone.findOne({ name: "Zone A" })
@@ -103,17 +106,18 @@ router.post('/agents/uploads', uploadCsv.single('csv'), async (req, res) => {
                     }
 
                     const agent = await AgentLocation.findOne({ name: Ar[0].toString().split(";")[1].code })
-
+                    const myString = Ar[0].toString().split(";")[0]
                     if (agent === null) {
                         let newproduct = AgentLocation({
-                            name: Ar[0].toString().split(";")[1].toString().replace(/"/g, ""),
+                            name: Ar[0]?.toString().split(";")[1].toString().replace(/"/g, ""),
                             zone: zone,
                             lng: 0.0,
                             lat: 0.0,
+                            id: myString.slice(0, myString.length - 1)
                             // createdBy: req.user._id,
 
                         })
-                        console.log(newproduct)
+
                         await newproduct.save();
 
                     }
@@ -126,11 +130,73 @@ router.post('/agents/uploads', uploadCsv.single('csv'), async (req, res) => {
         console.log(error)
     }
 })
+router.post('/agents/uploads', async (req, res) => {
+    try {
+        let obj =
+        {
+            business_name: '',
+            opening_hours: '',
+            location_id: "",
+            working_hours: "",
+            closing_hours: "",
+            isSuperAgent: false,
+        }
+        const locations = await AgentLocation.find();
+        let i
+        let j
+
+        for (i = 0; i < locations.length; i++) {
+            for (j = 0; j < Object.values(custom_locations).length; j++) {
+                obj.business_name = Object.values(custom_locations)[j].agent_location
+                obj.opening_hours = Object.values(custom_locations)[j].opening_time
+                obj.closing_hours = Object.values(custom_locations)[j].closing_time
+                obj.prefix = Object.values(custom_locations)[j].prefix
+
+                // console.log(locations[i].id)
+                // console.log(Object.values(custom_locations)[j].location)
+
+                if (parseInt(locations[i].id) === Object.values(custom_locations)[j].location) {
+                    obj.location_id = locations[i]._id
+                    await new Agent(obj).save()
+
+                }
+
+                //
+            }
+            //
+        }
+
+        // const customLocations = JSON.parse(custom_locations)
+
+
+
+        //   {  business_name:
+
+        //     opening_hours:
+        //     location_id:we mkuu
+        //     working_hours:
+
+        //     closing_hours:
+
+        //     isSuperAgent:
+        //     }
+        return res.json([])
+    } catch (error) {
+        console.log(error)
+    }
+})
 router.get('/agents', async (req, res) => {
     try {
+        console.log(req.query.location)
+        if (req.query.location) {
 
-        const agents = await Agent.find().populate('user').populate('rider').populate('location_id');
-        return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+            const agents = await Agent.find({ location_id: req.query.location }).populate('user').populate('rider').populate('location_id');
+            return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+        }
+        else {
+            const agents = await Agent.find().populate('user').populate('rider').populate('location_id');
+            return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+        }
 
     } catch (error) {
         console.log(error)
@@ -209,4 +275,6 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
 
 
 });
+
+
 module.exports = router;

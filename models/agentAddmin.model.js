@@ -19,6 +19,9 @@ const agentadminSchema = new Schema({
     closing_hours: {
         type: String,
     },
+    prefix: {
+        type: String,
+    },
     isOpen: {
         type: Boolean,
         default: false
