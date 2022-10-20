@@ -13,7 +13,7 @@ const RoutesSchema = new Schema({
     },
     zone: {
         type: Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'zone'
     },
 
 

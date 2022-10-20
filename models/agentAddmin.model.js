@@ -23,6 +23,10 @@ const agentadminSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isSuperAgent: {
+        type: Boolean,
+        default: false
+    },
     images: {
         type: Array
     },
@@ -33,10 +37,15 @@ const agentadminSchema = new Schema({
     working_hours: {
         type: String,
     },
-    zone: {
+    location_id: {
         type: Schema.Types.ObjectId,
-        ref: 'zone'
+        ref: 'agent-location'
     },
+    rider: {
+        type: Schema.Types.ObjectId,
+        ref: 'rider'
+    },
+
     mpesa_number: {
         type: String,
     },

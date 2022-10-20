@@ -17,10 +17,6 @@ const RiderPackageSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'agent_agent_sent_packages'
     },
-
-
-
-
     deleted_at: {
         type: Date,
         default: null

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_routes, Post, get_zones } from '../../redux/actions/routes.actions'
+import { get_routes, Post } from '../../redux/actions/routes.actions'
+import { get_zones } from '../../redux/actions/agents.actions'
 import { get_riders } from '../../redux/actions/riders.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
@@ -49,7 +50,6 @@ function Users(props) {
   }
   const submit = async () => {
     await props.Post(item)
-    alert(JSON.stringify(item))
     await props.get_routes()
     setItem(initialState)
     setShowModal(false)

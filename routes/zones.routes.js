@@ -12,7 +12,7 @@ const uploadFile = require("middlewere/upload.middleware");
 
 
 
-router.post('/zones', [authMiddleware, authorized], async (req, res) => {
+router.post('/zones', async (req, res) => {
     try {
         const Exists = await Zone.findOne({ name: req.body.name });
         if (Exists) {
@@ -20,7 +20,7 @@ router.post('/zones', [authMiddleware, authorized], async (req, res) => {
         }
         else {
             const body = req.body;
-            body.user_id = req.user._id
+            // body.user_id = req.user._id
             const newZone = new Zone(req.body)
             await newZone.save()
             return res.status(200).json({ message: 'Saved' });

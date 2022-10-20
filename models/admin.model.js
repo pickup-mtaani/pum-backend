@@ -22,7 +22,7 @@ const AdminSchema = new Schema({
     },
     activated: {
         type: Boolean,
-        default: false
+        default: true
     },
     createdBy: {
         type: Schema.Types.ObjectId,

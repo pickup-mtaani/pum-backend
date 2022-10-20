@@ -17,17 +17,14 @@ const Index = props => {
         let door_dropped_packages = await props.fetchdoorpackages('dropped')
         let recieved_dropped_packages = await props.fetchdoorpackages('recieved-warehouse')
         let recieved_agent_packages = await props.fetchpackages('recieved-warehouse')
-
-
         setAgent({ dropped: parseInt(agent_on_packages.length), transit: parseInt(agent_dropped_packages.length), recieved: parseInt(recieved_agent_packages.length) })
         setDoorstep({ dropped: parseInt(door_on_packages.length), transit: parseInt(door_dropped_packages.length), recieved: parseInt(recieved_dropped_packages.length) })
-
     }
 
     useEffect(() => {
         fetch()
     }, [])
-
+    console.log(agent)
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>

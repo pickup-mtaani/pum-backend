@@ -41,7 +41,6 @@ function Users(props) {
 
   }
 
-
   const columns = [
     {
       sortable: true,
@@ -169,7 +168,7 @@ function Users(props) {
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-        <ReactMapGl
+        {/* <ReactMapGl
           {...viewPoints}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
@@ -218,7 +217,7 @@ function Users(props) {
             />
           </Marker>
 
-        </ReactMapGl>
+        </ReactMapGl> */}
       </div>
 
       <AssignedPackModal

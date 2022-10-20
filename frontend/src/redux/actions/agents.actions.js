@@ -36,14 +36,11 @@ export const get_zones = () => async (dispatch) => {
     }
 };
 
-export const assign = (id, zone) => async (dispatch) => {
-
+export const assign = (id, agent) => async (dispatch) => {
     try {
         await setAuthToken(axios);
-
-        const { data } = await axios.put(`/api/assign-zone/${id}?zone=${zone}`);
+        const { data } = await axios.put(`/api/assign-agent-rider/${id}/${agent}`);
         let payload = [];
-
         return payload;
     } catch (error) {
         console.log(error)

@@ -3,6 +3,7 @@ var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require("models/agents.model");
 var AgentDetails = require("models/agentAddmin.model");
+var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
@@ -26,11 +27,11 @@ const { Makeid } = require("../helpers/randomNo.helper");
 const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
 const Mpesa_stk = require("../helpers/stk_push.helper");
+const { findOne } = require("../models/rider_routes.model");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   try {
-
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
@@ -107,9 +108,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
     } else {
-
       const { packages } = req.body
+
       for (let i = 0; i < packages.length; i++) {
+        let agent = await AgentDetails.findOne({ user: packages[i].senderAgentID })
+        let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -118,10 +121,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `PM-${Makeid(5)}`;
+        packages[i].assignedTo = route.rider
         const newPackage = await new Sent_package(packages[i]).save();
 
       }
-
       await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent")
       return res
         .status(200)
@@ -147,32 +150,32 @@ router.post("/package/delivery-charge", async (req, res) => {
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B") ||
       (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")
     ) {
-      price = 100;
+      price = 1;
     } else if (
       (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B") ||
       (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C")
     ) {
-      price = 200;
+      price = 2;
     } else if (
       (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A") ||
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
     ) {
-      price = 200;
+      price = 2;
     } else if (
       sender?.zone.name === "Zone A" &&
       receiver?.zone.name === "Zone A"
     ) {
-      price = 100;
+      price = 1;
     } else if (
       sender?.zone.name === "Zone B" &&
       receiver?.zone.name === "Zone A"
     ) {
-      price = 180;
+      price = 1;
     } else if (
       sender?.zone.name === "Zone C" &&
       receiver?.zone.name === "Zone C"
     ) {
-      price = 250;
+      price = 2;
     }
     return res.status(200).json({ message: "price set successfully ", price });
   } catch (error) {

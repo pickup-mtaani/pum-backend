@@ -29,13 +29,13 @@ router.post('/register', [authMiddleware, authorized], async (req, res) => {
             return res.status(400).json({ message: error });
         }
         body.hashPassword = bcrypt.hashSync(body.password, 10);
-        body.createdBy = req.user._id
+        // body.createdBy = req.user._id
         let newAdmin = new Admin(body);
         const saved = await newAdmin.save();
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
 
     } catch (error) {
-
+        console.log(error);
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

@@ -77,22 +77,8 @@ router.post('/login', async (req, res) => {
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
 
             if (userOBJ.role === "rider") {
-                const rider = await Rider.findOne({ user: userOBJ._id }).populate('chat_mates', "f_name l_name")
-                if (!rider) {
-                    user = userOBJ
-                } else {
-                    user.chatmates = rider.chat_mates
-                    user.bike_reg_plate = rider.bike_reg_plate
-                    user.token = token
-                    user.rider_avatar = rider.rider_avatar
-                    user.rider_licence_photo = rider.rider_licence_photo
-                    user.rider_id_front = rider.rider_id_front
-                    user.name = userOBJ.name
-                    user.phone_number = userOBJ.phone_number
-                    user.rider_id = userOBJ._id
-                    user.email = userOBJ.email
-                    user.role = userOBJ.role
-                }
+                user = await User.findOne({ _id: userOBJ._id }).populate('rider')
+                return res.status(200).json({ token, user });
             }
             if (userOBJ.role === "agent") {
                 const agent = await Agent.findOne({ user: userOBJ._id })
@@ -118,6 +104,7 @@ router.post('/login', async (req, res) => {
                 user = userOBJ
             )
 
+            // console.log(user)
             return res.status(200).json({ token, user });
         }
 

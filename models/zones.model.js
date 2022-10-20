@@ -12,15 +12,15 @@ const ZoneSchema = new Schema({
     },
     abr: {
         type: String,
-        required: true
+        // required: true
     },
-    
+
     deleted_at: {
         type: Date,
-        default: null 
+        default: null
     }
-  
-},{timestamps:true});
+
+}, { timestamps: true });
 
 
 

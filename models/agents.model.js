@@ -15,7 +15,6 @@ const AgentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'zone'
     },
-
     lng: {
         type: Number,
 
@@ -39,5 +38,5 @@ const AgentSchema = new Schema({
 
 
 
-const Agent = mongoose.model('agent', AgentSchema);
+const Agent = mongoose.model('agent-location', AgentSchema);
 module.exports = Agent

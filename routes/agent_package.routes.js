@@ -2,6 +2,7 @@ const express = require("express");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
 var Rider_Package = require('models/rider_package.model')
+var Agent = require('models/agentAddmin.model')
 var Sent_package = require("models/package.modal.js");
 var Rider = require("models/rider.model");
 var Reject = require("models/Rejected_parcels.model");
@@ -21,33 +22,48 @@ function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
+
   try {
     const { type } = req.query
+    let package = await Sent_package.findById(req.params.id)
+    let rider = await Rider.findOne({ user: package.assignedTo })
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
+
     if (req.params.state === "picked-from-sender") {
-      // const package = await Door_step_Sent_package.findById(req.params.id);
+
+      // const textbody = { address: `${package.customerPhoneNumber}`, Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
+      // console.log(textbody)
+      // await SendMessage(textbody)
+      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
-    if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
-      await new Rider_Package({ package: req.params.id, rider: req.query.rider ? req.query.rider : "632181644f413c3816858218" }).save()
-      // await Rider.findOneAndUpdate({ user: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { no_of_packages: no_of_packages + 1 }, { new: true, useFindAndModify: false })
-      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { new: true, useFindAndModify: false })
+    if (req.params.state === "assigned") {
+      await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
 
+      await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
+    }
+    if (req.params.state === "assigned-warehouse") {
+      await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
+      await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "dropped" || req.params.state === "delivered" || req.params.state === "dropped-to-agent") {
-      await Rider.findOneAndUpdate({ user: req.query.rider ? req.query.rider : "632181644f413c3816858218" }, { no_of_packages: no_of_packages - 1 }, { new: true, useFindAndModify: false })
+      await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages - 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "collected") {
-      req.body.package = req.params.id
-      req.body.dispatchedBy = req.user._id
-      await new Collected(req.body).save()
+      try {
+        req.body.package = req.params.id
+        req.body.dispatchedBy = req.user._id
+        await new Collected(req.body).save()
+      } catch (error) {
+        console.log(error)
+      }
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {

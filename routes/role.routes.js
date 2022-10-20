@@ -3,7 +3,7 @@ var Role = require('models/roles.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 
-router.post('/roled', async (req, res) => {
+router.post('/roles', async (req, res) => {
 
     try {
 

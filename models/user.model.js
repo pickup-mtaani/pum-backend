@@ -57,7 +57,14 @@ const UserSchema = new Schema({
     //     ref: 'role'
     // },
 
-
+    rider: {
+        type: Schema.Types.ObjectId,
+        ref: 'rider'
+    },
+    // agent: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: ''
+    // },
     hashPassword: {
         type: String,
         required: true

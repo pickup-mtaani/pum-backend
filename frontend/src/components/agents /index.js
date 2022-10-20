@@ -3,14 +3,21 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_agents, get_zones, assign, fetchpackages } from '../../redux/actions/agents.actions'
+import { get_riders, } from '../../redux/actions/riders.actions'
+import { get_routes } from '../../redux/actions/routes.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
 // const socket = io("https://stagingapi.pickupmtaani.com");
-function Payments(props) {
+function Agents(props) {
 
+
+  const [rider, setRider] = useState('')
+  const assigRider = () => {
+
+  }
   const columns = [
     {
       sortable: true,
@@ -36,7 +43,6 @@ function Payments(props) {
       sortable: true,
       name: 'Phone number',
       minWidth: '10px',
-
       selector: row => row.user?.phone_number
     },
     {
@@ -44,35 +50,29 @@ function Payments(props) {
       name: 'location',
       minWidth: '100px',
       wrap: true,
-      selector: row => row.loc?.name
+      selector: row => row.location_id?.name
     },
     // {
     //   sortable: true,
-    //   name: 'Zone',
+    //   name: 'Rider',
 
     //   maxWidth: '50px',
-    //   selector: row => (<>{row.zone ? row.zone?.name : "Not  assigned  a Zone"}</>)
+    //   selector: row => (<>{row.rider }</>)
     // },
     {
       sortable: true,
-      name: 'Date Paid',
+      name: 'Assign Rider',
 
       selector: row => (
         <div style={{ display: 'flex' }} className="gap-2">
-          {props.zones.map((zone, i) => (
-            <div key={i} style={{
-              height: 20,
-              background: zone?._id === row.zone?._id ? 'red' : "blue",
-              color: 'white',
-              borderRadius: 10,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 10,
-              justifyItems: 'center'
+          <select name="gender" onChange={(event) => props.assign(event?.target?.value, row._id)} className="bg-transparent border-b border-slate-500 pt-5 pb-5 ">
+            <option value=""> Select Rider</option>
+            {props.riders?.map((rider, i) => (
+              <option key={i} value={rider.user?._id} >{rider?.user?.name}</option>
+            ))}
 
-            }} onClick={async () => { await props.assign(row._id, zone._id); await props.get_agents() }}>{zone.name}</div>
-          ))}
+          </select>
+
         </div>
       ),
     },
@@ -111,13 +111,17 @@ function Payments(props) {
     );
   }, [searchValue, showModal]);
 
+  const fetch = async () => {
+    await props.get_agents()
+    await props.get_riders()
+  }
   useEffect(() => {
-    props.get_agents()
-    props.get_zones()
+
+    fetch()
 
   }, [])
 
-  console.log(props.zones)
+  console.log(props.riders)
   return (
     <Layout>
       <div className=" mx-2">
@@ -149,11 +153,11 @@ const mapStateToProps = (state) => {
   return {
 
     agents: state.agentsData.agents,
-    zones: state.agentsData.zones,
+    riders: state.ridersDetails.riders,
     loading: state.agentsData.loading,
     // error: state.userDetails.error,
   };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages })(Payments)
+export default connect(mapStateToProps, { get_agents, get_riders, get_routes, get_zones, assign, fetchpackages })(Agents)
 

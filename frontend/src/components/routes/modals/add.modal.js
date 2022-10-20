@@ -3,6 +3,8 @@ import React from 'react'
 
 function Add(props) {
     const { toggle, show, zones, riders } = props
+
+
     return (
 
         <>
@@ -36,7 +38,7 @@ function Add(props) {
                                                 <select name="rider" onChange={props.changeInput} className="bg-transparent border-b border-slate-500 pt-5 pb-5 ">
                                                     <option value="">Selected gender</option>
                                                     {riders?.map((rider, i) => (
-                                                        <option value={rider._id} onChange={props.changeInput}>{rider?.user?.name}</option>
+                                                        <option value={rider?.user?._id} onChange={props.changeInput}>{rider?.user?.name}</option>
                                                     ))}
 
 
