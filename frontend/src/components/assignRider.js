@@ -11,7 +11,7 @@ import PIN from './Riders/pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import AssignedPackModal from './Riders/AssignedPackModal'
 import { DownloadFile } from './common/helperFunctions'
-const socket = io("http://localhost:4000/");
+const socket = io("https://stagingapi.pickupmtaani.com/dashboard/");
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
 function Users(props) {
