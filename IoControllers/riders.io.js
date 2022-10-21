@@ -3,7 +3,7 @@ var User = require("./../models/rider.model");
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://stagingapi.pickupmtaani.com", "https://stagingapi.pickupmtaani.com"],
+      origin: ["http://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
     },
   });
   let riders = [];
