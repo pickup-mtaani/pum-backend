@@ -49,9 +49,7 @@ function Users(props) {
     };
 
     useEffect(() => {
-        // props.get_riders({ limit: 10 })
-        console.log(location.state.id)
-        setrider()
+
         socket.on('connection');
 
         socket.emit('track_rider', { rider_id: location.state.id, user_id: "1322" });
@@ -61,8 +59,6 @@ function Users(props) {
         });
 
         socket.on('position-changed', async coordinates => {
-
-            // console.log('coordinates', coordinates.coordinates);
             setLng(coordinates.coordinates.longitude)
             setLat(coordinates.coordinates.latitude)
         });
@@ -73,9 +69,7 @@ function Users(props) {
 
 
     }, [])
-    const handleApiLoaded = (map, maps) => {
-        // use map and maps objects
-    };
+
     return (
         <Layout>
 
@@ -121,46 +115,3 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, { get_riders, fetchpackages })(Users)
 
-{/* <div className=" mx-2 h-[1000px] w-[100%]">
-
-<ReactMapGl
-    {...viewPoints}
-    mapStyle="mapbox://styles/mapbox/streets-v11"
-    zoom={zoom}
-    onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
-    mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
->
-    {show && <Popup
-        latitude={lat}
-        longitude={lng}
-        closeButton={true}
-        onClose={() => togglePopup(false)}
-        anchor="top-right"
-    >
-        <div>{popupMark.location}</div>
-    </Popup>
-    }
-    <Marker
-        latitude={lat}
-        longitude={lng}
-        offsetLeft={-20}
-        offsetTop={-20}
-    >
-
-        <img
-            style={{ cursor: 'pointer', height: 20, width: 40 }}
-            onclick={() => {
-                setlocapopup({
-                    latitude: { lat },
-                    longitude: { lng },
-                    location: "Nairobi"
-                })
-                togglePopup(true);
-            }}
-            src={PIN}
-        />
-    </Marker>
-
-
-</ReactMapGl>
-</div> */}
