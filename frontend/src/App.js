@@ -38,7 +38,7 @@ const App = () => {
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
     { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },
-    { path: "/track-riders", element: <AssignRider /> },
+    { path: "/track/:riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/agents", element: <Agents /> },
     { path: "/agent/:name", element: <AgentsDetails /> },

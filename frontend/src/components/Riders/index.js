@@ -9,6 +9,7 @@ import Layout from '../../views/Layouts'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import AssignedPackModal from './AssignedPackModal'
 import { get_agents } from '../../redux/actions/agents.actions'
+import { Link } from 'react-router-dom'
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
 function Users(props) {
@@ -46,7 +47,16 @@ function Users(props) {
       sortable: true,
       name: ' Name',
       minWidth: '250px',
-      selector: row => row.user?.name
+      selector: row => (<Link
+        to={{
+          pathname: `/track/${row?.user?.name.replace(/\s/g, '')}`,
+        }}
+        state={{
+          id: row?.user?._id
+        }}>
+        {row.user?.name}
+      </Link>
+      )
     },
 
     {
@@ -94,7 +104,7 @@ function Users(props) {
           <select name="current_custodian" onChange={(e) => assignagentRider(e, row._id)} className="my-2">
             <option>Select an agent </option>
             {props.agents.map((loc, i) => (
-              <option value={loc.user._id}>{loc.user?.name}</option>
+              <option value={loc?.user?._id}>{loc.user?.name}</option>
             ))}
             {/* agent_location */}
           </select>
@@ -168,56 +178,7 @@ function Users(props) {
           paginationTotalRows={totalRows}
         // onChangeRowsPerPage={handlePerRowsChange}
         />
-        {/* <ReactMapGl
-          {...viewPoints}
-          mapStyle="mapbox://styles/mapbox/streets-v11"
-          onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
-          mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
-        >
-          {show && <Popup
-            latitude={lat}
-            longitude={lng}
-            closeButton={true}
-            onClose={() => togglePopup(false)}
-            anchor="top-right"
-          >
-            <div>{popupMark.location}</div>
-          </Popup>
-          }
-          <Marker
-            latitude="-1.28824"
-            longitude="36.81404"
-            offsetLeft={-20}
-            offsetTop={-20}
-          >
 
-            <img
-              style={{ cursor: 'pointer', height: 20, width: 40 }}
-              onclick={() => {
-                setlocapopup({
-                  latitude: { lat },
-                  longitude: { lng },
-                  location: "Nairobi"
-                })
-                togglePopup(true);
-              }}
-              src={PIN}
-            />
-          </Marker>
-          <Marker
-            latitude={lat}
-            longitude={lng}
-            offsetLeft={-20}
-            offsetTop={-20}
-          >
-            <img
-              style={{ cursor: 'pointer', height: 20, width: 40, objectFit: 'cover' }}
-
-              src={PIN}
-            />
-          </Marker>
-
-        </ReactMapGl> */}
       </div>
 
       <AssignedPackModal
