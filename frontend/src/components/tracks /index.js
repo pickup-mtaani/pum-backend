@@ -8,7 +8,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { io } from 'socket.io-client'
-const socket = io("https://stagingapi.pickupmtaani.com/");
+// const socket = io("https://stagingapi.pickupmtaani.com/");
 function Tracks(props) {
 
   const columns = [
@@ -77,35 +77,35 @@ function Tracks(props) {
     );
   }, [searchValue, showModal]);
   const start_rider = () => {
-    socket.on('connection');
-    socket.emit('start-ride', { rider_id: '12345' });
-    socket.on('room-created', data => {
-      console.log('Room created: ', data);
-    });
+    //   socket.on('connection');
+    //   socket.emit('start-ride', { rider_id: '12345' });
+    //   socket.on('room-created', data => {
+    //     console.log('Room created: ', data);
+    //   });
   }
   useEffect(() => {
-    socket.on('connection');
-    // socket.emit('start-ride', { rider_id: '12345' });
-    // socket.on('room-created', data => {
-    //   console.log('Room created: ', data);
-    // });
+    //   socket.on('connection');
+    //   // socket.emit('start-ride', { rider_id: '12345' });
+    //   // socket.on('room-created', data => {
+    //   //   console.log('Room created: ', data);
+    //   // });
 
 
-    socket.emit('track_rider', { rider_id: '12345', user_id: 344555 });
+    //   socket.emit('track_rider', { rider_id: '12345', user_id: 344555 });
 
-    socket.on('user-joined', data => {
-      console.log('user joined!', data);
-    });
+    //   socket.on('user-joined', data => {
+    //     console.log('user joined!', data);
+    //   });
 
-    socket.on('get-users', data => {
-      console.log('Get users:', data);
-    });
+    //   socket.on('get-users', data => {
+    //     console.log('Get users:', data);
+    //   });
 
 
-    socket.on('position-changed', async ({ coordinates }) => {
-      console.log('coordinates', coordinates);
-      setCords(coordinates)
-    });
+    //   socket.on('position-changed', async ({ coordinates }) => {
+    //     console.log('coordinates', coordinates);
+    //     setCords(coordinates)
+    //   });
 
   })
 

@@ -8,7 +8,7 @@ import PIN from './Riders/pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import GoogleMapReact from 'google-map-react';
 import { useLocation } from 'react-router-dom'
-const socket = io("https://stagingapi.pickupmtaani.com/");
+const socket = io("http://3.23.185.115:4000/");
 
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
@@ -45,7 +45,7 @@ function Users(props) {
     useEffect(() => {
 
         socket.on('connection');
-
+        console.log(location.state.id)
         socket.emit('track_rider', { rider_id: location.state.id, user_id: "1322" });
 
         socket.on('position-change', data => {
