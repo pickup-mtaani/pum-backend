@@ -146,7 +146,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        .populate("businessId", "name", "loc")
+        .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
 
     }
@@ -157,7 +157,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        .populate("businessId", "name", "loc")
+        .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
 
     }
@@ -181,6 +181,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     }
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
+    console.log(error)
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
