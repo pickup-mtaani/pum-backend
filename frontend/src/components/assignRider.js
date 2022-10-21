@@ -8,7 +8,7 @@ import PIN from './Riders/pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import GoogleMapReact from 'google-map-react';
 import { useLocation } from 'react-router-dom'
-const socket = io("https://stagingapi.pickupmtaani.com/dashboard/");
+const socket = io("https://stagingapi.pickupmtaani.com/");
 
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw';
