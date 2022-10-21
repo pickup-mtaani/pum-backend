@@ -24,6 +24,70 @@ function Add_admin(props) {
                                         </button>
                                     </div>
                                     <div className="relative p-6 flex-auto">
+                                        <div className='bg-red-100 w-full h-full flex'>
+                                            <div className='bg-red-100 w-1/2 h-full'>
+
+                                            </div>
+                                            <div className='bg-red-100 w-1/2 h-full'>
+
+                                            </div>
+                                        </div>
+
+                                        {/* <div className='w-full gap-x-1 flex'>
+                                            <div className="w-38">
+                                                <div className='ml-2'>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Name</div>
+                                                        <input type="text"
+                                                            value={props.item.name}
+                                                            className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Phone</div>
+                                                        <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                            value={props.item.phone_number}
+                                                            name="phone_number" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Email</div>
+                                                        <input type="email"
+                                                            value={props.item.email}
+                                                            autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Password</div>
+                                                        <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
+                                                    </div>
+
+                                                </div>
+                                                <div className='ml-2'>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Name</div>
+                                                        <input type="text"
+                                                            value={props.item.name}
+                                                            className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Phone</div>
+                                                        <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                            value={props.item.phone_number}
+                                                            name="phone_number" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Email</div>
+                                                        <input type="email"
+                                                            value={props.item.email}
+                                                            autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Password</div>
+                                                        <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div > */}
                                         <div className="w-full flex flex-col gap-y-2 ">
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Name</div>

@@ -58,7 +58,8 @@ function Users(props) {
             console.log('Position changed!!: ', data);
         });
 
-        socket.on('position-changed', async coordinates => {
+        socket.on('position-changed', coordinates => {
+            console.log(coordinates.coordinates)
             setLng(coordinates.coordinates.longitude)
             setLat(coordinates.coordinates.latitude)
         });

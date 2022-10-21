@@ -19,9 +19,16 @@ function Agents(props) {
   let initialState = {
     name: '', email: "", phone_number: '', password: '', id: ""
   }
+
+  let agentObj = {
+    business_name: '', opening_hours: "", closing_hours: '', prefix: '', isOpen: "",
+    isSuperAgent: '', images: "", closing_hours: '', working_hours: '', location_id: "",
+    rider: '', zone: "", mpesa_number: '', loc: '', location_id: ""
+  }
   const [rider, setRider] = useState('')
   const [agent, setAgent] = useState('')
   const [datar, setData] = useState('')
+  const [edit, setEdit] = useState(false)
   const [employees, setEmployees] = useState([])
   const [item, setItem] = useState(initialState);
   const assigRider = () => {
@@ -86,7 +93,7 @@ function Agents(props) {
 
           </div>
           <div className='p-2 bg-red-100' onClick={() => {
-            setShowModal(true); setAgent(row._id); setItem({
+            setEdit(true); setAgent(row._id); setItem({
               name: row?.user?.name, email: row?.user?.email, phone_number: row?.user?.phone_number, password: row?.user?.name, id: 'id'
             })
           }}>Edit</div>
@@ -107,8 +114,7 @@ function Agents(props) {
   }
 
   const submit = async () => {
-    console.log("Agent" + agent)
-    console.log("item" + item)
+
     await props.add_employee(agent, item)
     await fetch()
     setItem(initialState)
@@ -187,11 +193,11 @@ function Agents(props) {
         toggle={() => { setShowModal(false); setItem(initialState) }}
       />
       <Edit
-        show={showModal}
+        show={edit}
         changeInput={(e) => changeInput(e)}
         item={item}
         submit={() => submit()}
-        toggle={() => { setShowModal(false); setItem(initialState) }}
+        toggle={() => { setEdit(false); setItem(initialState) }}
       />
       <Manage
         show={show}
