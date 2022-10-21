@@ -109,7 +109,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
-
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ user: packages[i].senderAgentID })
         let route = await RiderRoutes.findOne({ agent: agent._id })
@@ -120,7 +119,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price;
         }
         packages[i].createdBy = req.user._id
-        packages[i].receipt_no = `PM-${Makeid(5)}`;
+        packages[i].receipt_no = `${agent.prefix}${Makeid(5)}`;
         packages[i].assignedTo = route.rider
         const newPackage = await new Sent_package(packages[i]).save();
 

@@ -90,6 +90,7 @@ router.post('/login', async (req, res) => {
                     user.opening_hours = agent.opening_hours
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number
+                    user.isSuperAgent = agent.isSuperAgent
                     user.location = agent.loc
                     user.hasShelf = agent.hasShelf
                     user.images = agent.images

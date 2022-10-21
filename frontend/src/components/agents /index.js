@@ -12,11 +12,12 @@ import moment from 'moment'
 import Add_admin from './add.modal'
 import { Link } from 'react-router-dom'
 import Manage from './manage.modal'
+import Edit from './edit.modal'
 // const socket = io("https://stagingapi.pickupmtaani.com");
 function Agents(props) {
 
   let initialState = {
-    name: '', email: "", phone_number: '', password: ''
+    name: '', email: "", phone_number: '', password: '', id: ""
   }
   const [rider, setRider] = useState('')
   const [agent, setAgent] = useState('')
@@ -84,7 +85,11 @@ function Agents(props) {
             </select>
 
           </div>
-          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true); setAgent(row._id); setItem(row) }}>Edit</div>
+          <div className='p-2 bg-red-100' onClick={() => {
+            setShowModal(true); setAgent(row._id); setItem({
+              name: row?.user?.name, email: row?.user?.email, phone_number: row?.user?.phone_number, password: row?.user?.name, id: 'id'
+            })
+          }}>Edit</div>
           <div className='p-2 bg-red-100' onClick={() => toggleManage(row)}>Manage</div>
 
         </div>
@@ -179,7 +184,14 @@ function Agents(props) {
         changeInput={(e) => changeInput(e)}
         item={item}
         submit={() => submit()}
-        toggle={() => setShowModal(false)}
+        toggle={() => { setShowModal(false); setItem(initialState) }}
+      />
+      <Edit
+        show={showModal}
+        changeInput={(e) => changeInput(e)}
+        item={item}
+        submit={() => submit()}
+        toggle={() => { setShowModal(false); setItem(initialState) }}
       />
       <Manage
         show={show}

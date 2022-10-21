@@ -15,6 +15,7 @@ const { Makeid } = require("../helpers/randomNo.helper");
 const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
 var Commision = require("models/commission.model");
+const Format_phone_number = require("../helpers/phone_number_formater");
 const router = express.Router();
 
 
@@ -25,7 +26,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
   try {
     const { type } = req.query
-    let package = await Sent_package.findById(req.params.id)
+    let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
     let rider = await Rider.findOne({ user: package.assignedTo })
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
@@ -33,10 +34,15 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
 
     if (req.params.state === "picked-from-sender") {
-
-      // const textbody = { address: `${package.customerPhoneNumber}`, Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
-      // console.log(textbody)
-      // await SendMessage(textbody)
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
+      await SendMessage(textbody)
+      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+      let payments = getRandomNumberBetween(100, 200)
+      await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+    }
+    if (req.params.state === "delivered") {
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.name} and will be shipped to in 2hrs ` }
+      await SendMessage(textbody)
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
@@ -50,7 +56,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "assigned-warehouse") {
-      await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
+      await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
       await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "dropped" || req.params.state === "delivered" || req.params.state === "dropped-to-agent") {
@@ -140,7 +146,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        .populate("businessId", "name")
+        .populate("businessId", "name", "loc")
         .sort({ createdAt: -1 });
 
     }
@@ -151,7 +157,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        .populate("businessId", "name")
+        .populate("businessId", "name", "loc")
         .sort({ createdAt: -1 });
 
     }

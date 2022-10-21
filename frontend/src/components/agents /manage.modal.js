@@ -12,8 +12,8 @@ function Manage(props) {
                 show ? (
                     <>
 
-                        <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-width:screen">
-                            <div className="relative w-full rounded-sm my-6 mx-auto max-w-3xl  ">
+                        <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed top-0 right-0  left-0 z-50 outline-none focus:outline-none min-width:screen">
+                            <div className="relative w-full rounded-sm my-6 mx-10 max-w-full  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
                                         <h3 className="text-xl font=bold uppercase">{props?.data?.business_name}</h3>

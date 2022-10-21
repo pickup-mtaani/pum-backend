@@ -33,162 +33,46 @@ function Users(props) {
     const map = useRef(null);
     const [lng, setLng] = useState(36.817223);
     const [lat, setLat] = useState(-1.286389);
-    const [zoom, setZoom] = useState(9);
+    const [zoom, setZoom] = useState(10);
     const [totalRows, setTotalRows] = useState(0);
     const [data, setFilterData] = React.useState([]);
     const [show, togglePopup] = useState();
     const [item, setItem] = useState([]);
 
-    const onChangeFilter = (e) => {
-        setFilterText(e)
-
-    }
-
-    const fetchUserPackages = async (row) => {
-        setShowModal(true);
-        setItem(row)
-        let result = await props.fetchpackages(row._id)
-        setFilterData(result)
-    }
-
-    const columns = [
-        {
-            sortable: true,
-            name: ' Name',
-            minWidth: '250px',
-            selector: row => row.user.name
-        },
-
-        {
-            sortable: true,
-            name: 'Phone number',
-            minWidth: '250px',
-            selector: row => row.user.phone_number
-        },
-        {
-            sortable: true,
-            name: 'ID',
-            minWidth: '250px',
-            selector: row => row.id_number
-        },
-        {
-            sortable: true,
-            name: 'Bikes Reg No',
-            minWidth: '250px',
-            selector: row => row.bike_reg_plate
-        },
-        {
-            sortable: true,
-            name: 'Rate',
-            minWidth: '225px',
-            selector: row => row.delivery_rate ? row.delivery_rate : 200
-        },
-        {
-            sortable: true,
-            name: 'Charge Per KM',
-            minWidth: '250px',
-            selector: row => row.charger_per_km ? row.charger_per_km : 120
-        },
-        {
-            sortable: true,
-            name: 'My packages',
-            minWidth: '150px',
-            selector: row => <>
-                <button onClick={() => fetchUserPackages(row)}>Packages </button>
-            </>
-        },
-    ]
-
-
-
-    const subHeaderComponentMemo = React.useMemo(() => {
-
-        return (
-            <>
-                <Search_filter_component
-                    onChangeFilter={onChangeFilter}
-
-                    searchValue={searchValue}
-                    date={date}
-                    download={() => DownloadFile(() =>
-                        props.FetchAdmins({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
-                        `${totalRows > 0 ? totalRows : "all"}_users`
-                    )}
-                />
-
-
-            </>
-        );
-    }, [searchValue, date,]);
 
 
     useEffect(() => {
-        props.get_riders({ limit: 10 })
+        // props.get_riders({ limit: 10 })
         socket.on('connection');
 
-        socket.emit('track_rider', { rider_id: '632181644f413c3816858218', user_id: "1322" });
+        socket.emit('track_rider', { rider_id: '6350c6baa64f05136a209d07', user_id: "1322" });
 
-        socket.on('user-joined', data => {
-            console.log('user joined!', data);
+        socket.on('position-change', data => {
+            console.log('Position changed!!: ', data);
         });
 
-        socket.on('get-users', data => {
-            console.log('Get users:', data);
-        });
+        socket.on('position-changed', async coordinates => {
 
-        // getCurrentLocation();
-        // socket.emit('position-change', {coordinates: crd});
-
-        socket.on('position-changed', async d => {
-            console.log('coordinates', d);
+            // console.log('coordinates', coordinates.coordinates);
+            setLng(coordinates.coordinates.longitude)
+            setLat(coordinates.coordinates.latitude)
         });
 
 
-        // getCurent()
-
-        // if (navigator.geolocation) {
-        //     navigator.geolocation.watchPosition(function (position) {
-        //         console.log('changing position')
-        //         console.log("Latitude is :", position.coords.latitude);
-        //         console.log("Longitude is :", position.coords.longitude);
-        //     });
-        // }
-        // navigator.geolocation.getCurrentPosition(function (position) {
-        //     user.coords = {
-        //         latitude: position.coords.latitude,
-        //         longitude: position.coords.longitude
-        //     }
-        //     socket.on('position-change', async (user) => {
-        //         setPosition(user)
-        //         // console.log(user)
-        //     })
-        // });
 
 
 
-    })
+
+    }, [])
     return (
         <Layout>
-            <div className=" mx-2 ">
+            <div className=" mx-2 h-[1000px] w-[100%]">
                 {/* <div ref={mapContainer} className="map-container my-2" style={{height: '400px'}} /> */}
-                <DataTable
-                    title=" Riders"
-                    columns={columns}
-                    data={[]}
-                    pagination
-                    paginationServer
-                    progressPending={props.loading}
-                    paginationResetDefaultPage={resetPaginationToggle}
-                    subHeader
-                    subHeaderComponent={subHeaderComponentMemo}
-                    persistTableHead
-                    // onChangePage={handlePageChange}
-                    paginationTotalRows={totalRows}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                />
+
                 <ReactMapGl
                     {...viewPoints}
                     mapStyle="mapbox://styles/mapbox/streets-v11"
+                    zoom={zoom}
                     onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
                     mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
                 >
@@ -203,8 +87,8 @@ function Users(props) {
                     </Popup>
                     }
                     <Marker
-                        latitude="-1.28824"
-                        longitude="36.81404"
+                        latitude={lat}
+                        longitude={lng}
                         offsetLeft={-20}
                         offsetTop={-20}
                     >
@@ -222,30 +106,11 @@ function Users(props) {
                             src={PIN}
                         />
                     </Marker>
-                    <Marker
-                        latitude={lat}
-                        longitude={lng}
-                        offsetLeft={-20}
-                        offsetTop={-20}
-                    >
-                        <img
-                            style={{ cursor: 'pointer', height: 20, width: 40, objectFit: 'cover' }}
 
-                            src={PIN}
-                        />
-                    </Marker>
 
                 </ReactMapGl>
             </div>
 
-            <AssignedPackModal
-                show={showModal}
-                data={data}
-                riders={props.riders}
-                // changeInput={(e) => changeInput(e)}
-                // submit={() => submit()}
-                toggle={() => setShowModal(false)}
-            />
 
 
         </Layout>

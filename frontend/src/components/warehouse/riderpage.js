@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { useLocation } from 'react-router-dom'
 import Layout from '../../views/Layouts'
-import { Sellers_columns } from './data'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages, } from '../../redux/actions/agents.actions'
+import { get_agents, get_zones, assign, fetchpackages, fetchdoorpackages } from '../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../redux/actions/package.actions'
 function Riderpage(props) {
 
@@ -12,12 +11,19 @@ function Riderpage(props) {
     const [data, setData] = useState([])
     const [data1, setData1] = useState([])
     const fetch = async (data, agent) => {
-        let res = await props.fetchpackages("dropped", agent)
-        let resr = await props.fetchpackages("recieved-warehouse", agent)
-        //alert(res)
-        setData(res)
-        setData1(resr)
+        if (location.state.type === "door") {
+            let res = await props.fetchdoorpackages("dropped", agent)
+            let resr = await props.fetchdoorpackages("recieved-warehouse", agent)
 
+            setData(res)
+            setData1(resr)
+        } else {
+            let res = await props.fetchpackages("dropped", agent)
+            let resr = await props.fetchpackages("recieved-warehouse", agent)
+
+            setData(res)
+            setData1(resr)
+        }
     }
     const packAction = async (id, state, rider) => {
         await props.assignwarehouse(id, state, rider)
@@ -25,10 +31,11 @@ function Riderpage(props) {
         await fetch("dropped", location?.state?.agent)
     }
     useEffect(() => {
+        console.log(location.state)
         fetch("dropped", location?.state?.agent)
 
     }, [])
-
+    console.log(JSON.stringify(location?.state))
     const Sellers_columns = [
 
         {
@@ -101,6 +108,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages, fetchdoorpackages, assignwarehouse })(Riderpage)
 
 

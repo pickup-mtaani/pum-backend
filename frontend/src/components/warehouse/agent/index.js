@@ -24,11 +24,10 @@ const Index = props => {
     useEffect(() => {
         fetch()
     }, [])
-    console.log(location?.state)
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'Collect From Riders', value: location?.state?.data?.dropped, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Collect From Riders', type: "agents", value: location?.state?.data?.dropped, state: "on-transit", data: collect }} />
                 <DashboardWHItem obj={{ title: 'Assign to Riders', value: location?.state?.data?.recieved, state: "recieved-warehouse", data: collect }} />
             </div>
 

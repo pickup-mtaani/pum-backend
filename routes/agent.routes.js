@@ -151,17 +151,13 @@ router.post('/agents/uploads', async (req, res) => {
                 obj.opening_hours = Object.values(custom_locations)[j].opening_time
                 obj.closing_hours = Object.values(custom_locations)[j].closing_time
                 obj.prefix = Object.values(custom_locations)[j].prefix
-
-                // console.log(locations[i].id)
-                // console.log(Object.values(custom_locations)[j].location)
-
                 if (parseInt(locations[i].id) === Object.values(custom_locations)[j].location) {
                     obj.location_id = locations[i]._id
+                    obj.zone = locations[i].zone
                     await new Agent(obj).save()
 
                 }
 
-                //
             }
             //
         }
@@ -187,7 +183,7 @@ router.post('/agents/uploads', async (req, res) => {
 })
 router.get('/agents', async (req, res) => {
     try {
-        console.log(req.query.location)
+
         if (req.query.location) {
 
             const agents = await Agent.find({ location_id: req.query.location }).populate('user').populate('rider').populate('location_id');

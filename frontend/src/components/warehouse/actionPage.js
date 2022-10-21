@@ -10,6 +10,7 @@ function ActionPage(props) {
     const location = useLocation()
 
     useEffect(() => {
+
         props.get_riders({ limit: 10 })
 
     }, [])

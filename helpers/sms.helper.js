@@ -10,12 +10,13 @@ const africastalking = require('africastalking')(credentials);
 // Initialize a service e.g. SMS
 const sms = africastalking.SMS
 module.exports.SendMessage = async (data) => {
-    console.log(data)
+
     const options = {
         to: [`${data.address}`],
         message: `${data.Body}`
     }
-    await sms.send(options)
+    let r = await sms.send(options)
+    console.log(r)
 }
 
 // module.exports = sendMessage

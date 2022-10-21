@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, assign, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import Layout from '../../../views/Layouts'
 import { DashboardWHItem } from '../../DashboardItems'
 import { useLocation } from 'react-router-dom'
@@ -13,22 +13,23 @@ const Index = props => {
     const location = useLocation()
     const fetch = async () => {
 
-        setCollections(await props.fetchpackages('on-transit'))
-        setAssign(await props.fetchpackages('recieved-warehouse'))
-        setDoorstep(await props.fetchpackages('assigned'))
-        setAssignDoorStep(await props.fetchpackages('assigned'))
+        setCollections(await props.fetchdoorpackages('dropped'))
+        setAssign(await props.fetchdoorpackages('recieved-warehouse'))
+        setDoorstep(await props.fetchdoorpackages('assigned'))
+        setAssignDoorStep(await props.fetchdoorpackages('assigned'))
     }
 
 
 
     useEffect(() => {
+
         fetch()
     }, [])
-    console.log(location?.state)
+
     return (
         <Layout>
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'Collect From Riders', value: location?.state?.data?.dropped, state: "on-transit", data: collect }} />
+                <DashboardWHItem obj={{ title: 'Collect From Riders', type: "doorstep", value: location?.state?.data?.dropped, state: "dropped", data: collect }} />
                 <DashboardWHItem obj={{ title: 'Assign to Riders', value: location?.state?.data?.recieved, state: "recieved-warehouse", data: collect }} />
             </div>
 
@@ -46,5 +47,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages })(Index)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchdoorpackages })(Index)
 

@@ -48,6 +48,10 @@ const agentadminSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'rider'
     },
+    zone: {
+        type: Schema.Types.ObjectId,
+        ref: 'zone'
+    },
 
     mpesa_number: {
         type: String,
