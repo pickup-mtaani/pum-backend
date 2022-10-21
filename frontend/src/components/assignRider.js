@@ -1,18 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 
-import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { io } from 'socket.io-client'
 import { get_riders, fetchpackages } from '../redux/actions/riders.actions'
-import Search_filter_component from './common/Search_filter_component'
 import Layout from '../views/Layouts'
-import ReactMapGl, { Marker, Popup } from 'react-map-gl';
 import PIN from './Riders/pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import AssignedPackModal from './Riders/AssignedPackModal'
-import { DownloadFile } from './common/helperFunctions'
 import GoogleMapReact from 'google-map-react';
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import { useLocation } from 'react-router-dom'
 const socket = io("https://stagingapi.pickupmtaani.com/dashboard/");
 

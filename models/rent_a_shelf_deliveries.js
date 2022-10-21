@@ -27,6 +27,10 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+    color: {
+      type: String,
+
+    },
     customerName: {
       type: String,
       required: true,

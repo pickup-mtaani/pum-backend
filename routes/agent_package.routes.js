@@ -56,7 +56,9 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "assigned-warehouse") {
+
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
       await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "dropped" || req.params.state === "delivered" || req.params.state === "dropped-to-agent") {

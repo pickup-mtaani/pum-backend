@@ -71,6 +71,9 @@ const PackageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    color: {
+      type: String
+    },
     state: {
       type: String,
       enum: ["request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit"],
