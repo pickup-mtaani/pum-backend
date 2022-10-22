@@ -28,7 +28,7 @@ function Add_admin(props) {
                                             <div className='bg-red-100 w-1/2 h-full'>
 
                                             </div>
-                                            <div className='bg-red-100 w-1/2 h-full'>
+                                            <div className='bg-red-100 w-1/2 h-full bg-red-100'>
 
                                             </div>
                                         </div>

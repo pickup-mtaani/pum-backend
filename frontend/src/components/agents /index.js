@@ -81,7 +81,7 @@ function Agents(props) {
       minWidth: '400px',
       selector: row => (
         <div className='flex gap-x-2'>
-          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true); setAgent(row._id) }}>Add Employee</div>
+          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true) }}>Add Employee</div>
           <div className="" >
             <select onChange={(event) => props.assign(event?.target?.value, row._id)} className="">
               <option value=""> Select Rider</option>

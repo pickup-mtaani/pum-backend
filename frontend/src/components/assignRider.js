@@ -63,7 +63,7 @@ function Users(props) {
 
 
 
-    }, [])
+    })
 
     return (
         <Layout>
