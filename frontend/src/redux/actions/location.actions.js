@@ -15,6 +15,21 @@ export const getlocations = () => async (dispatch) => {
   }
 };
 
+export const getagentlocations = () => async (dispatch) => {
+  try {
+    await setAuthToken(axios);
+    dispatch({ type: "FETCH_LOCATION" });
+    let payload = [];
+    const response = await axios.get(`/api/agents-locations`);
+    const { data } = response;
+    payload = data;
+    dispatch({ type: "FETCH_LOCATION_SUCCESSFUL", payload });
+    return;
+  } catch (error) {
+    ;
+  }
+};
+
 export const addthrift = (data) => async (dispatch) => {
   try {
     await setAuthToken(axios);

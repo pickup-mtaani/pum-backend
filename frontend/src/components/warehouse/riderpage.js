@@ -14,13 +14,11 @@ function Riderpage(props) {
         if (location.state.type === "door") {
             let res = await props.fetchdoorpackages("dropped", agent)
             let resr = await props.fetchdoorpackages("recieved-warehouse", agent)
-
             setData(res)
             setData1(resr)
         } else {
             let res = await props.fetchpackages("dropped", agent)
             let resr = await props.fetchpackages("recieved-warehouse", agent)
-
             setData(res)
             setData1(resr)
         }
@@ -35,7 +33,7 @@ function Riderpage(props) {
         fetch("dropped", location?.state?.agent)
 
     }, [])
-    console.log(JSON.stringify(location?.state))
+
     const Sellers_columns = [
 
         {

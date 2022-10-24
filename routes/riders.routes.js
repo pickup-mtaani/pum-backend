@@ -3,6 +3,8 @@ var Rider = require('models/rider.model')
 var Rider_Package = require('models/rider_package.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
+var Agent = require('models/agentAddmin.model')
+var AgentUser = require('models/agent_user.model')
 var User = require('models/user.model')
 var Package = require('models/package.modal')
 var RiderRoutes = require('models/rider_routes.model')
@@ -236,8 +238,21 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 });
 router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
   try {
-    console.log(req.params.agent)
+    let agent = await Agent.findById(req.params.agent)
+    let newriders = []
+    if (agent?.rider) {
+      newriders = agent.rider.push(req.params.id)
+    } else {
+      newriders.push(req.params.id)
+    }
+    await Agent.findOneAndUpdate({ _id: req.params.id }, { riders: newriders, rider: req.params.id }, { new: true, useFindAndModify: false })
     await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
+    await new AgentUser({
+      agent: req.params.agent,
+      user: req.params.id,
+      role: "rider"
+    }).save()
+
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
     console.log(error)

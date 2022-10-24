@@ -1,5 +1,5 @@
 var User = require("./../models/rider.model");
-
+var Path = require("./../models/riderroute.model");
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
@@ -63,9 +63,11 @@ module.exports = (http) => {
       // });
     };
 
-    const riderChangedLocation = ({ rider_id, coordinates }) => {
+    const riderChangedLocation = async ({ rider_id, coordinates }) => {
       // console.log("change location:", rider_id, coordinates);
-      socket.to(rider_id).emit("position-changed", { coordinates }); ''
+      socket.to(rider_id).emit("position-changed", { coordinates });
+
+      await new Path({ rider: rider_id, lng: coordinates.longitude, lat: coordinates.latitude }).save();
       // grab the coordinates
       // send the coordinates to rider's room.
     };//console. ya on connection inatokea?

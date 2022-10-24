@@ -3,9 +3,7 @@ import React from 'react'
 function Add_admin(props) {
     const { toggle, show } = props
     return (
-
         <>
-
             {
                 show ? (
                     <>
@@ -13,7 +11,7 @@ function Add_admin(props) {
                             <div className="relative w-full rounded-sm my-6 mx-10 max-w-full  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-xl font=bold uppercase">ADD EMPLOYEE</h3>
+                                        <h3 className="text-xl font=bold uppercase">Edit Agent</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={props.toggle}
@@ -24,12 +22,105 @@ function Add_admin(props) {
                                         </button>
                                     </div>
                                     <div className="relative p-6 flex-auto">
-                                        <div className='bg-red-100 w-full h-full flex'>
-                                            <div className='bg-red-100 w-1/2 h-full'>
+                                        <div className='bg-slate-100 w-full h-full flex'>
+                                            <div className='bg-slate-100 w-1/2 p-10 h-full'>
+                                                <div className="w-full flex flex-col gap-y-2 ">
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Name</div>
+                                                        <input type="text"
+                                                            value={props.item.business_name}
+                                                            className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Contact</div>
+                                                        <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                            value={props.item.user?.phone_number}
+                                                            name="phone_number" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Description</div>
+                                                        <input type="agent_description"
+                                                            value={props.item.agent_description}
+                                                            autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Mpesa No</div>
+                                                        <input type="text" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="Mpesa No"
+                                                            value={props.item.mpesa_number}
+                                                            name="mpesa_number"
+                                                        />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Riders</div>
+                                                        <select className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput}>
+                                                            <option value=""> {props.item.riderName ? props.item.riderName : "Select a rider"}</option>
+                                                            {props.riders?.map((rider, i) => (
+                                                                <option key={i} value={rider.user?._id} >{rider?.user?.name}</option>
+                                                            ))}
 
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className='bg-red-100 w-1/2 h-full bg-red-100'>
+                                            <div className='bg-slate-100 w-1/2 h-full p-10 '>
+                                                <div className="w-full flex flex-col gap-y-2 ">
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Location </div>
+                                                        <select className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput}>
+                                                            <option value={props.item.location_id._id}> {props.item.locationName}</option>
+                                                            {props.locations?.map((rider, i) => (
+                                                                <option key={i} value={rider._id} >{rider?.name}</option>
+                                                            ))}
 
+                                                        </select>
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Opening Hours</div>
+                                                        <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                            value={props.item.opening_hours}
+                                                            name="opning hours" />
+                                                    </div>
+                                                    <div className="flex  gap-x-10">
+                                                        <div className="w-24">Clossing Hours</div>
+                                                        <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
+                                                            value={props.item.closing_hours}
+                                                            name="cloasing hours" />
+                                                    </div>
+                                                    <div className='w-full flex align-end justify-between'>
+                                                        <div className="w-24">Super Agent</div>
+                                                        <div className="flex  gap-x-10">
+                                                            <div className="w-24">Super Agent</div>
+                                                            <input type="radio" autoComplete="off" className="" onChange={props.changeInput}
+                                                                value={props.item.isSuperAgent}
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex  gap-x-10">
+                                                            <div className="w-24">Activate</div>
+                                                            <input type="radio" autoComplete="off" className="" onChange={props.changeInput}
+                                                                value={props.item.isSuperAgent}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className='w-full flex align-end justify-between'>
+                                                        <div className="w-24">Location</div>
+                                                        <div className="flex  gap-x-10">
+                                                            <div className="w-24">Location</div>
+                                                            <input type="radio" autoComplete="off" className="" onChange={props.changeInput}
+                                                                value={props.item.isSuperAgent}
+                                                            />
+                                                        </div>
+                                                        <div className="flex  gap-x-10">
+                                                            <div className="w-24">Activate</div>
+                                                            <input type="radio" autoComplete="off" className="" onChange={props.changeInput}
+                                                                value={props.item.isSuperAgent}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+
+
+                                                </div>
                                             </div>
                                         </div>
 
@@ -88,31 +179,7 @@ function Add_admin(props) {
                                             </div>
 
                                         </div > */}
-                                        <div className="w-full flex flex-col gap-y-2 ">
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Name</div>
-                                                <input type="text"
-                                                    value={props.item.name}
-                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Phone</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
-                                                    value={props.item.phone_number}
-                                                    name="phone_number" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Email</div>
-                                                <input type="email"
-                                                    value={props.item.email}
-                                                    autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
-                                            </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Password</div>
-                                                <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
-                                            </div>
 
-                                        </div>
                                     </div>
                                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                         <button

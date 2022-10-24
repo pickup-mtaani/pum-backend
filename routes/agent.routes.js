@@ -8,6 +8,8 @@ var multer = require('multer');
 const imagemin = require('imagemin');
 const imageminMozJpeg = require('imagemin-mozjpeg');
 const fs = require('fs');
+var User = require('models/user.model')
+const bcrypt = require('bcryptjs');
 const csv = require('csv-parser')
 var path = require('path');
 const router = express.Router();
@@ -46,6 +48,8 @@ var upload = multer({
         }
     }
 });
+var AgentUser = require('models/agent_user.model');
+const Format_phone_number = require('../helpers/phone_number_formater');
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     try {
         const Exists = await Agent.findOne({ name: req.body.name });
@@ -130,7 +134,7 @@ router.post('/agents-locations/uploads', uploadCsv.single('csv'), async (req, re
         console.log(error)
     }
 })
-router.post('/agents/uploads', async (req, res) => {
+router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) => {
     try {
         let obj =
         {
@@ -140,6 +144,8 @@ router.post('/agents/uploads', async (req, res) => {
             working_hours: "",
             closing_hours: "",
             isSuperAgent: false,
+            map_path: '',
+            user: ''
         }
         const locations = await AgentLocation.find();
         let i
@@ -150,32 +156,51 @@ router.post('/agents/uploads', async (req, res) => {
                 obj.business_name = Object.values(custom_locations)[j].agent_location
                 obj.opening_hours = Object.values(custom_locations)[j].opening_time
                 obj.closing_hours = Object.values(custom_locations)[j].closing_time
+                obj.agent_description = Object.values(custom_locations)[j].agent_description
                 obj.prefix = Object.values(custom_locations)[j].prefix
                 if (parseInt(locations[i].id) === Object.values(custom_locations)[j].location) {
                     obj.location_id = locations[i]._id
                     obj.zone = locations[i].zone
-                    await new Agent(obj).save()
+                    if (Object.values(custom_locations)[j].CONTACTS !== "") {
+                        if (!await User.findOne({ name: `${Object.values(custom_locations)[j].agent_location}'s Super Agent` })) {
+                            obj.isSuperAgent = true
+                            let phone = await Format_phone_number(`0${Object.values(custom_locations)[j].CONTACTS}`)
+                            let saved = await new User({
+
+                                name: `${Object.values(custom_locations)[j].agent_location}'s Super Agent`,
+                                phone_number: phone,
+                                activated: false,
+                                role: 'agent',
+
+                                hashPassword: bcrypt.hashSync("passwads", 10),
+                                createdBy: req.user._id,
+                                email: `agent@${Object.values(custom_locations)[j].agent_location.replace(/\s/g, '')}.com`
+
+                            }).save()
+                            obj.user = saved._id
+                            let agent = await new Agent(obj).save()
+                            await new AgentUser({
+                                agent: agent._id,
+                                user: saved._id,
+                                role: "agent"
+                            }).save()
+                        }
+                        else {
+                            let agent = await new Agent(obj).save()
+                        }
+
+                    }
+
 
                 }
 
+
+
             }
-            //
+
         }
 
-        // const customLocations = JSON.parse(custom_locations)
 
-
-
-        //   {  business_name:
-
-        //     opening_hours:
-        //     location_id:we mkuu
-        //     working_hours:
-
-        //     closing_hours:
-
-        //     isSuperAgent:
-        //     }
         return res.json([])
     } catch (error) {
         console.log(error)
@@ -183,15 +208,25 @@ router.post('/agents/uploads', async (req, res) => {
 })
 router.get('/agents', async (req, res) => {
     try {
-
-        if (req.query.location) {
-
-            const agents = await Agent.find({ location_id: req.query.location }).populate('user').populate('rider').populate('location_id');
-            return res.status(200).json({ message: 'Agents fetched  successfully', agents });
-        }
-        else {
-            const agents = await Agent.find().populate('user').populate('rider').populate('location_id');
-            return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            if (req.query.location) {
+                const agents = await Agent.find({ location_id: req.query.location, business_name: searchKey }).populate('user').populate('rider').populate('location_id').sort({ business_name: 1 });
+                return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+            }
+            else {
+                const agents = await Agent.find({ business_name: searchKey }).populate('user').populate('rider').populate('location_id').sort({ business_name: 1 });
+                return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+            }
+        } else {
+            if (req.query.location) {
+                const agents = await Agent.find({ location_id: req.query.location }).populate('user').populate('rider').populate('location_id').sort({ business_name: 1 });
+                return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+            }
+            else {
+                const agents = await Agent.find().populate('user').populate('rider').populate('location_id').sort({ business_name: 1 });
+                return res.status(200).json({ message: 'Agents fetched  successfully', agents });
+            }
         }
 
     } catch (error) {
@@ -201,8 +236,14 @@ router.get('/agents', async (req, res) => {
 });
 router.get('/agents-locations', async (req, res) => {
     try {
-        const agents = await AgentLocation.find();
-        return res.status(200).json(agents);
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            const agents = await AgentLocation.find({ name: searchKey }).sort({ name: 1 });
+            return res.status(200).json(agents);
+        } else {
+            const agents = await AgentLocation.find().sort({ name: 1 });
+            return res.status(200).json(agents);
+        }
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
@@ -218,6 +259,17 @@ router.put('/assign-zone/:id', async (req, res) => {
 
         console.log(v)
         return res.status(200).json('updated');
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/activate_agent/:id', async (req, res) => {
+    try {
+        let agent = await Agent.findOne({ _id: req.params.id })
+        await User.findOneAndUpdate({ _id: agent.user }, {
+            activated: true
+        }, { new: true, useFindAndModify: false })
+        return res.status(200).json('activated');
     } catch (error) {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }

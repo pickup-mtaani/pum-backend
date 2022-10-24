@@ -1,5 +1,6 @@
 const initialState = {
-  locations: {},
+  locations: [],
+
   errors: [],
   error: "",
   packages: [],

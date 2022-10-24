@@ -11,4 +11,13 @@ const Format_phone_number = (phone_number) => {
     }
 
 }
+const Inv_Format_phone_number = (phone_number) => {
+    let Refined
+    phone_number.substring(0, 4) === "+254"
+    let newPhone = phone_number.slice(0, 4);
+    Refined = "0".concat(newPhone)
+    return Refined
+
+
+}
 module.exports = Format_phone_number

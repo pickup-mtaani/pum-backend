@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, get_agents_employees, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
+import { get_agents, get_zones, get_agents_employees, activate_agents, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
 import { get_riders, } from '../../redux/actions/riders.actions'
+import { getagentlocations, } from '../../redux/actions/location.actions'
 import { get_routes } from '../../redux/actions/routes.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
-import moment from 'moment'
-import Add_admin from './add.modal'
 import { Link } from 'react-router-dom'
 import Manage from './manage.modal'
 import Edit from './edit.modal'
@@ -23,10 +22,11 @@ function Agents(props) {
   let agentObj = {
     business_name: '', opening_hours: "", closing_hours: '', prefix: '', isOpen: "",
     isSuperAgent: '', images: "", closing_hours: '', working_hours: '', location_id: "",
-    rider: '', zone: "", mpesa_number: '', loc: '', location_id: ""
+    rider: '', zone: "", mpesa_number: '', loc: '', location_id: "", agent_description: ''
   }
   const [rider, setRider] = useState('')
   const [agent, setAgent] = useState('')
+  const [agentobj, setAgentObj] = useState(agentObj)
   const [datar, setData] = useState('')
   const [edit, setEdit] = useState(false)
   const [employees, setEmployees] = useState([])
@@ -81,29 +81,19 @@ function Agents(props) {
       minWidth: '400px',
       selector: row => (
         <div className='flex gap-x-2'>
-          <div className='p-2 bg-red-100' onClick={() => { setShowModal(true) }}>Add Employee</div>
-          <div className="" >
-            <select onChange={(event) => props.assign(event?.target?.value, row._id)} className="">
-              <option value=""> Select Rider</option>
-              {props.riders?.map((rider, i) => (
-                <option key={i} value={rider.user?._id} >{rider?.user?.name}</option>
-              ))}
-
-            </select>
-
-          </div>
-          <div className='p-2 bg-red-100' onClick={() => {
-            setEdit(true); setAgent(row._id); setItem({
-              name: row?.user?.name, email: row?.user?.email, phone_number: row?.user?.phone_number, password: row?.user?.name, id: 'id'
+          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => {
+            setEdit(true); setAgent(row._id); setAgentObj({
+              business_name: row.business_name, opening_hours: row.opening_hours, closing_hours: row.closing_hours, prefix: row.prefix, isOpen: row.isOpen,
+              isSuperAgent: row.isSuperAgent, images: [], working_hours: row.working_hours, location_id: row.location_id._id, locationName: row.location_id?.name,
+              rider: row.rider, zone: row.zone, mpesa_number: row.mpesa_number, agent_description: row.agent_description, ridername: row.rider?.user?.name
             })
-          }}>Edit</div>
-          <div className='p-2 bg-red-100' onClick={() => toggleManage(row)}>Manage</div>
+          }}>Edit Agent</div>
+          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { props.activate_agents(row._id); fetch() }}>Activate contact person</div>
+          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { toggleManage(row); setAgent(row._id); }}>Manage Attendants</div>
 
         </div>
       )
     },
-
-
   ]
   const changeInput = (e) => {
     const { name, value } = e.target !== undefined ? e.target : e;
@@ -118,7 +108,7 @@ function Agents(props) {
     await props.add_employee(agent, item)
     await fetch()
     setItem(initialState)
-    setShowModal(false)
+
   }
   const [searchValue, setSearchValue] = useState("")
 
@@ -126,7 +116,7 @@ function Agents(props) {
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
-  const [showModal, setShowModal] = useState(false);
+
   const [show, setShow] = useState(false);
 
   const [Mpesadata, setMData] = useState([]);
@@ -142,7 +132,6 @@ function Agents(props) {
 
           searchValue={searchValue}
 
-          showModal={showModal}
           download={() => DownloadFile(() =>
             props.FetchAdmins({ limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
@@ -152,11 +141,12 @@ function Agents(props) {
 
       </>
     );
-  }, [searchValue, showModal]);
+  }, [searchValue]);
 
   const fetch = async () => {
     await props.get_agents()
     await props.get_riders()
+    await props.getagentlocations()
   }
   useEffect(() => {
 
@@ -185,24 +175,27 @@ function Agents(props) {
         />
       </div>
 
-      <Add_admin
-        show={showModal}
-        changeInput={(e) => changeInput(e)}
-        item={item}
-        submit={() => submit()}
-        toggle={() => { setShowModal(false); setItem(initialState) }}
-      />
+
       <Edit
         show={edit}
         changeInput={(e) => changeInput(e)}
-        item={item}
+        item={agentobj}
+        riders={props.riders}
+        locations={props.locations}
         submit={() => submit()}
         toggle={() => { setEdit(false); setItem(initialState) }}
       />
       <Manage
         show={show}
         changeInput={(e) => changeInput(e)}
+        add_employee={props.add_employee}
         data={datar}
+        assign={props.assign}
+        agent={agent}
+        toggleManage={toggleManage}
+        get_agents_employees={get_agents_employees}
+        riders={props.riders}
+        locations={props.riders}
         employees={employees}
         submit={() => submit()}
         toggle={() => setShow(false)}
@@ -218,9 +211,10 @@ const mapStateToProps = (state) => {
     agents: state.agentsData.agents,
     riders: state.ridersDetails.riders,
     loading: state.agentsData.loading,
+    locations: state.LocationDetail.locations
     // error: state.userDetails.error,
   };
 };
 
-export default connect(mapStateToProps, { get_agents, get_agents_employees, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
+export default connect(mapStateToProps, { get_agents, get_agents_employees, getagentlocations, activate_agents, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
 

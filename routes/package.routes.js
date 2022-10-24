@@ -10,6 +10,7 @@ var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
 var BussinessDetails = require("models/business_details.model");
+const mpesaLogs = require('models/mpesa_logs.model')
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
@@ -19,6 +20,7 @@ var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
+
 var {
   authMiddleware,
   authorized,
@@ -31,6 +33,7 @@ const { findOne } = require("../models/rider_routes.model");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
+
   try {
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
@@ -110,8 +113,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     } else {
       const { packages } = req.body
       for (let i = 0; i < packages.length; i++) {
-        let agent = await AgentDetails.findOne({ user: packages[i].senderAgentID })
+        let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let route = await RiderRoutes.findOne({ agent: agent._id })
+        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent")
+
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -121,10 +126,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix}${Makeid(5)}`;
         packages[i].assignedTo = route.rider
-        const newPackage = await new Sent_package(packages[i]).save();
+        await new Sent_package(packages[i]).save();
 
       }
-      await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent")
+
       return res
         .status(200)
         .json({ message: "Package successfully Saved" });
@@ -199,11 +204,11 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "collected") {
-
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
-      // await new Collected(req.body).save()
-      // await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+      // req.body.collector_signature = JSON.parse(req.body.collector_signature)
+      console.log(req.body)
+      await new Collected(req.body).save()
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {

@@ -5,6 +5,7 @@ var Rider_Package = require('models/rider_package.model')
 var Agent = require('models/agentAddmin.model')
 var Sent_package = require("models/package.modal.js");
 var Rider = require("models/rider.model");
+var AgentUser = require('models/agent_user.model');
 var Reject = require("models/Rejected_parcels.model");
 var mongoose = require('mongoose')
 var {
@@ -144,6 +145,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     const { period, state } = req.query
     let packages
     if (period === 0 || period === undefined || period === null) {
+      let user = await AgentUser.findOne({ user: req.user._id, role: "agent", agent: req.params.agent })
       packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")

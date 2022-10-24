@@ -37,6 +37,9 @@ const UserSchema = new Schema({
         type: String,
 
     },
+    agent_id: {
+        type: String,
+    },
     id_number: {
         type: String,
 

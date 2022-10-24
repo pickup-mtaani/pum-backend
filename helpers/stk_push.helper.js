@@ -13,6 +13,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     const code = "254";
     let new_amount = parseInt(amount)
     let phone = `${code}${s}`;
+    var mpesaCode = ""
 
     const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`, 'utf-8').toString('base64')}`;
     axios.get("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
@@ -33,17 +34,17 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                     "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
                     "Timestamp": "20220816220447",
                     "TransactionType": "CustomerPayBillOnline",
-                    "Amount": new_amount,
+                    // "Amount": new_amount,
+                    "Amount": 1,
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "https://stagingapi.pickupmtaani.com/api/mpesa-callback",
+                    "CallBackURL": "https://35de-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })
             })
                 .then(response => {
-                    // console.log("response.tex" + JSON.stringify(response));
 
                     return response.json()
                 })
@@ -55,22 +56,20 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                         phone_number: phone,
                         amount: amount,
                         ResponseCode: data.ResponseCode,
-
                         type: typeofDelivery,
-                        user: user,
+                        // user: user,
                         log: ''
                     }
-                    await new mpesa_logsModel(body).save()
-                    // data.Body.stkCallback.CallbackMetadata.Item[0].Value
-                    // data.Body.stkCallback.CallbackMetadata.Item[0].Value
-                    return result;
-                }
+                    mpesaCode = body.MerchantRequestID
 
-                )
+                    await new mpesa_logsModel(body).save()
+                    return;
+                })
                 .catch(error => console.log(error));
 
         })
-    // return/
+    console.log("token" + mpesaCode);
+    return mpesaCode
     // console.log("token"+token);
 }
 

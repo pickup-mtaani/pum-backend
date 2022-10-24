@@ -1,23 +1,21 @@
 var mongoose = require('mongoose');
 const bcrypt = require('bcryptjs')
-
-
 const Schema = mongoose.Schema;
 
+const RoutesSchema = new Schema({
 
-const RiderRoutesSchema = new Schema({
-    agent: {
-        type: Schema.Types.ObjectId,
-        ref: 'agents_details'
-    },
-    user: {
+    rider: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    role: {
+    lng: {
         type: String,
-        // default: "agent"
     },
+    lat: {
+        type: String,
+
+    },
+
     deleted_at: {
         type: Date,
         default: null
@@ -27,4 +25,4 @@ const RiderRoutesSchema = new Schema({
 
 
 
-module.exports = mongoose.model('agent_user', RiderRoutesSchema);
+module.exports = mongoose.model('rider_path', RoutesSchema);

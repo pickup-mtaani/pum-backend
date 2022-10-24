@@ -32,6 +32,20 @@ export const get_agents_employees = (id) => async (dispatch) => {
         ;
     }
 };
+export const activate_agents = (id) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+
+        const { data } = await axios.put(`/api/activate_agent/${id}`);
+
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_AGENTS_FAIL" });
+        ;
+    }
+};
 export const get_zones = () => async (dispatch) => {
 
     try {
@@ -63,11 +77,11 @@ export const assign = (id, agent) => async (dispatch) => {
     }
 };
 
-export const add_employee = (id, data) => async (dispatch) => {
+export const add_employee = (id, data, role) => async (dispatch) => {
 
     try {
         await setAuthToken(axios);
-        await axios.post(`/api/admin/add-user-to-agent/${id}`, data);
+        await axios.post(`/api/admin/add-user-to-agent/${id}?role=${role}`, data);
 
         return;
     } catch (error) {

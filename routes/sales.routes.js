@@ -71,8 +71,8 @@ router.post('/mpesa-callback', async (req, res, next) => {
       MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
     }, { new: true, useFindAndModify: false })
 
-    const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID })
-    console.log("kes", LogedMpesa)
+    const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
+
 
     if (LogedMpesa.type === "doorstep") {
 
@@ -84,7 +84,7 @@ router.post('/mpesa-callback', async (req, res, next) => {
       }, { new: true, useFindAndModify: false })
     }
     else if (LogedMpesa.type === "agent") {
-      console.log("kes", LogedMpesa)
+
       const UpdatePackage = await AgentPackage.findOneAndUpdate(
         {
           _id: LogedMpesa.package

@@ -1,9 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
+import Add_admin from './add.modal';
 
 function Manage(props) {
     const { toggle, show } = props
+    let initialState = {
+        name: '', email: "", phone_number: '', password: '', id: "", role: ''
+    }
+    const [item, setItem] = useState(initialState);
+    const [showModal, setShowModal] = useState(false);
 
-    console.log(props.employees)
+    const changeInput = (e) => {
+        const { name, value } = e.target !== undefined ? e.target : e;
+        setItem((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    }
+
+    const submit = async () => {
+        await props.add_employee(props.agent, item)
+        await props.get_agents_employees(props.agent)
+        setItem(initialState)
+        setShowModal(false)
+    }
     return (
 
         <>
@@ -12,7 +31,7 @@ function Manage(props) {
                 show ? (
                     <>
 
-                        <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed top-0 right-0  left-0 z-50 outline-none focus:outline-none min-width:screen">
+                        <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed top-0 right-0  left-80 z-50 outline-none focus:outline-none min-width:screen">
                             <div className="relative w-full rounded-sm my-6 mx-10 max-w-full  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
@@ -26,30 +45,54 @@ function Manage(props) {
                                             </span>
                                         </button>
                                     </div>
+                                    <div className="relative p-6 flex-auto">
+                                        <div className='bg-slate-100 w-full h-full flex'>
+                                            <div className='bg-slate-100 w-full p-10 h-full'>
+                                                <div className='p-5'>
+                                                    <h2 className='text-center py-5 text-2xl tuppercase'>ATTENDANTS</h2>
+                                                    <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => setShowModal(true)}> Add an attendant</div>
+                                                    <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.assign(e.target.value, props.agent)}>
+                                                        <option value="">Assign a new Rider</option>
+                                                        {props.riders?.map((rider, i) => (
+                                                            <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
+                                                        ))}
 
-                                    <div className='p-5'>
-                                        <h2 className='text-center'>Employees</h2>
-                                        <table className='w-full'>
-                                            <thead className='gap-x-1 border-b-2 border-red-200'>
-                                                <th>Name</th>
-                                                <th>Phone Number</th>
-                                                <th>Email</th>
-                                                <th>Role</th>
-                                                <th>Action</th>
-                                            </thead>
-                                            <tbody className='gap-x-3' >
-                                                {props?.employees?.map((emp, i) => (
-                                                    <tr key={i}>
-                                                        <td>{emp?.user?.name}</td>
-                                                        <td>{emp?.user?.phone_number}</td>
-                                                        <td>{emp?.user?.email}</td>
-                                                        <td>agent</td>
-                                                        <td></td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    </select>
+                                                    <table className='w-full color-red-100'>
+                                                        <thead className='border-b-2 border-slate-200'>
+                                                            <th className='border px-2 border-slate-300'>Name</th>
+                                                            <th className='border px-2 border-slate-300'>Phone Number</th>
+                                                            <th className='border px-2 border-slate-300'>Email</th>
+                                                            <th className='border px-2 border-slate-300'>Role</th>
+                                                            <th className='border px-2 border-slate-300'>Action</th>
+                                                        </thead>
+                                                        <tbody  >
+                                                            {props?.employees?.map((emp, i) => (
+                                                                <tr key={i}>
+                                                                    <td className='border px-2 border-slate-300'>{emp?.user?.name}</td>
+                                                                    <td className='border px-2 border-slate-300'>{emp?.user?.phone_number}</td>
+                                                                    <td className='border px-2 border-slate-300'>{emp?.user?.email}</td>
+                                                                    <td className='border px-2 border-slate-300'>{emp?.role}</td>
+                                                                    <td className='border px-2 border-slate-300'>
+                                                                        <div className='flex gap-x-2'>
+                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => { setShowModal(true) }}>Delete</div>
 
+                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                                setShowModal(true); setItem({
+                                                                                    name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
+                                                                                })
+                                                                            }}>Edit</div>
+
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                         <button
@@ -73,7 +116,15 @@ function Manage(props) {
                         </div>
                     </>
                 ) : null
-            }</>
+            }
+            <Add_admin
+                show={showModal}
+                changeInput={(e) => changeInput(e)}
+                item={item}
+                submit={() => submit()}
+                toggle={() => { setShowModal(false); setItem(initialState) }}
+            />
+        </>
     );
 };
 

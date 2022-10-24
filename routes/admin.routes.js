@@ -79,12 +79,10 @@ router.post('/login', async (req, res) => {
 router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, res) => {
 
     try {
-
-
         const body = req.body
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
-        const user = await Employee.findOne({ email: req.body.email });
-        const phone = await Employee.findOne({ phone_number: req.body.phone_number });
+        const user = await Employee.findOne({ email: req.body.email, agent_id: req.params.id, role: req.body.role });
+        const phone = await Employee.findOne({ phone_number: req.body.phone_number, agent_id: req.params.id, role: req.body.role });
         if (user || phone) {
             return res.status(402).json({ message: 'Employee Exists !!' });
         }
@@ -95,14 +93,16 @@ router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, 
         }
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         body.createdBy = req.user._id
-        body.role = "agent"
+        body.agent_id = req.params.id
+
         // body.agent = req.params.id
         let newemployee = await new Employee(body);
         const saved = await newemployee.save();
 
         await new AgentUser({
             agent: req.params.id,
-            user: saved._id
+            user: saved._id,
+            role: req.body.role
         }).save()
 
         return res.status(200).json({ message: 'User Saved Successfully !!', saved });
