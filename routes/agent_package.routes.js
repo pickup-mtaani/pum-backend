@@ -80,11 +80,10 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
-    console.log(agent)
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
     let agent_packages
     if (req.query.searchKey) {
-      agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
@@ -93,7 +92,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .status(200)
         .json(agent_packages);
     } else {
-      agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
