@@ -142,7 +142,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     let packages
     if (period === 0 || period === undefined || period === null) {
       let user = await AgentUser.findOne({ user: req.user._id, role: "agent", agent: req.params.agent })
-      packages = await Sent_package.find({ $or: [{ senderAgentID: req.params.agent }, { receieverAgentID: agent.agent }], state: state, })
+      packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }, { receieverAgentID: agent.agent }], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         // .populate("senderAgentID")
         .populate({

@@ -13,12 +13,7 @@ export const Sellers_columns = [
     minWidth: '250px',
     selector: row => row.collector_phone_number
   },
-  {
-    sortable: true,
-    name: 'package',
-    minWidth: '250px',
-    selector: row => row.package?.package_name
-  },
+
   {
     sortable: true,
     name: 'Signature',
