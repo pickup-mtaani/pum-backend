@@ -402,6 +402,27 @@ router.get("/package/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+router.get("/collectors/", async (req, res) => {
+  try {
+
+    const users = await Collected.find().populate('package', 'package_name reciept_No')
+    // const reciever
+
+    return res
+      .status(200)
+      .json({
+
+        package, sender: sender.business_name,
+
+      });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/packages/bussiness/:id", async (req, res) => {
   try {
     const packages = await Package.find({ businessId: req.params.id })

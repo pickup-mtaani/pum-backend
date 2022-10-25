@@ -86,8 +86,8 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
     if (req.query.searchKey) {
       agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
-        .populate('receieverAgentID', 'name')
-        .populate('senderAgentID', 'name')
+        .populate('receieverAgentID', 'business_name')
+        .populate('senderAgentID', 'business_name')
         .populate('businessId')
       return res
         .status(200)
@@ -95,8 +95,8 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
     } else {
       agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
-        .populate('receieverAgentID', 'name')
-        .populate('senderAgentID', 'name')
+        .populate('receieverAgentID', 'business_name')
+        .populate('senderAgentID', 'business_name')
         .populate('businessId')
       return res
         .status(200)
