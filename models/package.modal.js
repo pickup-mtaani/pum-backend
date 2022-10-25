@@ -61,11 +61,11 @@ const PackageSchema = new Schema(
     },
     senderAgentID: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "agents_details ",
     },
     receieverAgentID: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "agents_details ",
     },
     assignedTo: {
       type: Schema.Types.ObjectId,

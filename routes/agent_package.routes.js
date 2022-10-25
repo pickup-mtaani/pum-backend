@@ -18,8 +18,6 @@ const moment = require("moment");
 var Commision = require("models/commission.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
 const router = express.Router();
-
-
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
