@@ -145,8 +145,20 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       let user = await AgentUser.findOne({ user: req.user._id, role: "agent", agent: req.params.agent })
       packages = await Sent_package.find({ agent: agent.agent, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID")
-        .populate("receieverAgentID")
+        // .populate("senderAgentID")
+        .populate({
+          path: 'senderAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        // .populate("receieverAgentID")
+        .populate({
+          path: 'receieverAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
 
