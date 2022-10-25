@@ -27,12 +27,12 @@ function Users(props) {
   const [showModal, setShowModal] = useState(false);
   const [item, setItem] = useState(initialState);
   const filteredItems = routes.filter(
-    item => item.name.toLowerCase().includes(filterText.toLowerCase()),
+    item => item.collector_name.toLowerCase().includes(filterText.toLowerCase()),
   );
   const onChangeFilter = (e) => {
     setFilterText(e)
     const filtered = filteredItems.filter(
-      item => item.title && item.title.toLowerCase().includes(filterText.toLowerCase()),
+      item => item.collector_name && item.collector_name.toLowerCase().includes(filterText.toLowerCase()),
     );
     setFilterData(filtered)
   }
@@ -77,11 +77,11 @@ function Users(props) {
     );
   }, [searchValue, date, showModal]);
   const fetch = async () => {
-    await props.get_riders()
-    let result = await props.get_zones()
+
     let routes = await props.get_routes()
+    console.log(routes)
     setData(routes)
-    setZones(result)
+
   }
   useEffect(() => {
     fetch()
@@ -94,7 +94,7 @@ function Users(props) {
         <DataTable
           // title=""
           columns={Sellers_columns}
-          data={filteredItems}
+          data={routes}
           pagination
           paginationServer
           progressPending={props.loading}
@@ -107,14 +107,7 @@ function Users(props) {
         // onChangeRowsPerPage={handlePerRowsChange}
         />
       </div>
-      <Add
-        show={showModal}
-        zones={zones}
-        changeInput={(e) => changeInput(e)}
-        riders={props.riders}
-        submit={() => submit()}
-        toggle={() => setShowModal(false)}
-      />
+
     </Layout>
   )
 }

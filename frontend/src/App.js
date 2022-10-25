@@ -29,7 +29,7 @@ const App = () => {
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/seller/:id", element: <UserDetails /> },
     { path: "/seller/:bussiness_id/products", element: <Products /> },
-    { path: "/routes", element: <Routes /> },
+    { path: "/collections", element: <Routes /> },
     { path: "/packages", element: <Packages /> },
     { path: "/riders", element: <Riders /> },
     { path: "/mpesa-payments", element: <Payments /> },

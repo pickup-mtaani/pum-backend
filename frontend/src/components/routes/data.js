@@ -5,18 +5,27 @@ export const Sellers_columns = [
     sortable: true,
     name: ' Name',
     minWidth: '225px',
-    selector: row => row.name
+    selector: row => row.collector_name
   },
   {
     sortable: true,
-    name: 'Zonne',
+    name: 'Phine Numner',
     minWidth: '250px',
-    selector: row => row.zone?.name
+    selector: row => row.collector_phone_number
   },
   {
     sortable: true,
-    name: 'Rider',
+    name: 'package',
+    minWidth: '250px',
+    selector: row => row.package?.package_name
+  },
+  {
+    sortable: true,
+    name: 'Signature',
     minWidth: '150px',
-    selector: row => row.rider?.name
+    selector: row => (<>
+      <img src={`data:image/png;base64,${row.collector_signature}`} alt="Red dot" />
+
+    </>)
   }
 ]

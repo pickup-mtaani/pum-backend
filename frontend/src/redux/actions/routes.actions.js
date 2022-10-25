@@ -8,6 +8,7 @@ export const get_routes = () => async (dispatch) => {
         dispatch({ type: "FETCH_ROUTES_SUCCESSFUL" });
         const { data } = await axios.get(`/api/collectors`);
         let payload = [];
+        console.log(data)
         payload = data
         dispatch({ type: "FETCH_ROUTES_SUCCESSFUL", payload });
 
