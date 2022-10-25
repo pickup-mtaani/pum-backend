@@ -141,7 +141,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     const { period, state } = req.query
     let packages
     if (period === 0 || period === undefined || period === null) {
-      let user = await AgentUser.findOne({ user: req.user._id, role: "agent", agent: req.params.agent })
+
       packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }, { receieverAgentID: agent.agent }], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         // .populate("senderAgentID")
@@ -165,7 +165,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ $or: [{ senderAgentID: req.params.agent }, { receieverAgentID: agent.agent }], state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }], state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -247,11 +247,14 @@ router.get("/agent-packages-web", async (req, res) => {
 router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req, res) => {
 
   try {
+    let agent = await AgentUser.findOne({ user: req.user._id })
+
     const { period, state } = req.query
     let packages
     if (period === 0 || period === undefined || period === null) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+
+      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -262,7 +265,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     } else if (req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -274,7 +277,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     else if (state && req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
@@ -284,7 +287,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     }
     else {
 
-      packages = await Sent_package.find({ receieverAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
@@ -294,6 +297,8 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     }
 
   } catch (error) {
+
+    console.log(error)
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

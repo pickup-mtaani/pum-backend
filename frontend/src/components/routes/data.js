@@ -19,7 +19,7 @@ export const Sellers_columns = [
     name: 'Signature',
     minWidth: '150px',
     selector: row => (<>
-      <img src={`data:image/png;base64,${row.collector_signature}`} alt="Red dot" />
+      <img src={`data:image/png;base64,${row.collector_signature}`} height={60} width={60} alt="Red dot" />
 
     </>)
   }
