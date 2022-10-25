@@ -6,7 +6,7 @@ export const get_routes = () => async (dispatch) => {
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_ROUTES_SUCCESSFUL" });
-        const { data } = await axios.get(`/api/routes`);
+        const { data } = await axios.get(`/api/collectors`);
         let payload = [];
         payload = data
         dispatch({ type: "FETCH_ROUTES_SUCCESSFUL", payload });

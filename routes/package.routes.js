@@ -406,16 +406,10 @@ router.get("/package/:id", async (req, res) => {
 router.get("/collectors/", async (req, res) => {
   try {
 
-    const users = await Collected.find().populate('package', 'package_name reciept_No')
-    // const reciever
-
+    const users = await Collected.find().populate('package').populate('dispatchedBy')
     return res
       .status(200)
-      .json({
-
-        package, sender: sender.business_name,
-
-      });
+      .json(users);
   } catch (error) {
     console.log(error)
     return res
