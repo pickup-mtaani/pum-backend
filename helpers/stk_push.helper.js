@@ -39,7 +39,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "https://35de-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
+                    "CallBackURL": "https://e1ee-217-21-116-210.eu.ngrok.io/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })
@@ -57,7 +57,8 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                         amount: amount,
                         ResponseCode: data.ResponseCode,
                         type: typeofDelivery,
-                        // user: user,
+
+                        user: user,
                         log: ''
                     }
                     mpesaCode = body.MerchantRequestID
@@ -68,7 +69,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                 .catch(error => console.log(error));
 
         })
-    console.log("token" + mpesaCode);
+
     return mpesaCode
     // console.log("token"+token);
 }

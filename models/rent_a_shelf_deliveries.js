@@ -47,12 +47,11 @@ const doorstepSchema = new Schema(
     },
     location: {
       type: Schema.Types.ObjectId,
-      ref: "thrifter_location",
-      default: "6304d87a5be36ab5bfb66e2e"
+      ref: "agents_details ",
 
     },
 
-    // 6304d87a5be36ab5bfb66e2e
+
     customer_location: {
       type: String,
     },

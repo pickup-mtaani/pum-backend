@@ -37,16 +37,13 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "picked-from-sender") {
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
       await SendMessage(textbody)
-      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "delivered") {
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.name} and will be shipped to in 2hrs ` }
       await SendMessage(textbody)
-      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
-      let payments = getRandomNumberBetween(100, 200)
-      await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+
     }
     if (req.params.state === "rejected") {
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
@@ -84,10 +81,12 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 });
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
+    let agent = await AgentUser.findOne({ user: req.user._id })
+    console.log(agent)
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
     let agent_packages
     if (req.query.searchKey) {
-      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'name')
         .populate('senderAgentID', 'name')
@@ -96,7 +95,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .status(200)
         .json(agent_packages);
     } else {
-      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ agent: agent.agent, state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'name')
         .populate('senderAgentID', 'name')
@@ -141,12 +140,12 @@ router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, 
 });
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-
+    let agent = await AgentUser.findOne({ user: req.user._id })
     const { period, state } = req.query
     let packages
     if (period === 0 || period === undefined || period === null) {
       let user = await AgentUser.findOne({ user: req.user._id, role: "agent", agent: req.params.agent })
-      packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, })
+      packages = await Sent_package.find({ agent: agent.agent, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -157,7 +156,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ agent: agent.agent, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -167,7 +166,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     }
     else if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ agent: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -176,7 +175,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     }
     else {
-      packages = await Sent_package.find({ senderAgentID: req.user._id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ agent: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")

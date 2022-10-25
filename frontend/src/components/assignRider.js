@@ -27,6 +27,13 @@ const AnyReactComponent = ({ lat, lng }) => <div>
     />
 </div>;
 
+let start = {
+    lat: "-1.33124", long: "36.88484 "
+}
+let stop = {
+    lat: -1.145703, long: 36.964853
+}
+
 function Users(props) {
     const [lng, setLng] = useState(36.817223);
     const [lat, setLat] = useState(-1.286389);

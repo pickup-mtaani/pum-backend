@@ -42,8 +42,8 @@ const MpesaLogsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    ResultDesc:{
-        type:String
+    ResultDesc: {
+        type: String
     },
     createdAt: {
         type: Date,

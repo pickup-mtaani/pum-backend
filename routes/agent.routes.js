@@ -12,6 +12,7 @@ var User = require('models/user.model')
 const bcrypt = require('bcryptjs');
 const csv = require('csv-parser')
 var path = require('path');
+var AgentUser = require('models/agent_user.model');
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -48,7 +49,7 @@ var upload = multer({
         }
     }
 });
-var AgentUser = require('models/agent_user.model');
+
 const Format_phone_number = require('../helpers/phone_number_formater');
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     try {
@@ -163,7 +164,7 @@ router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) =>
                     obj.zone = locations[i].zone
                     if (Object.values(custom_locations)[j].CONTACTS !== "") {
                         if (!await User.findOne({ name: `${Object.values(custom_locations)[j].agent_location}'s Super Agent` })) {
-                            obj.isSuperAgent = true
+
                             let phone = await Format_phone_number(`0${Object.values(custom_locations)[j].CONTACTS}`)
                             let saved = await new User({
 

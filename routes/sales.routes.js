@@ -60,6 +60,7 @@ router.get('/mpesa-payments', async (req, res, next) => {
 })
 
 router.post('/mpesa-callback', async (req, res, next) => {
+
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(

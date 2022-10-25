@@ -16,7 +16,7 @@ const RiderRoutesSchema = new Schema({
     },
     role: {
         type: String,
-        // default: "agent"
+        default: "agent"
     },
     deleted_at: {
         type: Date,
