@@ -7,15 +7,16 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     console.log(No)
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
-
+    let phone
     if (s.charAt(0) === '0') {
         s = s.substring(1);
+        const code = "254";
+        phone = `${code}${s}`;
     } else {
         return
     }
-    const code = "254";
-    let phone = `${code}${s}`;
 
+    console.log(phone)
     let new_amount = parseInt(amount)
 
     var mpesaCode = ""
