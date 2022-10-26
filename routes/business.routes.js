@@ -111,6 +111,7 @@ router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
                 path: 'details',
                 populate: {
                     path: 'agent',
+
                 }
             })
 

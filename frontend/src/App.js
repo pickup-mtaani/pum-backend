@@ -16,6 +16,7 @@ import WareHouse from "./components/warehouse";
 import Agents from "./components/agents ";
 import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
+import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
 import WHAgent from "./components/warehouse/agent";
 import Routes from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
@@ -40,6 +41,7 @@ const App = () => {
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
     { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },
     { path: "/wahehouse/doorstep/pick-packages", element: <PickFromRider /> },
+    { path: "/wahehouse/doorstep/pick-packages-from/:rider", element: <PickFromRiderPage /> },
     { path: "/track/:riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/agents", element: <Agents /> },

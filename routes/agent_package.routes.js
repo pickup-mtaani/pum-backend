@@ -242,6 +242,8 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+
 router.get("/agent-packages-web", async (req, res) => {
   try {
     let packages
@@ -355,6 +357,16 @@ router.get("/packages/agent/:id", async (req, res) => {
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/user/agent/:id", async (req, res) => {
+  try {
+    const agent = await Agent.findOne({ user: req.params.id })
+    return res.status(200).json(agent);
   } catch (error) {
     return res
       .status(400)
