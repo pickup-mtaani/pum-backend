@@ -8,6 +8,9 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
     let phone
+    if (s.charAt(0) === '+') {
+        s = s.substring(1);
+    }
     if (s.charAt(0) === '0') {
         s = s.substring(1);
         const code = "254";
