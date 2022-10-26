@@ -153,10 +153,7 @@ router.post('/register', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-        if (req.body.role === "agent") {
-            req.body.activated = true;
 
-        }
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
@@ -165,7 +162,7 @@ router.post('/register', async (req, res) => {
             await new Rider({ user: saved._id }).save()
         }
         if (req.body.role === "agent") {
-            req.body.activated = true;
+            req.body.activated = false;
             let agent = await new Agent({ user: saved._id }).save()
             await new AgentUser({ user: saved._id, agent: agent._id }).save()
         }
