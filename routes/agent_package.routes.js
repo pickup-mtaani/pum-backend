@@ -64,7 +64,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       try {
         req.body.package = req.params.id
         req.body.dispatchedBy = req.user._id
-        await new Collected(req.body).save()
+        let saved = await new Collected(req.body).save()
+        console.log(saved._id)
       } catch (error) {
         console.log(error)
       }
@@ -140,6 +141,46 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     let agent = await AgentUser.findOne({ user: req.user._id })
     const { period, state } = req.query
     let packages
+
+    if (state === "request") {
+      packages = await Sent_package.find({ senderAgentID: agent.agent, state: state, })
+        .populate("createdBy", "l_name f_name phone_number")
+        .populate({
+          path: 'senderAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .populate({
+          path: 'receieverAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .populate("businessId", "name loc")
+        .sort({ createdAt: -1 });
+      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+    }
+    if (state === "delivered") {
+      packages = await Sent_package.find({ $or: [{ receieverAgentID: agent.agent },], state: state, })
+        .populate("createdBy", "l_name f_name phone_number")
+        .populate({
+          path: 'senderAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        // .populate("receieverAgentID")
+        .populate({
+          path: 'receieverAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .populate("businessId", "name loc")
+        .sort({ createdAt: -1 });
+      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+    }
     if (period === 0 || period === undefined || period === null) {
 
       packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }, { receieverAgentID: agent.agent }], state: state, })
@@ -160,6 +201,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         })
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
+      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
 
     }
 
@@ -171,6 +213,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("receieverAgentID")
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
+      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
 
     }
     else if (req.query.searchKey) {

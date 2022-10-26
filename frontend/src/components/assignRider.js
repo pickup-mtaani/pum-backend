@@ -6,8 +6,9 @@ import { get_riders, fetchpackages } from '../redux/actions/riders.actions'
 import Layout from '../views/Layouts'
 import PIN from './Riders/pin.png'
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import GoogleMapReact from 'google-map-react';
+// import GoogleMapReact from 'google-map-react';
 import { useLocation } from 'react-router-dom'
+import { GoogleMap } from '@react-google-maps/api';
 const socket = io("https://stagingapi.pickupmtaani.com/");
 
 
@@ -77,26 +78,38 @@ function Users(props) {
 
 
             <div style={{ height: '100vh', width: '100%' }}>
-                <GoogleMapReact
+                <GoogleMap
+                    id="circle-example"
+                    mapContainerStyle={{
+                        height: "400px",
+                        width: "800px"
+                    }}
+                    zoom={7}
+                    center={{
+                        lat: -3.745,
+                        lng: -38.523
+                    }}
+                />
+                {/* <GoogleMapReact
                     bootstrapURLKeys={{ key: "" }}
                     // bootstrapURLKeys={{ key: "AIzaSyBBYlYdpbci4zBhCSyLAJngOBLR3cRCGJA" }}
                     defaultCenter={{ lat, lng }}
                     defaultZoom={defaultProps.zoom}
-                >
-                    {/* <GoogleMapReact
+                > */}
+                {/* <GoogleMapReact
                     bootstrapURLKeys={{ key: 'AIzaSyBBYlYdpbci4zBhCSyLAJngOBLR3cRCGJA' }}
                     defaultCenter={defaultProps.center}
                     defaultZoom={defaultProps.zoom}
                 // yesIWantToUseGoogleMapApiInternals
                 // onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
                 > */}
-                    <AnyReactComponent
+                {/* <AnyReactComponent
                         lat={lat}
                         lng={lng}
                         text="My Marker"
                     />
 
-                </GoogleMapReact>
+                </GoogleMapReact> */}
             </div>
 
         </Layout>
