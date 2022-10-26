@@ -35,7 +35,7 @@ const Format_phone_number = require("../helpers/phone_number_formater");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-
+  // SendMessage({ address: Format_phone_number(`0724248784`), Body: `Hi \nYour Package with reciept No $ has been  shelved at ` })
   // return
   // console.log(req.body)
   try {
