@@ -76,6 +76,33 @@ export const assign = (id, agent) => async (dispatch) => {
         ;
     }
 };
+export const agents = () => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        const { data } = await axios.get(`/api/agents_routes`);
+
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_PAYMENTS_FAIL" });
+        ;
+    }
+};
+
+export const CollectDoorStep = (id, state) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+        const { data } = await axios.put(`/api/door-step/package/${id}/${state}`);
+        let payload = [];
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_PAYMENTS_FAIL" });
+        ;
+    }
+};
+
 
 export const add_employee = (id, data, role) => async (dispatch) => {
 
@@ -107,14 +134,29 @@ export const fetchpackages = (state, agent) => async (dispatch) => {
         ;
     }
 };
-
-
-export const fetchdoorpackages = (state, agent) => async (dispatch) => {
+export const fetchdoorpack = (state) => async (dispatch) => {
     //alert(JSON.stringify(agent))
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
         const { data } = await axios.get(`/api/wh-door-step-packages?state=${state}`);
+        let payload = [];
+
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
+
+export const fetchdoorpackages = (state, id) => async (dispatch) => {
+    //alert(JSON.stringify(agent))
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/wh-door-step-packages/${id}?state=${state}`);
         let payload = [];
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });

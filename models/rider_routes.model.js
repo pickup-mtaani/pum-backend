@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 const RiderRoutesSchema = new Schema({
     agent: {
         type: Schema.Types.ObjectId,
-        ref: 'agents_details'
+        ref: 'agents_details '
     },
     rider: {
         type: Schema.Types.ObjectId,

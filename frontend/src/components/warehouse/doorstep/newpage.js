@@ -3,7 +3,8 @@ import DataTable from 'react-data-table-component'
 import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpackages } from '../../../redux/actions/agents.actions'
+import { get_riders, } from '../../../redux/actions/riders.actions'
+import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 function Riderpage(props) {
 
@@ -11,8 +12,8 @@ function Riderpage(props) {
     const [data, setData] = useState([])
     const [data1, setData1] = useState([])
     const fetch = async (data, agent) => {
-        let res = await props.fetchdoorpackages("dropped", location?.state?.id)
-
+        let res = await props.fetchdoorpack("recieved-warehouse")
+        await props.get_riders()
         setData(res)
 
 
@@ -24,8 +25,8 @@ function Riderpage(props) {
         await fetch("dropped", location?.state?.agent)
     }
     useEffect(() => {
-        console.log(location.state)
-        fetch("dropped", location?.state?.agent)
+
+        fetch()
 
     }, [])
 
@@ -48,7 +49,14 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <button onClick={() => props.CollectDoorStep(row._id, "recieved-warehouse")}>Recieve package { }</button>
+                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.CollectDoorStep(row._id, "assigned", e.target.value)}>
+                    <option value="">Assign a new Rider</option>
+                    {props.riders?.map((rider, i) => (
+                        <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
+                    ))}
+
+                </select>
+                {/* <button onClick={() => props.CollectDoorStep(row._id, "assigned")}>AssignRider package { }</button> */}
             </>)
         },
 
@@ -82,10 +90,11 @@ const mapStateToProps = (state) => {
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
+        riders: state.ridersDetails.riders,
         // error: state.userDetails.error,
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectDoorStep, fetchdoorpackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectDoorStep, get_riders, fetchdoorpack, assignwarehouse })(Riderpage)
 
 

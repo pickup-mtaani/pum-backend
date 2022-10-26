@@ -2,6 +2,7 @@ const express = require("express");
 var AgentDetails = require("models/agentAddmin.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Commision = require("models/commission.model");
+var RiderRoutes = require("models/rider_routes.model");
 var Declined = require("models/declined.model");
 var moment = require("moment");
 var Conversation = require('models/conversation.model')
@@ -29,6 +30,11 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       const package = await Door_step_Sent_package.findById(req.params.id);
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+    }
+    if (req.params.state === "assigned") {
+
+      await Door_step_Sent_package.findOneAndUpdate({ package: req.params.id, assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
+
     }
     if (req.params.state === "on-transit") {
       const exists = await Conversation.findOne({
@@ -115,9 +121,28 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+router.get("/agents_routes", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    const agents = await AgentDetails.find().sort({ createdAt: -1 }).limit(100);
+    console.log(agents)
+    return res
+      .status(200)
+      .json(agents);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+
+
 router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
+    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
@@ -130,7 +155,7 @@ router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, 
 });
 router.get("/wh-door-step-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number');
+    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
