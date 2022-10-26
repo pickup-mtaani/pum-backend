@@ -21,7 +21,6 @@ var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
 var Reciever = require("models/reciever.model");
 var AgentUser = require('models/agent_user.model');
-
 var {
   authMiddleware,
   authorized,
@@ -37,6 +36,8 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
+  // return
+  // console.log(req.body)
   try {
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
@@ -115,6 +116,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
+      console.log(packages)
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let route = await RiderRoutes.findOne({ agent: agent._id })

@@ -4,15 +4,20 @@ const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
 const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
-
+    console.log(No)
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
-    while (s.charAt(0) === '0') {
+
+    if (s.charAt(0) === '0') {
         s = s.substring(1);
+    } else {
+        return
     }
     const code = "254";
-    let new_amount = parseInt(amount)
     let phone = `${code}${s}`;
+
+    let new_amount = parseInt(amount)
+
     var mpesaCode = ""
 
     const Authorization = `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`, 'utf-8').toString('base64')}`;
