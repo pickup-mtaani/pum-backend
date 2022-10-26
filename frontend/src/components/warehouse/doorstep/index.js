@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, unstable_HistoryRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { get_agents, get_zones, assign, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import Layout from '../../../views/Layouts'
@@ -71,17 +71,44 @@ const Index = props => {
     return (
         <Layout>
 
-            <DataTable
-                title="Door Packages"
-                columns={columns}
-                data={collect}
-                pagination
-                paginationServer
-                subHeader
-            />
             <div className='flex w-full gap-x-20 '>
-                <DashboardWHItem obj={{ title: 'Collect From Riders', type: "doorstep", value: location?.state?.data?.dropped, state: "dropped", data: collect }} />
-                <DashboardWHItem obj={{ title: 'Assign to Riders', value: location?.state?.data?.recieved, state: "recieved-warehouse", data: collect }} />
+                <div className="bg-white  w-1/2  ">
+                    <Link
+                        to={{
+                            pathname: `/wahehouse/doorstep/pick-packages`,
+
+                        }}
+
+                    > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
+                            <div className="h-full w-4/6 ">
+                                <div className=" w-full flex flex-col p-3">
+                                    <h1 className="font-bold text-gray-400 text-xl">Pick From Rider</h1>
+                                </div>
+                            </div>
+
+                        </div>
+                    </Link>
+                </div >
+                <div className='flex w-full gap-x-20 '>
+                    <div className="bg-white  w-1/2  ">
+                        <Link
+                            to={{
+                                pathname: `/wahehouse/doorstep/pick-packages`,
+
+                            }}
+
+                        > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
+                                <div className="h-full w-4/6 ">
+                                    <div className=" w-full flex flex-col p-3">
+                                        <h1 className="font-bold text-gray-400 text-xl">Assign to Rider</h1>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </Link>
+                    </div >
+                </div>
+                {/* <DashboardWHItem obj={{ title: 'Assign to Riders', value: location?.state?.data?.recieved, state: "recieved-warehouse", data: collect }} /> */}
             </div>
 
         </Layout>

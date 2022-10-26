@@ -78,7 +78,7 @@ function Users(props) {
 
 
             <div style={{ height: '100vh', width: '100%' }}>
-                <GoogleMap
+                {/* <GoogleMap
                     id="circle-example"
                     mapContainerStyle={{
                         height: "400px",
@@ -89,7 +89,9 @@ function Users(props) {
                         lat: -3.745,
                         lng: -38.523
                     }}
-                />
+                /> */}
+
+
                 {/* <GoogleMapReact
                     bootstrapURLKeys={{ key: "" }}
                     // bootstrapURLKeys={{ key: "AIzaSyBBYlYdpbci4zBhCSyLAJngOBLR3cRCGJA" }}
