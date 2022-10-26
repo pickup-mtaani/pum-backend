@@ -10,14 +10,16 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     let phone
     if (s.charAt(0) === '+') {
         s = s.substring(1);
-        const code = "254";
-        phone = `${code}${s}`;
+        console.log("phone1" + s)
+        phone = s
     }
     if (s.charAt(0) === '0') {
         s = s.substring(1);
         const code = "254";
+        console.log("phone2" + s)
         phone = `${code}${s}`;
     } else {
+        phone = s
         return
     }
 
