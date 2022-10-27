@@ -49,7 +49,7 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.CollectDoorStep(row._id, "assigned", e.target.value)}>
+                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.CollectDoorStep(row._id, "assigned-warehouse", e.target.value)}>
                     <option value="">Assign a new Rider</option>
                     {props.riders?.map((rider, i) => (
                         <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>

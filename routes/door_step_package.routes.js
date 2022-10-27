@@ -5,6 +5,7 @@ var Commision = require("models/commission.model");
 var RiderRoutes = require("models/rider_routes.model");
 var Declined = require("models/declined.model");
 var moment = require("moment");
+var Collected = require("models/collectors.model");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
@@ -12,6 +13,8 @@ var {
   authMiddleware,
   authorized,
 } = require("middlewere/authorization.middlewere");
+const Format_phone_number = require("../helpers/phone_number_formater");
+const { SendMessage } = require("../helpers/sms.helper");
 
 
 function getRandomNumberBetween(min, max) {
@@ -28,12 +31,16 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     }
     if (req.params.state === "picked-from-sender") {
       const package = await Door_step_Sent_package.findById(req.params.id);
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
+      await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
-    if (req.params.state === "assigned") {
-
-      await Door_step_Sent_package.findOneAndUpdate({ package: req.params.id, assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
+    if (req.params.state === "assigned-warehouse") {
+      console.log("IS ASSIGNED TO:", req.query.assignedTo)
+      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
+      console.log("RESULT", v)
+      return res.status(200).json({ message: "Sucessfully" });
 
     }
     if (req.params.state === "on-transit") {
@@ -44,6 +51,16 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
           ]
         }
       })
+      if (req.params.state === "complete") {
+        try {
+          req.body.package = req.params.id
+          req.body.dispatchedBy = req.user._id
+          let saved = await new Collected(req.body).save()
+
+        } catch (error) {
+          console.log(error)
+        }
+      }
       if (exists) {
         await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
         await new Message({ conversationId: exists._id, sender: req.user_id, text: `Hi  been assigned your package kindly feel free to chat` }).save()

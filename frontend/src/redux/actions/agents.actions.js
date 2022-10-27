@@ -89,11 +89,11 @@ export const agents = () => async (dispatch) => {
     }
 };
 
-export const CollectDoorStep = (id, state) => async (dispatch) => {
+export const CollectDoorStep = (id, state, assignedTo) => async (dispatch) => {
 
     try {
         await setAuthToken(axios);
-        const { data } = await axios.put(`/api/door-step/package/${id}/${state}`);
+        const { data } = await axios.put(`/api/door-step/package/${id}/${state}?assignedTo=${assignedTo}`);
         let payload = [];
         return payload;
     } catch (error) {

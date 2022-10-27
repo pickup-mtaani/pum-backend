@@ -73,9 +73,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         packages[i].receipt_no = `PM-${Makeid(5)}`;
         packages[i].assignedTo = route.rider
-        console.log(route)
-        console.log(packages[i])
-        // return
+
         await new Door_step_Sent_package(packages[i]).save();
 
       }
