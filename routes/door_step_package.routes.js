@@ -31,15 +31,15 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     }
     if (req.params.state === "picked-from-sender") {
       const package = await Door_step_Sent_package.findById(req.params.id);
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "assigned-warehouse") {
-      console.log("IS ASSIGNED TO:", req.query.assignedTo)
+
       let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
-      console.log("RESULT", v)
+
       return res.status(200).json({ message: "Sucessfully" });
 
     }

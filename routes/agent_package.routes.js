@@ -33,13 +33,13 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
 
     if (req.params.state === "picked-from-sender") {
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.name} and will be shipped to in 24hrs ` }
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "delivered") {
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.name} and will be shipped to in 2hrs ` }
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} and will be shipped to in 2hrs ` }
       await SendMessage(textbody)
 
     }
