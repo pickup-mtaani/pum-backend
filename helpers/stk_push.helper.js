@@ -41,7 +41,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                     "PartyA": phone,
                     "PartyB": 174379,
                     "PhoneNumber": phone,
-                    "CallBackURL": "https://e1ee-217-21-116-210.eu.ngrok.io/api/mpesa-callback",
+                    "CallBackURL": "https://71eb-217-21-116-210.in.ngrok.io/api/mpesa-callback",
                     "AccountReference": "Pick-up delivery",
                     "TransactionDesc": "Payment delivery of  ***"
                 })

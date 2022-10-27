@@ -35,16 +35,19 @@ const Format_phone_number = require("../helpers/phone_number_formater");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-  // SendMessage({ address: Format_phone_number(`0724248784`), Body: `Hi \nYour Package with reciept No $ has been  shelved at ` })
-  // return
-  // console.log(req.body)
+
   try {
     const body = req.body;
     body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
+
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
+
+        let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        let route = await RiderRoutes.findOne({ agent: agent_id._id })
+
         const currentBusiness = await Bussiness.findById(packages[i].businessId).populate(
           {
             path: "details",
@@ -60,8 +63,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
-        packages[i].origin = currentBusiness?.details?.agent?.loc
-        packages[i].agent = currentBusiness?.details?.agent?._id
+        packages[i].origin = { lng: null, lat: null, name: '' }
+
         packages[i].destination = {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
@@ -69,7 +72,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         packages[i].receipt_no = `PM-${Makeid(5)}`;
-        packages[i].assignedTo = packages[i].rider
+        packages[i].assignedTo = route.rider
+        console.log(route)
+        console.log(packages[i])
+        // return
         await new Door_step_Sent_package(packages[i]).save();
 
       }
