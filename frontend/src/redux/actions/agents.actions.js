@@ -9,7 +9,7 @@ export const get_agents = () => async (dispatch) => {
         const { data } = await axios.get(`/api/agents?location=`);
         let payload = [];
         payload = data.agents;
-        //alert(JSON.stringify(payload))
+
         dispatch({ type: "FETCH_AGENTS_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
@@ -88,6 +88,19 @@ export const agents = () => async (dispatch) => {
         ;
     }
 };
+export const Rideagents = (id) => async (dispatch) => {
+    try {
+
+        await setAuthToken(axios);
+        const { data } = await axios.get(`/api/agents/${id}`);
+
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_PAYMENTS_FAIL" });
+        ;
+    }
+};
 
 export const CollectDoorStep = (id, state, assignedTo) => async (dispatch) => {
 
@@ -125,7 +138,7 @@ export const fetchpackages = (state, agent) => async (dispatch) => {
         const { data } = await axios.get(`/api/agent-packages-web?state=${state}&agent=${agent ? agent : "all"}`);
         let payload = [];
         payload = data.packages;
-        console.log(payload);
+
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
@@ -140,6 +153,23 @@ export const fetchdoorpack = (state) => async (dispatch) => {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
         const { data } = await axios.get(`/api/wh-door-step-packages?state=${state}`);
+        let payload = [];
+
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
+
+export const fetchAgentpack = (state) => async (dispatch) => {
+    //alert(JSON.stringify(agent))
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/agents-packages-recieved-warehouese?agent=${state}`);
         let payload = [];
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });

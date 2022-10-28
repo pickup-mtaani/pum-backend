@@ -93,7 +93,7 @@ const Index = props => {
                     <div className="bg-white  w-1/2  ">
                         <Link
                             to={{
-                                pathname: `/wahehouse/doorstep/give-package-to-rider`,
+                                pathname: `/wahehouse/doorstep/assign-rider`,
                             }}
 
                         > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">

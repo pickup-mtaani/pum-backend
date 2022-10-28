@@ -278,6 +278,20 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
   }
 
 });
+router.get('/agents/:id', [authMiddleware, authorized], async (req, res) => {
+  try {
+    console.log(req.params.id)
+    const riders = await RiderRoutes.find({ rider: req.params.id }).populate('agent')
+    console.log(riders)
+    return res.status(200).json(riders);
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+  }
+
+});
 router.get("/riders", async (req, res) => {
   try {
     // const riders = await User.find({ role: 'rider' })

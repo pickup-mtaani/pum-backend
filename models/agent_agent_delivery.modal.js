@@ -17,6 +17,11 @@ const AgentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "business",
     },
+
+    reject_Id: {
+      type: Schema.Types.ObjectId,
+      ref: "rejected",
+    },
     total_payment: {
       type: Number,
 

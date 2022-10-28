@@ -38,7 +38,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
   try {
     const body = req.body;
-    body.receipt_no = `PM-${Makeid(5)}`;
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
 
@@ -60,6 +59,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
+
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
@@ -70,8 +70,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
         }
-
-        packages[i].receipt_no = `PM-${Makeid(5)}`;
+        packages[i].receipt_no = `${agent_id.prefix}${Makeid(5)}`;
         packages[i].assignedTo = route.rider
 
         await new Door_step_Sent_package(packages[i]).save();
@@ -96,7 +95,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].location = "63575250602a3e763b1305ed";
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
-        packages[i].receipt_no = `PM-${Makeid(5)}`;
+        packages[i].receipt_no = `${agent_id.prefix}${Makeid(5)}`;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -120,7 +119,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
-      console.log(packages)
+
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let route = await RiderRoutes.findOne({ agent: agent._id })
@@ -213,7 +212,10 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "picked-from-seller") {
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  shelved at ` }
+      const textbody = {
+        address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `
+      Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from Philadelphia house Track now:  pickupmtaani.com
+      ` }
       await SendMessage(textbody)
 
     }

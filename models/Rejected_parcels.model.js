@@ -19,4 +19,4 @@ const rejectSchema = new Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('reject_reasons', rejectSchema);
+module.exports = mongoose.model('rejected', rejectSchema);

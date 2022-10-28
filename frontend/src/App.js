@@ -13,12 +13,13 @@ import Riders from "./components/Riders";
 import Payments from "./components/payments";
 import Tracks from "./components/tracks ";
 import WareHouse from "./components/warehouse";
+import Assign_Agent_package_riderWareHouse from "./components/warehouse/agent/assignRider";
 import Agents from "./components/agents ";
 import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
 import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
 import GIvetoRiderPage from "./components/warehouse/doorstep/give";
-import AsRiderPage from "./components/warehouse/doorstep/newpage";
+import AsRiderPage from "./components/warehouse/doorstep/assignRider";
 import WHAgent from "./components/warehouse/agent";
 import Routes from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
@@ -49,6 +50,8 @@ const App = () => {
 
     { path: "/track/:riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
+    { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },
+
     { path: "/agents", element: <Agents /> },
     { path: "/agent/:name", element: <AgentsDetails /> },
 
