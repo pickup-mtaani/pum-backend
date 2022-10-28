@@ -58,15 +58,19 @@ router.get('/mpesa-payments', async (req, res, next) => {
   const mpeslog = await MpesaLogs.find().populate('user')
   return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
 })
-
-router.post('/mpesa-callbacks', async (req, res, next) => {
+router.get('/mpesa-callback', async (req, res, next) => {
+  console.log("Get-Back:", req.body)
+  return
+})
+router.post('/mpesa-callback', async (req, res, next) => {
 
   console.log("Call-Back:", req.body)
+  return
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(
       {
-        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID// sa unajuaje package yenye inaown hii transaction?
+        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
       }, {
       log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
       ResponseCode: req.body.Body?.stkCallback?.ResultCode,
@@ -132,11 +136,11 @@ router.post('/mpesa_payment/stk', async function (req, res) {
           "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
           "Timestamp": "20220816220447",
           "TransactionType": "CustomerPayBillOnline",
-          "Amount": amount,
-          "PartyA": phone,
+          "Amount": 1,
+          "PartyA": 254720141534,
           "PartyB": 174379,
-          "PhoneNumber": phone,
-          "CallBackURL": "https://stagingapi.pickupmtaani.com/api/mpesa-callback",
+          "PhoneNumber": 254720141534,
+          "CallBackURL": "https://famous-actors-itch-217-21-116-210.loca.lt/api/mpesa-callback",
           "AccountReference": "Pick-up delivery",
           "TransactionDesc": "Payment delivery of  ***"
         })
@@ -157,7 +161,7 @@ router.post('/mpesa_payment/stk', async function (req, res) {
             // user: req.user._id,
             log: ''
           }
-          await new MpesaLogs(body).save()
+          // await new MpesaLogs(body).save()
           // data.Body.stkCallback.CallbackMetadata.Item[0].Value
           // data.Body.stkCallback.CallbackMetadata.Item[0].Value
           return res.status(200).json({ success: true, message: `payment made`, result });

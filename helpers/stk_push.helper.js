@@ -155,14 +155,13 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El",
         consumer_secret = "1GpfPi1UKAlMh2tI";
     var s = `${No}`;
-    console.log(s);
+
     while (s.charAt(0) === "0") {
         s = s.substring(1);
     }
     const code = "254";
     let new_amount = parseInt(amount);
     let phone = `${code}${s}`;
-    console.log(phone);
 
     const Authorization = `Basic ${new Buffer.from(
         `${consumer_key}:${consumer_secret}`,
@@ -198,20 +197,32 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                 PartyA: phone,
                 PartyB: 174379,
                 PhoneNumber: phone,
-                CallBackURL:
-                    "https://71eb-217-21-116-210.in.ngrok.io/api/mpesa-callback",
+                CallBackURL: "https://stagingapi.pickupmtaani.com//api/mpesa-callback",
                 AccountReference: "Pick-up delivery",
                 TransactionDesc: "Payment delivery of  *",
             }),
         }
     );
 
-    const ret = await fetch_response.json();
+    const data = await fetch_response.json();
 
+    const body = {
+        MerchantRequestID: data.MerchantRequestID,
+        CheckoutRequestID: data.CheckoutRequestID,
+        phone_number: phone,
+        amount: amount,
+        ResponseCode: data.ResponseCode,
+        type: typeofDelivery,
+
+        // user: user,
+        log: ''
+    }
+    let T = await new mpesa_logsModel(body).save()
+    console.log(T)
     //   mpesaCode = ret.MerchantRequestID;
 
     //   console.log("MPESA CODE", ret);
-    return ret;
+    return data;
     // console.log("token"+token);
 };
 module.exports = Mpesa_stk

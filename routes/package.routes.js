@@ -36,9 +36,9 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
-  // let v = Mpesa_stk("0720141534", 1, 1, "doorstep")
+  // let v = await Mpesa_stk("0707717455", 1, 1, "doorstep")
   // // console.log(v)
-  // return
+  // return res.status(200).json({ message: v })
   try {
     const body = req.body;
     body.createdBy = req.user._id;
@@ -80,7 +80,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       }
 
-      Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
+      await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
 
       return res
         .status(200)
