@@ -59,13 +59,14 @@ router.get('/mpesa-payments', async (req, res, next) => {
   return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
 })
 
-router.post('/mpesa-callback', async (req, res, next) => {
+router.post('/mpesa-callbacks', async (req, res, next) => {
 
+  console.log("Call-Back:", req.body)
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(
       {
-        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
+        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID// sa unajuaje package yenye inaown hii transaction?
       }, {
       log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
       ResponseCode: req.body.Body?.stkCallback?.ResultCode,

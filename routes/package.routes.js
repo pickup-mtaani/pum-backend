@@ -36,6 +36,9 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
+  // let v = Mpesa_stk("0720141534", 1, 1, "doorstep")
+  // // console.log(v)
+  // return
   try {
     const body = req.body;
     body.createdBy = req.user._id;
@@ -70,7 +73,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
         }
-        packages[i].receipt_no = `${agent_id.prefix}${Makeid(5)}`;
+        packages[i].receipt_no = `pm-${Makeid(5)}`;
         packages[i].assignedTo = route.rider
 
         await new Door_step_Sent_package(packages[i]).save();
@@ -83,9 +86,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", });
     } else if (body.delivery_type === "shelf") {
+
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
+        let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -95,7 +100,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].location = "63575250602a3e763b1305ed";
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
-        packages[i].receipt_no = `${agent_id.prefix}${Makeid(5)}`;
+        packages[i].receipt_no = `pm-${Makeid(5)}`;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
