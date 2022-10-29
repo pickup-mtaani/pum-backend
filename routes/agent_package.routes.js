@@ -174,7 +174,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
             path: 'location_id',
           }
         })
-        .populate("rreject_Id")
+        .populate("reject_Id")
         .populate({
           path: 'receieverAgentID',
           populate: {
