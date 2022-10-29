@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-import { getdoorstep } from '../../redux/actions/package.actions'
+import { getdoorstep, togglePayment } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -50,6 +50,12 @@ function Doorstep(props) {
             name: 'Stored At ',
             minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        {
+            sortable: true,
+            name: 'payment_status ',
+            minWidth: '250px',
+            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
@@ -119,9 +125,9 @@ function Doorstep(props) {
 
         {
             sortable: true,
-            name: 'Payment Status',
+            name: 'payment_status ',
             minWidth: '250px',
-            selector: row => row.payment_status
+            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500' onClick={() => props.togglePayment(row._id, "doorstep")}>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
@@ -226,5 +232,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { getdoorstep, get_riders, assignRider })(Doorstep)
+export default connect(mapStateToProps, { getdoorstep, get_riders, assignRider, togglePayment })(Doorstep)
 

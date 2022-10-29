@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-import { getagentParcels } from '../../redux/actions/package.actions'
+import { getagentParcels, togglePayment } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
@@ -16,7 +16,7 @@ function Agent(props) {
     const [filterText, setFilterText] = React.useState('');
     const [searchValue, setSearchValue] = useState("")
     const [date, setDate] = useState("")
-    const [data1, setData] = useState("")
+    const [data1, setData] = useState([])
     const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
     const [RowsPerPage, setRowsPerPage] = useState(5)
     const [limit, setLimit] = useState(5)
@@ -68,7 +68,12 @@ function Agent(props) {
     };
     const delivery_columns = [
 
-
+        {
+            sortable: true,
+            name: 'payment_status ',
+            minWidth: '250px',
+            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500' onClick={() => props.togglePayment(row._id, "agent")}>Pay Now</div> : "Paid"}</>),
+        },
         {
             sortable: true,
             name: 'Name',
@@ -106,12 +111,7 @@ function Agent(props) {
             minWidth: '250px',
             selector: row => row.delivery_fee
         },
-        {
-            sortable: true,
-            name: 'Payment Status',
-            minWidth: '250px',
-            selector: row => row.payment_status
-        },
+
 
         {
             sortable: true,
@@ -177,23 +177,23 @@ function Agent(props) {
         );
     }, [searchValue, date, showModal]);
     const fetch = async () => {
-        let result = await props.getagentParcels({ limit: limit, state: state })
-        await props.get_riders()
+        let result = await props.getagentParcels()
 
-        setData(result);
+
+        setData(result.data);
 
     }
     useEffect(() => {
         fetch()
     }, [])
-
+    console.log(data1)
     return (
 
         <div className=" mx-2">
             <DataTable
                 title=" Agent to Agent Delivery"
                 columns={delivery_columns}
-                data={props?.packages}
+                data={data1}
                 pagination
                 paginationServer
                 progressPending={props.loading}
@@ -231,5 +231,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { getagentParcels, get_riders, assignRider })(Agent)
+export default connect(mapStateToProps, { getagentParcels, get_riders, assignRider, togglePayment })(Agent)
 

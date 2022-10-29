@@ -16,6 +16,8 @@ export const getParcels = (data1) => async (dispatch) => {
     console.log(error)
   }
 };
+
+
 export const getdoorstep = (data1) => async (dispatch) => {
 
   try {
@@ -30,6 +32,7 @@ export const getdoorstep = (data1) => async (dispatch) => {
     console.log(error)
   }
 };
+
 export const assignwarehouse = (id, state, rider) => async (dispatch) => {
 
   try {
@@ -45,14 +48,30 @@ export const assignwarehouse = (id, state, rider) => async (dispatch) => {
   }
 };
 
-export const getagentParcels = (data1) => async (dispatch) => {
+export const togglePayment = (id, type) => async (dispatch) => {
 
   try {
-    const { limit, state } = data1
+
+    dispatch({ type: "FETCH_DOORSTEP" });
+    let payload = [];
+    const { data } = await axios.put(`/api/${type}/toogle-payment/${id}`);
+    payload = data;
+    dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
+export const getagentParcels = () => async (dispatch) => {
+
+  try {
+    await setAuthToken(axios);
     dispatch({ type: "FETCH_AGENTS_PACKAGES" });
     let payload = [];
-    const { data } = await axios.get(`/api/packages?limit = ${limit} & state=${state}`);
-    payload = data;
+
+    const response = await axios.get(`/api/web/all-agent-packages/packages`);
+
+    payload = response;
     dispatch({ type: "FETCH_AGENTS_PACKAGES_SUCCESSFUL", payload });
     return payload;
   } catch (error) {

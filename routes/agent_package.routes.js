@@ -21,6 +21,19 @@ const router = express.Router();
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let paid = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+    return res
+      .status(200)
+      .json(paid);
+
+  } catch (err) {
+    console.log(err)
+  }
+})
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -87,7 +100,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
     let agent_packages
 
     if (req.query.searchKey) {
-      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ payment_status: "paid", state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
@@ -98,7 +111,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .status(200)
         .json(agent_packages);
     } else {
-      agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ payment_status: "paid", state: req.params.state, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
@@ -118,7 +131,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
 
 router.get("/agents-packages-recieved-warehouese", [authMiddleware, authorized], async (req, res) => {
   try {
-    let packages = agent_packages = await Sent_package.find({ state: "recieved-warehouse", $or: [{ receieverAgentID: req.query.agent }, { senderAgentID: req.query.agent }] }).sort({ createdAt: -1 }).limit(100)
+    let packages = await Sent_package.find({ state: "recieved-warehouse", $or: [{ receieverAgentID: req.query.agent }, { senderAgentID: req.query.agent }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name')
       .populate('receieverAgentID', 'business_name')
       .populate('senderAgentID', 'business_name')
@@ -166,7 +179,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     const { period, state } = req.query
     let packages
     if (state === "rejected") {
-      packages = await Sent_package.find({ senderAgentID: agent.agent, state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate({
           path: 'senderAgentID',
@@ -186,7 +199,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "request") {
-      packages = await Sent_package.find({ senderAgentID: agent.agent, state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
 
         .populate({
@@ -206,13 +219,13 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "delivered") {
-      packages = await Sent_package.find({ $or: [{ receieverAgentID: agent.agent },], state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", $or: [{ receieverAgentID: agent.agent },], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate({
           path: 'senderAgentID',
           populate: {
             path: 'location_id',
-          }
+          }``
         })
         // .populate("receieverAgentID")
         .populate({
@@ -288,6 +301,25 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let packages = await Sent_package.find()
+
+    // .populate('createdBy', 'f_name l_name name')
+    // .populate('receieverAgentID', 'business_name')
+    // .populate('senderAgentID', 'business_name')
+    // .populate('businessId')
+    return res
+      .status(200)
+      .json(packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+})
 
 
 router.get("/agent-packages-web", async (req, res) => {
@@ -345,7 +377,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     if (period === 0 || period === undefined || period === null) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
 
-      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -356,7 +388,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     } else if (req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -368,7 +400,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     else if (state && req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
@@ -378,7 +410,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     }
     else {
 
-      packages = await Sent_package.find({ receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")

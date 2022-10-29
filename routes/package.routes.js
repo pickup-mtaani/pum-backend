@@ -343,6 +343,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
+        .populate("agent")
         .limit(100);
 
       doorstep_packages = await Door_step_Sent_package.find({
@@ -351,6 +352,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
+        .populate("agent")
         .sort({ createdAt: -1 })
         .limit(100);
       shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).populate(
@@ -372,6 +374,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         .sort({ createdAt: -1 })
+        .populate("agent")
         .limit(100);
       shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id }).populate(
 

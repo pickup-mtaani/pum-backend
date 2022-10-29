@@ -87,6 +87,18 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.put("/doorstep/toogle-payment/:id", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let paid = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+    return res
+      .status(400)
+      .json(paid);
+
+  } catch (err) {
+    console.log(err)
+  }
+})
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -95,7 +107,7 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
       period = req.query.period
     }
     console.log("period: " + period);
-    const blended = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
+    const blended = await Door_step_Sent_package.find({ payment_status: "paid", updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,')
       .populate('businessId')
     const agent = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
@@ -104,14 +116,14 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Door_step_Sent_package.find({ payment_status: "paid", updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId')
       return res
         .status(200)
         .json({ agent_packages, blended, agent });
     } else {
 
-      agent_packages = await Door_step_Sent_package.find({ updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Door_step_Sent_package.find({ payment_status: "paid", updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId')
       return res
         .status(200)
@@ -128,7 +140,7 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent = await AgentDetails.findOne({ user: req.user._id });
-    const agent_packages = await Door_step_Sent_package.find({ state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Door_step_Sent_package.find({ payment_status: "paid", state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);

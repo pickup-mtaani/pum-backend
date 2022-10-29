@@ -9,6 +9,7 @@ import Sellers from "./components/Seller";
 import UserDetails from "./components/Seller/UserDetails";
 import Products from "./components/Seller/products";
 import Packages from "./components/packages"
+import AgentPackages from "./components/packages/aent"
 import Riders from "./components/Riders";
 import Payments from "./components/payments";
 import Tracks from "./components/tracks ";
@@ -33,6 +34,7 @@ const App = () => {
     { path: "/sellers", element: <Sellers /> },
     { path: "/dashboard", element: <Dashboard /> },
     { path: "/seller/:id", element: <UserDetails /> },
+    { path: "/agent-agent-packages", element: <AgentPackages /> },
     { path: "/seller/:bussiness_id/products", element: <Products /> },
     { path: "/collections", element: <Routes /> },
     { path: "/packages", element: <Packages /> },
