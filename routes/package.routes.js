@@ -357,11 +357,9 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .limit(100);
       shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).populate(
 
-
       );
     } else {
       agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id, })
-
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
