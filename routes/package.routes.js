@@ -36,7 +36,7 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
-  // let v = await Mpesa_stk("0707717455", 1, 1, "doorstep")
+  // let v = await Mpesa_stk("0790923387", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
   try {
@@ -154,7 +154,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: " failed  to send package", error });
   }
 });
-
 router.post("/package/delivery-charge", async (req, res) => {
   try {
     let price = 100;
@@ -218,8 +217,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     }
     if (req.params.state === "picked-from-seller") {
       const textbody = {
-        address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `
-      Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from Philadelphia house Track now:  pickupmtaani.com
+        address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package.customerName} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
 

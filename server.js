@@ -84,8 +84,10 @@ app.use(express.static(root));
 app.get('*', function (req, res) {
     res.sendFile('index.html', { root: path.join(__dirname, 'frontend/build') });
 });
-app.post('/mpesa-callback', async (req, res, next) => {
-    console.log("res")
+app.post('/mpesa-callback', async (req, res) => {
+    console.log("--------------------STK RESPONSE")
+    console.log(req.body)
+
     // https://0dbf-217-21-116-210.in.ngrok.io
     // try {
     //   const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })

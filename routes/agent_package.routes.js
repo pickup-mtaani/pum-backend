@@ -85,13 +85,15 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
     let agent = await AgentUser.findOne({ user: req.user._id })
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
     let agent_packages
+
     if (req.query.searchKey) {
       agent_packages = await Sent_package.find({ state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('createdBy', 'f_name l_name name')
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
         .populate('businessId')
-        .populate('reject_Id')
+
+
       return res
         .status(200)
         .json(agent_packages);
@@ -101,7 +103,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
         .populate('businessId')
-        .populate('reject_Id')
+
       return res
         .status(200)
         .json(agent_packages);
@@ -163,7 +165,26 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     let agent = await AgentUser.findOne({ user: req.user._id })
     const { period, state } = req.query
     let packages
-
+    if (state === "rejected") {
+      packages = await Sent_package.find({ senderAgentID: agent.agent, state: state, })
+        .populate("createdBy", "l_name f_name phone_number")
+        .populate({
+          path: 'senderAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .populate("rreject_Id")
+        .populate({
+          path: 'receieverAgentID',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .populate("businessId", "name loc")
+        .sort({ createdAt: -1 });
+      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+    }
     if (state === "request") {
       packages = await Sent_package.find({ senderAgentID: agent.agent, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
@@ -208,7 +229,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
       packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }, { receieverAgentID: agent.agent }], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
-        .populate('reject_Id')
+
         .populate({
           path: 'senderAgentID',
           populate: {
@@ -234,7 +255,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        .populate('reject_Id')
+
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
@@ -245,7 +266,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       packages = await Sent_package.find({ agent: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
-        .populate('reject_Id')
+
         .populate("receieverAgentID")
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
@@ -255,7 +276,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
-        .populate('reject_Id')
+
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
     }

@@ -152,8 +152,8 @@ var { Headers } = fetch
 //     // console.log("token"+token);
 // };
 const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
-    let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El",
-        consumer_secret = "1GpfPi1UKAlMh2tI";
+    let consumer_key = "BIXdwG4MfjHyokYWYEAVI41G7D0YJQ50",
+        consumer_secret = "XDRoAOxnM5NcgEBw";
     var s = `${No}`;
 
     while (s.charAt(0) === "0") {
@@ -197,8 +197,8 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                 PartyA: phone,
                 PartyB: 174379,
                 PhoneNumber: phone,
-                CallBackURL: "https://stagingapi.pickupmtaani.com//api/mpesa-callback",
-                AccountReference: "Pick-up delivery",
+                CallBackURL: "https://171e-217-21-116-210.eu.ngrok.io/mpesa-callback",
+                AccountReference: "Pick-up-delivery",
                 TransactionDesc: "Payment delivery of  *",
             }),
         }
