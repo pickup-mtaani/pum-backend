@@ -30,8 +30,9 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }
     if (req.params.state === "picked-from-sender") {
-      const package = await Door_step_Sent_package.findById(req.params.id);
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to you in 24hrs ` }
+      const package = await Door_step_Sent_package.findById(req.params.id).populate("agent");
+
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
