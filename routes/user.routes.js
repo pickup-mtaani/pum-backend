@@ -153,7 +153,6 @@ router.post('/register', async (req, res) => {
             let error = Object.values(errors)[0]
             return res.status(400).json({ message: error });
         }
-
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);

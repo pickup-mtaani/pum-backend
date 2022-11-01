@@ -6,8 +6,7 @@ var { Headers } = fetch
 // const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
 
 //     let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";
-//     var s = `${No}`;
-//     console.log(s)
+//     var s = `${No}`
 //     while (s.charAt(0) === '0') {
 //         s = s.substring(1);
 //     }
@@ -197,7 +196,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
                 PartyA: phone,
                 PartyB: 174379,
                 PhoneNumber: phone,
-                CallBackURL: "https://171e-217-21-116-210.eu.ngrok.io/mpesa-callback",
+                CallBackURL: "https://168a-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
                 AccountReference: "Pick-up-delivery",
                 TransactionDesc: "Payment delivery of  *",
             }),
@@ -218,7 +217,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
         log: ''
     }
     let T = await new mpesa_logsModel(body).save()
-    console.log(T)
+    // console.log(T)
     //   mpesaCode = ret.MerchantRequestID;
 
     //   console.log("MPESA CODE", ret);

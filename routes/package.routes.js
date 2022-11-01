@@ -6,6 +6,9 @@ var AgentDetails = require("models/agentAddmin.model");
 var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
+var Narations = require('models/agent_agent_narations.model');
+var DoorstepNarations = require('models/door_step_narations.model');
+var rentshelfNarations = require('models/rent_shelf_narations.model');
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
@@ -32,6 +35,7 @@ const Mpesa_stk = require("../helpers/stk_push.helper");
 
 const { findOne } = require("../models/rider_routes.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
+const { request } = require("express");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
@@ -39,8 +43,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
   // let v = await Mpesa_stk("0790923387", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
+  let newpackage
   try {
     const body = req.body;
+
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
 
@@ -76,11 +82,20 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].receipt_no = `pm-${Makeid(5)}`;
         packages[i].assignedTo = route.rider
 
-        await new Door_step_Sent_package(packages[i]).save();
+        newpackage = await new Door_step_Sent_package(packages[i]).save();
+
+        await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
+        await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
+
 
       }
+      if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
+        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
+      }
+      else {
+        await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
 
-      await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
+      }
 
       return res
         .status(200)
@@ -118,7 +133,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
       }).save();
-
+      await new rentshelfNarations({ package: newPackage._id, state: "request", descriptions: `Package created` }).save()
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -128,7 +143,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let route = await RiderRoutes.findOne({ agent: agent._id })
-        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+        // 
 
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -139,9 +154,20 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix}${Makeid(5)}`;
         packages[i].assignedTo = route.rider
-        await new Sent_package(packages[i]).save();
+        let newpackage = await new Sent_package(packages[i]).save();
+        await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
 
       }
+      if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
+
+        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+      }
+
+      else {
+        // await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+
+      }
+
 
       return res
         .status(200)
@@ -152,6 +178,22 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: " failed  to send package", error });
+  }
+});
+
+router.get("/rent-shelf-package-narations/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let narations = await rentshelfNarations.find({ package: req.params.id }).sort({ createdAt: -1 })
+    return res
+      .status(200)
+      .json(narations);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
   }
 });
 router.post("/package/delivery-charge", async (req, res) => {
@@ -205,7 +247,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
-    let package = await Rent_a_shelf_deliveries.findById(req.params.id)
+    let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('agent')
 
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
@@ -216,7 +258,10 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "picked-from-seller") {
+      await new rentshelfNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent name(receiver agent)` }).save()
+
       const textbody = {
+
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package.customerName} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
@@ -224,6 +269,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     }
     if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
+
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "collected") {
@@ -260,6 +306,46 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
         .populate('createdBy')
       return res.status(200)
         .json(agent_packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
+  let agent = await AgentUser.findOne({ user: req.user._id })
+  try {
+    let agent_packages
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      let dropped = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let unavailable = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "unavailable", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let picked = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let request = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "request", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let collected = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "collected", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let rejected = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "rejected", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped-to-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let assigned = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "assigned", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-sender", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      return res.status(200)
+        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+    } else {
+      let dropped = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped" })
+      let unavailable = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "unavailable" })
+      let picked = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked" })
+      let request = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "request" })
+      let collected = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "collected" })
+      let rejected = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "rejected" })
+      let onTransit = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "on-transit" })
+      let cancelled = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "cancelled" })
+      let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped-to-agent" })
+      let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
+      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-sender" })
+      return res.status(200)
+        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
   } catch (error) {
     console.log(error);
@@ -339,7 +425,6 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")

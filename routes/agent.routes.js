@@ -237,12 +237,14 @@ router.get('/agents', async (req, res) => {
 });
 router.get('/agents-locations', async (req, res) => {
     try {
+        let zoneA = await Zone.findOne({ name: "Zone A" })
+        let zoneB = await Zone.findOne({ name: "Zone B" })
         if (req.query.searchKey) {
             var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-            const agents = await AgentLocation.find({ name: searchKey }).sort({ name: 1 });
+            const agents = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }], name: searchKey }).sort({ name: 1 });
             return res.status(200).json(agents);
         } else {
-            const agents = await AgentLocation.find().sort({ name: 1 });
+            const agents = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }] }).sort({ name: 1 });
             return res.status(200).json(agents);
         }
     } catch (error) {

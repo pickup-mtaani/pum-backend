@@ -17,6 +17,10 @@ const AgentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "business",
     },
+    payment_option: {
+      type: String,
+      enum: ['customer', 'vendor', 'collection'],
+    },
 
     reject_Id: {
       type: Schema.Types.ObjectId,

@@ -58,10 +58,10 @@ router.get('/mpesa-payments', async (req, res, next) => {
   const mpeslog = await MpesaLogs.find().populate('user')
   return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
 })
-router.get('/mpesa-callback', async (req, res, next) => {
-  console.log("Get-Back:", req.body)
-  return
-})
+// router.get('/mpesa-callback', async (req, res, next) => {
+//   console.log("Get-Back:", "req.body")
+//   return
+// })
 router.post('/mpesa-callback', async (req, res, next) => {
 
   console.log("Call-Back:", req.body)
