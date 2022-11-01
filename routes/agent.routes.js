@@ -289,46 +289,32 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
 
         // }
 
-        if (req.files.length === 0) {
-            const Update = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
-                business_name: req.body.business_name,
-                working_hours: req.body.working_hours,
-                location_id: req.body.location_id,
-                // images: reqFiles,
-                mpesa_number: req.body.mpesa_number,
-                loc: JSON.parse(req.body.loc),
 
-            }, { new: true, useFindAndModify: false })
-            return res.status(201).json({ success: true, message: 'Agent  Updated successfully ' });
-        } else {
-            const reqFiles = [];
-            const url = req.protocol + '://' + req.get('host')
+        const reqFiles = [];
+        const url = req.protocol + '://' + req.get('host')
 
-            for (var i = 0; i < req.files.length; i++) {
-                reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
+        for (var i = 0; i < req.files.length; i++) {
+            reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
 
-                await imagemin(["uploads/agents_gallery/" + req.files[i].filename], {
-                    destination: "uploads/agents_gallery",
-                    plugins: [
-                        imageminMozJpeg({ quality: 30 })
-                    ]
-                })
+            await imagemin(["uploads/agents_gallery/" + req.files[i].filename], {
+                destination: "uploads/agents_gallery",
+                plugins: [
+                    imageminMozJpeg({ quality: 30 })
+                ]
+            })
 
-            }
-
-            const Update = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
-                business_name: req.body.business_name,
-                working_hours: req.body.working_hours,
-                location_id: req.body.location_id,
-                images: reqFiles,
-                mpesa_number: req.body.mpesa_number,
-                loc: JSON.parse(req.body.loc),
-
-            }, { new: true, useFindAndModify: false })
-            return res.status(201).json({ success: true, message: 'Agent  Updated successfully ' });
         }
 
+        const Update = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
+            business_name: req.body.business_name,
+            working_hours: req.body.working_hours,
+            location_id: req.body.location_id,
+            images: reqFiles,
+            mpesa_number: req.body.mpesa_number,
+            loc: JSON.parse(req.body.loc),
 
+        }, { new: true, useFindAndModify: false })
+        return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
     } catch (error) {
         console.log(error)
