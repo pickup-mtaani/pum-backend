@@ -215,11 +215,9 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
 
 router.post("/door-step-packages/pay-on-delivery", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.body)
-    let v = await Mpesa_stk(req.body.phone_number, 1, 1, "doorstep")
-    // const agent = await AgentDetails.findOne({ user: req.user._id });
 
-    // const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    let v = await Mpesa_stk(req.body.phone_number, 1, 1, "doorstep")
+    await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
     return res
       .status(200)
       .json(v);
