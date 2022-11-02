@@ -331,7 +331,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "assigned", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
       let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-sender", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
       return res.status(200)
-        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     } else {
       let dropped = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped" })
       let unavailable = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "unavailable" })
@@ -345,7 +345,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
       let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-sender" })
       return res.status(200)
-        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
   } catch (error) {
     console.log(error);

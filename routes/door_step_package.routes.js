@@ -66,34 +66,34 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
           ]
         }
       })
-    }
-    if (req.params.state === "complete") {
-      try {
-        let { customerPhoneNumber, payment_status, delivery_fee } = await Door_step_Sent_package.findOne({ _id: req.params.id })
-        req.body.package = req.params.id
-        req.body.dispatchedBy = req.user._id
-        await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
-        await new Collected(req.body).save()
-        if (payment_status === "to-be-paid") {
-          await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
-        }
 
-      } catch (error) {
-        console.log(error)
+      if (req.params.state === "complete") {
+        try {
+          let { customerPhoneNumber, payment_status, delivery_fee } = await Door_step_Sent_package.findOne({ _id: req.params.id })
+          req.body.package = req.params.id
+          req.body.dispatchedBy = req.user._id
+          await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
+          await new Collected(req.body).save()
+          if (payment_status === "to-be-paid") {
+            await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
+          }
+
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      if (exists) {
+        await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
+        await new Message({ conversationId: exists._id, sender: req.user_id, text: `Hi  been assigned your package kindly feel free to chat` }).save()
+      } else {
+        const newConversation = new Conversation({
+          members: [req.user._id, Owner.createdBy]
+        });
+
+        await newConversation.save()
+
       }
     }
-    if (exists) {
-      await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
-      await new Message({ conversationId: exists._id, sender: req.user_id, text: `Hi  been assigned your package kindly feel free to chat` }).save()
-    } else {
-      const newConversation = new Conversation({
-        members: [req.user._id, Owner.createdBy]
-      });
-
-      await newConversation.save()
-
-    }
-
     if (req.params.state === "unavailable") {
       await new UnavailableDoorStep({ package: req.params.id, reason: req.body.reason }).save()
     }
