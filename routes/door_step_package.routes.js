@@ -217,7 +217,8 @@ router.post("/door-step-packages/pay-on-delivery", [authMiddleware, authorized],
   try {
 
     let v = await Mpesa_stk(req.body.phone_number, 1, 1, "doorstep")
-    await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+    let update = await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+    console.log(update)
     return res
       .status(200)
       .json(v);
