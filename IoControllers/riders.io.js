@@ -77,7 +77,7 @@ module.exports = (http) => {
       createRoom(data?.rider_id);
       {
         socket.on("position-change", (data_2) => {
-          console.log("POSITION CHANGED:", data_2);
+          // console.log("POSITION CHANGED:", data_2);
           riderChangedLocation({
             rider_id: data.rider_id,
             coordinates: data_2?.coordinates,

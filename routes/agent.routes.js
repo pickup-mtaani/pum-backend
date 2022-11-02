@@ -279,6 +279,8 @@ router.put('/activate_agent/:id', async (req, res) => {
 });
 router.post('/update_agent', upload.array('images'), async (req, res, next) => {
 
+
+
     try {
 
         // const { errors, isValid } = hairstyleValidation(req.body);
@@ -288,7 +290,14 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
         //     return res.status(400).json(errors);
 
         // }
-
+        // if (req.files.length === 0) {
+        //     console.log("no image", JSON.stringify(req.body))
+        //     return
+        // }
+        // else {
+        //     console.log("image", JSON.stringify(req.body))
+        //     return
+        // }
 
         const reqFiles = [];
         const url = req.protocol + '://' + req.get('host')
