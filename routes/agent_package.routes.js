@@ -209,7 +209,6 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
     const { period, state } = req.query
-    console.log("state,state", state)
     let packages
     if (state === "rejected") {
       packages = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: state, })
