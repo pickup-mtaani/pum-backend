@@ -16,25 +16,29 @@ const NarationsSchema = new Schema({
         default: moment()
     },
 
-    dropped: {
-        at: {
-            type: Date,
-            default: null
-        },
-
-        to: {
-            type: Schema.Types.ObjectId,
-            ref: 'agent_agent_packages'
-        }
+    droppedTo: {
+        type: Schema.Types.ObjectId,
+        ref: 'agents_details'
+    },
+    droppedAt: {
+        type: Date,
+        default: null
+    },
+    reciept: {
+        type: String,
     },
 
-    picked: {
+    collectedby: {
+        type: Schema.Types.ObjectId,
+        ref: 'collector'
+    },
+    collectedAt: {
         type: Date,
         default: null
     },
     package: {
         type: Schema.Types.ObjectId,
-        ref: 'agent_agent_packages'
+        ref: 'rent_a_shelf_packages'
     },
     descriptions: {
         type: String,
@@ -50,4 +54,4 @@ const NarationsSchema = new Schema({
 
 
 
-module.exports = mongoose.model('rent-shelf-narations', NarationsSchema);
+module.exports = mongoose.model('rent-shelf-package_track', NarationsSchema);

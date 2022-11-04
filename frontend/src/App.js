@@ -27,6 +27,7 @@ import WareHouseActions from "./components/warehouse/actionPage";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/agents /agentsDetails";
+import SwitchBoard from "./components/packages/switchboard";
 import AssignRider from "./components/assignRider";
 const App = () => {
   let routes = useRoutes([
@@ -49,7 +50,7 @@ const App = () => {
     { path: "/wahehouse/doorstep/pick-packages-from/:rider", element: <PickFromRiderPage /> },
     { path: "/wahehouse/doorstep/give-package-to-rider", element: <GIvetoRiderPage /> },
     { path: "/wahehouse/doorstep/assign-rider", element: <AsRiderPage /> },
-
+    { path: "/switch-board", element: <SwitchBoard /> },
     { path: "/track/:riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },

@@ -4,6 +4,7 @@ import LocationReducer from "./location.reduce";
 import ProductReducer from "./product.reduce";
 import BussinessReducer from "./business.reduce";
 import agebtsReducer from "./AGENTS.reducer";
+import switchboard from "./switchboard.reduce"
 
 import RidersReducer from "./riders.reducer";
 const baseReduce = {
@@ -13,7 +14,8 @@ const baseReduce = {
   products: ProductReducer,
   bussiness: BussinessReducer,
   ridersDetails: RidersReducer,
-  agentsData: agebtsReducer
+  agentsData: agebtsReducer,
+  switchboard: switchboard
 };
 
 export default baseReduce;

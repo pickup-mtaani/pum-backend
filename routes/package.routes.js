@@ -9,6 +9,7 @@ var Unavailable = require("models/unavailable.model");
 var Narations = require('models/agent_agent_narations.model');
 var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
+var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
@@ -89,7 +90,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
 
       }
-      if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
+      if (req.body.payment_option === "vendor") {
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
       }
       else {
@@ -134,6 +135,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         createdBy: req.user._id,
       }).save();
       await new rentshelfNarations({ package: newPackage._id, state: "request", descriptions: `Package created` }).save()
+      await new Track_rent_a_shelf({ package: newPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newPackage.receipt_no }).save()
+
       return res
         .status(200)
         .json({ message: "Package successfully Saved", newPackage });
@@ -244,10 +247,12 @@ router.post("/package/delivery-charge", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+// change the package state as it is dropped to when its picked up
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
-    let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('agent')
+    let package = await Rent_a_shelf_deliveries.findById(req.params.id)
 
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
@@ -259,6 +264,8 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     }
     if (req.params.state === "picked-from-seller") {
       await new rentshelfNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent name(receiver agent)` }).save()
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: "63575250602a3e763b1305ed", droppedAt: Date.now() }, { new: true, useFindAndModify: false })
 
       const textbody = {
 
@@ -276,8 +283,9 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
 
+      let collector = await new Collected(req.body).save()
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
-      await new Collected(req.body).save()
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
@@ -287,6 +295,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       .json({ success: false, message: "operation failed ", error });
   }
 });
+// get packages as per the state filter
 router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) => {
   let agent = await AgentUser.findOne({ user: req.user._id })
   try {
@@ -314,6 +323,40 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+// get package track
+router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let packages
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      tra = await Track_rent_a_shelf.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+        .populate('package')
+        .populate("collectedby")
+      // .populate("droppedTo")
+      return res.status(200)
+        .json(packages);
+    } else {
+      packages = await Track_rent_a_shelf.find().sort({ createdAt: -1 }).limit(100)
+        .populate('package')
+        .populate("collectedby")
+        .populate({
+          path: 'package',
+          populate: {
+            path: 'businessId',
+          }
+        })
+
+      return res.status(200)
+        .json(packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 
 router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
   let agent = await AgentUser.findOne({ user: req.user._id })
