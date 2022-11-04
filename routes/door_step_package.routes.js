@@ -11,6 +11,7 @@ var Collected = require("models/collectors.model");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
+var Track_door_step = require('models/rent_shelf_package_track.model');
 var {
   authMiddleware,
   authorized,
@@ -35,6 +36,8 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
     if (req.params.state === "picked-from-sender") {
       const package = await Door_step_Sent_package.findById(req.params.id).populate("agent");
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, { droppedAt: Date.now() }, { new: true, useFindAndModify: false })
+
       await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.senderAgentID.business_name})` }).save()
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)

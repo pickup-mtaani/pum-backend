@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import Agent from './agent.switchboard'
 import Rent from './rent.switchboard'
 import { connect } from 'react-redux'
-import { get_rent_shelf_tracks } from './../../../redux/actions/switchboard.actions'
+import { get_rent_shelf_tracks, get_agent_tracks } from './../../../redux/actions/switchboard.actions'
 import Layout from '../../../views/Layouts'
 function Index(props) {
     const [view, setView] = useState('agent')
     useEffect(() => {
         props.get_rent_shelf_tracks()
+        props.get_agent_tracks()
     }, [])
 
     return (
@@ -18,7 +19,7 @@ function Index(props) {
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10, border: 'gray 1px solid', width: '30%' }} onClick={() => setView("door")}>Door Step</div>
             </div>
             <h3 style={{ textAlign: 'center', textTransform: 'uppercase', textDecoration: 'underline' }}>{view}'s SwitchBoard</h3>
-            {view === "agent" ? <Agent /> : view === "rent" ? <Rent data={props.rentTracks} /> : null}
+            {view === "agent" ? <Agent data={props.agentTracks} /> : view === "rent" ? <Rent data={props.rentTracks} /> : null}
             {/* {view === "rent" && <Rent />} */}
         </Layout>
     )
@@ -30,10 +31,11 @@ const mapStateToProps = (state) => {
         riders: state.ridersDetails.riders,
         packages: state.PackageDetails.packages,
         rentTracks: state.switchboard.shelf_packages_tracks,
+        agentTracks: state.switchboard.agent_packages_tracks,
         loading: state.PackageDetails.indexloading,
 
     };
 };
 
-export default connect(mapStateToProps, { get_rent_shelf_tracks })(Index)
+export default connect(mapStateToProps, { get_rent_shelf_tracks, get_agent_tracks })(Index)
 

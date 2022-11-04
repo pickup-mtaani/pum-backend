@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 
 import { connect } from 'react-redux'
 import Details_modal from './detailsModal';
-// import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-// import { getagentParcels, togglePayment } from '../../redux/actions/package.actions'
 function Agent(props) {
     const [showModal, setShowModal] = useState(false)
     const [component, setComponent] = useState(<></>)
@@ -119,20 +117,20 @@ function Agent(props) {
 
                         </div>
                         <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.droppedAt).fromNow()}
                             </div>
-                            <div style={{ justifyContent: 'right', display: "flex", }}>
+                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
                                 <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     View Details
                                 </div>
                             </div>
                         </div>
-                        <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                        <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ display: rent?.collectedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.collectedAt).fromNow()}
                             </div>
-                            <div style={{ justifyContent: 'right', display: "flex", }}>
+                            <div style={{ justifyContent: 'right', display: rent?.collectedAt ? 'flex' : "none", }}>
                                 <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => openCollector(rent?.collectedby)}>
                                     View Details
                                 </div>
@@ -148,7 +146,7 @@ function Agent(props) {
                 title={title}
                 toggle={() => setShowModal(false)}
             />
-        </div>
+        </div >
     )
 }
 

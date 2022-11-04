@@ -10,6 +10,9 @@ var Narations = require('models/agent_agent_narations.model');
 var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
+var Track_door_step = require('models/rent_shelf_package_track.model');
+
+var Track_agent_packages = require('models/agent_package_track.model');
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
@@ -84,6 +87,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].assignedTo = route.rider
 
         newpackage = await new Door_step_Sent_package(packages[i]).save();
+        await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
 
         await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
@@ -120,6 +124,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: savedPackage.receipt_no }).save()
+
         packagesArr.push(savedPackage._id);
       }
 
@@ -135,7 +141,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         createdBy: req.user._id,
       }).save();
       await new rentshelfNarations({ package: newPackage._id, state: "request", descriptions: `Package created` }).save()
-      await new Track_rent_a_shelf({ package: newPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newPackage.receipt_no }).save()
 
       return res
         .status(200)
@@ -160,16 +165,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let newpackage = await new Sent_package(packages[i]).save();
         await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
 
+        await new Track_agent_packages({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
       }
       if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
 
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
       }
 
-      else {
-        // await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+      // else {
+      //   await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
 
-      }
+      // }
 
 
       return res
@@ -183,11 +189,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: " failed  to send package", error });
   }
 });
-
 router.get("/rent-shelf-package-narations/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    let narations = await rentshelfNarations.find({ package: req.params.id }).sort({ createdAt: -1 })
+    let narations = await rentshelfNarations.findOne({ package: req.params.id }).sort({ createdAt: -1 })
     return res
       .status(200)
       .json(narations);
@@ -252,7 +257,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
-    let package = await Rent_a_shelf_deliveries.findById(req.params.id)
+    let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
 
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (req.params.state === "unavailable") {
@@ -269,7 +274,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 
       const textbody = {
 
-        address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package.customerName} at Philadelphia house Track now:  pickupmtaani.com
+        address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
 
@@ -345,7 +350,6 @@ router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (re
             path: 'businessId',
           }
         })
-
       return res.status(200)
         .json(packages);
     }

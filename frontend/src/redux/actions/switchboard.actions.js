@@ -4,14 +4,14 @@ import axios, { setAuthToken } from "./axiosService";
 export const get_agent_tracks = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);
-        dispatch({ type: "FETCH_SELLER_PRODUCTS" });
-        const { data } = await axios.get(`/api/all_products/${id}`);
+        dispatch({ type: "FETCH_AGENT" });
+        const { data } = await axios.get(`/api/agent/track/packages`);
         let payload = [];
-        payload = data.products;
-        dispatch({ type: "FETCH_PRODUCTS_SUCCESSFUL", payload });
+        payload = data;
+        dispatch({ type: "FETCH_AGENT_SUCCESSFUL", payload });
         return payload;
     } catch (error) {
-        dispatch({ type: "FETCH_SELLER_PRODUCTS_FAIL" });
+        dispatch({ type: "FETCH_AGENT_FAIL" });
         ;
     }
 };
@@ -31,16 +31,3 @@ export const get_rent_shelf_tracks = (id) => async (dispatch) => {
     }
 };
 
-export const get_single_product = (id) => async (dispatch) => {
-    try {
-        await setAuthToken(axios);
-        dispatch({ type: "FETCH_PRODUCT" });
-        const { data } = await axios.get(`/api/product/${id}`);
-        let payload = data.prod;
-        dispatch({ type: "FETCH_PRODUCT_SUCCESSFUL", payload });
-        return payload;
-    } catch (error) {
-        dispatch({ type: "FETCH_PRODUCT_FAIL" });
-        ;
-    }
-};
