@@ -10,7 +10,7 @@ var Narations = require('models/agent_agent_narations.model');
 var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
-var Track_door_step = require('models/rent_shelf_package_track.model');
+var Track_door_step = require('models/door_step_package_track.model');
 
 var Track_agent_packages = require('models/agent_package_track.model');
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
@@ -87,8 +87,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].assignedTo = route.rider
 
         newpackage = await new Door_step_Sent_package(packages[i]).save();
-        await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
-
+        let V = await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
+        console.log(V)
         await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
 

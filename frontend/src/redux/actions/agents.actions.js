@@ -169,7 +169,7 @@ export const fetchAgentpack = (state) => async (dispatch) => {
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
-        const { data } = await axios.get(`/api/agents-packages-recieved-warehouese?agent=${state}`);
+        const { data } = await axios.get(`/api/agents-packages-recieved-warehouse?agent=${state}`);
         let payload = [];
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });

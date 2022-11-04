@@ -6,6 +6,7 @@ const initialState = {
   to_door_packages: [],
   shelf_packages_tracks: [],
   agent_packages_tracks: [],
+  door_packages_tracks: [],
   agentloading: true,
   doorloading: true,
   loading: true,
@@ -42,6 +43,23 @@ export default function store(state = initialState, action) {
         agent_packages_tracks: action.payload
       };
     case "FETCH_AGENT_FAIL":
+      return {
+        ...state,
+        loading: true,
+        error: action.payload,
+      };
+    case "FETCH_DOOR_STEP":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "FETCH_DOOR_STEP_SUCCESSFUL":
+      return {
+        ...state,
+        loading: false,
+        door_packages_tracks: action.payload
+      };
+    case "FETCH_DOOR_STEP_FAIL":
       return {
         ...state,
         loading: true,

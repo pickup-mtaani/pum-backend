@@ -51,6 +51,7 @@ var upload = multer({
 });
 
 const Format_phone_number = require('../helpers/phone_number_formater');
+const { Makeid } = require('../helpers/randomNo.helper');
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     try {
         const Exists = await Agent.findOne({ name: req.body.name });
@@ -318,6 +319,7 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
             business_name: req.body.business_name,
             working_hours: req.body.working_hours,
             location_id: req.body.location_id,
+            prefix: `Na-${Makeid(5)}`,
             images: reqFiles,
             mpesa_number: req.body.mpesa_number,
             loc: JSON.parse(req.body.loc),

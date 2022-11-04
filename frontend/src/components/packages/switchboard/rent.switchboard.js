@@ -103,11 +103,11 @@ function Agent(props) {
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {rent?.package?.packageName}
                             </div>
-                            <div style={{ justifyContent: 'right', display: "flex", }}>
+                            {/* <div style={{ justifyContent: 'right', display: "flex", }}>
                                 <div onClick={() => openPack(rent?.package)} style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     View Details
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         <div style={{ backgroundColor: rent?.created ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
 
@@ -120,11 +120,11 @@ function Agent(props) {
                             <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.droppedAt).fromNow()}
                             </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
+                            {/* <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
                                 <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     View Details
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ display: rent?.collectedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>

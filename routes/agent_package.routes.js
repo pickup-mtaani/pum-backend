@@ -168,7 +168,7 @@ router.get("/agent-package-narations/:id", [authMiddleware, authorized], async (
   }
 });
 
-router.get("/agents-packages-recieved-warehouese", [authMiddleware, authorized], async (req, res) => {
+router.get("/agents-packages-recieved-warehouse", [authMiddleware, authorized], async (req, res) => {
   try {
     let packages = await Sent_package.find({ state: "recieved-warehouse", $or: [{ receieverAgentID: req.query.agent }, { senderAgentID: req.query.agent }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name')
