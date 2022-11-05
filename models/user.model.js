@@ -55,10 +55,7 @@ const UserSchema = new Schema({
         type: String,
         default: "seller"
     },
-    // role: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'role'
-    // },
+
 
     rider: {
         type: Schema.Types.ObjectId,

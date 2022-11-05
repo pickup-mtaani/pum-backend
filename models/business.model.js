@@ -16,7 +16,10 @@ const BizSchema = new Schema({
 
     },
 
-
+    has_shelf: {
+        type: Boolean,
+        default: false
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'
