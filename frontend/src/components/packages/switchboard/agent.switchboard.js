@@ -130,7 +130,7 @@ function Agent(props) {
 
                             {rent?.droppedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dropped at: {moment(rent?.droppedAt).fromNow()}</div>
-                                <>Delivered to:{rent?.package?.senderAgentID.business_name}</>
+                                <>Delivered to:{rent?.package?.senderAgentID?.business_name}</>
                             </div>}
 
                         </div>
@@ -154,7 +154,7 @@ function Agent(props) {
                             {rent?.reassignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Re Assigned at: {moment(rent?.reassignedAt).fromNow()}</div>
                                 <>Rider:{rent?.package?.assignedTo.name}</>
-                                <>Rider Phone :{rent?.package?.assignedTo.phone_number}</>
+                                <>Rider Phone :{rent?.package?.assignedTo?.phone_number}</>
                             </div>}
 
                         </div>
@@ -162,7 +162,7 @@ function Agent(props) {
 
                             {rent?.droppedToagentAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Delivered at: {moment(rent?.droppedToagentAt).fromNow()}</div>
-                                <>Delivered to:{rent?.package?.receieverAgentID.business_name}</>
+                                <>Delivered to:{rent?.package?.receieverAgentID?.business_name}</>
                             </div>}
                         </div>
                         <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
