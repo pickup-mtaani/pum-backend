@@ -19,6 +19,7 @@ const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
 var Commision = require("models/commission.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
+const { populate } = require("../models/mpesa_logs.model");
 const router = express.Router();
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -653,6 +654,15 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
           path: 'package',
           populate: {
             path: 'businessId',
+          },
+          populate: {
+            path: 'assignedTo'
+          },
+          populate: {
+            path: 'receieverAgentID'
+          },
+          populate: {
+            path: 'senderAgentID'
           }
         })
       return res.status(200)
