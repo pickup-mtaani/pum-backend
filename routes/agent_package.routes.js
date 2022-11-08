@@ -690,7 +690,7 @@ router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req
         .json(packages);
     } else {
       packages = await Track_agent_packages.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
-        .populate('package')
+
         .populate("collectedby")
         .populate({
           path: 'package',

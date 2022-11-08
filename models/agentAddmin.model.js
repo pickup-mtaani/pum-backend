@@ -66,6 +66,10 @@ const agentadminSchema = new Schema({
     mpesa_number: {
         type: String,
     },
+    package_count: {
+        type: Number,
+        default: 5000,
+    },
     loc: {
         lat: {
             type: String,

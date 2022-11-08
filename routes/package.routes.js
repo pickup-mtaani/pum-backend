@@ -6,27 +6,18 @@ var AgentDetails = require("models/agentAddmin.model");
 var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Unavailable = require("models/unavailable.model");
-var Narations = require('models/agent_agent_narations.model');
 var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
 var Track_door_step = require('models/door_step_package_track.model');
 
 var Track_agent_packages = require('models/agent_package_track.model');
-var UnavailableDoorStep = require("models/unavailable_doorstep.model");
-var Declined = require("models/declined.model");
 var Bussiness = require("models/business.model");
-var BussinessDetails = require("models/business_details.model");
-const mpesaLogs = require('models/mpesa_logs.model')
-var Conversation = require('models/conversation.model')
-const Message = require("models/messages.model");
 var Product = require("models/products.model.js");
-var User = require("models/user.model.js")
 var Rider_Package = require('models/rider_package.model')
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
-var Reciever = require("models/reciever.model");
 var AgentUser = require('models/agent_user.model');
 var {
   authMiddleware,
@@ -58,15 +49,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
 
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        let newPackageCount = 1
+        if (agent_id.package_count) {
+          newPackageCount = parseInt(agent_id?.package_count + 1)
+        }
+
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
 
-        const currentBusiness = await Bussiness.findById(packages[i].businessId).populate(
-          {
-            path: "details",
-            populate: {
-              path: "agent"
-            }
-          })
 
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -83,14 +72,15 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
         }
-        packages[i].receipt_no = `pm-${Makeid(5)}`;
+        packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
 
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         let V = await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
-        console.log(V)
-        await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
-        await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
+        await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+
+        // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
+        // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
 
 
       }
@@ -110,7 +100,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
-        let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        packages[0]
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -150,9 +140,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
-        let route = await RiderRoutes.findOne({ agent: agent._id })
-        // 
+        let newPackageCount = 1
+        if (agent.package_count) {
+          newPackageCount = parseInt(agent?.package_count + 1)
+        }
 
+        let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -160,23 +153,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = product.price;
         }
         packages[i].createdBy = req.user._id
-        packages[i].receipt_no = `${agent.prefix}${Makeid(5)}`;
+        packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
         let newpackage = await new Sent_package(packages[i]).save();
-        await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
-
+        await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+        // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         await new Track_agent_packages({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
       }
       if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
 
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
       }
-
-      // else {
-      //   await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
-
-      // }
-
 
       return res
         .status(200)
@@ -395,7 +382,6 @@ router.get("/rent-shelf/track/packages/:id", [authMiddleware, authorized], async
 router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
   let agent = await AgentUser.findOne({ user: req.user._id })
   try {
-    let agent_packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       let dropped = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
