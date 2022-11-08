@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import Details_modal from './detailsModal';
 function Agent(props) {
     const [showModal, setShowModal] = useState(false)
-    const [component, setComponent] = useState(<></>)
+    const [component, setComponent] = useState(<div></div>)
     const [title, setTitle] = useState('')
 
     const openCollector = (item) => {
@@ -103,21 +103,18 @@ function Agent(props) {
                             </div>
                         </div>
                         <div style={{ backgroundColor: 'green', width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {rent?.package?.customerName}({rent?.package?.customerphonumber})
                             </div>
-
                         </div>
 
                         <div style={{ backgroundColor: 'green', width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <>Name:{rent?.package?.packageName}</>
+                                <div>Name:{rent?.package?.packageName}</div>
                                 <div>Color: {rent?.package?.color}</div>
-                                <>Business:{rent?.package?.businessId?.name}</>
-                                <>Payment: {rent?.package?.payment_status}</>
+                                <div>Business:{rent?.package?.businessId?.name}</div>
+                                <div>Payment: {rent?.package?.payment_status}</div>
                             </div>
-
                         </div>
                         <div style={{ backgroundColor: rent?.created ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
 
@@ -130,16 +127,16 @@ function Agent(props) {
 
                             {rent?.droppedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dropped at: {moment(rent?.droppedAt).fromNow()}</div>
-                                <>Delivered to:{rent?.package?.senderAgentID?.business_name}</>
+                                <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
                             </div>}
 
                         </div>
                         <div style={{ backgroundColor: rent?.assignedAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
 
                             {rent?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <div>Dropped at: {moment(rent?.assignedAt).fromNow()}</div>
-                                <>Rider:{rent?.package?.assignedTo.name}</>
-                                <>Rider Phone :{rent?.package?.assignedTo.phone_number}</>
+                                <div>Dispatched: {moment(rent?.assignedAt).fromNow()}</div>
+                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>
                             </div>}
 
                         </div>
@@ -153,8 +150,8 @@ function Agent(props) {
 
                             {rent?.reassignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Re Assigned at: {moment(rent?.reassignedAt).fromNow()}</div>
-                                <>Rider:{rent?.package?.assignedTo.name}</>
-                                <>Rider Phone :{rent?.package?.assignedTo?.phone_number}</>
+                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider Phone :{rent?.package?.assignedTo?.phone_number}</div>
                             </div>}
 
                         </div>
@@ -162,15 +159,15 @@ function Agent(props) {
 
                             {rent?.droppedToagentAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Delivered at: {moment(rent?.droppedToagentAt).fromNow()}</div>
-                                <>Delivered to:{rent?.package?.receieverAgentID?.business_name}</>
+                                <div>Delivered to:{rent?.package?.receieverAgentID?.business_name}</div>
                             </div>}
                         </div>
                         <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
 
                             {rent?.collectedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <div>Collected at: {moment(rent?.collectedAt).fromNow()}</div>
-                                <>Collected By:{rent?.collectedby?.collector_name}</>
-                                <>Collector's Phone :{rent?.collectedby?.collector_phone_number}</>
+                                <div>Collected: {moment(rent?.collectedAt).fromNow()}</div>
+                                <div>Collected By:{rent?.collectedby?.collector_name}</div>
+                                <div>Collector's Phone :{rent?.collectedby?.collector_phone_number}</div>
                             </div>}
                         </div>
 

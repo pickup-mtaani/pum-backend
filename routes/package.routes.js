@@ -360,7 +360,37 @@ router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (re
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
+router.get("/rent-shelf/track/packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let packages
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      tra = await Track_rent_a_shelf.find({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+        .populate('package')
+        .populate("collectedby")
+      // .populate("droppedTo")
+      return res.status(200)
+        .json(packages);
+    } else {
+      packages = await Track_rent_a_shelf.find({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
+        .populate('package')
+        .populate("collectedby")
+        .populate({
+          path: 'package',
+          populate: {
+            path: 'businessId',
+          }
+        })
+      return res.status(200)
+        .json(packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
   let agent = await AgentUser.findOne({ user: req.user._id })

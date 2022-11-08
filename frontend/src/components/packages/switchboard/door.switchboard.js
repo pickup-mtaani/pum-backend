@@ -54,140 +54,112 @@ function Agent(props) {
         <div >
             <div style={{ border: 'gray 1px solid' }}>
                 <div style={{ display: 'flex', borderBottom: 'gray 1px solid', width: "auto" }}>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         #NO
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Sender Details
                     </div>
-                    {/* <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    {/* <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Shelf Details
                     </div> */}
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Package Details
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Created
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Recieved
                     </div>
 
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Assigned
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Dropped to warehouse
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    <div style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Reassigned
                     </div>
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid', marginRight: 1 }}>
+                    {/* <div style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRight: 'gray 1px solid' }}>
                         Delivered
-                    </div>
+                    </div> */}
 
-                    <div style={{ width: '20%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         Collected
                     </div>
 
 
                 </div>
                 {props?.data?.map((rent, i) => (
-                    <div style={{ display: 'flex' }} key={i}>
+                    <div style={{ display: 'flex', borderBottom: 'gray 1px solid', }} key={i}>
                         <div style={{ backgroundColor: 'green', width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {rent?.package?.receipt_no}
                             </div>
                         </div>
-                        <div style={{ backgroundColor: 'green', width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-
+                        <div style={{ backgroundColor: 'green', width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {rent?.package?.customerName}
                             </div>
-                            {/* <div style={{ justifyContent: 'right', display: "flex", }}>
-                                <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View More
-                                </div>
-                            </div> */}
+
                         </div>
 
-                        <div style={{ backgroundColor: 'green', width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {rent?.package?.packageName}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: "flex", }}>
-                                <div onClick={() => openPack(rent?.package)} style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div>
+                        <div style={{ backgroundColor: 'green', width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Name:{rent?.package?.packageName}</div>
+                                <div>Color: {rent?.package?.color}</div>
+                                <div>Business:{rent?.package?.businessId?.name}</div>
+                                <div>Sent To:{rent?.package?.destination?.name}</div>
+                                <div>Payment: {rent?.package?.payment_status}</div>
                             </div>
                         </div>
-                        <div style={{ backgroundColor: rent?.created ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.created ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
 
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.created).fromNow()}
                             </div>
 
                         </div>
-                        <div style={{ backgroundColor: rent?.droppedAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-                            <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {moment(rent?.droppedAt).fromNow()}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
-                                {/* <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div> */}
-                            </div>
+                        <div style={{ backgroundColor: rent?.droppedAt ? 'green' : null, width: '50%', display: 'flex', flexDirection: 'column', borderRight: 'gray 1px solid', }}>
+                            {rent?.droppedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Dropped at: {moment(rent?.droppedAt).fromNow()}</div>
+                                <div>Delivered to:{rent?.package?.agent?.business_name}</div>
+                            </div>}
                         </div>
-                        <div style={{ backgroundColor: rent?.assignedAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-                            <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {moment(rent?.assignedAt).fromNow()}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
-                                {/* <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div> */}
-                            </div>
+                        <div style={{ backgroundColor: rent?.assignedAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                            {rent?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Dispatched at: {moment(rent?.assignedAt).fromNow()}</div>
+                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>
+                            </div>}
                         </div>
-                        <div style={{ backgroundColor: rent?.warehouseAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-                            <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                        <div style={{ backgroundColor: rent?.warehouseAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                            {rent?.warehouseAt && <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.warehouseAt).fromNow()}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
-                                {/* <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div> */}
-                            </div>
+                            </div>}
+
                         </div>
-                        <div style={{ backgroundColor: rent?.reassignedAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
-                            <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {moment(rent?.reassignedAt).fromNow()}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
-                                {/* <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div> */}
-                            </div>
+                        <div style={{ backgroundColor: rent?.reassignedAt ? 'green' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                            {rent?.reassignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Re Assigned at: {moment(rent?.reassignedAt).fromNow()}</div>
+                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider Phone :{rent?.package?.assignedTo?.phone_number}</div>
+                            </div>}
                         </div>
-                        <div style={{ backgroundColor: rent?.droppedToagentAt ? 'green' : null, width: '20%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        {/* <div style={{ backgroundColor: rent?.droppedToagentAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.droppedToagentAt).fromNow()}
                             </div>
-                            <div style={{ justifyContent: 'right', display: rent?.droppedAt ? 'flex' : "none", }}>
-                                {/* <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    View Details
-                                </div> */}
-                            </div>
-                        </div>
-                        <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '20%', display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ display: rent?.collectedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                {moment(rent?.collectedAt).fromNow()}
-                            </div>
-                            <div style={{ justifyContent: 'right', display: rent?.collectedAt ? 'flex' : "none", }}>
-                                <div style={{ margin: 5, borderRadius: 20, backgroundColor: 'beige', width: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => openCollector(rent?.collectedby)}>
-                                    View Details
-                                </div>
-                            </div>
+
+                        </div> */}
+                        <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                            {rent?.collectedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Collected: {moment(rent?.collectedAt).fromNow()}</div>
+                                <div>Collected By:{rent?.collectedby?.collector_name}</div>
+                                <div>Collector's Phone :{rent?.collectedby?.collector_phone_number}</div>
+                            </div>}
                         </div>
 
                     </div>
