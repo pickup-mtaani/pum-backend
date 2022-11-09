@@ -166,7 +166,7 @@ router.post('/register', async (req, res) => {
             await new AgentUser({ user: saved._id, agent: agent._id }).save()
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
-        if (req.body.role === "rider" || req.body.role === "rider") {
+        if (req.body.role === "rider" || req.body.role === "seller") {
             await SendMessage(textbody)
         }
         const mailOptions = {

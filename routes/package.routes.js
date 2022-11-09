@@ -5,6 +5,7 @@ var Agent = require("models/agents.model");
 var AgentDetails = require("models/agentAddmin.model");
 var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
+var Customer = require("models/customer.model");
 var Unavailable = require("models/unavailable.model");
 var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
@@ -47,16 +48,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
-
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         let newPackageCount = 1
         if (agent_id.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
-
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
-
-
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -66,7 +63,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].origin = { lng: null, lat: null, name: '' }
-
         packages[i].destination = {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
@@ -74,7 +70,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
-
+        let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
+        if (customer === null) {
+          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         let V = await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
@@ -114,6 +113,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
+        if (customer === null) {
+          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
         await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: savedPackage.receipt_no }).save()
 
         packagesArr.push(savedPackage._id);
@@ -156,6 +159,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
         let newpackage = await new Sent_package(packages[i]).save();
+        packages[i].assignedTo = route.rider
+        let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
+        if (customer === null) {
+          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
         await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         await new Track_agent_packages({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
@@ -695,6 +703,18 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
     return res
       .status(400)
       .json({ success: false, message: "operationhj failed ", error });
+  }
+});
+router.get("/customers", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let customers = await Customer.find({ seller: req.user._id })
+    return res
+      .status(200)
+      .json(customers);
+
+  } catch (error) {
+
   }
 });
 router.get("/package/:id", async (req, res) => {
