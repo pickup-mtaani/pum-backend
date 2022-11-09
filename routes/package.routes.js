@@ -729,8 +729,9 @@ router.get("/customers", [authMiddleware, authorized], async (req, res) => {
 router.get("/package/:id", async (req, res) => {
   try {
     const package = await Sent_package.findById(req.params.id)
+    const doorStep = await Door_step_Sent_package.findById(req.params.id)
     // console.log(package);
-    const sender = await AgentDetails.findOne({ $or: [{ _id: package?.senderAgentID }, { _id: package?.receieverAgentID }] })
+    const sender = await AgentDetails.findOne({ $or: [{ _id: package?.senderAgentID }, { _id: package?.receieverAgentID }, { _id: doorStep?.agent }] })
     // const reciever
 
     return res
