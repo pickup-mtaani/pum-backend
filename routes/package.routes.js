@@ -35,7 +35,7 @@ const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
-  // let v = await Mpesa_stk("0790923387", 1, 1, "doorstep")
+  // let v = await Mpesa_stk("0720141534", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
   let newpackage

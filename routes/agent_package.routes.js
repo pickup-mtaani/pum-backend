@@ -648,7 +648,11 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
         .json(packages);
     } else {
       packages = await Track_agent_packages.find().sort({ createdAt: -1 }).limit(100)
-        .populate('package')
+        .populate({
+          path: 'package', populate: {
+            path: 'receieverAgentID'
+          }
+        })
         .populate("collectedby")
         .populate({
           path: 'package',
@@ -658,13 +662,12 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
           populate: {
             path: 'assignedTo'
           },
-          populate: {
-            path: 'receieverAgentID'
-          },
+
           populate: {
             path: 'senderAgentID'
           }
         })
+
       return res.status(200)
         .json(packages);
     }
@@ -689,9 +692,15 @@ router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req
       return res.status(200)
         .json(packages);
     } else {
+
       packages = await Track_agent_packages.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
 
         .populate("collectedby")
+        .populate({
+          path: 'package', populate: {
+            path: 'receieverAgentID'
+          }
+        })
         .populate({
           path: 'package',
           populate: {
@@ -707,6 +716,7 @@ router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req
             path: 'senderAgentID'
           }
         })
+
       return res.status(200)
         .json(packages);
     }
