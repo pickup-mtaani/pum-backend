@@ -70,9 +70,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
+
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
           await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
+        else {
+          await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         let V = await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
@@ -116,6 +120,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
           await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        } else {
+          await Customer.findOneAndUpdate({ seller: req.user._id, }, { rent_shelf_package_count: parseInt(customer.rent_shelf_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: savedPackage.receipt_no }).save()
 
@@ -163,6 +169,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
           await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
+        else {
+          await Customer.findOneAndUpdate({ seller: req.user._id, }, { agent_package_count: parseInt(customer.agent_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()

@@ -16,6 +16,22 @@ const customerSchema = new Schema({
         type: String,
         required: true
     },
+    total_package_count: {
+        type: Number,
+        default: 0
+    },
+    door_step_package_count: {
+        type: Number,
+        default: 0
+    },
+    agent_package_count: {
+        type: Number,
+        default: 0
+    },
+    rent_shelf_package_count: {
+        type: Number,
+        default: 0
+    },
     seller: {
         type: Schema.Types.ObjectId,
         ref: 'user'
