@@ -5,11 +5,13 @@ import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
 import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
+import ConfirmModal from '../../confirm'
 function Riderpage(props) {
 
     const location = useLocation()
     const [data, setData] = useState([])
-    const [data1, setData1] = useState([])
+    const [show, setShow] = useState(false)
+    const [id, setId] = useState([])
     const fetch = async (data, agent) => {
         let res = await props.fetchdoorpackages("dropped", location?.state?.id)
 
@@ -28,6 +30,11 @@ function Riderpage(props) {
         fetch("dropped", location?.state?.agent)
 
     }, [])
+
+    const Recieve = (row) => {
+        setId(row._id)
+        setShow(true)
+    }
 
     const Sellers_columns = [
 
@@ -48,12 +55,16 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <button onClick={() => props.CollectDoorStep(row._id, "recieved-warehouse")}>Recieve package { }</button>
+                <button onClick={() => Recieve}>Recieve package { }</button>
             </>)
         },
 
     ]
-    // console.log(JSON.stringify(data))
+    const el = () => (
+        <div className='flex text-black' >
+            <h1>Are you sure You want to assign Brayo this package ?</h1>
+        </div>
+    )
 
     return (
         <Layout>
@@ -73,6 +84,17 @@ function Riderpage(props) {
                 // paginationTotalRows={totalRows}
                 // onChangeRowsPerPage={handlePerRowsChange}
                 /></div>
+
+
+
+            <ConfirmModal
+                // showModal={setShowModal}
+                // item={item}
+                msg="Are you sure You want to Recieve this package"
+                show={show}
+                // inputChange={inputChange}
+                Submit={() => props.CollectDoorStep(id, "recieved-warehouse")}
+            />
         </Layout>
     )
 }

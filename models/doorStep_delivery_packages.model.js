@@ -107,6 +107,10 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+    hasBalance: {
+      type: Boolean,
+      default: false
+    },
     agent: {
       type: Schema.Types.ObjectId,
       ref: "agents_details ",

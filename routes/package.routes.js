@@ -124,7 +124,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { rent_shelf_package_count: parseInt(customer.rent_shelf_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: savedPackage.receipt_no }).save()
-
+        if (req.body.payment_option === "collection") {
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: savedPackage._id, }, { hasBalance: true }, { new: true, useFindAndModify: false })
+        }
         packagesArr.push(savedPackage._id);
       }
 
@@ -140,6 +142,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         createdBy: req.user._id,
       }).save();
       await new rentshelfNarations({ package: newPackage._id, state: "request", descriptions: `Package created` }).save()
+
 
       return res
         .status(200)
@@ -176,11 +179,18 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         await new Track_agent_packages({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
+        if (req.body.payment_option === "collection") {
+          await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+
+          await Sent_package.findOneAndUpdate({ _id: newpackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
+
+        }
       }
-      if (req.body.payment_option === "vendor" || req.body.payment_option === "collection") {
+      if (req.body.payment_option === "vendor") {
 
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
       }
+
 
       return res
         .status(200)
@@ -346,7 +356,12 @@ router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (re
         .json(packages);
     } else {
       packages = await Track_rent_a_shelf.find().sort({ createdAt: -1 }).limit(100)
-        .populate('package')
+        .populate({
+          path: 'package',
+          populate: {
+            path: 'location',
+          }
+        })
         .populate("collectedby")
         .populate({
           path: 'package',
@@ -728,17 +743,20 @@ router.get("/customers", [authMiddleware, authorized], async (req, res) => {
 });
 router.get("/package/:id", async (req, res) => {
   try {
-    const package = await Sent_package.findById(req.params.id)
-    const doorStep = await Door_step_Sent_package.findById(req.params.id).populate('agent')
+    const agent = await Sent_package.findById(req.params.id)
+    const rent = await Rent_a_shelf_deliveries.findById(req.params.id)
+    let package = await Door_step_Sent_package.findById(req.params.id).populate('agent')
+    if (agent) {
+      package = agent
+    } else if (rent) {
+      package = rent
+    }
+    const sender = await AgentDetails.findOne({ $or: [{ _id: package?.senderAgentID }, { _id: package?.receieverAgentID }, { _id: package?.agent }, { _id: rent?.location }] })
 
-    const sender = await AgentDetails.findOne({ $or: [{ _id: package?.senderAgentID }, { _id: package?.receieverAgentID }, { _id: doorStep?.agent }] })
-    // const reciever
-    console.log(sender);
     return res
       .status(200)
       .json({
-
-        package, doorStep, sender: sender.business_name,
+        package, sender: sender?.business_name,
 
       });
   } catch (error) {

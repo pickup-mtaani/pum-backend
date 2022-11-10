@@ -14,6 +14,10 @@ const PackageSchema = new Schema(
       type: String,
 
     },
+    hasBalance: {
+      type: Boolean,
+      default: false
+    },
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",

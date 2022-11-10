@@ -15,10 +15,10 @@ function Index(props) {
 
     return (
         <Layout>
-            <div style={{ display: 'flex', width: '100%', alignSelf: 'center' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10, border: 'gray 1px solid', width: '30%' }} onClick={() => setView("agent")}>Agent</div>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10, border: 'gray 1px solid', width: '30%' }} onClick={() => setView("rent")}>Rent  a Shelf</div>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10, border: 'gray 1px solid', width: '30%' }} onClick={() => setView("door")}>Door Step</div>
+            <div className='flex w-full justify-center'>
+                <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("agent")}>Agent</div>
+                <div className="flex justify-center items-center border p-2 w-1/3" onClick={async () => { setView("rent") }}>Rent  a Shelf</div>
+                <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("door")}>Door Step</div>
             </div>
             <h3 style={{ textAlign: 'center', textTransform: 'uppercase', textDecoration: 'underline' }}>{view}'s SwitchBoard</h3>
             {view === "agent" ? <Agent data={props.agentTracks} /> : view === "rent" ? <Rent data={props.rentTracks} /> : <Door data={props.doorTacks} />}

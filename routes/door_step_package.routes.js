@@ -9,8 +9,10 @@ var moment = require("moment");
 var AgentUser = require('models/agent_user.model');
 var Collected = require("models/collectors.model");
 var Conversation = require('models/conversation.model')
+var Sent_package = require("models/package.modal.js");
 const Message = require("models/messages.model");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
+var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Track_door_step = require('models/door_step_package_track.model');
 var {
   authMiddleware,
@@ -215,12 +217,18 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
   }
 });
 
-router.post("/door-step-packages/pay-on-delivery", [authMiddleware, authorized], async (req, res) => {
+router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) => {
   try {
+    let v = await Mpesa_stk(req.body.phone_number, 1, 1, req.body.type)
+    if (req.body.type === "doorstep") {
+      let update = await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+      console.log(update)
+    } else if (req.body.type == "rent") {
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.body.package_id, }, { hasBalance: false }, { new: true, useFindAndModify: false })
+    } else {
+      await Sent_package.findOneAndUpdate({ _id: req.body.package_id, }, { hasBalance: false }, { new: true, useFindAndModify: false })
 
-    let v = await Mpesa_stk(req.body.phone_number, 1, 1, "doorstep")
-    let update = await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
-    console.log(update)
+    }
     return res
       .status(200)
       .json(v);
@@ -292,17 +300,19 @@ router.get("/door-step/track/packages", [authMiddleware, authorized], async (req
         .json(packages);
     } else {
       packages = await Track_door_step.find().sort({ createdAt: -1 }).limit(100)
-
-        .populate('package')
+        .populate({
+          path: 'package',
+          populate: {
+            path: 'agent',
+          }
+        })
         .populate("collectedby")
         .populate({
           path: 'package',
           populate: {
             path: 'businessId',
           },
-          populate: {
-            path: 'agent',
-          },
+
           populate: {
             path: 'assignedTo'
           },

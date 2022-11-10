@@ -23,6 +23,10 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+    hasBalance: {
+      type: Boolean,
+      default: false
+    },
     receipt_no: {
       type: String,
 
