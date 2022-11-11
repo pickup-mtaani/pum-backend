@@ -58,7 +58,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
-
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].package_value = product.price
         }
         packages[i].createdBy = req.user._id
@@ -106,6 +106,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[0]
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
@@ -160,6 +161,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price;

@@ -38,7 +38,7 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
   }
 })
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
-
+  console.log(req.params)
   try {
     const { type, } = req.query
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
