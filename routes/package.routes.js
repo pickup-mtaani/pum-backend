@@ -61,6 +61,31 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].package_value = product.price
         }
+        if (packages[i].products) {
+          const item = packages[i].products
+
+
+          let products_name = item?.map(function (item) {
+            return `${item.product_name}(${item?.cart_amt})`;
+          })
+            .join(',')
+          let products_price = item?.reduce(function (accumulator, currentValue) {
+            const totalPrice =
+              parseInt(currentValue.price) *
+              parseInt(currentValue?.cart_amt);
+            return accumulator + totalPrice;
+          }, 0)
+          for (let k = 0; k < item.length; k++) {
+            const product = await Product.findById(item[k]._id);
+            await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
+
+          }
+          packages[i].packageName = products_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = products_price;
+
+
+        }
         packages[i].createdBy = req.user._id
         packages[i].origin = { lng: null, lat: null, name: '' }
         packages[i].destination = {
@@ -211,29 +236,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
 
-          // console.log(products_name)
 
-          // for (let k = 0; k < packages[i].products.length; k++) {
-          //   // console.log(packages[i].products[0])
-          //   const product = await Product.findById(packages[i].products[k]._id);
-          //   packages[i].packageName = product.product_name();
-          //   packages[i].isProduct = true;
-          //   packages[i].package_value = product.price;
-          //   // console.log("Product", product)
-          //   // let basket = await new AgentBasket({
-          //   //   package: newpackage._id,
-          //   //   product: packages[i].products[k]._id,
-          //   //   qty: packages[i].products[k].qty
-
-          //   // }).save()
-          //   console.log("Product", basket._id)
-          //   // // basketarray.push(basket._id)
-          //   // // const product = await Product.findById(packages[i].basket.id);
-          //   await Sent_package.findOneAndUpdate({ _id: newpackage._id }, { basket: basketarray }, { new: true, useFindAndModify: false })
-
-          //   // await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - packages[i].products[k].qty) }, { new: true, useFindAndModify: false })
-
-          // }
         }
         let newpackage = await new Sent_package(packages[i]).save();
 
