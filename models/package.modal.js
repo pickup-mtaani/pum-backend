@@ -14,6 +14,7 @@ const PackageSchema = new Schema(
       type: String,
 
     },
+
     hasBalance: {
       type: Boolean,
       default: false
