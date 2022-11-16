@@ -9,12 +9,17 @@ var { authMiddleware, authorized } = require('middlewere/authorization.middlewer
 const router = express.Router();
 var fetch = require('node-fetch')
 var axios = require('axios')
+var Customer = require("models/customer.model");
+var Product = require('models/products.model')
+var Bussiness = require('models/business.model')
+var moment = require('moment')
 var { Headers } = fetch
 const { SendMessage } = require('../helpers/sms.helper');
 var unirest = require("unirest");
 var MpesaLogs = require("./../models/mpesa_logs.model");
 const { getLogger } = require('nodemailer/lib/shared');
-router.post('/sale', [authMiddleware, authorized], async (req, res) => {
+const Mpesa_stk = require('../helpers/stk_push.helper');
+router.post('/sales', [authMiddleware, authorized], async (req, res) => {
   try {
     Exists = await Stock.findOne({ business: req.body.business, product: req.body.product }).populate(['business', 'createdBy', 'product']);
     const newqty = parseInt(Exists.qty) - parseInt(req.body.qty)
@@ -53,6 +58,71 @@ router.post('/sale', [authMiddleware, authorized], async (req, res) => {
 
 });
 
+router.post('/sell', [authMiddleware, authorized], async (req, res) => {
+  try {
+    console.log("BODY", req.body)
+    // const prod = await Product.findOne({ _id: req.body.product, business: req.body.body.business })
+    const body = req.body
+    body.createdBy = req.user._id
+    const { products } = req.body
+    if (req.body.products) {
+      const item = products
+      let products_name = products?.map(function (item) {
+        return `${item.product_name}(${item?.cart_amt})`;
+      })
+        .join(',')
+      let products_price = item?.reduce(function (accumulator, currentValue) {
+        const totalPrice =
+          parseInt(currentValue.price) *
+          parseInt(currentValue?.cart_amt);
+        return accumulator + totalPrice;
+      }, 0)
+      for (let k = 0; k < item.length; k++) {
+        const product = await Product.findById(item[k]._id);
+        await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
+      }
+      body.packageName = products_name;
+      body.package_value = products_price;
+    }
+    const sale = await new Sale(body).save()
+    return res.status(200).json(sale);
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+  }
+
+});
+
+router.get('/todays-sales', [authMiddleware, authorized], async (req, res) => {
+  try {
+    var start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    var end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const sales = await Sale.find({ createdBy: req.user._id, createdAt: { $gte: start, $lt: end } }).populate('business')
+    return res.status(200).json(sales);
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+  }
+
+});
+router.post("/sales-pay/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let v = await Mpesa_stk(req.body.phone_number, 1)
+    await Sale.findOneAndUpdate({ _id: req.params.id }, { payment_status: true }, { new: true, useFindAndModify: false })
+    return res
+      .status(200)
+      .json({});
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 router.get('/mpesa-payments', async (req, res, next) => {
   const mpeslog = await MpesaLogs.find().populate('user')
@@ -104,8 +174,6 @@ router.post('/mpesa-callback', async (req, res, next) => {
     console.log(error)
   }
 })
-
-
 
 router.post('/mpesa_payment/stk', async function (req, res) {
   let consumer_key = "FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El", consumer_secret = "1GpfPi1UKAlMh2tI";

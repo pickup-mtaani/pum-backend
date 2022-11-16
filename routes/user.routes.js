@@ -228,6 +228,7 @@ router.post('/:id/update_password', async (req, res) => {
 router.put('/reset-password', async (req, res) => {
     try {
         const body = req.body
+
         const { errors, isValid } = validatePasswordInput(req.body);
         if (!isValid) {
             let error = Object.values(errors)[0]
@@ -236,10 +237,10 @@ router.put('/reset-password', async (req, res) => {
 
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         let user = await User.findOne({ phone_number: req.body.phone_number }) || await Rider.findOne({ phone_number: req.body.phone_number });
-        const password_match = await user.comparePassword(req.body.password, user.hashPassword);
-        if (!password_match) {
-            return res.status(400).json({ success: false, message: 'Kindly enter the exact previous password ' });
-        }
+        // const password_match = await user.comparePassword(req.body.password, user.hashPassword);
+        // if (!password_match) {
+        //     return res.status(400).json({ success: false, message: 'Kindly enter the exact previous password ' });
+        // }
 
         if (req.body.email) {
             user = await User.findOne({ email: req.body.email }) || await Rider.findOne({ email: req.body.email })
@@ -248,7 +249,8 @@ router.put('/reset-password', async (req, res) => {
             return res.status(400).json({ success: false, message: 'User Not Found ' });
         }
         let hashPassword = bcrypt.hashSync(body.new_password, 10);
-        if (req.body.email) {
+        if (user) {
+
             const Update = await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false }) || await User.findOneAndUpdate({ email: user.email }, { hashPassword: hashPassword }, { new: true, useFindAndModify: false })
             return res.status(200).json({ success: true, message: 'User Updated Successfully ', Update });
         }
@@ -281,7 +283,7 @@ router.post('/recover_account', async (req, res) => {
 
             let verification_code = MakeActivationCode(5)
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code }, { new: true, useFindAndModify: false })
-            const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
+            const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.name} \nYour Account Recovery Code for Pickup mtaani is  ${verification_code} ` }
             await SendMessage(textbody)
             return res.status(200).json({ message: `A recovery Text has been sent to  ${req.body.phone_number}` });
         }

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const SalesSchema = new Schema({
-    packageName: {
+const rejectSchema = new Schema({
+    reason: {
         type: String,
 
     },
@@ -9,15 +9,11 @@ const SalesSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'business'
     },
-    package_value: {
-        type: Number,
-
+    product: {
+        type: Schema.Types.ObjectId,
+        ref: 'products'
     },
-    payment_status: {
-        type: Boolean,
-        default: false
-    },
-    createdBy: {
+    rejectedBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
@@ -29,4 +25,4 @@ const SalesSchema = new Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('sales', SalesSchema);
+module.exports = mongoose.model('rejected_stock', rejectSchema);

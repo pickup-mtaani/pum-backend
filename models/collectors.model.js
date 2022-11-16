@@ -20,6 +20,10 @@ const collectorSchema = new Schema({
         type: String,
         // required: true
     },
+    time: {
+        type: String,
+        // required: true
+    },
 
     package: {
         type: Schema.Types.ObjectId,

@@ -58,12 +58,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
-          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].package_value = product.price
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
+
         }
         if (packages[i].products) {
-          const item = packages[i].products
 
+          const item = packages[i].products
 
           let products_name = item?.map(function (item) {
             return `${item.product_name}(${item?.cart_amt})`;
@@ -78,13 +79,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           for (let k = 0; k < item.length; k++) {
             const product = await Product.findById(item[k]._id);
             await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
-
           }
           packages[i].packageName = products_name;
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
-
-
         }
         packages[i].createdBy = req.user._id
         packages[i].origin = { lng: null, lat: null, name: '' }
@@ -98,13 +96,18 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
-          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+          await new Customer({ door_step_package_count: 1, total_package_count: 1, seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
         }
         else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
-        let V = await new Track_door_step({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
+        let V = await new Track_door_step({
+          package: newpackage._id, created: {
+            createdAt: moment(),
+            createdBy: req.user._id
+          }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+        }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
 
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
@@ -124,17 +127,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", });
     } else if (body.delivery_type === "shelf") {
-
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
         packages[0]
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
-          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
+
         }
         packages[i].location = "63575250602a3e763b1305ed";
         packages[i].createdBy = req.user._id;
@@ -143,9 +146,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        // let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        // let newPackageCount = 1
+        // if (agent_id.package_count) {
+        //   newPackageCount = parseInt(agent_id?.package_count + 1)
+        // }
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
-          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+          await new Customer({ rent_shelf_package_count: 1, seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber, total_package_count: 1 }).save()
         } else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { rent_shelf_package_count: parseInt(customer.rent_shelf_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
@@ -167,8 +175,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         receipt_no: req.body.receipt_no,
         createdBy: req.user._id,
       }).save();
-      await new rentshelfNarations({ package: newPackage._id, state: "request", descriptions: `Package created` }).save()
-
 
       return res
         .status(200)
@@ -186,27 +192,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
-          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
+          let p = await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
+          console.log(p)
         }
-        // const name = hasProducts
-        //       ? item?.products
-        //       .map(function (item) {
-        //         return `${item.product_name}`;
-        //       })
-        //       .join(',')
-        //   : '';
 
-        // const price = hasProducts
-        //   ? item?.products?.reduce(function (accumulator, currentValue) {
-        //       const totalPrice =
-        //         parseInt(currentValue.price) *
-        //         parseInt(currentValue?.cart_amt);
-        //       return accumulator + totalPrice;
-        //     }, 0)
-        //   : 0;
 
 
         packages[i].createdBy = req.user._id
@@ -215,8 +207,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let basketarray = []
         if (packages[i].products) {
           const item = packages[i].products
-
-
           let products_name = item?.map(function (item) {
             return `${item.product_name}(${item?.cart_amt})`;
           })
@@ -243,19 +233,22 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].assignedTo = route.rider
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
-          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+          await new Customer({ seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber, total_package_count: 1, agent_package_count: 1 }).save()
         }
         else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { agent_package_count: parseInt(customer.agent_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
-        await new Track_agent_packages({ package: newpackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no }).save()
+        await new Track_agent_packages({
+          package: newpackage._id, created: {
+            createdAt: moment(),
+            createdBy: req.user._id
+          }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+        }).save()
         if (req.body.payment_option === "collection") {
           await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
-
           await Sent_package.findOneAndUpdate({ _id: newpackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
-
         }
       }
       if (req.body.payment_option === "vendor") {
@@ -341,7 +334,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 
 // change the package state as it is dropped to when its picked up
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
-
+  console.log(req.body)
   try {
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
 
@@ -354,12 +347,8 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "picked-from-seller") {
-      await new rentshelfNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent name(receiver agent)` }).save()
-
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: "63575250602a3e763b1305ed", droppedAt: Date.now() }, { new: true, useFindAndModify: false })
-
       const textbody = {
-
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
@@ -370,6 +359,13 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
+    if (req.params.state === "collected" && package.booked) {
+      let collector = await Collected.findOneAndUpdate({ package: req.params.id }, {
+        collector_signature: req.body.collector_signature
+      }, { new: true, useFindAndModify: false })
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+
+    }
     if (req.params.state === "collected") {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
@@ -377,6 +373,21 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       let collector = await new Collected(req.body).save()
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
+    }
+    if (req.params.state === "early_collection") {
+      req.body.package = req.params.id
+      req.body.dispatchedBy = req.user._id
+      console.log(req.body)
+      let collector = await new Collected(req.body).save()
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
+        booked: {
+          bookedBy: req.user._id,
+          bookedAt: moment(),
+          bookedFor: req.body.time
+        }
+      }, { new: true, useFindAndModify: false })
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { booked: true }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ message: "Sucessfully" });
     }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
@@ -488,7 +499,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
   try {
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      let dropped = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      let dropped = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-seller", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       let unavailable = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "unavailable", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       let picked = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       let request = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "request", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
@@ -500,7 +511,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     } else {
-      let dropped = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped" })
+      let dropped = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-seller" })
       let unavailable = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "unavailable" })
       let picked = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked" })
       let request = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "request" })
@@ -511,6 +522,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped-to-agent" })
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
       let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-sender" })
+
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
@@ -583,6 +595,53 @@ router.get("/packages", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+router.get("/user-agent-agent-package/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let agent_packages = await Sent_package.find({ createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      .sort({ createdAt: -1 })
+      .populate("senderAgentID")
+      .populate("receieverAgentID")
+      // .populate("agent")
+      .limit(100);
+    return res.status(200)
+      .json(agent_packages)
+  } catch (error) {
+
+  }
+
+})
+router.get("/user-door-step-package/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let packages = await Door_step_Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      .populate(
+        "customerPhoneNumber packageName package_value package_value packageName customerName"
+      )
+      // .populate("agent")
+      .sort({ createdAt: -1 })
+      .limit(100);
+    return res.status(200)
+      .json(packages)
+  } catch (error) {
+    console.log(error)
+  }
+
+})
+router.get("/user-rent_shelf-package/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let packages = await Rent_a_shelf_deliveries.findOne({ $or: [{ state: "picked-from-sender" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      .sort({ createdAt: -1 })
+      .limit(100);
+    return res.status(200)
+      .json(packages)
+  } catch (error) {
+
+  }
+
+})
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -592,38 +651,38 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
     // "request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "", "warehouse-transit"
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      agent_packages.created = await Sent_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.created = await Sent_package.findOne({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
         // .populate("agent")
         .limit(100);
-      agent_packages.dropped = await Sent_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.dropped = await Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
         // .populate("agent")
         .limit(100);
-      agent_packages.transit = await Sent_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.transit = await Sent_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
         // .populate("agent")
         .limit(100);
-      agent_packages.warehouse = await Sent_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.warehouse = await Sent_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
         // .populate("agent")
         .limit(100);
 
-      agent_packages.delivered = await Sent_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.delivered = await Sent_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
         // .populate("agent")
         .limit(100);
-      agent_packages.collected = await Sent_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      agent_packages.collected = await Sent_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -637,21 +696,21 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         // .populate("agent")
         .sort({ createdAt: -1 })
         .limit(100);
-      doorstep_packages.dropped = await Door_step_Sent_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      doorstep_packages.dropped = await Door_step_Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         // .populate("agent")
         .sort({ createdAt: -1 })
         .limit(100);
-      doorstep_packages.transit = await Door_step_Sent_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      doorstep_packages.transit = await Door_step_Sent_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         // .populate("agent")
         .sort({ createdAt: -1 })
         .limit(100);
-      doorstep_packages.warehouse = await Door_step_Sent_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      doorstep_packages.warehouse = await Door_step_Sent_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
@@ -659,14 +718,14 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .sort({ createdAt: -1 })
         .limit(100);
 
-      doorstep_packages.delivered = await Door_step_Sent_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      doorstep_packages.delivered = await Door_step_Sent_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
         // .populate("agent")
         .sort({ createdAt: -1 })
         .limit(100);
-      doorstep_packages.collected = await Door_step_Sent_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      doorstep_packages.collected = await Door_step_Sent_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
@@ -685,13 +744,13 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       //   .limit(100);
       // shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey },{ customerPhoneNumber: searchKey }] }).populate(
       // );
-      shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      shelves.created = await Rent_a_shelf_deliveries.findOne({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "picked-from-sender" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      shelves.dropped = await Rent_a_shelf_deliveries.findOne({ $or: [{ state: "picked-from-seller" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves.collected = await Rent_a_shelf_deliveries.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      shelves.collected = await Rent_a_shelf_deliveries.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .limit(100);
     } else {
@@ -779,7 +838,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "picked-from-sender" }], createdBy: req.user._id, businessId: req.params.id, })
+      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "picked-from-seller" }, { state: "early_collection" }], createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
         .limit(100);
       shelves.collected = await Rent_a_shelf_deliveries.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, })

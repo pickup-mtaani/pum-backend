@@ -216,7 +216,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
         // user: user,
         log: ''
     }
-    let T = await new mpesa_logsModel(body).save()
+    // let T = await new mpesa_logsModel(body).save()
     // console.log(T)
     //   mpesaCode = ret.MerchantRequestID;
 

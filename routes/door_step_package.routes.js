@@ -38,27 +38,51 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
     if (req.params.state === "picked-from-sender") {
       const package = await Door_step_Sent_package.findById(req.params.id).populate("agent");
-      await Track_door_step.findOneAndUpdate({ package: req.params.id }, { droppedAt: Date.now(), assignedAt: Date.now() }, { new: true, useFindAndModify: false })
-      await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent` }).save()
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        droppedBy: package.assignedTo,
+        droppedTo: package?.senderAgentID?._id,
+        recievedBy: req.user._id,
+        droppedAt: moment()
+        , assignedAt: Date.now()
+      }, { new: true, useFindAndModify: false })
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "assigned-warehouse") {
-      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
-      await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
-      await Track_door_step.findOneAndUpdate({ package: req.params.id }, { reassignedTo: req.query.assignedTo, reassignedAt: Date.now() }, { new: true, useFindAndModify: false })
+      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, {
+        reassigned:
+        {
+          assignedTo: req.params.rider,
+          reAssignedAt: Date.now(),
+          reAssignedBy: req.user._id,
+        }
+      }, { new: true, useFindAndModify: false })
+      //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        reassignedTo:
+        {
+          reAssignedTo: req.query.assignedTo,
+          reAssignedAt: Date.now(),
+          reAssignedBy: req.user._id,
+        }
+
+      }, { new: true, useFindAndModify: false })
       return res.status(200).json({ message: "Sucessfully" });
 
     }
-    if (req.params.state === "delivered") {
-      await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package delivered to reciver agent` }).save()
-    }
 
     if (req.params.state === "dropped") {
-      await Track_door_step.findOneAndUpdate({ package: req.params.id }, { warehouseAt: Date.now() }, { new: true, useFindAndModify: false })
-      await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        warehouse:
+        {
+          recievedBy: req.user._id,
+
+          warehouseAt: moment()
+        }
+      }, { new: true, useFindAndModify: false })
+      //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
 
     if (req.params.state === "on-transit") {
@@ -75,9 +99,15 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
           let { customerPhoneNumber, payment_status, delivery_fee } = await Door_step_Sent_package.findOne({ _id: req.params.id })
           req.body.package = req.params.id
           req.body.dispatchedBy = req.user._id
-          await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
+          //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
           let collector = await new Collected(req.body).save()
-          await Track_door_step.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+          await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+            collected: {
+              collectedby: collector._id,
+              collectedAt: moment(),
+              dispatchedBy: request.user._id
+            }
+          }, { new: true, useFindAndModify: false })
           if (payment_status === "to-be-paid") {
             await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
           }

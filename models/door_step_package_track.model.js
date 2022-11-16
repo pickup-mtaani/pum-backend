@@ -12,22 +12,45 @@ const NarationsSchema = new Schema({
         required: true
     },
     created: {
-        type: Date,
-        default: moment()
+        createdAt: {
+            type: Date,
+            default: moment()
+        },
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        }
     },
 
-    droppedTo: {
-        type: Schema.Types.ObjectId,
-        ref: 'agents_details'
-    },
-    droppedAt: {
-        type: Date,
-        default: null
+    dropped: {
+        droppedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'rider'
+        },
+        droppedTo: {
+            type: Schema.Types.ObjectId,
+            ref: 'agents_details'
+        },
+        recievedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        droppedAt: {
+            type: Date,
+            default: null
+        }
     },
 
-    warehouseAt: {
-        type: Date,
-        default: null
+    warehouse: {
+        recievedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+
+        warehouseAt: {
+            type: Date,
+            default: null
+        }
     },
     recievedTo: {
         type: Schema.Types.ObjectId,
@@ -37,42 +60,85 @@ const NarationsSchema = new Schema({
         type: Date,
         default: null
     },
-    assignedTo: {
-        type: Schema.Types.ObjectId,
-        ref: 'rider'
+    assigned: {
+        assignedTo: {
+            type: Schema.Types.ObjectId,
+            ref: 'rider'
+        },
+        assignedAt: {
+            type: Date,
+            default: null
+        },
+        assignedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'rider'
+        },
     },
-    assignedAt: {
-        type: Date,
-        default: null
+    reAssigned: {
+        reAssignedTo: {
+            type: Schema.Types.ObjectId,
+            ref: 'rider'
+        },
+        reAssignedAt: {
+            type: Date,
+            default: null
+        },
+        reAssignedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
     },
-    reassignedTo: {
-        type: Schema.Types.ObjectId,
-        ref: 'rider'
-    },
-    droppedToagentAt: {
-        type: Date,
-        default: null
+    delivered: {
+        deliveredto: {
+            type: Schema.Types.ObjectId,
+            ref: 'agents_details'
+        },
+        deliveredAt: {
+            type: Date,
+            default: null
+        },
+        recievedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
     },
     droppedToagent: {
-        type: Schema.Types.ObjectId,
-        ref: 'agents_details'
-    },
-    reassignedAt: {
-        type: Date,
-        default: null
+        droppedToagentBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'rider'
+        },
+        recievedAt: {
+            type: Date,
+            default: null
+        },
+        recievedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        droppedToagent: {
+            type: Schema.Types.ObjectId,
+            ref: 'agents_details'
+        },
     },
     reciept: {
         type: String,
     },
 
-    collectedby: {
-        type: Schema.Types.ObjectId,
-        ref: 'collector'
+    collected: {
+        collectedby: {
+            type: Schema.Types.ObjectId,
+            ref: 'collector'
+        },
+        collectedAt: {
+            type: Date,
+            default: null
+        },
+        dispatchedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
     },
-    collectedAt: {
-        type: Date,
-        default: null
-    },
+
     package: {
         type: Schema.Types.ObjectId,
         ref: 'doorStep_delivery_packages'

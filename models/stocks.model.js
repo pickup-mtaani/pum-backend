@@ -5,6 +5,11 @@ const StockSchema = new Schema({
         type: String,
         required: true
     },
+    current_stock: {
+        type: Number,
+        default: 0
+    },
+
     unit: {
         type: String,
 
@@ -21,10 +26,7 @@ const StockSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
-    restock_at: {
-        type: Date,
-        default: null
-    },
+
     deleted_at: {
         type: Date,
         default: null
