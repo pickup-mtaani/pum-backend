@@ -35,7 +35,7 @@ const { request } = require("express");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-
+  // console.log("REDY", req.body)
   // let v = await Mpesa_stk("0720141534", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
@@ -47,6 +47,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     if (body.delivery_type === "door_step") {
 
       const { packages } = req.body;
+      console.log("PACK", packages[0])
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         let newPackageCount = 1
@@ -54,18 +55,15 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
-        if (packages[i].product) {
+        if (packages[i].product !== "") {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price
           await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
-
         }
         if (packages[i].products) {
-
           const item = packages[i].products
-
           let products_name = item?.map(function (item) {
             return `${item.product_name}(${item?.cart_amt})`;
           })
@@ -101,6 +99,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
+        if (packages[i].pipe = "doorStep") {
+          packages[i].state = "pending-doorstep"
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
+
+        }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         let V = await new Track_door_step({
           package: newpackage._id, created: {
@@ -108,12 +111,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
             createdBy: req.user._id
           }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
         }).save()
-        await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
 
+        await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
-
-
       }
       if (req.body.payment_option === "vendor") {
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -143,6 +144,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
         packages[i].receipt_no = `pm-${Makeid(5)}`;
+        packages[i].packageName = packages[i].packageName ? packages[i].packageName : "jacket";
+        packages[i].package_value = packages[i].package_value ? packages[i].package_value : 400;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -181,7 +184,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
-
+      console.log(packages[0])
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let newPackageCount = 1
@@ -190,21 +193,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let route = await RiderRoutes.findOne({ agent: agent._id })
-        if (packages[i].product) {
+        if (packages[i].product !== "") {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price;
           let p = await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
-          console.log(p)
         }
-
-
-
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
-        let basketarray = []
+
         if (packages[i].products) {
           const item = packages[i].products
           let products_name = item?.map(function (item) {
@@ -220,14 +219,21 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           for (let k = 0; k < item.length; k++) {
             const product = await Product.findById(item[k]._id);
             await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
-
           }
           packages[i].packageName = products_name;
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
 
-
         }
+        if (packages[i].pipe = "agent") {
+          packages[i].state = "pending-agent"
+          let G = await Rent_a_shelf_deliveries.findById(packages[0].p_id)
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[0].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
+        }
+        console.log(packages[i])
+        // packages[i].packageName = "shoes";
+        // packages[i].package_value = 400;
+
         let newpackage = await new Sent_package(packages[i]).save();
 
         packages[i].assignedTo = route.rider
@@ -334,7 +340,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 
 // change the package state as it is dropped to when its picked up
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
-  console.log(req.body)
+
   try {
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
 
@@ -359,17 +365,16 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
     }
-    if (req.params.state === "collected" && package.booked) {
+    if (req.params.state === "collected" && package.booked === true) {
       let collector = await Collected.findOneAndUpdate({ package: req.params.id }, {
         collector_signature: req.body.collector_signature
       }, { new: true, useFindAndModify: false })
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
-    if (req.params.state === "collected") {
+    if (req.params.state === "collected" && package.booked === false) {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
-
       let collector = await new Collected(req.body).save()
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
@@ -377,8 +382,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     if (req.params.state === "early_collection") {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
-      console.log(req.body)
-      let collector = await new Collected(req.body).save()
+      await new Collected(req.body).save()
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
         booked: {
           bookedBy: req.user._id,
@@ -595,7 +599,6 @@ router.get("/packages", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/user-agent-agent-package/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
@@ -838,13 +841,15 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
       shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
         .limit(100);
-      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "picked-from-seller" }, { state: "early_collection" }], createdBy: req.user._id, businessId: req.params.id, })
+      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "agent" }, { state: "doorstep" }, { state: "picked-from-seller" }, { state: "early_collection" }], createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
         .limit(100);
+
       shelves.collected = await Rent_a_shelf_deliveries.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
         .limit(100);
     }
+
     return res
       .status(200)
       .json({
@@ -872,6 +877,18 @@ router.get("/customers", [authMiddleware, authorized], async (req, res) => {
 
   }
 });
+router.get("/booked-for-ealy-collection", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const booked = await Rent_a_shelf_deliveries.find({ $or: [{ state: "early_collection" }], })
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .populate('businessId')
+    return res
+      .status(200)
+      .json(booked);
+  } catch (error) {
+  }
+});
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id)
@@ -897,7 +914,6 @@ router.get("/package/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/collectors/", async (req, res) => {
   try {
 
@@ -926,5 +942,7 @@ router.get("/packages/bussiness/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+
 
 module.exports = router;

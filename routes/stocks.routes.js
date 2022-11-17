@@ -14,7 +14,6 @@ const router = express.Router();
 
 router.post('/stock', [authMiddleware, authorized], async (req, res) => {
     try {
-
         const prod = await Product.findOne({ _id: req.body.product, business: req.body.business })
 
         // if (Exists) {
@@ -52,7 +51,6 @@ router.post('/stock', [authMiddleware, authorized], async (req, res) => {
     }
 
 });
-
 router.post('/approve-stock/:bussiness_id/:product_id', [authMiddleware, authorized], async (req, res) => {
     try {
         const prod = await Product.findOne({ business: req.params.bussiness_id, _id: req.params.product_id })

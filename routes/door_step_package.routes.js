@@ -6,6 +6,7 @@ var RiderRoutes = require("models/rider_routes.model");
 var DoorstepNarations = require('models/door_step_narations.model');
 var Declined = require("models/declined.model");
 var moment = require("moment");
+var Product = require("models/products.model.js");
 var AgentUser = require('models/agent_user.model');
 var Collected = require("models/collectors.model");
 var Conversation = require('models/conversation.model')
@@ -247,6 +248,22 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
   }
 });
 
+router.get("/rented-door-step-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const agent = await AgentDetails.findOne({ user: req.user._id });
+
+    const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) => {
   try {
     let v = await Mpesa_stk(req.body.phone_number, 1, 1, req.body.type)
@@ -286,6 +303,7 @@ router.get("/agents_routes", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
 
 
 

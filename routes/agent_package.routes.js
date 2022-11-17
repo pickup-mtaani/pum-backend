@@ -195,6 +195,42 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
+router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agent = await AgentUser.findOne({ user: req.user._id })
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let agent_packages
+
+    if (req.query.searchKey) {
+      agent_packages = await Sent_package.find({ payment_status: "paid", state: "pending-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+        .populate('createdBy', 'f_name l_name name')
+        .populate('receieverAgentID', 'business_name')
+        .populate('senderAgentID', 'business_name')
+        .populate('businessId')
+
+
+      return res
+        .status(200)
+        .json(agent_packages);
+    } else {
+      agent_packages = await Sent_package.find({ state: "pending-agent" }).sort({ createdAt: -1 }).limit(100)
+        .populate('createdBy', 'f_name l_name name')
+        .populate('receieverAgentID', 'business_name')
+        .populate('senderAgentID', 'business_name')
+        .populate('businessId')
+
+      return res
+        .status(200)
+        .json(agent_packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/agent-package-narations/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
@@ -378,6 +414,63 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     console.log(error)
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const pack = await Rent_a_shelf_deliveries.findById(req.params.id)
+    await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { pipe: "doorStep" }, { new: true, useFindAndModify: false })
+    const { body } = req.body;
+    let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+    let newPackageCount = 1
+    if (agent_id.package_count) {
+      newPackageCount = parseInt(agent_id?.package_count + 1)
+    }
+    let route = await RiderRoutes.findOne({ agent: agent_id._id })
+
+    body.createdBy = req.user._id
+    body.origin = { lng: null, lat: null, name: '' }
+    body.destination = {
+      name: body?.destination?.name,
+      lat: body?.destination?.latitude,
+      lng: body?.destination?.longitude
+    }
+    body.receipt_no = `${agent_id.prefix}${newPackageCount}`;
+    body.assignedTo = route.rider
+    body.state = "pending-doorstep"
+
+    let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: body.customerPhoneNumber })
+    if (customer === null) {
+      await new Customer({ door_step_package_count: 1, total_package_count: 1, seller: req.user._id, customer_name: body.customerName, customer_phone_number: body.customerPhoneNumber }).save()
+    }
+    else {
+      await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1) }, { new: true, useFindAndModify: false })
+    }
+    newpackage = await new Door_step_Sent_package(body).save();
+    let V = await new Track_door_step({
+      package: newpackage._id, created: {
+        createdAt: moment(),
+        createdBy: req.user._id
+      }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+    }).save()
+    await AgentDetails.findOneAndUpdate({ _id: body.agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+    if (req.body.payment_option === "vendor") {
+      await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
+    }
+    else {
+      await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+
+    }
+
+    return res
+      .status(200)
+      .json(agents);
+  } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

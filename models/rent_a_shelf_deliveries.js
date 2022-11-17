@@ -12,7 +12,7 @@ const doorstepSchema = new Schema(
     state: {
       type: String,
 
-      enum: ["rejected", "expired", "picked-from-seller", "collected", "request"],
+      enum: ["rejected", "expired", "picked-from-seller", "doorstep", "agent", "early_collection", "collected", "request"],
       default: "request"
     },
     businessId: {
@@ -30,6 +30,10 @@ const doorstepSchema = new Schema(
     booked: {
       type: Boolean,
       default: false
+    },
+    pipe: {
+      type: String,
+
     },
     receipt_no: {
       type: String,
