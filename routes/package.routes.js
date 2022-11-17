@@ -143,8 +143,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
         packages[i].receipt_no = `pm-${Makeid(5)}`;
-        packages[i].packageName = packages[i].packageName ? packages[i].packageName : "jacket";
-        packages[i].package_value = packages[i].package_value ? packages[i].package_value : 400;
+        // packages[i].packageName = packages[i].packageName ? packages[i].packageName : "jacket";
+        // packages[i].package_value = packages[i].package_value ? packages[i].package_value : 400;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
