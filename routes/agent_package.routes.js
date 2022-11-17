@@ -74,6 +74,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     }
     if (req.params.state === "rejected") {
+      console.log("Body", req.body)
       let rejected = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
 

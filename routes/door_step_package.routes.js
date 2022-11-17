@@ -86,6 +86,13 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
 
+
+    if (req.params.state === "rejected") {
+      // let rejected = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+      // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
+      console.log(rejected)
+
+    }
     if (req.params.state === "on-transit") {
       const exists = await Conversation.findOne({
         "members": {

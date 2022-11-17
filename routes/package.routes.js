@@ -55,7 +55,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
-        if (packages[i].product !== "") {
+        if (packages[i].product || packages[i].product !== "") {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
@@ -111,7 +111,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
             createdBy: req.user._id
           }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
         }).save()
-
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
@@ -193,7 +192,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let route = await RiderRoutes.findOne({ agent: agent._id })
-        if (packages[i].product !== "") {
+        if (packages[i].product || packages[i].product !== "") {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
