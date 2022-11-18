@@ -247,8 +247,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         if (packages[i].pipe = "agent") {
           packages[i].state = "pending-agent"
-          let G = await Rent_a_shelf_deliveries.findById(packages[0].p_id)
-          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[0].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
+          let G = await Rent_a_shelf_deliveries.findById(packages[i].p_id)
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
         }
         console.log(packages[i])
         // packages[i].packageName = "shoes";
