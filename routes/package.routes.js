@@ -102,7 +102,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
-        if (packages[i].pipe = "doorStep") {
+        if (packages[i].pipe === "doorStep") {
           packages[i].state = "pending-doorstep"
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
 
@@ -204,14 +204,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
-      console.log(packages[0])
       for (let i = 0; i < packages.length; i++) {
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
         let newPackageCount = 1
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
         }
-
+        console.log("Body", body)
         let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -245,17 +244,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].package_value = products_price;
 
         }
-        if (packages[i].pipe = "agent") {
+        if (packages[i].pipe === "agent") {
           packages[i].state = "pending-agent"
           let G = await Rent_a_shelf_deliveries.findById(packages[i].p_id)
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
         }
-        console.log(packages[i])
-        // packages[i].packageName = "shoes";
-        // packages[i].package_value = 400;
-
+        console.log("Pack", packages[i])
         let newpackage = await new Sent_package(packages[i]).save();
-
         packages[i].assignedTo = route.rider
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
