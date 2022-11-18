@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const StockSchema = new Schema({
     qty: {
         type: String,
-        required: true
+        // required: true
     },
     current_stock: {
         type: Number,

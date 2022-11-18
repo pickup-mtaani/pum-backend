@@ -28,6 +28,7 @@ const ProductSchema = new Schema({
     },
     qty: {
         type: Number,
+        default: 0
 
     },
     pending_stock_confirmed: {

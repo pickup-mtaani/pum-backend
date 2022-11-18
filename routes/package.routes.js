@@ -45,7 +45,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
-      console.log("Doorstep", req.body)
+
       const { packages } = req.body;
 
       for (let i = 0; i < packages.length; i++) {
@@ -103,7 +103,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         if (packages[i].pipe === "doorstep") {
-          console.log("first", packages[i].pipe)
           packages[i].state = "pending-doorstep"
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
         }
