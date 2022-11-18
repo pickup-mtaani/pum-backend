@@ -213,7 +213,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let route = await RiderRoutes.findOne({ agent: agent._id })
-        if (packages[i].product || packages[i].product !== "") {
+        if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
