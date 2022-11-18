@@ -47,7 +47,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     if (body.delivery_type === "door_step") {
 
       const { packages } = req.body;
-      console.log("PACK", packages[0])
+
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         let newPackageCount = 1
@@ -55,14 +55,17 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
-        if (packages[i].product || packages[i].product !== "") {
+        if (packages[i]?.product) {
+
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
           packages[i].isProduct = true;
           packages[i].package_value = product.price
           await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
+
+
         }
-        if (packages[i].products) {
+        if (packages[i].products?.length !== 0) {
           const item = packages[i].products
           let products_name = item?.map(function (item) {
             return `${item.product_name}(${item?.cart_amt})`;
@@ -105,6 +108,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
+
         let V = await new Track_door_step({
           package: newpackage._id, created: {
             createdAt: moment(),
@@ -127,10 +131,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", });
     } else if (body.delivery_type === "shelf") {
+
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
         packages[0]
+        // if (packages[i].state === "early_collection") {
+        //   await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "early_collection", descriptions: ``, reciept: savedPackage.receipt_no }).save()
+        // }
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -139,20 +147,33 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
 
         }
+        if (packages[i].products?.length !== 0) {
+          const item = packages[i].products
+          let products_name = item?.map(function (item) {
+            return `${item.product_name}(${item?.cart_amt})`;
+          })
+            .join(',')
+          let products_price = item?.reduce(function (accumulator, currentValue) {
+            const totalPrice =
+              parseInt(currentValue.price) *
+              parseInt(currentValue?.cart_amt);
+            return accumulator + totalPrice;
+          }, 0)
+          for (let k = 0; k < item.length; k++) {
+            const product = await Product.findById(item[k]._id);
+            await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
+          }
+          packages[i].packageName = products_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = products_price;
+        }
         packages[i].location = "63575250602a3e763b1305ed";
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
         packages[i].receipt_no = `pm-${Makeid(5)}`;
-        // packages[i].packageName = packages[i].packageName ? packages[i].packageName : "jacket";
-        // packages[i].package_value = packages[i].package_value ? packages[i].package_value : 400;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
-        // let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
-        // let newPackageCount = 1
-        // if (agent_id.package_count) {
-        //   newPackageCount = parseInt(agent_id?.package_count + 1)
-        // }
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
           await new Customer({ rent_shelf_package_count: 1, seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber, total_package_count: 1 }).save()
@@ -203,7 +224,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
 
-        if (packages[i].products) {
+        if (packages[i].products?.length !== 0) {
           const item = packages[i].products
           let products_name = item?.map(function (item) {
             return `${item.product_name}(${item?.cart_amt})`;

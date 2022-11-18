@@ -4,6 +4,7 @@ var Stock = require('models/stocks.model')
 const imagemin = require('imagemin');
 const imageminMozJpeg = require('imagemin-mozjpeg')
 var Category = require('models/business_categories.model')
+var Payment = require('models/payments.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 var path = require('path');
@@ -71,6 +72,19 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             await newStock.save()
             return res.status(200).json({ message: 'Saved', product_created });
         }
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.post('/payments', [authMiddleware, authorized], async (req, res) => {
+
+    try {
+        const body = req.body
+        body.recievedBy = req.user._id
+        await new Payment(body).save()
+        return res.status(200).json({ message: 'Payment Made successfully' });
+
     } catch (error) {
         console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
