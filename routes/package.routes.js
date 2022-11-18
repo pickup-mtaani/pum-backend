@@ -45,7 +45,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
     body.createdBy = req.user._id;
     if (body.delivery_type === "door_step") {
-
+      console.log("Doorstep", req.body)
       const { packages } = req.body;
 
       for (let i = 0; i < packages.length; i++) {
