@@ -63,7 +63,7 @@ function Riderpage(props) {
         },
 
     ]
-    console.log(JSON.stringify(location.state))
+
 
     return (
         <Layout>
@@ -83,6 +83,14 @@ function Riderpage(props) {
                 // paginationTotalRows={totalRows}
                 // onChangeRowsPerPage={handlePerRowsChange}
                 /></div>
+            {/* <ConfirmModal
+                // showModal={setShowModal}
+                // item={item}
+                msg="Are you sure You want to Recieve this package"
+                show={show}
+                // inputChange={inputChange}
+                Submit={() => props.CollectDoorStep(id, "recieved-warehouse")}
+            /> */}
         </Layout>
     )
 }

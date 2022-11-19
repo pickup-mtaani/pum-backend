@@ -6,11 +6,14 @@ import { connect } from 'react-redux'
 import { get_riders, } from '../../../redux/actions/riders.actions'
 import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
+import ConfirmModal from '../../confirm'
 function Riderpage(props) {
 
     const location = useLocation()
     const [data, setData] = useState([])
-    const [data1, setData1] = useState([])
+    const [rider, setRider] = useState([])
+    const [show, setShow] = useState(false)
+    const [id, setId] = useState('')
     const fetch = async (data, agent) => {
         let res = await props.fetchdoorpack("recieved-warehouse")
         await props.get_riders()
@@ -49,7 +52,8 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.CollectDoorStep(row._id, "assigned-warehouse", e.target.value)}>
+                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none"
+                    onChange={(e) => { setShow(true); setId(row._id); setRider(e.target.value) }}>
                     <option value="">Assign a new Rider</option>
                     {props.riders?.map((rider, i) => (
                         <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
@@ -81,6 +85,12 @@ function Riderpage(props) {
                 // paginationTotalRows={totalRows}
                 // onChangeRowsPerPage={handlePerRowsChange}
                 /></div>
+            <ConfirmModal
+                msg=" Assign this package"
+                show={show}
+                // inputChange={inputChange}
+                Submit={async () => { await props.CollectDoorStep(id, "assigned-warehouse", rider); setShow(false); fetch("dropped", location?.state?.agent) }}
+            />
         </Layout>
     )
 }

@@ -4,10 +4,12 @@
   "private": true,
   "dependencies": {
     "@googlemaps/react-wrapper": "^1.1.35",
+    "@react-google-maps/api": "^2.17.0",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
+    "@ubilabs/google-maps-react-hooks": "^2.0.0",
     "axios": "^0.26.1",
     "canvas": "^2.9.3",
     "canvasjs-react-charts": "^1.0.5",

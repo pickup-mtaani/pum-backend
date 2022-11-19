@@ -3,7 +3,7 @@ var Path = require("./../models/riderroute.model");
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
+      origin: ["https://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
     },
   });
   let riders = [];
@@ -64,7 +64,7 @@ module.exports = (http) => {
     };
 
     const riderChangedLocation = async ({ rider_id, coordinates }) => {
-      // console.log("change location:", rider_id, coordinates);
+      console.log("change location:", rider_id, coordinates);
       socket.to(rider_id).emit("position-changed", { coordinates });
 
       await new Path({ rider: rider_id, lng: coordinates.longitude, lat: coordinates.latitude }).save();

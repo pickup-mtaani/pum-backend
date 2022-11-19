@@ -26,12 +26,13 @@ function Riderpage(props) {
         await fetch("dropped", location?.state?.agent)
     }
     useEffect(() => {
-        console.log(location.state)
+
         fetch("dropped", location?.state?.agent)
 
     }, [])
 
     const Recieve = (row) => {
+
         setId(row._id)
         setShow(true)
     }
@@ -55,7 +56,7 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <button onClick={() => Recieve}>Recieve package { }</button>
+                <button onClick={() => Recieve(row)}>Recieve package</button>
             </>)
         },
 
@@ -88,12 +89,10 @@ function Riderpage(props) {
 
 
             <ConfirmModal
-                // showModal={setShowModal}
-                // item={item}
-                msg="Are you sure You want to Recieve this package"
+                msg=" Recieve this package"
                 show={show}
                 // inputChange={inputChange}
-                Submit={() => props.CollectDoorStep(id, "recieved-warehouse")}
+                Submit={async () => { await props.CollectDoorStep(id, "recieved-warehouse"); setShow(false); fetch("dropped", location?.state?.agent) }}
             />
         </Layout>
     )

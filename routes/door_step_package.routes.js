@@ -349,7 +349,7 @@ router.get("/door-step/track/packages", [authMiddleware, authorized], async (req
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Track_door_step.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
@@ -361,7 +361,7 @@ router.get("/door-step/track/packages", [authMiddleware, authorized], async (req
             path: 'agent',
           }
         })
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package',
           populate: {
@@ -389,7 +389,7 @@ router.get("/door-step/track/packages/:id", [authMiddleware, authorized], async 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Track_door_step.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
@@ -397,7 +397,7 @@ router.get("/door-step/track/packages/:id", [authMiddleware, authorized], async 
       packages = await Track_door_step.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
 
         .populate('package')
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package',
           populate: {

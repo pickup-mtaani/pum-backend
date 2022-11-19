@@ -30,6 +30,14 @@ function Riderpage(props) {
 
         await fetch("dropped", location?.state?.agent)
     }
+    const complete = () => {
+        // if (location?.state?.lis === "on-transit") {
+        //     packAction(id, "recieved-warehouse", location?.state?.id)
+        // } else {
+        //     packAction(id, "assigned-warehouse", location?.state?.id)
+        // }
+
+    }
     useEffect(() => {
 
         fetch("dropped", location?.state?.agent)

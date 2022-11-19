@@ -778,7 +778,7 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Track_agent_packages.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
@@ -789,7 +789,7 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'receieverAgentID'
           }
         })
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package',
           populate: {
@@ -823,7 +823,7 @@ router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       packages = await Track_agent_packages.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
@@ -831,7 +831,7 @@ router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req
 
       packages = await Track_agent_packages.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
 
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package', populate: {
             path: 'receieverAgentID'

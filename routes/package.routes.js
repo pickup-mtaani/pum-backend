@@ -451,7 +451,7 @@ router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (re
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       tra = await Track_rent_a_shelf.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
@@ -463,7 +463,7 @@ router.get("/rent-shelf/track/packages", [authMiddleware, authorized], async (re
             path: 'location',
           }
         })
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package',
           populate: {
@@ -487,14 +487,14 @@ router.get("/rent-shelf/track/packages/:id", [authMiddleware, authorized], async
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
       tra = await Track_rent_a_shelf.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+      // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
     } else {
       packages = await Track_rent_a_shelf.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
         .populate('package')
-        .populate("collectedby")
+        // .populate("collectedby")
         .populate({
           path: 'package',
           populate: {
