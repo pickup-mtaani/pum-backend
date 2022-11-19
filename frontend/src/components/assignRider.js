@@ -84,48 +84,25 @@ function Users(props) {
             center: [lng, lat],
             zoom: zoom
         });
+        if (!map.current) return; // wait for map to initialize
+        map.current.on('move', () => {
+            setLng(map.current.getCenter().lng.toFixed(4));
+            setLat(map.current.getCenter().lat.toFixed(4));
+            setZoom(map.current.getZoom().toFixed(2));
+        });
     }, [lat, lng])
     return (
         <Layout>
             <div className=" mx-2 ">
+                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
                 <div ref={mapContainer} className="map-container my-2" style={{ height: '400px' }} />
                 {/* <div ref={mapContainer} className="map-container" /> */}
                 <ReactMapGl
                     {...viewPoints}
-                    mapStyle="mapbox://styles/mapbox/streets-v11"
+                    mapStyle="mapbox://styles/mapbox/streets-v9"
                     onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
                     mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
                 >
-                    {show && <Popup
-                        latitude={lat}
-                        longitude={lng}
-                        closeButton={true}
-                        onClose={() => togglePopup(false)}
-                        anchor="top-right"
-                    >
-                        <div>{popupMark.location}</div>
-                    </Popup>
-                    }
-                    {/* <Marker
-                        latitude="-1.28824"
-                        longitude="36.81404"
-                        offsetLeft={-20}
-                        offsetTop={-20}
-                    >
-
-                        <img
-                            style={{ cursor: 'pointer', height: 20, width: 40 }}
-                            onclick={() => {
-                                setlocapopup({
-                                    latitude: { lat },
-                                    longitude: { lng },
-                                    location: "Nairobi"
-                                })
-                                togglePopup(true);
-                            }}
-                            src={PIN}
-                        />
-                    </Marker> */}
                     <Marker
                         latitude={lat}
                         longitude={lng}
@@ -141,17 +118,6 @@ function Users(props) {
 
                 </ReactMapGl>
             </div>
-
-            <AssignedPackModal
-                show={showModal}
-                data={data}
-                riders={props.riders}
-                // changeInput={(e) => changeInput(e)}
-                // submit={() => submit()}
-                toggle={() => setShowModal(false)}
-            />
-
-
         </Layout>
     )
 }
