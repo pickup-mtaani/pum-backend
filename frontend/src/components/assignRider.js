@@ -170,7 +170,7 @@ function Users(props) {
 
 
 
-    })
+    }, [lat])
     return (
         <Layout>
             <div className=" mx-2 ">
