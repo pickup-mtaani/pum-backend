@@ -99,7 +99,7 @@ function Users(props) {
                 {/* <div ref={mapContainer} className="map-container" /> */}
                 <ReactMapGl
                     {...viewPoints}
-                    mapStyle="mapbox://styles/mapbox/streets-v9"
+                    mapStyle="mapbox://styles/mapbox/streets-v11"
                     onViewPortsChange={(viewPoints) => setViewPoints(viewPoints)}
                     mapboxAccessToken="pk.eyJ1Ijoia2VuYXRlIiwiYSI6ImNqdWR0MjVsNzAxeTYzem1sb3FxaHhid28ifQ.ntUj7ZMNwUtKWaBUoUVuhw"
                 >
