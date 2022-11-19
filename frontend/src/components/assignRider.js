@@ -20,7 +20,7 @@ function Users(props) {
 
 
     const [viewPoints, setViewPoints] = useState({
-        width: "100vh", height: "800px", latitude: -1.286389, longitude: 36.817223, zoom: 12
+        width: "100vh", height: "800px", latitude: -1.286389, longitude: 36.817223, zoom: 16
     })
     const [filterText, setFilterText] = React.useState('');
     const [searchValue, setSearchValue] = useState("")
