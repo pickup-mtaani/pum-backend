@@ -53,76 +53,6 @@ function Users(props) {
         setFilterData(result)
     }
 
-    const columns = [
-        {
-            sortable: true,
-            name: ' Name',
-            minWidth: '250px',
-            selector: row => row.user.name
-        },
-
-        {
-            sortable: true,
-            name: 'Phone number',
-            minWidth: '250px',
-            selector: row => row.user.phone_number
-        },
-        {
-            sortable: true,
-            name: 'ID',
-            minWidth: '250px',
-            selector: row => row.id_number
-        },
-        {
-            sortable: true,
-            name: 'Bikes Reg No',
-            minWidth: '250px',
-            selector: row => row.bike_reg_plate
-        },
-        {
-            sortable: true,
-            name: 'Rate',
-            minWidth: '225px',
-            selector: row => row.delivery_rate ? row.delivery_rate : 200
-        },
-        {
-            sortable: true,
-            name: 'Charge Per KM',
-            minWidth: '250px',
-            selector: row => row.charger_per_km ? row.charger_per_km : 120
-        },
-        {
-            sortable: true,
-            name: 'My packages',
-            minWidth: '150px',
-            selector: row => <>
-                <button onClick={() => fetchUserPackages(row)}>Packages </button>
-            </>
-        },
-    ]
-
-
-
-    const subHeaderComponentMemo = React.useMemo(() => {
-
-        return (
-            <>
-                <Search_filter_component
-                    onChangeFilter={onChangeFilter}
-
-                    searchValue={searchValue}
-                    date={date}
-                    download={() => DownloadFile(() =>
-                        props.FetchAdmins({ date, limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
-                        `${totalRows > 0 ? totalRows : "all"}_users`
-                    )}
-                />
-
-
-            </>
-        );
-    }, [searchValue, date,]);
-
 
     useEffect(() => {
 
@@ -147,49 +77,19 @@ function Users(props) {
             setLat(d.coordinates.latitude)
         });
 
-
-        // getCurent()
-
-        // if (navigator.geolocation) {
-        //     navigator.geolocation.watchPosition(function (position) {
-        //         console.log('changing position')
-        //         console.log("Latitude is :", position.coords.latitude);
-        //         console.log("Longitude is :", position.coords.longitude);
-        //     });
-        // }
-        // navigator.geolocation.getCurrentPosition(function (position) {
-        //     user.coords = {
-        //         latitude: position.coords.latitude,
-        //         longitude: position.coords.longitude
-        //     }
-        //     socket.on('position-change', async (user) => {
-        //         setPosition(user)
-        //         // console.log(user)
-        //     })
-        // });
-
-
-
-    }, [lat])
+        if (map.current) return; // initialize map only once
+        map.current = new mapboxgl.Map({
+            container: mapContainer.current,
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [lng, lat],
+            zoom: zoom
+        });
+    }, [lat, lng])
     return (
         <Layout>
             <div className=" mx-2 ">
                 <div ref={mapContainer} className="map-container my-2" style={{ height: '400px' }} />
-                {/* <DataTable
-                    title=" Riders"
-                    columns={columns}
-                    data={[]}
-                    pagination
-                    paginationServer
-                    progressPending={props.loading}
-                    paginationResetDefaultPage={resetPaginationToggle}
-                    subHeader
-                    subHeaderComponent={subHeaderComponentMemo}
-                    persistTableHead
-                    // onChangePage={handlePageChange}
-                    paginationTotalRows={totalRows}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                /> */}
+                {/* <div ref={mapContainer} className="map-container" /> */}
                 <ReactMapGl
                     {...viewPoints}
                     mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -229,8 +129,8 @@ function Users(props) {
                     <Marker
                         latitude={lat}
                         longitude={lng}
-                        offsetLeft={-20}
-                        offsetTop={-20}
+                    // offsetLeft={-20}
+                    // offsetTop={-20}
                     >
                         <img
                             style={{ cursor: 'pointer', height: 20, width: 40, objectFit: 'cover' }}
