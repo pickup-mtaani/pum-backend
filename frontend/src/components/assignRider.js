@@ -34,7 +34,9 @@ function Map(props) {
             console.log("E", coordinates.coordinates)
             // setLng(coordinates.coordinates.longitude)
             // setLat(coordinates.coordinates.latitude)
-            // let obj = { lat: coordinates.coordinates.latitude, lng: coordinates.coordinates.longitude }
+            let obj = { lat: coordinates.coordinates.latitude, lng: coordinates.coordinates.longitude }
+            setDest(obj)
+            fetchDirections(obj)
             // console.log(obj)
             // setDestination(obj)
         });
@@ -46,6 +48,8 @@ function Map(props) {
     }, [socket])
 
     useEffect(() => {
+        const { lat, lng } = dest
+        if (!lat || !lng) return
         fetchDirections(dest)
     }, [dest])
 
