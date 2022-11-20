@@ -789,7 +789,7 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'receieverAgentID'
           }
         })
-        // .populate("collectedby")
+        .populate("collectedBy")
         .populate({
           path: 'package',
           populate: {
@@ -803,7 +803,7 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'senderAgentID'
           }
         })
-
+      console.log(packages[0])
       return res.status(200)
         .json(packages);
     }

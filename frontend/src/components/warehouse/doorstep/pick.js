@@ -30,7 +30,7 @@ const Index = props => {
     return (
         <Layout>
 
-            <div className='w-full p-2 flex '>
+            <div className='w-full p-2 flex flex-wrap'>
                 {props.riders.map((rider, i) => (
 
                     <div className='w-1/4 p-2' key={i}>

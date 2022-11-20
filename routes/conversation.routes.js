@@ -3,6 +3,7 @@ const { request } = require("express");
 var Conversation = require('models/conversation.model')
 const Message = require("models/messages.model");
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+var Path = require("models/riderroute.model");
 router.post('/conversation', [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -10,6 +11,17 @@ router.post('/conversation', [authMiddleware, authorized], async (req, res) => {
     await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: req.body.text }, { new: true, useFindAndModify: false })
     await new Message({ conversationId: exists._id, sender: req.user._id, text: req.body.text }).save()
     return res.status(200).json(exists)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(error)
+  }
+});
+
+router.get('/paths', async (req, res) => {
+  try {
+    const paths = await Path.find()
+    console.log(paths)
+    return res.status(200).json(paths)
   } catch (error) {
     console.log(error)
     res.status(500).json(error)

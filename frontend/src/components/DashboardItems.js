@@ -99,7 +99,7 @@ export function DashboardRider(props) {
         <div className="bg-white  w-80  " >
             <Link
                 to={{
-                    pathname: `/wahehouse/assign/${props?.rider?.user?.name.replace(/\s/g, '')}`,
+                    pathname: `/wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
                 }}
                 state={{
 

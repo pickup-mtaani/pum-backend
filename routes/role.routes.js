@@ -23,6 +23,21 @@ router.post('/roles', async (req, res) => {
     }
 
 });
+router.post('/sockets', async (req, res) => {
+
+    try {
+        if (!req.body.lat || !req.body.lng) {
+            res.status(400).json({ success: false, message: 'Please provide full lat and lng' })
+        }
+        global.io.emit("change-coord", { lat: parseFloat(req.body.lat), lng: parseFloat(req.body.lng) })
+        return res.status(200).json(req.body)
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 router.get('/roles', async (req, res) => {
     try {
         const roles = await Role.find({ deleted_at: null });
