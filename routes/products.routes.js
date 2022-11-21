@@ -35,6 +35,7 @@ var upload = multer({
 
 
 router.post('/product', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
+    console.log("Product", req.body)
 
     try {
         const Exists = await Product.findOne({ product_name: req.body.product_name, createdBy: req.user._id });
@@ -54,14 +55,14 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 })
 
             }
-            if (req.body.other) {
-                const body = req.body;
-                body.createdBy = req.user._id
-                body.name = req.body.other
-                const newCategory = new Category(body)
-                const category = await newCategory.save()
-                body.category = category._id
-            }
+            // if (req.body.other) {
+            //     const body = req.body;
+            //     body.createdBy = req.user._id
+            //     body.name = req.body.other
+            //     const newCategory = new Category(body)
+            //     const category = await newCategory.save()
+            //     body.category = category._id
+            // }
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles

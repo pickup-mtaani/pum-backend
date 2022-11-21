@@ -236,6 +236,37 @@ router.get('/agents', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+
+router.get('/agents-grouped', async (req, res) => {
+    try {
+        let t = await Agent.aggregate([
+            // First Stage
+            {
+                $match: { "createdAt": { $gte: new Date("2022-10-11"), $lt: new Date("2022-12-12") } }
+            },
+            // Second Stage
+            {
+                $group: {
+                    _id: '$location_id',
+                    count: { $sum: 1 }
+                    // _id: 1,
+                    // totalSaleAmount: { $sum: { $multiply: ["$price", "$quantity"] } },
+                    // averageQuantity: { $avg: "$quantity" },
+                    // count: { $sum: 1 }
+                }
+            },
+            // // Third Stage
+            // {
+            //     $sort: { totalSaleAmount: -1 }
+            // }
+        ])
+        console.log(t)
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
 router.get('/agents-locations', async (req, res) => {
     try {
         let zoneA = await Zone.findOne({ name: "Zone A" })
