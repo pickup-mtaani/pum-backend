@@ -4,6 +4,7 @@ var Unavailable = require("models/unavailable.model");
 var Rider_Package = require('models/rider_package.model')
 var Narations = require('models/agent_agent_narations.model');
 var Agent = require('models/agentAddmin.model')
+var User = require('models/user.model')
 var Sent_package = require("models/package.modal.js");
 var Rider = require("models/rider.model");
 var AgentUser = require('models/agent_user.model');
@@ -196,7 +197,6 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
@@ -247,7 +247,6 @@ router.get("/agent-package-narations/:id", [authMiddleware, authorized], async (
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/agents-packages-recieved-warehouse", [authMiddleware, authorized], async (req, res) => {
   try {
     let packages = await Sent_package.find({ state: "recieved-warehouse", $or: [{ receieverAgentID: req.query.agent }, { senderAgentID: req.query.agent }] }).sort({ createdAt: -1 }).limit(100)
@@ -294,7 +293,10 @@ router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, 
 });
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
+    let user = await User.findById(req.user._id)
+
     let agent = await AgentUser.findOne({ user: req.user._id })
+
     const { period, state } = req.query
     let packages
     if (state === "rejected") {
@@ -408,7 +410,6 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
-
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
     }
@@ -420,7 +421,6 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const pack = await Rent_a_shelf_deliveries.findById(req.params.id)
@@ -479,8 +479,11 @@ router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req
 });
 router.get("/agent-packages-count", [authMiddleware, authorized], async (req, res) => {
   try {
+
     let agent = await AgentUser.findOne({ user: req.user._id })
 
+    let ddropped = await Sent_package.find({ senderAgentID: agent.agent, })
+    console.log(ddropped)
     const { period, state } = req.query
     let packages
 
@@ -598,8 +601,6 @@ router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], asy
       .json({ success: false, message: "operation failed ", error });
   }
 })
-
-
 router.get("/agent-packages-web", async (req, res) => {
   try {
     let packages
@@ -729,7 +730,6 @@ router.get("/user/agent/:id", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/commisions", [authMiddleware, authorized], async (req, res) => {
   try {
     const commisionArr = await Commision.find({

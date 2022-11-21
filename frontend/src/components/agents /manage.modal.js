@@ -11,6 +11,7 @@ function Manage(props) {
 
     const changeInput = (e) => {
         const { name, value } = e.target !== undefined ? e.target : e;
+
         setItem((prevState) => ({
             ...prevState,
             [name]: value,
@@ -18,7 +19,8 @@ function Manage(props) {
     }
 
     const submit = async () => {
-        await props.add_employee(props.agent, item)
+
+        await props.add_employee(props.agent, item, item.role)
         await props.get_agents_employees(props.agent)
         setItem(initialState)
         setShowModal(false)
@@ -82,6 +84,9 @@ function Manage(props) {
                                                                                     name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
                                                                                 })
                                                                             }}>Edit</div>
+                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                                props.activate(emp?._id)
+                                                                            }}>Activate</div>
 
                                                                         </div>
                                                                     </td>

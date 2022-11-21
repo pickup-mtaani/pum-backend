@@ -47,6 +47,7 @@ function Add_admin(props) {
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Role</div>
                                                 <select className=" px-2 border border-slate-200 w-full py-2 rounded-md" name="role" onChange={props.changeInput}>
+                                                    <option value="">select role</option>
                                                     <option value="agent">Agent</option>
                                                     <option value="rider">Rider</option>
                                                     <option value="seller">Seller</option>

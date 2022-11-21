@@ -83,6 +83,7 @@ router.post('/login', async (req, res) => {
             }
             if (userOBJ.role === "agent") {
                 const agent = await Agent.findOne({ user: userOBJ._id })
+                // console.log(agent)
                 if (!agent) {
                     user = userOBJ
                 } else {
@@ -92,15 +93,17 @@ router.post('/login', async (req, res) => {
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number
                     user.isSuperAgent = agent.isSuperAgent
+                    user.isSubAgent = userOBJ.isSubAgent
                     user.location = agent.loc
                     user.hasShelf = agent.hasShelf
                     user.images = agent.images
                     user.name = userOBJ.name
                     user.phone_number = userOBJ.phone_number
-                    user.agent_id = userOBJ._id
+                    user.agent_id = agent._id
                     user.email = userOBJ.email
                     user.role = userOBJ.role
                 }
+                // console.log(user)
             }
             else (
                 user = userOBJ
@@ -360,6 +363,22 @@ router.put('/user/:id/activate', async (req, res) => {
         }
     } catch (error) {
 
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.put('/user/:id/activate-user', async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id }) || await Rider.findOne({ phone_number: req.body.phone_number });
+
+        let userObj = await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
+        console.log(userObj)
+        const token = await jwt.sign({ email: userObj.email, _id: user._id }, process.env.JWT_KEY);
+        return res.status(200).json({ message: 'User Activated successfully and can now login !!', token });
+
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

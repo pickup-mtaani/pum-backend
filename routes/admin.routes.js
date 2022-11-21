@@ -79,6 +79,7 @@ router.post('/login', async (req, res) => {
 router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, res) => {
 
     try {
+        console.log(req.params)
         const body = req.body
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         const user = await Employee.findOne({ email: req.body.email, agent_id: req.params.id, role: req.body.role });
@@ -94,9 +95,11 @@ router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, 
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         body.createdBy = req.user._id
         body.agent_id = req.params.id
-
+        body.isSubAgent = true
+        body.activated = true
         // body.agent = req.params.id
         let newemployee = await new Employee(body);
+
         const saved = await newemployee.save();
 
         await new AgentUser({

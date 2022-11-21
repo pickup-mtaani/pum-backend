@@ -1,5 +1,6 @@
 
 const Format_phone_number = (phone_number) => {
+    console.log(phone_number)
     let Refined
     if (phone_number.charAt(0) === "0") {
         let newPhone = phone_number.slice(1);

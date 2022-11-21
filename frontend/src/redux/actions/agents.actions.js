@@ -46,6 +46,20 @@ export const activate_agents = (id) => async (dispatch) => {
         ;
     }
 };
+export const activate_user = (id) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+
+        const { data } = await axios.put(`/api/user/${id}/activate-user`);
+
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_AGENTS_FAIL" });
+        ;
+    }
+};
 export const get_zones = () => async (dispatch) => {
 
     try {

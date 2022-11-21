@@ -241,25 +241,54 @@ router.get('/agents-grouped', async (req, res) => {
     try {
         let t = await Agent.aggregate([
             // First Stage
-            {
-                $match: { "createdAt": { $gte: new Date("2022-10-11"), $lt: new Date("2022-12-12") } }
-            },
+            // {
+            //     $match: { "createdAt": { $gte: new Date("2022-10-11"), $lt: new Date("2022-12-12") } }
+            // },
             // Second Stage
             {
                 $group: {
                     _id: '$location_id',
-                    count: { $sum: 1 }
-                    // _id: 1,
-                    // totalSaleAmount: { $sum: { $multiply: ["$price", "$quantity"] } },
-                    // averageQuantity: { $avg: "$quantity" },
-                    // count: { $sum: 1 }
-                }
+
+                    count: { $sum: 1 },
+                    data: {
+                        $addToSet: {
+                            business_name: "$business_name",
+                            agent_description: "$agent_description",
+                            opening_hours: "$opening_hours",
+                            closing_hours: "$closing_hours",
+                            prefix: "$prefix",
+                            isOpen: "$isOpen",
+                            isSuperAgent: "$isSuperAgent",
+                            images: "$images",
+                            hasShelf: "$hasShelf",
+                            working_hours: "$working_hours",
+
+                        }
+                        //     $addToSet: "$agent_description",
+
+                        // }
+                        // _id: 1,
+                        // totalSaleAmount: { $sum: { $multiply: ["$price", "$quantity"] } },
+                        // averageQuantity: { $avg: "$quantity" },
+                        // count: { $sum: 1 }
+                    }
+                },
             },
+            {
+                "$set": {
+                    "product_id": "$_id",
+                    "productHFhfhff": "$working_hours",
+
+                },
+
+            },
+
             // // Third Stage
             // {
             //     $sort: { totalSaleAmount: -1 }
             // }
         ])
+        return res.status(200).json(t);
         console.log(t)
     } catch (error) {
         console.log(error)

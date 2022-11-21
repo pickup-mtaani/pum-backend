@@ -33,6 +33,7 @@ const agentadminSchema = new Schema({
         type: Boolean,
         default: false
     },
+
     images: {
         type: Array
     },

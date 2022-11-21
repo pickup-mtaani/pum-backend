@@ -37,6 +37,10 @@ const UserSchema = new Schema({
         type: String,
 
     },
+    isSubAgent: {
+        type: Boolean,
+        default: false
+    },
     agent_id: {
         type: String,
     },
