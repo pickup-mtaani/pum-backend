@@ -16,6 +16,7 @@ var AgentUser = require('models/agent_user.model');
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { request } = require('express');
+var AgentLocation = require('models/agents.model')
 // var { authMiddleware, authorized } = require('./../common/authrized');
 const router = express.Router();
 // const db = require('helpers/db');
@@ -87,6 +88,8 @@ router.post('/login', async (req, res) => {
                 if (!agent) {
                     user = userOBJ
                 } else {
+                    let location = await AgentLocation.findById(agent.location_id)
+                    console.log(location)
                     user.token = token
                     user.business_name = agent.business_name
                     user.opening_hours = agent.opening_hours

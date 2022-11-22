@@ -91,7 +91,8 @@ router.post('/payments', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/products', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
+router.get('/products', [authMiddleware, authorized], async (req, res) => {
+    console.log("first")
     try {
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
