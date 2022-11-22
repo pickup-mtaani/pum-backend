@@ -103,6 +103,7 @@ function Agent(props) {
                         </td>
                         <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
                             <div>Name:{rent?.package?.packageName}</div>
+                            <div>Reciept:{rent?.package?.receipt_no}</div>
                             <div>Value: {rent?.package?.package_value}</div>
                             <div>Color: {rent?.package?.color}</div>
                             <div>Business:{rent?.package?.businessId?.name}</div>

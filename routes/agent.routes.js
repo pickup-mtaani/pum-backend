@@ -12,6 +12,8 @@ var User = require('models/user.model')
 const bcrypt = require('bcryptjs');
 const csv = require('csv-parser')
 var path = require('path');
+var User = require('models/user.model')
+var Agent = require('models/agentAddmin.model')
 var AgentUser = require('models/agent_user.model');
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -73,7 +75,7 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
 router.put('/open-close', [authMiddleware, authorized], async (req, res) => {
     try {
         let { state } = req.query
-        console.log(state)
+
         const open = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
             isOpen: state,
         }, { new: true, useFindAndModify: false })
@@ -237,6 +239,17 @@ router.get('/agents', async (req, res) => {
     }
 });
 
+router.put('/agents/:id', async (req, res) => {
+    try {
+        let agent = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        await User.findOneAndUpdate({ _id: agent.user }, req.body, { new: true, useFindAndModify: false })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+
 router.get('/agents-grouped', async (req, res) => {
     try {
         let t = await Agent.aggregate([
@@ -321,7 +334,7 @@ router.put('/assign-zone/:id', async (req, res) => {
 
         }, { new: true, useFindAndModify: false })
 
-        console.log(v)
+
         return res.status(200).json('updated');
     } catch (error) {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
@@ -338,8 +351,7 @@ router.put('/activate_agent/:id', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.post('/update_agent', upload.array('images'), async (req, res, next) => {
-
+router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
 
 
     try {
@@ -374,17 +386,9 @@ router.post('/update_agent', upload.array('images'), async (req, res, next) => {
             })
 
         }
-
-        const Update = await Agent.findOneAndUpdate({ user: req.body.user_id }, {
-            business_name: req.body.business_name,
-            working_hours: req.body.working_hours,
-            location_id: req.body.location_id,
-            prefix: `Na-${Makeid(5)}`,
-            images: reqFiles,
-            mpesa_number: req.body.mpesa_number,
-            loc: JSON.parse(req.body.loc),
-
-        }, { new: true, useFindAndModify: false })
+        req.body.images = reqFiles
+        req.body.loc = JSON.parse(req.body.loc)
+        const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
     } catch (error) {
