@@ -355,7 +355,7 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
 
 
     try {
-
+        console.log("BODY", req.body)
         // const { errors, isValid } = hairstyleValidation(req.body);
 
         // if (!isValid) {
@@ -397,8 +397,20 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
 
     }
 
+});
 
+router.put('/update-agent/:id', async (req, res, next) => {
+    try {
 
+        req.body.loc = JSON.parse(req.body.loc)
+        const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'an error occured ', error });
+
+    }
 
 });
 

@@ -22,59 +22,59 @@ function Packages(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
 
- 
 
-   const columns = [
-     {
-       sortable: true,
-       name: "Package Name",
-       minWidth: "250px",
-       selector: (row) => row.packageName,
-     },
-     {
-       sortable: true,
-       name: "Package value",
-       minWidth: "250px",
-       selector: (row) => row.package_value,
-     },
-     {
-       sortable: true,
-       name: "Reciept",
-       minWidth: "250px",
-       selector: (row) => row.receipt_no,
-     },
-     {
-       sortable: true,
-       name: "Customer Full Name",
-       minWidth: "225px",
-       selector: (row) => row.customerName,
-     },
-     {
-       sortable: true,
-       name: "Customer Phone Number",
-       minWidth: "250px",
-       selector: (row) => row.customerPhoneNumber,
-     },
 
-     {
-       sortable: true,
-       name: "Reciever",
-       minWidth: "150px",
-       selector: (row) => row.receieverAgentID?.name,
-     },
-     {
-       sortable: true,
-       name: "Sender",
-       minWidth: "150px",
-       selector: (row) => row.senderAgentID?.name,
-     },
-     {
-       sortable: true,
-       name: "Seller",
-       minWidth: "150px",
-       selector: (row) => row.businessId?.name,
-     },
-   ];
+  const columns = [
+    {
+      sortable: true,
+      name: "Package Name",
+      minWidth: "250px",
+      selector: (row) => row.packageName,
+    },
+    {
+      sortable: true,
+      name: "Package value",
+      minWidth: "250px",
+      selector: (row) => row.package_value,
+    },
+    {
+      sortable: true,
+      name: "Reciept",
+      minWidth: "250px",
+      selector: (row) => row.receipt_no,
+    },
+    {
+      sortable: true,
+      name: "Customer Full Name",
+      minWidth: "225px",
+      selector: (row) => row.customerName,
+    },
+    {
+      sortable: true,
+      name: "Customer Phone Number",
+      minWidth: "250px",
+      selector: (row) => row.customerPhoneNumber,
+    },
+
+    {
+      sortable: true,
+      name: "Reciever",
+      minWidth: "150px",
+      selector: (row) => row.receieverAgentID?.name,
+    },
+    {
+      sortable: true,
+      name: "Sender",
+      minWidth: "150px",
+      selector: (row) => row.senderAgentID?.name,
+    },
+    {
+      sortable: true,
+      name: "Seller",
+      minWidth: "150px",
+      selector: (row) => row.businessId?.name,
+    },
+  ];
   const onChangeFilter = (e) => {
     setFilterText(e);
 
@@ -115,7 +115,7 @@ function Packages(props) {
   useEffect(() => {
     // props.FetchUsers({ date: date })
   }, []);
- console.log(props.packages)
+
   return (
     <div className="w-full mx-1">
       <DataTable
@@ -131,9 +131,9 @@ function Packages(props) {
         persistTableHead
         // onChangePage={handlePageChange}
         paginationTotalRows={totalRows}
-        // onChangeRowsPerPage={handlePerRowsChange}
+      // onChangeRowsPerPage={handlePerRowsChange}
       />
-       <DataTable
+      <DataTable
         title={`${props.name}\`s Door Step Packages`}
         columns={door_step_columns}
         data={props.to_door_packages}
@@ -146,9 +146,9 @@ function Packages(props) {
         persistTableHead
         // onChangePage={handlePageChange}
         paginationTotalRows={totalRows}
-        // onChangeRowsPerPage={handlePerRowsChange}
+      // onChangeRowsPerPage={handlePerRowsChange}
       />
-       <div className=" mx-2 my-10">
+      <div className=" mx-2 my-10">
         <DataTable
           title="Rent A shelf Delivery"
           columns={rent_shelf_columns}
@@ -186,4 +186,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { })(Packages);
+export default connect(mapStateToProps, {})(Packages);

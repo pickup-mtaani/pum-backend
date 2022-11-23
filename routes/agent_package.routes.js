@@ -482,8 +482,7 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
 
     let agent = await AgentUser.findOne({ user: req.user._id })
 
-    let ddropped = await Sent_package.find({ senderAgentID: agent.agent, })
-    console.log(ddropped)
+
     const { period, state } = req.query
     let packages
 
@@ -803,7 +802,6 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'senderAgentID'
           }
         })
-      console.log(packages[0])
       return res.status(200)
         .json(packages);
     }

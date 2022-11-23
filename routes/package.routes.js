@@ -209,7 +209,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
         }
-        console.log("Body", body)
+
         let route = await RiderRoutes.findOne({ agent: agent._id })
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
@@ -248,7 +248,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           let G = await Rent_a_shelf_deliveries.findById(packages[i].p_id)
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
         }
-        console.log("Pack", packages[i])
+
         let newpackage = await new Sent_package(packages[i]).save();
         packages[i].assignedTo = route.rider
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
@@ -307,7 +307,7 @@ router.post("/package/delivery-charge", async (req, res) => {
   try {
     let price = 100;
     const { senderAgentID, receieverAgentID } = req.body;
-    console.log(senderAgentID, receieverAgentID);
+
     const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
     const receiver = await Agent.findOne({ _id: receieverAgentID }).populate(
       "zone"
