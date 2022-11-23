@@ -10,10 +10,10 @@ const ProductSchema = new Schema({
         ref: 'business'
     }
     ,
-    // category: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'business_category'
-    // },
+    desc: {
+        type: String,
+
+    },
     images: {
         type: Array
 

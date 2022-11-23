@@ -92,6 +92,8 @@ router.post('/login', async (req, res) => {
                     console.log(location)
                     user.token = token
                     user.business_name = agent.business_name
+                    user.working_days = agent.working_days
+                    user.loc = agent.loc
                     user.opening_hours = agent.opening_hours
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number

@@ -66,12 +66,21 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles
-            const newProduct = new Product(body)
-            const product_created = await newProduct.save()
-            body.product = product_created._id
-            let newStock = new Stock(body)
-            await newStock.save()
-            return res.status(200).json({ message: 'Saved', product_created });
+            if (body.isShelf === true) {
+                req.body.pending_stock = body.qty
+                req.body.qty = 0
+                const newProduct = await new Product(body).save()
+                body.product = newProduct._id
+                let newStock = await new Stock(body).save()
+                return res.status(200).json({ message: 'Saved', newProduct });
+            } else {
+                const product_created = await new Product(body).save()
+                body.product = product_created._id
+                let newStock = await new Stock(body).save()
+                return res.status(200).json({ message: 'Saved', product_created });
+            }
+
+
         }
     } catch (error) {
         console.log(error)
@@ -92,7 +101,7 @@ router.post('/payments', [authMiddleware, authorized], async (req, res) => {
     }
 });
 router.get('/products', [authMiddleware, authorized], async (req, res) => {
-    console.log("first")
+
     try {
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
