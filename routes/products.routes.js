@@ -66,17 +66,19 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             const body = req.body
             body.createdBy = req.user._id
             body.images = reqFiles
-            if (body.isShelf === true) {
+            if (body.type === "shelf") {
                 req.body.pending_stock = body.qty
                 req.body.qty = 0
                 const newProduct = await new Product(body).save()
                 body.product = newProduct._id
                 let newStock = await new Stock(body).save()
+                console.log("SAVED", newProduct)
                 return res.status(200).json({ message: 'Saved', newProduct });
             } else {
                 const product_created = await new Product(body).save()
                 body.product = product_created._id
                 let newStock = await new Stock(body).save()
+                console.log("InHouse SAVED", product_created)
                 return res.status(200).json({ message: 'Saved', product_created });
             }
 
@@ -195,15 +197,26 @@ router.get('/agent-products', [authMiddleware, authorized], async (req, res) => 
 });
 router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Successfull Update ', prod });
+
+        let body = req.body
+        if (body.type === "shelf") {
+            req.body.pending_stock = body.qty
+            req.body.qty = 0
+            const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+            await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Saved', prod });
+        } else {
+            const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+            await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Edited', prod });
+        }
+
 
     } catch (error) {
-
+        console.log("Error", error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.put('/product/:id/delete_image', [authMiddleware, authorized], async (req, res) => {
     try {
         const prod = await Product.findById(req.params.id);
@@ -222,7 +235,6 @@ router.put('/product/:id/delete_image', [authMiddleware, authorized], async (req
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.put('/product/:id/update_images', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
     try {
 
@@ -240,14 +252,24 @@ router.put('/product/:id/update_images', upload.array('images'), [authMiddleware
             })
 
         }
+        // for (var i = 0; i < req.body.image.length; i++) {
+        //     fs.unlink(__dirname + './../uploads/products/' + path.basename(req.body.image[i]), async (err) => {
+        //         if (err) throw err;
+        //         // let newImages = prod.images.splice(req.body.index, 1)
+        //         //     await Product.findOneAndUpdate({ _id: req.params.id }, { images: newImages }, { new: true, useFindAndModify: false })
+        //         //     return res.status(200).json({ message: 'successfullreq.body.y deleted file ' });
+        //     });
 
-        req.body.images = reqFiles
-        let newimages = product.images.concat(reqFiles)
-        const update = await Product.findOneAndUpdate({ _id: req.params.id }, { images: newimages }, { new: true, useFindAndModify: false })
-        return res.status(200).json({ message: 'Images Updated Successfully', update });
+        // }
+
+        req.body.images = reqFiles.concat(req.body.image)
+        // console.log("Images", req.body.images)
+        // let newimages = product.images.concat(reqFiles)
+        const update = await Product.findOneAndUpdate({ _id: req.params.id }, { images: req.body.images }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Images Updated Successfully', });
 
     } catch (error) {
-
+        console.log(" Image update Error", error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
