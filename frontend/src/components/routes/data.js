@@ -3,13 +3,24 @@ import { Link } from "react-router-dom";
 export const Sellers_columns = [
   {
     sortable: true,
+    name: 'Package',
+    minWidth: '225px',
+    selector: row => row?.package?.packageName
+  }, {
+    sortable: true,
+    name: 'Time',
+    minWidth: '225px',
+    selector: row => row.createdAt
+  },
+  {
+    sortable: true,
     name: ' Name',
     minWidth: '225px',
     selector: row => row.collector_name
   },
   {
     sortable: true,
-    name: 'Phine Numner',
+    name: 'Phone Numner',
     minWidth: '250px',
     selector: row => row.collector_phone_number
   },

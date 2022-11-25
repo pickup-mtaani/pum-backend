@@ -930,7 +930,7 @@ router.get("/package/:id", async (req, res) => {
 router.get("/collectors/", async (req, res) => {
   try {
 
-    const users = await Collected.find().populate('package').populate('dispatchedBy')
+    const users = await Collected.find().populate('package').populate('dispatchedBy').sort({ createdAt: -1 })
     return res
       .status(200)
       .json(users);

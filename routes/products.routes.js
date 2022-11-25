@@ -169,7 +169,7 @@ router.get('/all_products/:id', [authMiddleware, authorized], async (req, res) =
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).populate('category').skip(skip)
+        const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });
@@ -185,7 +185,7 @@ router.get('/agent-products', [authMiddleware, authorized], async (req, res) => 
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null }).populate('category').populate('business').skip(skip)
+        const products = await Product.find({ deleted_at: null }).populate('business').skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });
