@@ -153,13 +153,13 @@ router.get('/stocks-pending', [authMiddleware, authorized], async (req, res) => 
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null, pending_stock_confirmed: false }).populate('category').populate('business').skip(skip)
+        const products = await Product.find({ deleted_at: null, pending_stock_confirmed: false }).populate('business').skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });
 
     } catch (error) {
-
+        console.log("Error", error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -197,7 +197,6 @@ router.get('/agent-products', [authMiddleware, authorized], async (req, res) => 
 });
 router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-
         let body = req.body
         if (body.type === "shelf") {
             req.body.pending_stock = body.qty

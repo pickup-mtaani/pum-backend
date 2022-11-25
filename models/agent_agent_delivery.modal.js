@@ -19,7 +19,7 @@ const AgentSchema = new Schema(
     },
     payment_option: {
       type: String,
-      enum: ['customer', 'vendor', 'collection'],
+      enum: ['customer', 'vendor', 'collection', 'booked'],
     },
 
     reject_Id: {

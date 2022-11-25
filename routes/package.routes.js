@@ -386,7 +386,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
-    if (req.params.state === "collected" && package.booked === false) {
+    if (req.params.state === "collected" && package.booked === true) {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let collector = await new Collected(req.body).save()
@@ -525,7 +525,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let rejected = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "rejected", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped-to-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "assigned", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-sender", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-seller", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     } else {
@@ -539,8 +539,7 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let cancelled = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "cancelled" })
       let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped-to-agent" })
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
-      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-sender" })
-
+      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, $or: [{ state: "picked-from-seller" }] })
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
