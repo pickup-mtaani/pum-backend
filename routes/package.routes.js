@@ -511,9 +511,11 @@ router.get("/rent-shelf/track/packages/:id", [authMiddleware, authorized], async
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
   let agent = await AgentUser.findOne({ user: req.user._id })
+  const agentDetaoils = await AgentDetails.findOne({ user: req.user._id });
+
+
   try {
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
@@ -539,9 +541,17 @@ router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req
       let cancelled = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "cancelled" })
       let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped-to-agent" })
       let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
+      let agentOrderRequest = await Sent_package.find({ payment_status: "paid", state: "pending-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      let earlyOrderRequest = await Rent_a_shelf_deliveries.find({ location: agent?.agent, $or: [{ state: "early_collection" }] })
+      let doorSteporderRequest = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
       let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, $or: [{ state: "picked-from-seller" }] })
+      let incomingStock = await Product.find({
+        pending_stock: {
+          $gt: 0
+        }
+      })
       return res.status(200)
-        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+        .json({ message: "Fetched Sucessfully after", earlyOrderRequest: earlyOrderRequest.length, doorSteporderRequest: doorSteporderRequest.length, agentOrderRequest: agentOrderRequest.length, incomingStock: incomingStock.length, pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
   } catch (error) {
     console.log(error);

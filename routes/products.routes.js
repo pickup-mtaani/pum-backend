@@ -35,8 +35,6 @@ var upload = multer({
 
 
 router.post('/product', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
-    console.log("Product", req.body)
-
     try {
         const Exists = await Product.findOne({ product_name: req.body.product_name, createdBy: req.user._id });
         if (Exists) {

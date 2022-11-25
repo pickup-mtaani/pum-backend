@@ -403,7 +403,9 @@ router.put('/update-agent/:id', async (req, res, next) => {
     try {
 
         req.body.loc = JSON.parse(req.body.loc)
+        req.body.working_hours = JSON.parse(req.body.working_hours)
         const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        console.log("BODY", Update)
         return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
     } catch (error) {

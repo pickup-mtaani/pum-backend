@@ -100,6 +100,7 @@ router.post('/login', async (req, res) => {
                     user.isSuperAgent = agent.isSuperAgent
                     user.phone_number = agent.phone_number
                     user.working_hours = agent.working_hours
+                    user.working_days = agent.working_days
                     user.isSubAgent = userOBJ.isSubAgent
                     user.location = agent.loc
                     user.hasShelf = agent.hasShelf

@@ -22,6 +22,7 @@ const agentadminSchema = new Schema({
     working_days: {
         type: String,
     },
+
     closing_hours: {
         type: String,
     },
@@ -36,7 +37,6 @@ const agentadminSchema = new Schema({
         type: Boolean,
         default: false
     },
-
     images: {
         type: Array
     },
@@ -45,7 +45,7 @@ const agentadminSchema = new Schema({
         default: false
     },
     working_hours: {
-        type: String,
+        type: String
     },
     location_id: {
         type: Schema.Types.ObjectId,
@@ -66,7 +66,6 @@ const agentadminSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'zone'
     },
-
     mpesa_number: {
         type: String,
     },
@@ -85,12 +84,10 @@ const agentadminSchema = new Schema({
             type: String,
         }
     },
-
     deleted_at: {
         type: Date,
         default: null
     }
-
 }, { timestamps: true });
 
 
