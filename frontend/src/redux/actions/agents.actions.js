@@ -37,7 +37,7 @@ export const get_agents_employees = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);
 
-        const { data } = await axios.get(`/api/admin/employees/${id}`);
+        const { data } = await axios.get(`/api/admin/all-employees/${id}`);
 
         return data;
     } catch (error) {

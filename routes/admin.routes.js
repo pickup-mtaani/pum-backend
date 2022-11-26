@@ -142,9 +142,22 @@ router.get('/', [authMiddleware, authorized], async (req, res) => {
     }
 
 });
-router.get('/employees/:id', async (req, res) => {
+router.get('/all-employees/:id', async (req, res) => {
     try {
         let emp = await AgentUser.find({ agent: req.params.id }).populate('user');
+
+        return res.status(200).json(emp);
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.get('/employees/:id', async (req, res) => {
+    try {
+        let emp = await AgentUser.find({ agent: req.params.id, role: "agent" }).populate('user');
 
         return res.status(200).json(emp);
 
