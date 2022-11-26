@@ -220,7 +220,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           let p = await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
         }
         packages[i].createdBy = req.user._id
-        packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
+        packages[i].receipt_no = `${agent.prefix ? agent.prefix : "PMT-"}${newPackageCount}`;
         if (!route) {
           return res
             .status(400)
