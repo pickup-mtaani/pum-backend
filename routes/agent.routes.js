@@ -389,9 +389,10 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
                 })
             }
             req.body.images = reqFiles
+
         }
         req.body.loc = JSON.parse(req.body.loc)
-
+        req.body.location_id = "6381f124818a02a28d598fe9"
         const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
