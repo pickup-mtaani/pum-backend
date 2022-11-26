@@ -18,6 +18,20 @@ export const get_agents = () => async (dispatch) => {
         ;
     }
 };
+export const delete_agents = (id) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+
+        const payload = await axios.delete(`/api/delete-agent/${id}`);
+
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_AGENTS_FAIL" });
+        ;
+    }
+};
 export const get_agents_employees = (id) => async (dispatch) => {
 
     try {

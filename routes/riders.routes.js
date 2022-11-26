@@ -3,6 +3,7 @@ var Rider = require('models/rider.model')
 var Rider_Package = require('models/rider_package.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
+var Path = require("./../models/riderroute.model");
 var Agent = require('models/agentAddmin.model')
 var AgentUser = require('models/agent_user.model')
 var User = require('models/user.model')
@@ -238,7 +239,9 @@ router.post('/update-rider', [authMiddleware, authorized], async (req, res) => {
 });
 router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
   try {
+
     let agent = await Agent.findById(req.params.agent)
+
     let newriders = []
     if (agent?.rider) {
       newriders = agent.rider.push(req.params.id)
@@ -379,6 +382,18 @@ router.get("/assigned-packages", [authMiddleware, authorized], async (req, res) 
         },
       ],
     })
+    return res.status(200).json({ message: "Fetched Sucessfully", packages });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/get-points/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const packages = await Path.find({ rider: req.params.id })
     return res.status(200).json({ message: "Fetched Sucessfully", packages });
   } catch (error) {
     console.log(error);

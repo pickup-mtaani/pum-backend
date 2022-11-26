@@ -84,17 +84,18 @@ router.post('/login', async (req, res) => {
             }
             if (userOBJ.role === "agent") {
                 const agent = await Agent.findOne({ user: userOBJ._id })
-                // console.log(agent)
+
                 if (!agent) {
                     user = userOBJ
                 } else {
                     let location = await AgentLocation.findById(agent.location_id)
-                    console.log(location)
                     user.token = token
                     user.business_name = agent.business_name
                     user.working_days = agent.working_days
                     user.loc = agent.loc
+                    user.location_name = location.name
                     user.opening_hours = agent.opening_hours
+                    user.location_id = agent.location_id
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number
                     user.isSuperAgent = agent.isSuperAgent
@@ -111,7 +112,7 @@ router.post('/login', async (req, res) => {
                     user.email = userOBJ.email
                     user.role = userOBJ.role
                 }
-                // console.log(user)
+
             }
             else (
                 user = userOBJ
@@ -167,7 +168,7 @@ router.post('/register', async (req, res) => {
         body.verification_code = MakeActivationCode(5)
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         let NewUser = new User(body);
-        const saved = await NewUser.save();
+        let saved = await NewUser.save();
         if (req.body.role === "rider") {
             await new Rider({ user: saved._id }).save()
         }
@@ -175,6 +176,7 @@ router.post('/register', async (req, res) => {
             req.body.activated = false;
             let agent = await new Agent({ user: saved._id }).save()
             await new AgentUser({ user: saved._id, agent: agent._id }).save()
+            return res.status(200).json({ message: 'User Saved Successfully !!', saved, agent: agent._id });
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         if (req.body.role === "rider" || req.body.role === "seller") {
@@ -381,7 +383,7 @@ router.put('/user/:id/activate-user', async (req, res) => {
         const user = await User.findOne({ _id: req.params.id }) || await Rider.findOne({ phone_number: req.body.phone_number });
 
         let userObj = await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
-        console.log(userObj)
+
         const token = await jwt.sign({ email: userObj.email, _id: user._id }, process.env.JWT_KEY);
         return res.status(200).json({ message: 'User Activated successfully and can now login !!', token });
 

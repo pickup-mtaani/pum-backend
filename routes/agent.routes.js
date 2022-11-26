@@ -55,6 +55,7 @@ var upload = multer({
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { Makeid } = require('../helpers/randomNo.helper');
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
+    console.log("AGENT bODY", req.body)
     try {
         const Exists = await Agent.findOne({ name: req.body.name });
         if (Exists) {
@@ -266,6 +267,7 @@ router.get('/agents-grouped', async (req, res) => {
                     data: {
                         $addToSet: {
                             business_name: "$business_name",
+                            _id: "$_id",
                             agent_description: "$agent_description",
                             opening_hours: "$opening_hours",
                             closing_hours: "$closing_hours",
@@ -352,10 +354,10 @@ router.put('/activate_agent/:id', async (req, res) => {
     }
 });
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
-
-
     try {
-        console.log("BODY", req.body)
+
+        let V = await Agent.findOne({ _id: req.params.id })
+
         // const { errors, isValid } = hairstyleValidation(req.body);
 
         // if (!isValid) {
@@ -371,23 +373,24 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
         //     console.log("image", JSON.stringify(req.body))
         //     return
         // }
+        if (req?.body?.images?.length !== 0) {
+            const reqFiles = [];
+            const url = req.protocol + '://' + req.get('host')
 
-        const reqFiles = [];
-        const url = req.protocol + '://' + req.get('host')
+            for (var i = 0; i < req.files.length; i++) {
+                reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
 
-        for (var i = 0; i < req.files.length; i++) {
-            reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
-
-            await imagemin(["uploads/agents_gallery/" + req.files[i].filename], {
-                destination: "uploads/agents_gallery",
-                plugins: [
-                    imageminMozJpeg({ quality: 30 })
-                ]
-            })
-
+                await imagemin(["uploads/agents_gallery/" + req.files[i].filename], {
+                    destination: "uploads/agents_gallery",
+                    plugins: [
+                        imageminMozJpeg({ quality: 30 })
+                    ]
+                })
+            }
+            req.body.images = reqFiles
         }
-        req.body.images = reqFiles
         req.body.loc = JSON.parse(req.body.loc)
+
         const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
@@ -415,6 +418,24 @@ router.put('/update-agent/:id', async (req, res, next) => {
     }
 
 });
+
+
+router.delete('/delete-agent/:id', async (req, res, next) => {
+    try {
+        let agent = await Agent.findById(req.params.id)
+        await User.findOneAndDelete({ _id: agent.user })
+        await Agent.findOneAndDelete({ _id: req.params.id })
+
+        return res.status(201).json({ success: true, message: 'Agent  Updated successfully ' });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'an error occured ', error });
+
+    }
+
+});
+
 
 
 module.exports = router;

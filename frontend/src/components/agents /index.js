@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, get_agents_employees, activate_user, activate_agents, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
+import { get_agents, delete_agents, get_zones, get_agents_employees, activate_user, activate_agents, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
 import { get_riders, } from '../../redux/actions/riders.actions'
 import { getagentlocations, } from '../../redux/actions/location.actions'
 import { get_routes } from '../../redux/actions/routes.actions'
@@ -81,16 +81,16 @@ function Agents(props) {
       minWidth: '400px',
       selector: row => (
         <div className='flex gap-x-2'>
-          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => {
+          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => {
             setEdit(true); setAgent(row._id); setAgentObj({
               business_name: row.business_name, opening_hours: row.opening_hours, closing_hours: row.closing_hours, prefix: row.prefix, isOpen: row.isOpen,
               isSuperAgent: row.isSuperAgent, images: [], working_hours: row.working_hours, location_id: row.location_id._id, locationName: row.location_id?.name,
               rider: row.rider, zone: row.zone, mpesa_number: row.mpesa_number, agent_description: row.agent_description, ridername: row.rider?.user?.name
             })
-          }}>Edit Agent</div>
-          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { props.activate_agents(row._id); fetch() }}>Activate contact person</div>
-          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { toggleManage(row); setAgent(row._id); }}>Manage Attendants</div>
-
+          }}>Edit Agent</div> */}
+          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { props.activate_agents(row._id); fetch() }}>Activate contact person</div> */}
+          <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { toggleManage(row); setAgent(row._id); fetch() }}>Manage Attendants</div>
+          {/* <div onClick={async () => { await props.delete_agents(row._id); await fetch() }}>Delete Agent</div> */}
         </div>
       )
     },
@@ -193,6 +193,7 @@ function Agents(props) {
         activate={props.activate_user}
         assign={props.assign}
         agent={agent}
+        activate_agents={props.activate_agents}
         toggleManage={toggleManage}
         get_agents_employees={get_agents_employees}
         riders={props.riders}
@@ -217,5 +218,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_agents, get_agents_employees, getagentlocations, activate_user, activate_agents, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
+export default connect(mapStateToProps, { get_agents, delete_agents, get_agents_employees, getagentlocations, activate_user, activate_agents, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
 

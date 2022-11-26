@@ -211,6 +211,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let route = await RiderRoutes.findOne({ agent: agent._id })
+
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -220,6 +221,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix}${newPackageCount}`;
+        if (!route) {
+          return res
+            .status(400)
+            .json({ message: "The sender agent has no rider kindly select a different agent " });
+        }
         packages[i].assignedTo = route.rider
 
         if (packages[i].products?.length !== 0) {

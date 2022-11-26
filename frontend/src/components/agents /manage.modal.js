@@ -53,6 +53,8 @@ function Manage(props) {
                                                 <div className='p-5'>
                                                     <h2 className='text-center py-5 text-2xl tuppercase'>ATTENDANTS</h2>
                                                     <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => setShowModal(true)}> Add an attendant</div>
+                                                    <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => props.activate_agents(props?.data?._id)}>Activate Super Attendant</div>
+
                                                     <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.assign(e.target.value, props.agent)}>
                                                         <option value="">Assign a new Rider</option>
                                                         {props.riders?.map((rider, i) => (
@@ -84,9 +86,9 @@ function Manage(props) {
                                                                                     name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
                                                                                 })
                                                                             }}>Edit</div>
-                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                            {/* <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
                                                                                 props.activate(emp?._id)
-                                                                            }}>Activate</div>
+                                                                            }}>Activate</div> */}
 
                                                                         </div>
                                                                     </td>
