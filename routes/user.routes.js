@@ -174,9 +174,9 @@ router.post('/register', async (req, res) => {
         }
         if (req.body.role === "agent") {
             req.body.activated = false;
-            let agent = await new Agent({ user: saved._id }).save()
-            await new AgentUser({ user: saved._id, agent: agent._id }).save()
-            return res.status(200).json({ message: 'User Saved Successfully !!', saved, agent: agent._id });
+            let agent1 = await new Agent({ user: saved._id }).save()
+            await new AgentUser({ user: saved._id, agent: agent1._id }).save()
+            return res.status(200).json({ message: 'User Saved Successfully !!', saved, agent: agent1._id });
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         if (req.body.role === "rider" || req.body.role === "seller") {
