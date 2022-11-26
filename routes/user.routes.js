@@ -88,12 +88,12 @@ router.post('/login', async (req, res) => {
                 if (!agent) {
                     user = userOBJ
                 } else {
-                    let location = await AgentLocation.findById(agent.location_id)
+                    // let location = await AgentLocation.findById(agent.location_id)
                     user.token = token
                     user.business_name = agent.business_name
                     user.working_days = agent.working_days
                     user.loc = agent.loc
-                    user.location_name = location.name
+                    // user.location_name = location.name
                     user.opening_hours = agent.opening_hours
                     user.location_id = agent.location_id
                     user.closing_hours = agent.closing_hours
