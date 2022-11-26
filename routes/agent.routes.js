@@ -355,8 +355,9 @@ router.put('/activate_agent/:id', async (req, res) => {
 });
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
     try {
-
+        console.log("Params", req.params)
         let V = await Agent.findOne({ _id: req.params.id })
+        console.log("Agent", V)
 
         // const { errors, isValid } = hairstyleValidation(req.body);
 
