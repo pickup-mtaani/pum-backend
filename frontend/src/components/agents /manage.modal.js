@@ -86,9 +86,9 @@ function Manage(props) {
                                                                                     name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
                                                                                 })
                                                                             }}>Edit</div>
-                                                                            {/* <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
-                                                                                props.activate(emp?._id)
-                                                                            }}>Activate</div> */}
+                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                                props.make_super(emp?._id)
+                                                                            }}>Make Super</div>
 
                                                                         </div>
                                                                     </td>

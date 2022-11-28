@@ -356,8 +356,7 @@ router.put('/activate_agent/:id', async (req, res) => {
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
     try {
         console.log("Params", req.params)
-        let V = await Agent.findOne({ _id: req.params.id })
-        console.log("Agent", V)
+
 
         // const { errors, isValid } = hairstyleValidation(req.body);
 
@@ -374,7 +373,9 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
         //     console.log("image", JSON.stringify(req.body))
         //     return
         // }
-        if (req?.body?.images?.length !== 0) {
+
+        if (req?.files?.length > 0) {
+
             const reqFiles = [];
             const url = req.protocol + '://' + req.get('host')
 
@@ -389,12 +390,21 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
                 })
             }
             req.body.images = reqFiles
+            req.body.loc = JSON.parse(req.body.loc)
+
+            const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+            return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
         }
-        req.body.loc = JSON.parse(req.body.loc)
-        req.body.location_id = "6381f124818a02a28d598fe9"
-        const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-        return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
+        else {
+            // delete req.body.images
+            const { images, ...other_details } = req.body
+            req.body.loc = JSON.parse(other_details.loc)
+
+            const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, other_details, { new: true, useFindAndModify: false })
+            return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
+
+        }
 
     } catch (error) {
         console.log(error)

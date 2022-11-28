@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_agents, delete_agents, get_zones, get_agents_employees, activate_user, activate_agents, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
+import { get_agents, delete_agents, make_super, get_zones, get_agents_employees, activate_user, activate_agents, assign, add_employee, fetchpackages } from '../../redux/actions/agents.actions'
 import { get_riders, } from '../../redux/actions/riders.actions'
 import { getagentlocations, } from '../../redux/actions/location.actions'
 import { get_routes } from '../../redux/actions/routes.actions'
@@ -190,6 +190,7 @@ function Agents(props) {
         changeInput={(e) => changeInput(e)}
         add_employee={props.add_employee}
         data={datar}
+        make_super={props.make_super}
         activate={props.activate_user}
         assign={props.assign}
         agent={agent}
@@ -218,5 +219,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_agents, delete_agents, get_agents_employees, getagentlocations, activate_user, activate_agents, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
+export default connect(mapStateToProps, { get_agents, make_super, delete_agents, get_agents_employees, getagentlocations, activate_user, activate_agents, get_riders, add_employee, get_routes, get_zones, assign, fetchpackages })(Agents)
 

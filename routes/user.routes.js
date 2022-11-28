@@ -381,11 +381,22 @@ router.put('/user/:id/activate', async (req, res) => {
 router.put('/user/:id/activate-user', async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.params.id }) || await Rider.findOne({ phone_number: req.body.phone_number });
-
         let userObj = await User.findOneAndUpdate({ _id: req.params.id }, { activated: true }, { new: true, useFindAndModify: false })
-
         const token = await jwt.sign({ email: userObj.email, _id: user._id }, process.env.JWT_KEY);
         return res.status(200).json({ message: 'User Activated successfully and can now login !!', token });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
+router.put('/user/make-super/:id', async (req, res) => {
+    try {
+        let afgent = await Agent.findOneAndUpdate({ user: req.params.id })
+        let userObj = await Agent.findOneAndUpdate({ user: req.params.id }, { isSuperAgent: true }, { new: true, useFindAndModify: false })
+        console.log("first", afgent)
+        return res.status(200).json({ message: ' !!', userObj });
 
     } catch (error) {
         console.log(error)
