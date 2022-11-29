@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import Layout from '../../views/Layouts'
 import DoorStep from './doorStep'
 import Rent from './rent'
+
+import Errand from './errand'
 function index(props) {
 
 
@@ -12,6 +14,7 @@ function index(props) {
       <Agent />
       <DoorStep />
       <Rent />
+      <Errand />
     </Layout>
   )
 }

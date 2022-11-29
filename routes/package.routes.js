@@ -11,14 +11,16 @@ var DoorstepNarations = require('models/door_step_narations.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
 var Track_door_step = require('models/door_step_package_track.model');
-
+var Track_Erand = require('models/erand_package_track.model');
 var Track_agent_packages = require('models/agent_package_track.model');
 var Bussiness = require("models/business.model");
 var Product = require("models/products.model.js");
 var Rider_Package = require('models/rider_package.model')
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
+var Erand_package = require("models/erand_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
+var Courrier = require("models/courier.model");
 var AgentUser = require('models/agent_user.model');
 var {
   authMiddleware,
@@ -35,7 +37,7 @@ const { request } = require("express");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-  // console.log("REDY", req.body)
+  console.log("REDY", req.body)
   // let v = await Mpesa_stk("0720141534", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
@@ -120,6 +122,95 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       }
       if (req.body.payment_option === "vendor") {
         await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
+      }
+      else {
+        await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Package successfully Saved", });
+    } else if (body.delivery_type === "errand") {
+      const { packages } = req.body;
+      for (let i = 0; i < packages.length; i++) {
+        let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        let newPackageCount = 1
+        if (agent_id?.package_count) {
+          newPackageCount = parseInt(agent_id?.package_count + 1)
+        }
+        let route = await RiderRoutes.findOne({ agent: agent_id._id })
+        if (packages[i].other) {
+          let data = { name: packages[i].other, descriptions: packages[i].other }
+          let courriers = await new Courrier(data).save();
+          packages[i].courier = courriers._id
+        }
+        if (packages[i]?.product) {
+
+          const product = await Product.findById(packages[i].product);
+          packages[i].packageName = product.product_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = product.price
+          packages[i].payment_status = "paid"
+          await Product.findOneAndUpdate({ _id: packages[i].product }, { qty: parseInt(product.qty - 1) }, { new: true, useFindAndModify: false })
+
+
+        }
+        if (packages[i].products?.length !== 0) {
+          const item = packages[i].products
+          let products_name = item?.map(function (item) {
+            return `${item.product_name}(${item?.cart_amt})`;
+          })
+            .join(',')
+          let products_price = item?.reduce(function (accumulator, currentValue) {
+            const totalPrice =
+              parseInt(currentValue.price) *
+              parseInt(currentValue?.cart_amt);
+            return accumulator + totalPrice;
+          }, 0)
+          for (let k = 0; k < item.length; k++) {
+            const product = await Product.findById(item[k]._id);
+            await Product.findOneAndUpdate({ _id: item[k]._id }, { qty: parseInt(product.qty) - parseInt(item[k].cart_amt) }, { new: true, useFindAndModify: false })
+          }
+          packages[i].packageName = products_name;
+          packages[i].isProduct = true;
+          packages[i].package_value = products_price;
+        }
+        packages[i].createdBy = req.user._id
+        packages[i].origin = { lng: null, lat: null, name: '' }
+        packages[i].destination = {
+          name: body?.packages[i]?.destination?.name,
+          lat: body?.packages[i]?.destination?.latitude,
+          lng: body?.packages[i]?.destination?.longitude
+        }
+        packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
+        packages[i].assignedTo = route.rider
+
+        let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
+        if (customer === null) {
+          await new Customer({ erands_package_count: 1, total_package_count: 1, seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber }).save()
+        }
+        else {
+          await Customer.findOneAndUpdate({ seller: req.user._id, }, { erands_package_count: parseInt(customer.erands_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
+        }
+        // if (packages[i].pipe === "erand") {
+        //   packages[i].state = "pending-erand"
+        //   await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "erand" }, { new: true, useFindAndModify: false })
+        // }
+        newpackage = await new Erand_package(packages[i]).save();
+
+        let V = await new Track_Erand({
+          package: newpackage._id, created: {
+            createdAt: moment(),
+            createdBy: req.user._id
+          }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+        }).save()
+        await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+        // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
+        // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
+      }
+      if (req.body.payment_option === "vendor") {
+        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "erand")
       }
       else {
         await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })

@@ -24,6 +24,10 @@ const customerSchema = new Schema({
         type: Number,
         default: 0
     },
+    erands_package_count: {
+        type: Number,
+        default: 0
+    },
     agent_package_count: {
         type: Number,
         default: 0

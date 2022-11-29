@@ -32,6 +32,19 @@ export const getdoorstep = (data1) => async (dispatch) => {
     console.log(error)
   }
 };
+export const geterrands = () => async (dispatch) => {
+
+  try {
+
+    const data = await axios.get(`/api/web-errand-packages`);
+
+    let payload = data;
+
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
 
 export const assignwarehouse = (id, state, rider) => async (dispatch) => {
 
