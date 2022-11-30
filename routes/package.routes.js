@@ -95,10 +95,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
         }
-        packages[i].delivery_fee = 70
-        if (zone.name === "Zone A") {
-          packages[i].delivery_fee = 100
-        }
+
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
 
@@ -365,13 +362,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
         }).save()
         if (req.body.payment_option === "collection") {
-          await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+          // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
           await Sent_package.findOneAndUpdate({ _id: newpackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
         }
       }
       if (req.body.payment_option === "vendor") {
-
-        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+        // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
       }
 
 
