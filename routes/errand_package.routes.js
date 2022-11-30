@@ -9,6 +9,8 @@ var Track_Erand = require('models/erand_package_track.model');
 var AgentUser = require('models/agent_user.model');
 var Rejected = require('models/Rejected_parcels.model');
 var Collected = require("models/collectors.model");
+var Zone = require('models/agents.model');
+var AgentZone = require('models/zones.model');
 var Conversation = require('models/conversation.model')
 var Sent_package = require("models/package.modal.js");
 var Courrier = require("models/courier.model");
@@ -161,6 +163,23 @@ router.get("/errand-package-count", [authMiddleware, authorized], async (req, re
     let pickedfromSender = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "picked-from-sender" })
     return res.status(200)
       .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+
+
+  } catch (error) {
+    console.log(error)
+  }
+});
+router.get("/errand-package-delivery-price", async (req, res) => {
+  try {
+    let agent = await AgentDetails.findOne({ _id: req.query.agent })
+    let zon = await Zone.findOne({ _id: agent.location_id })
+
+    let price = 100
+    if (zon.name === "CBD - TOWN NAIROBI") {
+      price = 70
+    }
+    return res.status(200)
+      .json({ message: "Fetched Sucessfully after", price });
 
 
   } catch (error) {

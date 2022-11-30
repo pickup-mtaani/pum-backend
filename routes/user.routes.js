@@ -49,7 +49,6 @@ router.post('/login', async (req, res) => {
             //     const token = await jwt.sign({ email: NewUser.email, email: NewUser.email, _id: NewUser._id }, process.env.JWT_KEY);
             //     return res.status(200).json({ token, email: NewUser.email, email: NewUser.email, _id: NewUser._id });
             // });
-
             return
         }
 
@@ -57,7 +56,7 @@ router.post('/login', async (req, res) => {
             if (userOBJ.role === "agent") {
                 return res.status(402).json({ message: 'Your Account is not Activated kindly contact support for activation' });
             }
-            return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phon via text message' });
+            return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phone via text message' });
         }
 
         if (!userOBJ) {

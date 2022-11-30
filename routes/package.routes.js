@@ -7,7 +7,7 @@ var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Customer = require("models/customer.model");
 var Unavailable = require("models/unavailable.model");
-var DoorstepNarations = require('models/door_step_narations.model');
+var Zone = require('models/zones.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
 var Track_door_step = require('models/door_step_package_track.model');
@@ -52,6 +52,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        let zone = await Zone.findOne({ _id: agent_id.location_id })
         let newPackageCount = 1
         if (agent_id.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
@@ -93,6 +94,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
           lng: body?.packages[i]?.destination?.longitude
+        }
+        packages[i].delivery_fee = 70
+        if (zone.name === "Zone A") {
+          packages[i].delivery_fee = 100
         }
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
