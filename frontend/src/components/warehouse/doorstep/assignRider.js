@@ -60,12 +60,10 @@ function Riderpage(props) {
                     ))}
 
                 </select>
-                {/* <button onClick={() => props.CollectDoorStep(row._id, "assigned")}>AssignRider package { }</button> */}
             </>)
         },
 
     ]
-    // console.log(JSON.stringify(data))
 
     return (
         <Layout>
@@ -88,7 +86,7 @@ function Riderpage(props) {
             <ConfirmModal
                 msg=" Assign this package"
                 show={show}
-                // inputChange={inputChange}
+
                 Submit={async () => { await props.CollectDoorStep(id, "assigned-warehouse", rider); setShow(false); fetch("dropped", location?.state?.agent) }}
             />
         </Layout>
@@ -101,7 +99,7 @@ const mapStateToProps = (state) => {
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
         riders: state.ridersDetails.riders,
-        // error: state.userDetails.error,
+
     };
 };
 

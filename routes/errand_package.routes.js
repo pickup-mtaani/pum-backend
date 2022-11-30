@@ -4,8 +4,10 @@ var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Commision = require("models/commission.model");
 var Declined = require("models/declined.model");
 var moment = require("moment");
+const { v4: uuidv4 } = require('uuid');
 var Track_Erand = require('models/erand_package_track.model');
 var AgentUser = require('models/agent_user.model');
+var Rejected = require('models/Rejected_parcels.model');
 var Collected = require("models/collectors.model");
 var Conversation = require('models/conversation.model')
 var Sent_package = require("models/package.modal.js");
@@ -13,14 +15,34 @@ var Courrier = require("models/courier.model");
 const Message = require("models/messages.model");
 var Erand_package = require("models/erand_delivery_packages.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
-var {
-  authMiddleware,
-  authorized,
-} = require("middlewere/authorization.middlewere");
+var multer = require('multer');
+const fs = require('fs');
+var path = require('path');
+var { authMiddleware, authorized } = require("middlewere/authorization.middlewere");
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { SendMessage } = require("../helpers/sms.helper");
 const Mpesa_stk = require("../helpers/stk_push.helper");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + './../uploads/errands');
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + '-' + fileName)
+  }
+});
 
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
 
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -78,8 +100,8 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
 
 
     if (req.params.state === "rejected") {
-      // let rejected = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
-      // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
+      let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.reason }).save()
+      let r = await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
       console.log(rejected)
 
     }
@@ -92,28 +114,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
         }
       })
 
-      if (req.params.state === "complete") {
-        try {
-          let { customerPhoneNumber, payment_status, delivery_fee } = await Erand_package.findOne({ _id: req.params.id })
-          req.body.package = req.params.id
-          req.body.dispatchedBy = req.user._id
-          //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
-          let collector = await new Collected(req.body).save()
-          await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
-            collected: {
-              collectedby: collector._id,
-              collectedAt: moment(),
-              dispatchedBy: request.user._id
-            }
-          }, { new: true, useFindAndModify: false })
-          if (payment_status === "to-be-paid") {
-            await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
-          }
 
-        } catch (error) {
-          console.log(error)
-        }
-      }
       if (exists) {
         await Conversation.findOneAndUpdate({ _id: exists._id }, { updated_at: new Date(), last_message: 'Hi  been assigned your package kindly feel free to chat' }, { new: true, useFindAndModify: false })
         await new Message({ conversationId: exists._id, sender: req.user_id, text: `Hi  been assigned your package kindly feel free to chat` }).save()
@@ -142,6 +143,7 @@ router.get("/errand-package-count", [authMiddleware, authorized], async (req, re
   try {
 
     let agent = await AgentUser.findOne({ user: req.user._id })
+
     let dropped = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "dropped" })
     let assigneWarehouse = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "assigned-warehouse" })
     let warehouseTransit = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "warehouse-transit" })
@@ -157,6 +159,7 @@ router.get("/errand-package-count", [authMiddleware, authorized], async (req, re
     let assigned = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "assigned" })
     let recievedWarehouse = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "recieved-warehouse" })
     let pickedfromSender = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "picked-from-sender" })
+    console.log("REjected", rejected)
     return res.status(200)
       .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
 
@@ -212,6 +215,49 @@ router.get("/errand-packages", [authMiddleware, authorized], async (req, res) =>
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.post('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('ticket'), async (req, res) => {
+  try {
+    const url = req.protocol + '://' + req.get('host');
+
+    if (req.file) {
+
+      const body = req.body
+      // body.createdBy = req.body.user_id
+      body.state = "collected",
+        body.ticket = url + '/uploads/errand_dispaches' + req.file.filename
+
+      let { customerPhoneNumber, payment_status, delivery_fee } = await Erand_package.findOne({ _id: req.params.id })
+      req.body.package = req.params.id
+      req.body.dispatchedBy = req.user._id
+      await Erand_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+
+      //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package collected by customer)` }).save()
+      let collector = await new Collected(req.body).save()
+      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        collected: {
+          collectedby: collector._id,
+          collectedAt: moment(),
+          dispatchedBy: req.user._id
+        }
+      }, { new: true, useFindAndModify: false })
+
+      if (payment_status === "to-be-paid") {
+        await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
+      }
+
+
+    } else {
+      return res.status(400).json("Reciept Image is Required");
+    }
+
+
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
   }
 });
 // router.get("/errand-packages", async (req, res) => {
@@ -276,6 +322,124 @@ router.get("/errand-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let packages = {}
+
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+
+
+      packages.created = await Erand_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.dropped = await Erand_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.transit = await Erand_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.warehouse = await Erand_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      packages.delivered = await Erand_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.collected = await Erand_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+
+
+    } else {
+
+      packages.created = await Erand_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.dropped = await Erand_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.transit = await Erand_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.warehouse = await Erand_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      packages.delivered = await Erand_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      packages.collected = await Erand_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+    }
+
+    return res
+      .status(200)
+      .json({
+        message: "Fetched Sucessfully",
+        packages,
+
+      });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operationhj failed ", error });
+  }
+});
+
 
 router.get("/rented-errand-packages", [authMiddleware, authorized], async (req, res) => {
   try {
@@ -327,7 +491,7 @@ router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/wh-door-step-packages/:id", [authMiddleware, authorized], async (req, res) => {
+router.get("/wh-errands-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const errand_packages = await Erand_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res

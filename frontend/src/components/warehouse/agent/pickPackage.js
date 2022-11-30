@@ -103,7 +103,7 @@ function Riderpage(props) {
                 <ConfirmModal
                     msg=" Recieve this package"
                     show={show}
-                    // inputChange={inputChange}
+
                     Submit={async () => { await packAction(id, "recieved-warehouse", location?.state?.id); setShow(false); fetch("dropped", location?.state?.agent) }}
                 />
             </div> :
@@ -147,7 +147,7 @@ const mapStateToProps = (state) => {
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
-        // error: state.userDetails.error,
+
     };
 };
 

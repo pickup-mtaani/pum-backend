@@ -37,9 +37,9 @@ function Products(props) {
       minWidth: '250px',
       selector: (row) => (
         <div className="flex gap-x-1">
-         {row.colors.map((color,i)=>(
-          <div style={{width:12,height:12,borderRadius:"50%",backgroundColor:color,borderColor:"black",borderWidth:"1px"}} ></div>
-         ))}
+          {row.colors.map((color, i) => (
+            <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: color, borderColor: "black", borderWidth: "1px" }} ></div>
+          ))}
         </div>
       )
     },
@@ -124,7 +124,7 @@ const mapStateToProps = (state) => {
     users: state.userDetails.users,
     // lastId: state.userDetails.lastId,
     loading: state.userDetails.loading,
-    // error: state.userDetails.error,
+
   };
 };
 

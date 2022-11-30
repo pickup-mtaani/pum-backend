@@ -161,7 +161,7 @@ const mapStateToProps = (state) => {
 
     payments: state.ridersDetails.payments,
     loading: state.ridersDetails.loading,
-    // error: state.userDetails.error,
+
   };
 };
 

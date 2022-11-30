@@ -215,7 +215,7 @@ const mapStateToProps = (state) => {
     riders: state.ridersDetails.riders,
     loading: state.agentsData.loading,
     locations: state.LocationDetail.locations
-    // error: state.userDetails.error,
+
   };
 };
 

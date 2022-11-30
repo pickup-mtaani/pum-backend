@@ -58,7 +58,6 @@ function Riderpage(props) {
 
                     </select> */}
 
-                    {/* <button onClick={() => props.CollectDoorStep(row._id, "assigned")}>AssignRider package { }</button> */}
                 </>)
         },
 
@@ -88,7 +87,7 @@ function Riderpage(props) {
                 // item={item}
                 msg="Are you sure You want to Recieve this package"
                 show={show}
-                // inputChange={inputChange}
+              
                 Submit={() => props.CollectDoorStep(id, "recieved-warehouse")}
             /> */}
         </Layout>
@@ -101,7 +100,7 @@ const mapStateToProps = (state) => {
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
         riders: state.ridersDetails.riders,
-        // error: state.userDetails.error,
+
     };
 };
 

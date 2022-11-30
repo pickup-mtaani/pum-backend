@@ -30,6 +30,8 @@ const Index = props => {
             <div className='flex w-full gap-x-20 '>
                 <WHItem noCount={false} obj={{ title: 'DOOR STEP PACKAGES', pathname: "/wahehouse/doorstep/packages", value: doorStep, state: "on-transit", data: collect }} />
                 <WHItem noCount={false} obj={{ title: 'AGENT PACKAGES', pathname: "/wahehouse/agent-agent/packages", value: agent, state: "recieved-warehouse", data: collect }} />
+                <WHItem noCount={false} obj={{ title: 'ERRAND PACKAGES', pathname: "/wahehouse/errand/packages", value: doorStep, state: "on-transit", data: collect }} />
+
             </div>
             {/* <div className='flex w-full gap-x-20 mt-20'>
                 <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />
@@ -48,7 +50,7 @@ const mapStateToProps = (state) => {
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
-        // error: state.userDetails.error,
+
     };
 };
 

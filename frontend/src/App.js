@@ -22,6 +22,14 @@ import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
 import PickFromAgentRider from "./components/warehouse/agent/pickPackage";
 import GIvetoRiderPage from "./components/warehouse/doorstep/give";
 import AsRiderPage from "./components/warehouse/doorstep/assignRider";
+
+import WereHouseErrands from "./components/warehouse/errand/";
+import PickErrandFromRider from "./components/warehouse/errand/pick";
+import PickErrandFromRiderPage from "./components/warehouse/errand/riderpage";
+import GiveErrandtoRiderPage from "./components/warehouse/errand/give";
+import AssignErrandRiderPage from "./components/warehouse/errand/assignRider";
+
+
 import WHAgent from "./components/warehouse/agent";
 import Routes from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
@@ -52,6 +60,13 @@ const App = () => {
     { path: "/wahehouse/doorstep/pick-packages-from/:rider", element: <PickFromRiderPage /> },
     { path: "/wahehouse/doorstep/give-package-to-rider", element: <GIvetoRiderPage /> },
     { path: "/wahehouse/doorstep/assign-rider", element: <AsRiderPage /> },
+
+    { path: "/wahehouse/errand/packages", element: <WereHouseErrands /> },
+    { path: "/wahehouse/errand/pick-packages", element: <PickErrandFromRider /> },
+    { path: "/wahehouse/errand/pick-packages-from/:rider", element: <PickErrandFromRiderPage /> },
+    { path: "/wahehouse/errand/give-package-to-rider", element: <GiveErrandtoRiderPage /> },
+    { path: "/wahehouse/errand/assign-rider", element: <AssignErrandRiderPage /> },
+
     { path: "/switch-board", element: <SwitchBoard /> },
     { path: "/track/:riders", element: <AssignRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },

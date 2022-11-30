@@ -3,18 +3,20 @@ import DataTable from 'react-data-table-component'
 import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpackages } from '../../../redux/actions/agents.actions'
+import { get_riders, } from '../../../redux/actions/riders.actions'
+import { get_agents, get_zones, recieveErrand, assign, fetchpackages, fetchdoorpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 function Riderpage(props) {
 
     const location = useLocation()
     const [data, setData] = useState([])
+    const [rider, setRider] = useState([])
     const [show, setShow] = useState(false)
-    const [id, setId] = useState([])
+    const [id, setId] = useState('')
     const fetch = async (data, agent) => {
-        let res = await props.fetchdoorpackages("dropped", location?.state?.id)
-
+        let res = await props.fetchdoorpack("recieved-warehouse")
+        await props.get_riders()
         setData(res)
 
 
@@ -27,15 +29,9 @@ function Riderpage(props) {
     }
     useEffect(() => {
 
-        fetch("dropped", location?.state?.agent)
+        fetch()
 
     }, [])
-
-    const Recieve = (row) => {
-
-        setId(row._id)
-        setShow(true)
-    }
 
     const Sellers_columns = [
 
@@ -56,16 +52,18 @@ function Riderpage(props) {
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>
-                <button onClick={() => Recieve(row)}>Recieve package</button>
+                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none"
+                    onChange={(e) => { setShow(true); setId(row._id); setRider(e.target.value) }}>
+                    <option value="">Assign a new Rider</option>
+                    {props.riders?.map((rider, i) => (
+                        <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
+                    ))}
+
+                </select>
             </>)
         },
 
     ]
-    const el = () => (
-        <div className='flex text-black' >
-            <h1>Are you sure You want to assign Brayo this package ?</h1>
-        </div>
-    )
 
     return (
         <Layout>
@@ -85,14 +83,11 @@ function Riderpage(props) {
                 // paginationTotalRows={totalRows}
                 // onChangeRowsPerPage={handlePerRowsChange}
                 /></div>
-
-
-
             <ConfirmModal
-                msg=" Recieve this package"
+                msg=" Assign this package"
                 show={show}
 
-                Submit={async () => { await props.CollectDoorStep(id, "recieved-warehouse"); setShow(false); fetch("dropped", location?.state?.agent) }}
+                Submit={async () => { await props.recieveErrand(id, "assigned-warehouse", rider); setShow(false); fetch("dropped", location?.state?.agent) }}
             />
         </Layout>
     )
@@ -103,10 +98,11 @@ const mapStateToProps = (state) => {
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
+        riders: state.ridersDetails.riders,
 
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectDoorStep, fetchdoorpackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, recieveErrand, get_riders, fetchdoorpack, assignwarehouse })(Riderpage)
 
 

@@ -18,11 +18,12 @@ const erandSchema = new Schema(
     },
     packageName: {
       type: String,
-
     },
     description: {
       type: String,
-
+    },
+    ticket: {
+      type: String,
     },
     state: {
       type: String,
@@ -41,6 +42,10 @@ const erandSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    reject_Id: {
+      type: Schema.Types.ObjectId,
+      ref: "rejected",
+    },
     courier: {
       type: Schema.Types.ObjectId,
       ref: "courier",
@@ -54,12 +59,10 @@ const erandSchema = new Schema(
     customer_location: {
       type: String,
     },
-
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-
     payment_option: {
       type: String,
       enum: ['customer', 'vendor', 'collection'],
@@ -67,20 +70,6 @@ const erandSchema = new Schema(
     origin: {
       lat: {
         type: String,
-
-      },
-      lng: {
-        type: String,
-      },
-      name: {
-        type: String,
-      }
-
-    },
-    destination: {
-      lat: {
-        type: String,
-
       },
       lng: {
         type: String,

@@ -353,6 +353,17 @@ router.put('/activate_agent/:id', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
+router.put('/activate-deactivate/:id', async (req, res) => {
+    try {
+        let use = await User.findOne({ _id: req.params.id })
+        await User.findOneAndUpdate({ _id: req.params.id }, {
+            activated: !use.activated
+        }, { new: true, useFindAndModify: false })
+        return res.status(200).json('activated');
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
     try {
         console.log("Params", req.params)

@@ -174,8 +174,6 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
         .populate('businessId')
-
-
       return res
         .status(200)
         .json(agent_packages);

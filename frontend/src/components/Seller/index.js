@@ -12,7 +12,7 @@ import Date_range from './modals/date_range.modal'
 function Users(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
-  
+
   const [date, setDate] = useState({
     start_date: '',
     end_date: ""
@@ -46,7 +46,7 @@ function Users(props) {
 
   }
   const filter_BY_date = async () => {
-    
+
     await props.FetchUsers({ date: date })
 
   }
@@ -71,11 +71,11 @@ function Users(props) {
           <option value="Monthly">Monthly</option>
           <option value="Yearly">Yearly</option>
         </select>
-        
+
 
       </>
     );
-  }, [searchValue, date,setTime]);
+  }, [searchValue, date, setTime]);
 
   useEffect(() => {
     props.FetchUsers({ date })
@@ -113,7 +113,7 @@ const mapStateToProps = (state) => {
     users: state.userDetails.users,
     // lastId: state.userDetails.lastId,
     loading: state.userDetails.loading,
-    // error: state.userDetails.error,
+
   };
 };
 

@@ -116,7 +116,7 @@ const mapStateToProps = (state) => {
     admins: state.userDetails.admins,
     // lastId: state.userDetails.lastId,
     loading: state.userDetails.loading,
-    // error: state.userDetails.error,
+
   };
 };
 

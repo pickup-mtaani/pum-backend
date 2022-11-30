@@ -23,7 +23,7 @@ function Products(props) {
   const [data, setFilterData] = React.useState([]);
 
   const OPenImagView = async (image) => {
-   
+
     setShowImage(true)
     setImage(image.Images)
     setActive(image.id)
@@ -76,9 +76,9 @@ function Products(props) {
       minWidth: '150px',
       selector: row => row.price
     },
-  
+
   ]
- 
+
   const onChangeFilter = (e) => {
     setFilterText(e)
 
@@ -103,7 +103,7 @@ function Products(props) {
             `${totalRows > 0 ? totalRows : "all"}_products`
           )}
         />
-       
+
 
       </>
     );
@@ -149,7 +149,7 @@ const mapStateToProps = (state) => {
     // lastId: state.userDetails.lastId,
 
     loading: state.userDetails.loading,
-    // error: state.userDetails.error,
+
   };
 };
 

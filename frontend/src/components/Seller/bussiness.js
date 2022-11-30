@@ -46,7 +46,7 @@ function Bussiness(props) {
       name: "Deals in",
       selector: (row) => row.what_u_sale,
     },
-   
+
 
   ];
   const onChangeFilter = (e) => {
@@ -120,7 +120,7 @@ const mapStateToProps = (state) => {
     bussinesses: state.bussiness.bussinsses,
     loading: state.bussiness.loading,
     products: state.products.products,
-    // error: state.userDetails.error,
+
   };
 };
 

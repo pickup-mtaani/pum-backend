@@ -183,7 +183,7 @@ const mapStateToProps = (state) => {
         loading: state.PackageDetails.loading,
         to_door_packages: state.PackageDetails.to_door_packages,
         rent_shelf: state.PackageDetails.rented_shelf_packages
-        // error: state.userDetails.error,
+
     };
 };
 

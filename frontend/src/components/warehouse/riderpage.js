@@ -148,7 +148,7 @@ const mapStateToProps = (state) => {
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
         loading: state.agentsData.loading,
-        // error: state.userDetails.error,
+
     };
 };
 

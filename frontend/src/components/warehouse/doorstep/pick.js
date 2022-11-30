@@ -75,7 +75,7 @@ const mapStateToProps = (state) => {
         packages: state.agentsData.packs,
         riders: state.ridersDetails.riders,
         loading: state.agentsData.loading,
-        // error: state.userDetails.error,
+
     };
 };
 

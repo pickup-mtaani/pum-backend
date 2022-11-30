@@ -37,7 +37,7 @@ const { request } = require("express");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-  console.log("REDY", req.body)
+
   // let v = await Mpesa_stk("0720141534", 1, 1, "doorstep")
   // // console.log(v)
   // return res.status(200).json({ message: v })
@@ -178,11 +178,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].origin = { lng: null, lat: null, name: '' }
-        packages[i].destination = {
-          name: body?.packages[i]?.destination?.name,
-          lat: body?.packages[i]?.destination?.latitude,
-          lng: body?.packages[i]?.destination?.longitude
-        }
+        packages[i].destination = body?.packages[i]?.destination
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
         packages[i].assignedTo = route.rider
 
