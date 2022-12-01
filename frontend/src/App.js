@@ -37,7 +37,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/agents /agentsDetails";
 import SwitchBoard from "./components/packages/switchboard";
-import AssignRider from "./components/assignRider";
+import AssignRider from "./components/TrackRider";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },

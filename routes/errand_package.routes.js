@@ -54,7 +54,11 @@ const router = express.Router();
 router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const Owner = await Erand_package.findById(req.params.id);
+    let package = await Erand_package.findById(req.params.id)
+    // console.log(package.packageName)
     await Erand_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+    // global.io.emit("change-coord", { lat: req.params.id, lng: req.params.state })
+    // return
     if (req.params.state === "declined") {
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }

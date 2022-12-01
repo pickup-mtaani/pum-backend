@@ -70,7 +70,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 const newProduct = await new Product(body).save()
                 body.product = newProduct._id
                 let newStock = await new Stock(body).save()
-                console.log("SAVED", newProduct)
+
                 return res.status(200).json({ message: 'Saved', newProduct });
             } else {
                 const product_created = await new Product(body).save()

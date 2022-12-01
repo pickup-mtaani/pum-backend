@@ -71,7 +71,23 @@ router.get('/stocks/:bussiness_id', [authMiddleware, authorized], async (req, re
     try {
         let current_stock = await Product.find({ business: req.params.bussiness_id, createdBy: req.user._id, qty: { $gt: 0 } })
         let out_of_stock = await Product.find({ business: req.params.bussiness_id, createdBy: req.user._id, qty: { $eq: 0 } })
-        let pending_stock = await Product.find({ business: req.params.bussiness_id, createdBy: req.user._id, pending_stock_confirmed: false, pending_stock: { $gt: 0 } })
+        // let pending_stock = await Product.find({ business: req.params.bussiness_id, createdBy: req.user._id, pending_stock_confirmed: false, pending_stock: { $gt: 0 } })
+
+        return res.status(200).json({ current_stock: current_stock, out_of_stock: out_of_stock });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.get('/stocks/shelf/:bussiness_id', [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        let current_stock = await Product.find({ type: "shelf", business: req.params.bussiness_id, createdBy: req.user._id, qty: { $gt: 0 } })
+        let out_of_stock = await Product.find({ type: "shelf", business: req.params.bussiness_id, createdBy: req.user._id, qty: { $eq: 0 }, pending_stock: { $eq: 0 } })
+        let pending_stock = await Product.find({ type: "shelf", business: req.params.bussiness_id, createdBy: req.user._id, pending_stock_confirmed: false, pending_stock: { $gt: 0 } })
 
         return res.status(200).json({ current_stock: current_stock, out_of_stock: out_of_stock, pending_stock: pending_stock });
 
