@@ -6,7 +6,7 @@ import { io } from 'socket.io-client'
 import { get_riders, fetchpackages } from '../redux/actions/riders.actions'
 import Layout from '../views/Layouts'
 import GoogleMap from './googlemaps/map'
-const socket = io("https://stagingapi.pickupmtaani.com/");
+const socket = io("http://localhost:4000/");
 
 function Map(props) {
     const location = useLocation()
@@ -44,6 +44,11 @@ function Map(props) {
         socket.on('change-coord', data => {
             setDest(data)
             fetchDirections(data)
+        });
+        socket.on('change-stat', data => {
+            console.log(data)
+            // setDest(data)
+            // fetchDirections(data)
         });
     }, [socket])
 

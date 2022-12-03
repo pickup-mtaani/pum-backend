@@ -9,9 +9,10 @@ module.exports = (http) => {
   // global.io = io;
   let riders = [];
   let rooms = {};
+  let notificationrooms = [];
 
   io.on("connection", (socket) => {
-
+    console.log("first connected")
     let rider = null;
     const createRoom = (rider_id) => {
       const roomId = rider_id;
@@ -24,6 +25,8 @@ module.exports = (http) => {
 
       console.log("User created room");
     };
+
+
     const joinRoom = (roomId, userId) => {
       console.log("Join rooms: ", JSON.stringify(rooms));
       console.log(rooms[roomId]);
@@ -92,7 +95,19 @@ module.exports = (http) => {
       }
 
     });
+    socket.on("seller-notification", (data) => {
+      const index = notificationrooms.findIndex(object => object.seller === data.id);
+      if (index === -1) {
+        notificationrooms.push({ seller: data?.id, socket: socket.id });
+      } else {
+        notificationrooms[index] = { seller: data?.id, socket: socket.id }
+      }
+      global.sellers = notificationrooms
 
+      console.log("first", global.sellers)
+      // setRoom
+    });
+    socket.emit("riders", (notificationrooms))
     //
 
     socket.on("track_rider", (data) => {

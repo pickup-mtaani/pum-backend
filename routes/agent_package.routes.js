@@ -10,6 +10,7 @@ var Rider = require("models/rider.model");
 var AgentUser = require('models/agent_user.model');
 var Reject = require("models/Rejected_parcels.model");
 var Track_agent_packages = require('models/agent_package_track.model');
+var Notification = require("models/notification.model");
 var mongoose = require('mongoose')
 var {
   authMiddleware,
@@ -45,7 +46,77 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     const { type, } = req.query
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
     let rider = await Rider.findOne({ user: package.assignedTo })
+    let notefications = []
+    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`).socket
+    const { state } = req.params
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+    if (seller) {
+      switch (state) {
+        case "request":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "picked-from-sender":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 2, descriptions: ` Package #${package.receipt_no}  picked from sender` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "recieved-warehouse":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 6, descriptions: ` Package #${package.receipt_no} recieved at the warehouse` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "assigned-warehouse":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 7, descriptions: ` Package #${package.receipt_no}  assigned to a new rider` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "collected":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 11, descriptions: ` Package #${package.receipt_no}  collected` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "warehouse-transit":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 8, descriptions: ` Package #${package.receipt_no}  dispatched from warehouse` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "dropped-to-agent":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 9, descriptions: ` Package #${package.receipt_no}  dropped to the recieving agent` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "declined":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 11, descriptions: ` Package #${package.receipt_no}  rejected` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "droped":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 5, descriptions: ` Package #${package.receipt_no}  dropped to the the warehouse` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "on-transit":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 4, descriptions: ` Package #${package.receipt_no} on trans-it` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "assigned":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 3, descriptions: ` Package #${package.receipt_no}  been assigned to a rider` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        case "delivered":
+          await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 10, descriptions: ` Package #${package.receipt_no}  been assigned to a rider from the warehouse` }).save()
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
+          break;
+        default:
+          console.log(`Sorry, we are out of ${expr}.`);
+      }
+    }
+
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
