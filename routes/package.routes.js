@@ -112,6 +112,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
 
         let V = await new Track_door_step({
           package: newpackage._id, created: {
@@ -197,6 +198,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         //   await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "erand" }, { new: true, useFindAndModify: false })
         // }
         newpackage = await new Erand_package(packages[i]).save();
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
 
         let V = await new Track_Erand({
           package: newpackage._id, created: {
@@ -263,6 +265,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
           await new Customer({ rent_shelf_package_count: 1, seller: req.user._id, customer_name: packages[i].customerName, customer_phone_number: packages[i].customerPhoneNumber, total_package_count: 1 }).save()
@@ -346,6 +350,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let newpackage = await new Sent_package(packages[i]).save();
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+
         packages[i].assignedTo = route.rider
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
