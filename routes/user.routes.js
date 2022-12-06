@@ -54,9 +54,9 @@ router.post('/login', async (req, res) => {
 
         if (userOBJ && userOBJ.activated === false) {
             if (userOBJ.role === "agent") {
-                return res.status(402).json({ message: 'Your Account is not Activated kindly contact support for activation' });
+                return res.status(406).json({ message: 'Your Account is not Activated kindly contact support for activation', userOBJ });
             }
-            return res.status(402).json({ message: 'Your Account is not Activated kindly enter the code sent to your phone via text message' });
+            return res.status(406).json({ message: 'Your Account is not Activated kindly enter the code sent to your phone via text message', userOBJ });
         }
 
         if (!userOBJ) {
@@ -206,12 +206,16 @@ router.post('/register', async (req, res) => {
 router.post('/:id/resend-token', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
-        // console.log(textbody)
-        await SendMessage(textbody)
+        console.log("User", user)
+
+        if (user.verification_code) {
+            const textbody = { address: `${user.phone_number}`, Body: `Hi ${user.f_name} ${user.l_name}\nYour Activation Code for Pickup mtaani is  ${user.verification_code} ` }
+            await SendMessage(textbody)
+        }
+
         return res.status(200).json({ success: false, message: 'Activation resent ' });
     } catch (error) {
-
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -327,7 +331,7 @@ router.post('/recover_account', async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+        console.log("E", error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
@@ -392,9 +396,7 @@ router.put('/user/:id/activate-user', async (req, res) => {
 });
 router.put('/user/make-super/:id', async (req, res) => {
     try {
-        let afgent = await Agent.findOneAndUpdate({ user: req.params.id })
         let userObj = await Agent.findOneAndUpdate({ user: req.params.id }, { isSuperAgent: true }, { new: true, useFindAndModify: false })
-        console.log("first", afgent)
         return res.status(200).json({ message: ' !!', userObj });
 
     } catch (error) {

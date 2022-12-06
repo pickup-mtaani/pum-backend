@@ -32,6 +32,10 @@ const BizDetailsSchema = new Schema({
         type: { type: String },
         coordinates: []
     },
+    location: {
+        type: Schema.Types.ObjectId,
+        ref: 'business'
+    },
     business: {
         type: Schema.Types.ObjectId,
         ref: 'business'

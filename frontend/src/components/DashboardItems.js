@@ -68,13 +68,16 @@ export function WHItem(props) {
                 state={{
                     title: props.obj.title,
                     lis: props.obj.state,
+                    id: props.obj.id,
                     data: props.obj.value,
                     type: props.obj.type
                 }}
             > <div className="bg-white h-48 p-10  w-full  rounded-xl shadow-sm flex">
                     <div className="h-full w-4/6 ">
-                        <div className=" w-full flex flex-col p-3">
-                            <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
+                        <div className=" w-full flex  justify-between p-3">
+                            <h1 className="font-bold text-gray-400 text-xl text-red-200 uppercase">{props.obj.title}</h1>
+                            {props.obj.count && <div className='bg-red-200 w-10 h-10 flex text-center items-center justify-center rounded-full '>10</div>}
+
                         </div>
                     </div>
                     <div className="h-full w-2/6 flex justify-center items-center">

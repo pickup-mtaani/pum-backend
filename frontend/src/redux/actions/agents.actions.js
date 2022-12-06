@@ -129,6 +129,76 @@ export const agents = () => async (dispatch) => {
         ;
     }
 };
+export const rentShelfagents = () => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_RS_AGENTS" });
+        const { data } = await axios.get(`/api/rent-a-shelf-agents`);
+        let payload = data
+        dispatch({ type: "FETCH_RS_AGENTS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
+export const shelfLocations = () => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_RS_AGENTS" });
+        const { data } = await axios.get(`/api/shelf-locations`);
+        let payload = data
+        dispatch({ type: "FETCH_RS_AGENTS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
+export const rentShelfagentBusiness = (id) => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_RS_AGENTS" });
+        const { data } = await axios.get(`/api/rent-shelf-business/${id}`);
+        let payload = data.bussiness
+        dispatch({ type: "FETCH_RS_AGENTS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
+export const ShelfagentPackages = (id) => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_TODOS" })
+        const { data } = await axios.get(`/api/rent-package/${id}`);
+        let payload = data
+        dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
+export const ShelfagentXPackages = (id) => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_TODOS" })
+        const { data } = await axios.get(`/api/rent-package-expired/${id}`);
+        let payload = data
+        dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
 export const Rideagents = (id) => async (dispatch) => {
     try {
 

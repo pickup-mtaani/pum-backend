@@ -23,6 +23,7 @@ var Erand_package = require("models/erand_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
 var Courrier = require("models/courier.model");
 var AgentUser = require('models/agent_user.model');
+var User = require('models/user.model');
 var {
   authMiddleware,
   authorized,
@@ -32,16 +33,12 @@ const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
 const Mpesa_stk = require("../helpers/stk_push.helper");
 
-const { findOne } = require("../models/rider_routes.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { request } = require("express");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
-
-  // let v = await Mpesa_stk("0720141534", 1, 1, "doorstep")
-  // // console.log(v)
-  // return res.status(200).json({ message: v })
+  let auth = await User.findById(req.user._id)
   let newpackage
   try {
     const body = req.body;
@@ -273,7 +270,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         } else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { rent_shelf_package_count: parseInt(customer.rent_shelf_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
-        await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "request", descriptions: `Package created`, reciept: savedPackage.receipt_no }).save()
+        await new Track_rent_a_shelf({
+          package: savedPackage._id,
+          created: moment(),
+          state: "request",
+          descriptions: `Pkg ${packages[i].receipt_no} created by ${auth.name} `,
+          reciept: savedPackage.receipt_no
+        }).save()
         if (req.body.payment_option === "collection") {
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: savedPackage._id, }, { hasBalance: true }, { new: true, useFindAndModify: false })
         }
@@ -458,6 +461,8 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 
   try {
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
+    let shelf = await AgentDetails.findById("63575250602a3e763b1305ed")
+    let auth = await User.findById(req.user._id)
 
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let notefications = []
@@ -469,11 +474,13 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
           notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
           global.io.to(seller).emit("change-state", { notifications: notefications });
+
           break;
         case "picked-from-seller":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 3, s_type: 2, descriptions: ` Package #${package.receipt_no}  picked from sender` }).save()
           notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
           global.io.to(seller).emit("change-state", { notifications: notefications });
+
           break;
         case "collected":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 3, s_type: 11, descriptions: ` Package #${package.receipt_no}  collected` }).save()
@@ -504,36 +511,64 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
     }
     if (req.params.state === "picked-from-seller") {
-      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: "63575250602a3e763b1305ed", droppedAt: Date.now() }, { new: true, useFindAndModify: false })
+      await new Track_rent_a_shelf({
+        package: req.params.id,
+        droppedAt: Date.now(),
+        droppedTo: "63575250602a3e763b1305ed",
+        state: "picked-from-seller",
+        descriptions: `Pkg ${package.receipt_no} drop-off confirmed by ${auth.name} at ${shelf.business_name} `,
+        reciept: package.receipt_no
+      }).save()
+      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: "63575250602a3e763b1305ed", droppedAt: Date.now() }, { new: true, useFindAndModify: false })
       const textbody = {
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
 
     }
-    if (req.params.state === "assigned" || req.params.state === "assigned-warehouse") {
-      await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
 
-      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
-    }
     if (req.params.state === "collected" && package.booked === true) {
       let collector = await Collected.findOneAndUpdate({ package: req.params.id }, {
         collector_signature: req.body.collector_signature
       }, { new: true, useFindAndModify: false })
-      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+      await new Track_rent_a_shelf({
+        package: req.params.id,
+        collectedAt: Date.now(),
+        collectedby: collector._id,
+        state: "collected",
+        descriptions: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth.name} `,
+        reciept: package.receipt_no
+      }).save()
+      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
-    if (req.params.state === "collected" && package.booked === true) {
+    if (req.params.state === "collected" && package.booked !== true) {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let collector = await new Collected(req.body).save()
-      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+      await new Track_rent_a_shelf({
+        package: req.params.id,
+        collectedAt: Date.now(),
+        collectedby: collector._id,
+        state: "collected",
+        descriptions: `Pkg ${package.receipt_no} was given out to ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth.name} `,
+        reciept: package.receipt_no
+      }).save()
+      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "early_collection") {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       await new Collected(req.body).save()
+      await new Track_rent_a_shelf({
+        package: req.params.id,
+        collectedAt: Date.now(),
+        collectedby: collector._id,
+        state: "early_collection",
+        descriptions: `Pkg ${package.receipt_no} was booked ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth.name} `,
+        reciept: package.receipt_no
+      }).save()
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
         booked: {
           bookedBy: req.user._id,

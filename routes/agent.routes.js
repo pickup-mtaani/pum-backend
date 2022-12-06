@@ -1,11 +1,13 @@
 const express = require('express');
 var AgentLocation = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
+var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require('models/agentAddmin.model')
 var Zone = require('models/zones.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
 const imagemin = require('imagemin');
+const moment = require('moment');
 const imageminMozJpeg = require('imagemin-mozjpeg');
 const fs = require('fs');
 var User = require('models/user.model')
@@ -55,7 +57,7 @@ var upload = multer({
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { Makeid } = require('../helpers/randomNo.helper');
 router.post('/agent', [authMiddleware, authorized], async (req, res) => {
-    console.log("AGENT bODY", req.body)
+
     try {
         const Exists = await Agent.findOne({ name: req.body.name });
         if (Exists) {
@@ -69,6 +71,87 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
             return res.status(200).json({ message: 'Agent Added successfully', saved: saved });
         }
     } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
+
+
+router.get("/rent-package/:id", async (req, res) => {
+    try {
+        let agent_packages
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            agent_packages = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        } else {
+            agent_packages = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        }
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(400)
+            .json({ success: false, message: "operation failed ", error });
+    }
+});
+
+router.get("/rent-package-expired/:id", async (req, res) => {
+    try {
+        let agent_packages
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, location: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        } else {
+            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, location: req.params.id, }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        }
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(400)
+            .json({ success: false, message: "operation failed ", error });
+    }
+});
+
+router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        const agents = await Agent.find({ isSuperAgent: true })
+
+        return res.status(200).json(agents);
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
+
+router.get('/shelf-locations', [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        const agents = await Agent.find({ hasShelf: true })
+
+        return res.status(200).json(agents);
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 

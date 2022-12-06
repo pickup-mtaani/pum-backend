@@ -3,6 +3,7 @@ const initialState = {
     errors: [],
     error: "",
     agents: [],
+    rs_agents: [],
     routes: [],
     packs: [],
     loading: false,
@@ -39,6 +40,23 @@ export default function store(state = initialState, action) {
                 agents: action.payload,
             };
         case "FETCH_AGENTS_FAIL":
+            return {
+                ...state,
+                loading: true,
+                error: action.payload,
+            };
+        case "FETCH_RS_AGENTS":
+            return {
+                ...state,
+                loading: true,
+            };
+        case "FETCH_RS_AGENTS_SUCCESSFUL":
+            return {
+                ...state,
+                loading: false,
+                rs_agents: action.payload,
+            };
+        case "FETCH_RS_AGENTS_FAIL":
             return {
                 ...state,
                 loading: true,

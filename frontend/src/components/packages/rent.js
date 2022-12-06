@@ -11,9 +11,6 @@ function Rent(props) {
 
 
 
-    let initialState = {
-        name: '', email: "", phone_number: '', password: ''
-    }
     const [filterText, setFilterText] = React.useState('');
     const [searchValue, setSearchValue] = useState("")
     const [date, setDate] = useState("")

@@ -15,7 +15,6 @@ const BizSchema = new Schema({
         type: String,
 
     },
-
     has_shelf: {
         type: Boolean,
         default: false
@@ -28,6 +27,15 @@ const BizSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'business_category'
     },
+    shelf_location: {
+        type: Schema.Types.ObjectId,
+        ref: 'agents_details '
+    },
+    shelf_state: {
+        type: String,
+        default: 'Not a shelf'
+    },
+
 
     details: {
         type: Schema.Types.ObjectId,

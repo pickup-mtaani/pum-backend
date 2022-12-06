@@ -38,6 +38,12 @@ import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/agents /agentsDetails";
 import SwitchBoard from "./components/packages/switchboard";
 import AssignRider from "./components/TrackRider";
+
+import Bussiness from "./components/bussiness";
+
+import RentShelf from "./components/rentshelf";
+import RentShelfAgents from "./components/rentshelf/business";
+import RentShelfAgent from "./components/rentshelf/details";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -50,6 +56,11 @@ const App = () => {
     { path: "/packages", element: <Packages /> },
     { path: "/riders", element: <Riders /> },
     { path: "/mpesa-payments", element: <Payments /> },
+
+    { path: "/rent-a-shelf", element: <RentShelf /> },
+    { path: "/rent-a-shelf/:shop/businesses", element: <RentShelfAgents /> },
+    { path: "/rent-a-shelf/:shop/business/:business", element: <RentShelfAgent /> },
+
     { path: "/tracks", element: <Tracks /> },
     { path: "/wahehouse", element: <WareHouse /> },
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
@@ -60,6 +71,8 @@ const App = () => {
     { path: "/wahehouse/doorstep/pick-packages-from/:rider", element: <PickFromRiderPage /> },
     { path: "/wahehouse/doorstep/give-package-to-rider", element: <GIvetoRiderPage /> },
     { path: "/wahehouse/doorstep/assign-rider", element: <AsRiderPage /> },
+
+    { path: "/business", element: <Bussiness /> },
 
     { path: "/wahehouse/errand/packages", element: <WereHouseErrands /> },
     { path: "/wahehouse/errand/pick-packages", element: <PickErrandFromRider /> },

@@ -1,6 +1,7 @@
 const express = require('express');
 var Category = require('models/business_categories.model')
 var Product_subcategory = require('models/sub_categories.model');
+const Catgories = require('helpers/business_category.json')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 
@@ -25,6 +26,34 @@ router.post('/busines-category', [authMiddleware, authorized], async (req, res) 
 
     } catch (error) {
 
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.post('/upload-busines-category', [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        for (let i = 0; i < Catgories.length; i++) {
+            const categoryExists = await Category.findOne({ name: Catgories[i] });
+            if (categoryExists) {
+                return
+            } else {
+                let body = {};
+                body.name = Catgories[i]
+
+                body.createdBy = req.user._id
+                const newCategory = new Category(body)
+                const category = await newCategory.save()
+                console.log("Category saved", category._id)
+            }
+
+        }
+
+        // 
+
+    } catch (error) {
+        console.log("Error saving category", error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }
