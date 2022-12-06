@@ -35,6 +35,7 @@ const Mpesa_stk = require("../helpers/stk_push.helper");
 
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { request } = require("express");
+const { reject } = require("../frontend/src/redux/actions/location.actions");
 const router = express.Router();
 
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
@@ -276,7 +277,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           package: savedPackage._id,
           created: moment(),
           state: "request",
-          descriptions: `Pkg ${packages[i].receipt_no} created by ${auth.name} `,
+          descriptions: [`Pkg ${packages[i].receipt_no} created by ${auth?.name.length > 0 ? auth.name : auth.l_name}  `],
           reciept: savedPackage.receipt_no
         }).save()
         if (req.body.payment_option === "collection") {
@@ -467,7 +468,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     let business = await Bussiness.findById(package.businessId._id)
     let shelf = await AgentDetails.findById(business.shelf_location)
     let auth = await User.findById(req.user._id)
-
+    let narration = await Track_rent_a_shelf.findOne({ package: req.params.id })
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let notefications = []
     const { state } = req.params
@@ -511,19 +512,15 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
     if (req.params.state === "rejected") {
-      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
-      await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+      let reject = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, rejectedId: reject._id }, { new: true, useFindAndModify: false })
+
     }
     if (req.params.state === "picked-from-seller") {
-      await new Track_rent_a_shelf({
-        package: req.params.id,
-        droppedAt: Date.now(),
-        droppedTo: business.shelf_location,
-        state: "picked-from-seller",
-        descriptions: `Pkg ${package.receipt_no} drop-off confirmed by ${auth.name} at ${shelf.business_name} `,
-        reciept: package.receipt_no
-      }).save()
-      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: "63575250602a3e763b1305ed", droppedAt: Date.now() }, { new: true, useFindAndModify: false })
+
+      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name.length > 0 ? auth.name : auth.l_name}  at ${shelf.business_name} `)
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: business.shelf_location, droppedAt: Date.now(), descriptions: new_des }, { new: true, useFindAndModify: false })
       const textbody = {
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
@@ -535,44 +532,35 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       let collector = await Collected.findOneAndUpdate({ package: req.params.id }, {
         collector_signature: req.body.collector_signature
       }, { new: true, useFindAndModify: false })
-      await new Track_rent_a_shelf({
-        package: req.params.id,
-        collectedAt: Date.now(),
-        collectedby: collector._id,
-        state: "collected",
-        descriptions: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth.name} `,
-        reciept: package.receipt_no
-      }).save()
-      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name} `)
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "collected" && package.booked !== true) {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let collector = await new Collected(req.body).save()
-      await new Track_rent_a_shelf({
-        package: req.params.id,
-        collectedAt: Date.now(),
-        collectedby: collector._id,
-        state: "collected",
-        descriptions: `Pkg ${package.receipt_no} was given out to ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth.name} `,
-        reciept: package.receipt_no
-      }).save()
-      // await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
+      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
+
+      // await new Track_rent_a_shelf({
+      //   package: req.params.id,
+      //   collectedAt: Date.now(),
+      //   collectedby: collector._id,
+      //   state: "collected",
+      //   descriptions: `Pkg ${package.receipt_no} was given out to ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `,
+      //   reciept: package.receipt_no
+      // }).save()
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "early_collection") {
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       await new Collected(req.body).save()
-      await new Track_rent_a_shelf({
-        package: req.params.id,
-        collectedAt: Date.now(),
-        collectedby: collector._id,
-        state: "early_collection",
-        descriptions: `Pkg ${package.receipt_no} was booked ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth.name} `,
-        reciept: package.receipt_no
-      }).save()
+      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was booked ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
+
+
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
         booked: {
           bookedBy: req.user._id,
@@ -580,7 +568,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
           bookedFor: req.body.time
         }
       }, { new: true, useFindAndModify: false })
-      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { booked: true }, { new: true, useFindAndModify: false })
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { booked: true, booked: booked, descriptions: new_des }, { new: true, useFindAndModify: false })
       return res.status(200).json({ message: "Sucessfully" });
     }
     return res.status(200).json({ message: "Sucessfully" });

@@ -112,13 +112,16 @@ router.get("/rent-package/:id/:state", async (req, res) => {
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
+                .populate('rejectedId')
             return res.status(200)
                 .json(agent_packages);
         } else {
             agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
-                .populate('location')
-                .populate('businessId')
+                .populate('location', "business_name")
+                .populate('businessId', 'name')
                 .populate('createdBy')
+                .populate('rejectedId', 'reject_reason')
+
             return res.status(200)
                 .json(agent_packages);
         }
@@ -139,6 +142,7 @@ router.get("/rent-package-expired/:id", async (req, res) => {
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
+                .populate("rejectedId")
             return res.status(200)
                 .json(agent_packages);
         } else {
@@ -146,6 +150,7 @@ router.get("/rent-package-expired/:id", async (req, res) => {
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
+                .populate("rejectedId")
             return res.status(200)
                 .json(agent_packages);
         }

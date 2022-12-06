@@ -56,8 +56,8 @@ const NarationsSchema = new Schema({
         ref: 'rent_a_shelf_packages'
     },
     descriptions: {
-        type: String,
-        required: true
+        type: Array,
+        // required: true
     },
 
     deleted_at: {

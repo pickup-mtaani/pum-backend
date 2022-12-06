@@ -23,6 +23,10 @@ const doorstepSchema = new Schema(
       type: String,
 
     },
+    payment_option: {
+      type: String,
+
+    },
     hasBalance: {
       type: Boolean,
       default: false
@@ -55,6 +59,11 @@ const doorstepSchema = new Schema(
 
     payment_amount: {
       type: Number,
+
+    },
+    rejectedId: {
+      type: Schema.Types.ObjectId,
+      ref: "rejected",
 
     },
     location: {
