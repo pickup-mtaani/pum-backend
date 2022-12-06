@@ -84,7 +84,7 @@ export const rent_shelf_expired_columns = [
                 cursor: 'pointer',
             },
         },
-        selector: row => row.state
+        selector: row => row.packageName
     },
     {
         sortable: true,

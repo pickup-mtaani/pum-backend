@@ -219,10 +219,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", });
     } else if (body.delivery_type === "shelf") {
-
+      // console.log(req.body)
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
+        let business = await Bussiness.findById(packages[i].businessId)
+
         packages[0]
         // if (packages[i].state === "early_collection") {
         //   await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "early_collection", descriptions: ``, reciept: savedPackage.receipt_no }).save()
@@ -255,14 +257,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
         }
-        packages[i].location = "63575250602a3e763b1305ed";
+        packages[i].location = business.shelf_location;;
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
         packages[i].receipt_no = `pm-${Makeid(5)}`;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
-        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
@@ -460,8 +462,10 @@ router.post("/package/delivery-charge", async (req, res) => {
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
+
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
-    let shelf = await AgentDetails.findById("63575250602a3e763b1305ed")
+    let business = await Bussiness.findById(package.businessId._id)
+    let shelf = await AgentDetails.findById(business.shelf_location)
     let auth = await User.findById(req.user._id)
 
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
@@ -514,7 +518,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Track_rent_a_shelf({
         package: req.params.id,
         droppedAt: Date.now(),
-        droppedTo: "63575250602a3e763b1305ed",
+        droppedTo: business.shelf_location,
         state: "picked-from-seller",
         descriptions: `Pkg ${package.receipt_no} drop-off confirmed by ${auth.name} at ${shelf.business_name} `,
         reciept: package.receipt_no

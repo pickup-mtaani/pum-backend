@@ -19,7 +19,7 @@ function Index(props) {
         <Layout>
             <div className='flex w-full gap-x-20 '>
                 {data.map((item, index) => (
-                    < WHItem noCount={false} obj={{ title: `${item.business_name}`, pathname: `/rent-a-shelf/${item.business_name.replace(/\s/g, '')}/businesses`, count: true, id: item._id }} />
+                    < WHItem noCount={false} obj={{ title: `${item.business_name}`, pathname: `/rent-a-shelf/${item.business_name.replace(/\s/g, '')}/businesses`, id: item._id }} />
                 ))}
 
             </div>

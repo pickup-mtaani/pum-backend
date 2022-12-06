@@ -8,7 +8,7 @@ import Search_filter_component from '../common/Search_filter_component'
 import { connect } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import { ShelfagentPackages, ShelfagentXPackages } from '../../redux/actions/agents.actions'
+import { ShelfagentPackages, ShelfagentXPackages, ShelfstatePackages } from '../../redux/actions/agents.actions'
 
 function Agents(props) {
     const [filterText, setFilterText] = React.useState('');
@@ -34,7 +34,16 @@ function Agents(props) {
         // console.log("Packs", props.rent_shelf)
         // await props.get_riders()
 
-        // setData(result);
+        setData(result);
+
+    }
+    const fetchState = async (state) => {
+        let result = await props.ShelfstatePackages(location.state.id, state)
+        console.log("first", result)
+        // console.log("Packs", props.rent_shelf)
+        // await props.get_riders()
+
+        setData(result);
 
     }
     const fetchX = async () => {
@@ -73,17 +82,21 @@ function Agents(props) {
     return (
         <Layout>
             <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
-                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={() => setTab('sent')} style={{ backgroundColor: tab === "sent" && "gray" }} >
-                    Sent Packages 10000
+                <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { await fetch(); setTab('sent'); }} style={{ backgroundColor: tab === "sent" && "gray" }} >
+                    All Sent Packages {tab === "sent" && data1.count}
                 </div>
-                <div className='md:w-1/5 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => fetchX()} style={{ backgroundColor: tab === "expired" && "gray" }} >
-                    Expired Packages 10
+                <div className='md:w-1/5 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => await fetchX()} style={{ backgroundColor: tab === "expired" && "gray" }} >
+                    Expired Packages {tab === "sent" && data1.count}
                 </div>
-                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={() => setTab('declined')} style={{ backgroundColor: tab === "declined" && "gray" }} >
-                    Declined Packages 6
+
+                <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { await fetchState('collected'); setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
+                    Collected Packages {tab === "collected" && data1.count}
                 </div>
-                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={() => setTab('shelf')} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-                    shelfed Packages 120
+                <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { await fetchState('pending-doorstep'); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
+                    To door step {tab === "sent" && data1.count}
+                </div>
+                <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { await fetchState('pending-agent'); setTab('pending-agent') }} style={{ backgroundColor: tab === "pending-agent" && "gray" }} >
+                    To agent Packages {tab === "sent" && data1.count}
                 </div>
             </div>
             <div className=" mx-2 my-10">
@@ -118,5 +131,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { ShelfagentPackages, ShelfagentXPackages })(Agents)
+export default connect(mapStateToProps, { ShelfagentPackages, ShelfagentXPackages, ShelfstatePackages })(Agents)
 

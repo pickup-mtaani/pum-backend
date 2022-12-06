@@ -185,6 +185,20 @@ export const ShelfagentPackages = (id) => async (dispatch) => {
         ;
     }
 };
+export const ShelfstatePackages = (id, state) => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_TODOS" })
+        const { data } = await axios.get(`/api/rent-package/${id}/${state}`);
+        let payload = data
+        dispatch({ type: "FETCH_TODOS_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RS_AGENTS_FAIL" });
+        ;
+    }
+};
 export const ShelfagentXPackages = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);

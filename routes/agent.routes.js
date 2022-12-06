@@ -103,20 +103,19 @@ router.get("/rent-package/:id", async (req, res) => {
             .json({ success: false, message: "operation failed ", error });
     }
 });
-
-router.get("/rent-package-expired/:id", async (req, res) => {
+router.get("/rent-package/:id/:state", async (req, res) => {
     try {
         let agent_packages
         if (req.query.searchKey) {
             var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, location: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+            agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
             return res.status(200)
                 .json(agent_packages);
         } else {
-            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, location: req.params.id, }).sort({ createdAt: -1 }).limit(100)
+            agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
@@ -131,6 +130,45 @@ router.get("/rent-package-expired/:id", async (req, res) => {
     }
 });
 
+router.get("/rent-package-expired/:id", async (req, res) => {
+    try {
+        let agent_packages
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        } else {
+            agent_packages = await Rent_a_shelf_deliveries.find({ updatedAt: { $lte: moment().subtract(14, 'days').toDate() }, state: { $ne: "collected" }, businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
+                .populate('location')
+                .populate('businessId')
+                .populate('createdBy')
+            return res.status(200)
+                .json(agent_packages);
+        }
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(400)
+            .json({ success: false, message: "operation failed ", error });
+    }
+});
+
+router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res) => {
+    try {
+
+        const agents = await Agent.find({ isSuperAgent: true })
+
+        return res.status(200).json(agents);
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
 router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res) => {
     try {
 
