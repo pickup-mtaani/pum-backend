@@ -541,7 +541,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let collector = await new Collected(req.body).save()
-      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
+      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
 
       // await new Track_rent_a_shelf({
       //   package: req.params.id,
