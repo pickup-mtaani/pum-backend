@@ -182,7 +182,7 @@ router.get('/rent-shelf-business/:id', async (req, res) => {
                 populate: {
                     path: 'agent',
                 }
-            })
+            }).populate("shelf_location")
 
         return res.status(200).json({ message: 'fetched successfully', bussiness });
     } catch (error) {
