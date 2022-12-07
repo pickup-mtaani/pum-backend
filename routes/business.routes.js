@@ -174,14 +174,13 @@ router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/rent-shelf-business/:id', [authMiddleware, authorized], async (req, res) => {
+router.get('/rent-shelf-business/:id', async (req, res) => {
     try {
         const bussiness = await Business.find({ shelf_location: req.params.id, deleted_at: null }).populate(['category', "agent"])
             .populate({
                 path: 'details',
                 populate: {
                     path: 'agent',
-
                 }
             })
 

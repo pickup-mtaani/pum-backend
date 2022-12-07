@@ -20,6 +20,10 @@ const NarationsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'agents_details'
     },
+    rejectedAt: {
+        type: Date,
+        default: moment()
+    },
     booked: {
         bookedBy: {
             type: Schema.Types.ObjectId,

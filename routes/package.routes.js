@@ -23,6 +23,7 @@ var Erand_package = require("models/erand_delivery_packages.model");
 var Reject = require("models/Rejected_parcels.model");
 var Courrier = require("models/courier.model");
 var AgentUser = require('models/agent_user.model');
+var BizDetails = require('models/business_details.model');
 var User = require('models/user.model');
 var {
   authMiddleware,
@@ -220,12 +221,19 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .status(200)
         .json({ message: "Package successfully Saved", });
     } else if (body.delivery_type === "shelf") {
-      // console.log(req.body)
+
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
-        let business = await Bussiness.findById(packages[i].businessId)
 
+        let business = await Bussiness.findById(packages[i].businessId)
+        let details = await BizDetails.findById(business.details)
+        let agent_id = await AgentDetails.findOne({ _id: details.agent })
+        // console.log("Paack", agent_id)
+        let newPackageCount = 1
+        if (agent_id?.package_count) {
+          newPackageCount = parseInt(agent_id?.package_count + 1)
+        }
         packages[0]
         // if (packages[i].state === "early_collection") {
         //   await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "early_collection", descriptions: ``, reciept: savedPackage.receipt_no }).save()
@@ -258,13 +266,15 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
         }
-        packages[i].location = business.shelf_location;;
+        packages[i].location = business.shelf_location;
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
-        packages[i].receipt_no = `pm-${Makeid(5)}`;
+        packages[i].receipt_no = `PMT-RTF-${parseInt(agent_id?.package_count + 1)}`;
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        await AgentDetails.findOneAndUpdate({ _id: details.agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
@@ -277,7 +287,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           package: savedPackage._id,
           created: moment(),
           state: "request",
-          descriptions: [`Pkg ${packages[i].receipt_no} created by ${auth?.name.length > 0 ? auth.name : auth.l_name}  `],
+          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${auth.name ? auth.name : auth.l_name}` }],
           reciept: savedPackage.receipt_no
         }).save()
         if (req.body.payment_option === "collection") {
@@ -463,7 +473,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
-
+    console.log("ID", req.params.id)
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
     let business = await Bussiness.findById(package.businessId._id)
     let shelf = await AgentDetails.findById(business.shelf_location)
@@ -514,13 +524,18 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     if (req.params.state === "rejected") {
       let reject = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, rejectedId: reject._id }, { new: true, useFindAndModify: false })
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was rejected by ${auth?.name} because ${req.body.rejectReason} ` }]
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, rejectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "picked-from-seller") {
 
-      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name.length > 0 ? auth.name : auth.l_name}  at ${shelf.business_name} `)
-
-      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { droppedTo: business.shelf_location, droppedAt: Date.now(), descriptions: new_des }, { new: true, useFindAndModify: false })
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  at ${shelf.business_name} ` }]
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
+        droppedTo: business.shelf_location, droppedAt: Date.now(),
+        descriptions: new_des
+      }, { new: true, useFindAndModify: false })
       const textbody = {
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
@@ -532,7 +547,8 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       let collector = await Collected.findOneAndUpdate({ package: req.params.id }, {
         collector_signature: req.body.collector_signature
       }, { new: true, useFindAndModify: false })
-      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name} `)
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.substring(1, 4)}xxx xxxx by  ${auth?.name} ` }]
+
 
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
@@ -541,16 +557,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let collector = await new Collected(req.body).save()
-      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
-
-      // await new Track_rent_a_shelf({
-      //   package: req.params.id,
-      //   collectedAt: Date.now(),
-      //   collectedby: collector._id,
-      //   state: "collected",
-      //   descriptions: `Pkg ${package.receipt_no} was given out to ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `,
-      //   reciept: package.receipt_no
-      // }).save()
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx by  ${auth?.name}  ` }]
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
@@ -558,15 +565,15 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       await new Collected(req.body).save()
-      let new_des = narration.descriptions.push(`Pkg ${package.receipt_no} was booked ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth?.name.length > 0 ? auth.name : auth.l_name}  `)
-
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was booked ${req.body.collector_name} of phone No 0${req.body.substring(1, 4)}xxx xxxx by  ${auth?.name}  ` }]
 
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
         booked: {
           bookedBy: req.user._id,
           bookedAt: moment(),
           bookedFor: req.body.time
-        }
+        },
+        descriptions: new_des,
       }, { new: true, useFindAndModify: false })
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { booked: true, booked: booked, descriptions: new_des }, { new: true, useFindAndModify: false })
       return res.status(200).json({ message: "Sucessfully" });
