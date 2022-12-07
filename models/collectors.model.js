@@ -16,6 +16,10 @@ const collectorSchema = new Schema({
         type: String,
         required: true
     },
+    collector_national_id: {
+        type: String,
+        required: true
+    },
     collector_signature: {
         type: String,
         // required: true
