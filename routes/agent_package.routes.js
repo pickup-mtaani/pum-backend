@@ -132,7 +132,9 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           }
         }, { new: true, useFindAndModify: false })
         const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
-        await SendMessage(textbody)
+        let v = await SendMessage(textbody)
+        console.log("first", v)
+
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.senderAgentID.business_name})` }).save()
         let payments = getRandomNumberBetween(100, 200)
         await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
