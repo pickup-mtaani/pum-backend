@@ -39,7 +39,9 @@ const Format_phone_number = require("../helpers/phone_number_formater");
 const { request } = require("express");
 const { reject } = require("../frontend/src/redux/actions/location.actions");
 const router = express.Router();
-
+function getRandomNumberBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   let auth = await User.findById(req.user._id)
   let newpackage
@@ -542,6 +544,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
+      let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, rent_shelf: req.params.id, commision: 0.1 * parseInt(payments) }).save()
 
 
