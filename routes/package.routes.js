@@ -287,7 +287,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           package: savedPackage._id,
           created: moment(),
           state: "request",
-          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${auth.name ? auth.name : auth.l_name}` }],
+          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }],
           reciept: savedPackage.receipt_no
         }).save()
         if (req.body.payment_option === "collection") {
