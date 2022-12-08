@@ -839,6 +839,19 @@ router.get("/user-rent_shelf-package/:id", [authMiddleware, authorized], async (
   }
 
 })
+router.get("/user-rent-shelf-package-search/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let packages = await Rent_a_shelf_deliveries.find({ createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+      .sort({ createdAt: -1 })
+      .limit(100);
+    return res.status(200)
+      .json(packages)
+  } catch (error) {
+
+  }
+
+})
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
 
   try {
