@@ -473,7 +473,7 @@ router.post("/package/delivery-charge", async (req, res) => {
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
-    console.log("ID", req.params.id)
+
     let package = await Rent_a_shelf_deliveries.findById(req.params.id).populate('businessId')
     let business = await Bussiness.findById(package.businessId._id)
     let shelf = await AgentDetails.findById(business.shelf_location)
@@ -522,6 +522,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
     if (req.params.state === "rejected") {
+      console.log("first", req.body)
       let reject = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, rejectedId: reject._id }, { new: true, useFindAndModify: false })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was rejected by ${auth?.name} because ${req.body.rejectReason} ` }]

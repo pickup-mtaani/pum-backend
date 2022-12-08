@@ -12,7 +12,7 @@ module.exports = (http) => {
   let notificationrooms = [];
 
   io.on("connection", (socket) => {
-    console.log("first connected")
+    // console.log("first connected")
     let rider = null;
     const createRoom = (rider_id) => {
       const roomId = rider_id;
