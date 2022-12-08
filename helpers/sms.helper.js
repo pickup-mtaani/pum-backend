@@ -11,13 +11,18 @@ const africastalking = require('africastalking')(credentials);
 const sms = africastalking.SMS
 module.exports.SendMessage = async (data) => {
 
-    const options = {
-        to: [`${data.address}`],
-        message: `${data.Body}`,
-        from: "PikUpMtaani",
+    try {
+        const options = {
+            to: [`${data.address}`],
+            message: `${data.Body}`,
+            from: "PikUpMtaani",
+        }
+        let r = await sms.send(options)
+        console.log(r)
+    } catch (error) {
+        console.log(error)
+
     }
-    let r = await sms.send(options)
-    console.log(r)
 }
 
 // module.exports = sendMessage
