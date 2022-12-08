@@ -369,7 +369,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let newpackage = await new Sent_package(packages[i]).save();
-        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
         packages[i].assignedTo = route.rider
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
