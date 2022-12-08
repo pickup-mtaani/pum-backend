@@ -804,7 +804,7 @@ router.get("/commisions", [authMiddleware, authorized], async (req, res) => {
     const commisionArr = await Commision.find({
       agent: req.user._id,
     })
-      .populate(["agent_package", "doorstep_package", "agent"])
+      .populate(["agent_package", "doorstep_package", "agent", "rent_shelf"])
       .populate({
         path: 'doorstep_package',
         populate: {
@@ -817,6 +817,7 @@ router.get("/commisions", [authMiddleware, authorized], async (req, res) => {
           path: 'businessId',
         }
       })
+      .populate('rent_shelf')
 
     let grouped_commission = {}
     commisionArr.forEach(e => {

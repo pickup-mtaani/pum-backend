@@ -14,6 +14,10 @@ const CommisionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'agent_agent_sent_packages'
     },
+    rent_shelf: {
+        type: Schema.Types.ObjectId,
+        ref: 'rent_a_shelf_packages'
+    },
     agent: {
         type: Schema.Types.ObjectId,
         ref: 'user'

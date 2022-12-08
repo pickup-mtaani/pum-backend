@@ -14,6 +14,7 @@ var Track_door_step = require('models/door_step_package_track.model');
 var Track_Erand = require('models/erand_package_track.model');
 var Track_agent_packages = require('models/agent_package_track.model');
 var Bussiness = require("models/business.model");
+var Commision = require("models/commission.model");
 var Product = require("models/products.model.js");
 var Rider_Package = require('models/rider_package.model')
 var Notification = require("models/notification.model");
@@ -541,6 +542,8 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
         address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hello  ${package.customerName}, Collect parcel ${package.receipt_no} from ${package?.businessId?.name} at Philadelphia house Track now:  pickupmtaani.com
       ` }
       await SendMessage(textbody)
+      await new Commision({ agent: req.user._id, rent_shelf: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+
 
     }
 
@@ -598,6 +601,7 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
         .populate('location')
         .populate('businessId')
         .populate('createdBy')
+        .populate('rejectedId', 'reject_reason')
       return res.status(200)
         .json(agent_packages);
     } else {
@@ -605,6 +609,7 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
         .populate('location')
         .populate('businessId')
         .populate('createdBy')
+        .populate('rejectedId', 'reject_reason')
       return res.status(200)
         .json(agent_packages);
     }
