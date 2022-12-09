@@ -8,6 +8,7 @@ import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import AssignedPackModal from './AssignedPackModal'
 import { Link } from 'react-router-dom'
+import ConfirmModal from '../confirm'
 
 
 function Users(props) {
@@ -19,27 +20,48 @@ function Users(props) {
   const [filterText, setFilterText] = React.useState('');
   const [searchValue, setSearchValue] = useState("")
   const [date, setDate] = useState("")
+  const [show, setShow] = useState(false)
+  const [id, setId] = useState([])
   const [popupMark, setlocapopup] = useState({
 
   })
   const [showModal, setShowModal] = useState(false);
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
-  const mapContainer = useRef(null);
-  const map = useRef(null);
-  const [lng, setLng] = useState(36.817223);
-  const [lat, setLat] = useState(-1.286389);
-  const [zoom, setZoom] = useState(9);
+
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [data1, setData] = React.useState([]);
-  const [show, togglePopup] = useState();
+
   const [item, setItem] = useState([]);
 
   const onChangeFilter = (e) => {
     setFilterText(e)
 
   }
+  const conditionalRowStyles = [
+    {
+      when: row => row.has_shelf,
+      style: {
+        backgroundColor: '#dbdbdb',
+        color: 'white',
+        '&:hover': {
+          cursor: 'pointer',
+        },
+      },
+    },
+    {
+      when: row => row.request_shelf,
+      style: {
+        backgroundColor: '#d5d3e5',
+        color: 'white',
+        '&:hover': {
+          cursor: 'pointer',
+        },
+      },
+    },
+
+  ];
 
   const columns = [
     {
@@ -54,25 +76,29 @@ function Users(props) {
 
     {
       sortable: true,
-      name: 'Assign agent ',
+      name: 'Action',
       minWidth: '250px',
       selector: row => (
-        <div onClick={() => props.activateShelf(row._id)}>
-          Activate rent a shelf
-        </div>
+        <>
+          {!row.request_shelf && <div onClick={() => activate(row)}>
+            Activate rent a shelf
+          </div>}
+        </>
+
       )
     }
 
   ]
 
-  const assignagentRider = async (e, id) => {
+  const activate = async (data) => {
 
-    await props.assignAgent(e.target.value, id)
+    setId(data._id)
+    setShow(true)
+    await props.activateShelf(data._id)
     await props.get_business()
   }
 
   const subHeaderComponentMemo = React.useMemo(() => {
-
     return (
       <>
         <Search_filter_component
@@ -90,28 +116,26 @@ function Users(props) {
       </>
     );
   }, [searchValue, date,]);
-  const f = async () => {
-    let r = await props.get_business()
-    setData(r)
-    console.log("Business", r)
+  const fetch = async () => {
+    let result = await props.get_business()
+    setData(result)
+
   }
   useEffect(() => {
-    f()
-
-
+    fetch()
   }, [])
 
   return (
     <Layout>
       <div className=" mx-2 ">
-        {/* <div ref={mapContainer} className="map-container my-2" style={{height: '400px'}} /> */}
         <DataTable
-          title=" Riders"
+          title="Businesses"
           columns={columns}
           data={data1}
           pagination
           paginationServer
           progressPending={props.loading}
+          conditionalRowStyles={conditionalRowStyles}
           paginationResetDefaultPage={resetPaginationToggle}
           subHeader
           subHeaderComponent={subHeaderComponentMemo}
@@ -122,17 +146,12 @@ function Users(props) {
         />
 
       </div>
+      <ConfirmModal
+        msg=" Recieve this package"
+        show={show}
 
-      <AssignedPackModal
-        show={showModal}
-        data={data}
-        riders={props.riders}
-        // changeInput={(e) => changeInput(e)}
-        // submit={() => submit()}
-        toggle={() => setShowModal(false)}
+        Submit={async () => { await props.activateShelf(id); setShow(false); fetch() }}
       />
-
-
     </Layout>
   )
 }

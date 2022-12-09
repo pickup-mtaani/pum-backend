@@ -162,7 +162,7 @@ function Users(props) {
   return (
     <Layout>
       <div className=" mx-2 ">
-        {/* <div ref={mapContainer} className="map-container my-2" style={{height: '400px'}} /> */}
+
         <DataTable
           title=" Riders"
           columns={columns}

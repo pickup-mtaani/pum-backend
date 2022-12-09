@@ -75,8 +75,6 @@ router.post('/agent', [authMiddleware, authorized], async (req, res) => {
     }
 
 });
-
-
 router.get("/rent-package/:id", async (req, res) => {
     try {
         let agent_packages
@@ -132,7 +130,6 @@ router.get("/rent-package/:id/:state", async (req, res) => {
             .json({ success: false, message: "operation failed ", error });
     }
 });
-
 router.get("/rent-package-expired/:id", async (req, res) => {
     try {
         let agent_packages
@@ -161,7 +158,6 @@ router.get("/rent-package-expired/:id", async (req, res) => {
             .json({ success: false, message: "operation failed ", error });
     }
 });
-
 router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res) => {
     try {
 
@@ -186,7 +182,6 @@ router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res
     }
 
 });
-
 router.get('/shelf-locations', [authMiddleware, authorized], async (req, res) => {
     try {
 
@@ -365,7 +360,6 @@ router.get('/agents', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.put('/agents/:id', async (req, res) => {
     try {
         let agent = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
@@ -376,7 +370,6 @@ router.put('/agents/:id', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.get('/agents-grouped', async (req, res) => {
     try {
         let t = await Agent.aggregate(
@@ -450,7 +443,6 @@ router.get('/agents-grouped', async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-
 router.get('/agents-locations', async (req, res) => {
     try {
         let zoneA = await Zone.findOne({ name: "Zone A" })
@@ -566,7 +558,6 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
     }
 
 });
-
 router.put('/update-agent/:id', async (req, res, next) => {
     try {
 
@@ -583,8 +574,6 @@ router.put('/update-agent/:id', async (req, res, next) => {
     }
 
 });
-
-
 router.delete('/delete-agent/:id', async (req, res, next) => {
     try {
         let agent = await Agent.findById(req.params.id)

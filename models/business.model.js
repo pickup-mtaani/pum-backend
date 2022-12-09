@@ -19,6 +19,10 @@ const BizSchema = new Schema({
         type: Boolean,
         default: false
     },
+    request_shelf: {
+        type: Boolean,
+        default: false
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'

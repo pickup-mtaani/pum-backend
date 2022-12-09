@@ -110,7 +110,7 @@ router.put('/business/:id', [authMiddleware, authorized], async (req, res) => {
 router.put('/activate-shelf/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         const body = req.body
-        const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { has_shelf: true }, { new: true, useFindAndModify: false })
+        const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { has_shelf: true, request_shelf: false }, { new: true, useFindAndModify: false })
         return res.status(200).json({ message: 'Edited successfully', Edited });
     } catch (error) {
 
@@ -122,7 +122,7 @@ router.put('/request-shelf/:id', [authMiddleware, authorized], async (req, res) 
         const body = req.body
 
         if (body.choice) {
-            const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { shelf_location: body.shelf_location, has_shelf: true }, { new: true, useFindAndModify: false })
+            const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { shelf_location: body.shelf_location, request_shelf: true }, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'Edited successfully', Edited });
         } else {
             return res.status(200).json({ message: 'Edited successfully' });

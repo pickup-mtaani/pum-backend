@@ -560,7 +560,7 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
 
     if (period === 0 || period === undefined || period === null) {
       let packages = await Sent_package.find({ payment_status: "paid", state: state, });
-      // let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: "dropped" })
+      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: "dropped" })
       let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: "assigned-warehouse" })
       let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: "warehouse-transit" })
       let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: "unavailable" })
