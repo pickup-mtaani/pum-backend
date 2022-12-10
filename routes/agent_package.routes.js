@@ -41,6 +41,7 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
     console.log(err)
   }
 })
+
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -287,6 +288,29 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .status(200)
         .json(agent_packages);
     }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agent-search/:state", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let agent = await AgentUser.findOne({ user: req.user._id })
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let agent_packages
+
+    agent_packages = await Sent_package.find({ payment_status: "paid", state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
+    return res
+      .status(200)
+      .json(agent_packages);
+
   } catch (error) {
     console.log(error);
     return res
