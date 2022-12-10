@@ -113,6 +113,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].state = "pending-doorstep"
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
         }
+        packages[i].createdAt = moment().format('YYYY-MM-DD');
+        packages[i].time = moment().format('hh:mm');
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
 
@@ -199,6 +201,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         //   packages[i].state = "pending-erand"
         //   await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "erand" }, { new: true, useFindAndModify: false })
         // }
+        packages[i].createdAt = moment().format('YYYY-MM-DD');
+        packages[i].time = moment().format('hh:mm');
         newpackage = await new Erand_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
 
@@ -273,6 +277,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id;
         packages[i].businessId = req.body.businessId;
         packages[i].receipt_no = `PMT-RTF-${parseInt(agent_id?.package_count + 1)}`;
+        packages[i].createdAt = moment().format('YYYY-MM-DD');
+        packages[i].time = moment().format('hh:mm');
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -361,9 +367,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].packageName = products_name;
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
-          packages[i].newcreatedAt = moment().format('YYYY-MM-DD');
-          packages[i].time = moment().format('hh:mm');
-          console.log(packages[i])
+
 
         }
         if (packages[i].pipe === "agent") {
@@ -371,6 +375,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           let G = await Rent_a_shelf_deliveries.findById(packages[i].p_id)
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
         }
+        packages[i].createdAt = moment().format('YYYY-MM-DD');
+        packages[i].time = moment().format('hh:mm');
 
         let savedPackage = await new Sent_package(packages[i]).save();
         await new Track_agent_packages({

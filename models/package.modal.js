@@ -1,4 +1,5 @@
 var mongoose = require("mongoose");
+const { default: Date_range } = require("../frontend/src/components/Seller/modals/date_range.modal");
 
 const Schema = mongoose.Schema;
 
@@ -91,8 +92,22 @@ const PackageSchema = new Schema(
       type: Boolean,
       default: false,
     },
+
+    createdAt: {
+      type: Date,
+
+    },
+    updatedAt: {
+      type: Date,
+      default: new Date()
+
+    },
+    time: {
+      type: String,
+
+    },
   },
-  { timestamps: true }
+
 );
 
 const Package = mongoose.model("agent_agent_sent_packages", PackageSchema);

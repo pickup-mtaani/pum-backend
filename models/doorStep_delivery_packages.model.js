@@ -127,9 +127,22 @@ const doorstepSchema = new Schema(
       type: String,
       enum: ['customer', 'vendor', 'collection'],
     },
+    createdAt: {
+      type: Date,
+
+    },
+    updatedAt: {
+      type: Date,
+      default: new Date()
+
+    },
+    time: {
+      type: String,
+
+    },
 
   },
-  { timestamps: true }
+
 );
 
 const Doorstep = mongoose.model("doorStep_delivery_packages", doorstepSchema);

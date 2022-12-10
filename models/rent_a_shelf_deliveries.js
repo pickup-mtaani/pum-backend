@@ -85,8 +85,21 @@ const doorstepSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    createdAt: {
+      type: Date,
+
+    },
+    updatedAt: {
+      type: Date,
+      default: new Date()
+
+    },
+    time: {
+      type: String,
+
+    },
   },
-  { timestamps: true }
+
 );
 
 const Doorstep = mongoose.model("rent_a_shelf_packages", doorstepSchema);

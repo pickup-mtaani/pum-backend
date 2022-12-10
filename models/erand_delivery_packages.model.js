@@ -122,9 +122,22 @@ const erandSchema = new Schema(
       type: String,
       enum: ['customer', 'vendor', 'collection'],
     },
+    createdAt: {
+      type: Date,
+
+    },
+    updatedAt: {
+      type: Date,
+      default: new Date()
+
+    },
+    time: {
+      type: String,
+
+    },
 
   },
-  { timestamps: true }
+
 );
 
 module.exports = mongoose.model("erand_delivery_packages", erandSchema);
