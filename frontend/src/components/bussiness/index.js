@@ -80,7 +80,7 @@ function Users(props) {
       minWidth: '250px',
       selector: row => (
         <>
-          {!row.request_shelf && <div onClick={() => activate(row)}>
+          {row.request_shelf && <div onClick={() => activate(row)}>
             Activate rent a shelf
           </div>}
         </>

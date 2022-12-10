@@ -268,6 +268,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
 router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
@@ -356,6 +357,26 @@ router.get("/agent-expired-packages", [authMiddleware, authorized], async (req, 
         .sort({ createdAt: -1 });
       return res.status(200).json({ packages, "count": packages.length });
     }
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let packages = await Sent_package.find({ assignedTo: req.user._id })
+      // .populate('createdBy', 'f_name l_name name phone_number')
+      // .populate('receieverAgentID')
+      // .populate('senderAgentID')
+      // .populate("businessId", "name")
+      .sort({ createdAt: -1 });
+    packages.newcreatedAt = moment(packages.createdAt).format('YYYY-MM-DD');
+    packages.time = moment(packages.createdAt).format('hh:mm');
+    console.log(packages[0].time)
+    return res.status(200).json({ packages, "count": packages.length });
+
   } catch (error) {
     return res
       .status(400)

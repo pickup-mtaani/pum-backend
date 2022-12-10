@@ -307,6 +307,18 @@ router.get("/riders", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
+  try {
+    // const riders = await User.find({ role: 'rider' })
+    const agents = await RiderRoutes.find({ rider: req.user._id }).populate('agent', "business_name")
+    return res.status(200).json(agents);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.put("/agent/package1/:id/assign-rider", async (req, res) => {
   console.log("req.body")
   try {

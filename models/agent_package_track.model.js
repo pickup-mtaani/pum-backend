@@ -129,14 +129,13 @@ const NarationsSchema = new Schema({
         },
     },
 
-
     package: {
         type: Schema.Types.ObjectId,
         ref: 'agent_agent_sent_packages'
     },
     descriptions: {
-        type: String,
-        required: true
+        type: Array,
+        // required: true
     },
 
     deleted_at: {
