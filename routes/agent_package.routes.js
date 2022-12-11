@@ -438,10 +438,35 @@ router.get("/rider-packages/:state", [authMiddleware, authorized], async (req, r
       // .populate('senderAgentID')
       // .populate("businessId", "name")
       .sort({ createdAt: -1 });
-    console.log(packages[i].time)
+
     return res.status(200).json({ packages, "count": packages.length });
 
   } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agents = []
+
+    let { state } = req.query
+
+    let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+
+      agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : []
+
+    }
+
+    return res.status(200)
+      .json(agents_count);
+
+  } catch (error) {
+    console.log(error);
     return res
       .status(400)
       .json({ success: false, message: "operation failed ", error });

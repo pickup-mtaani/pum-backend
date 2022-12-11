@@ -438,45 +438,30 @@ router.get("/rent-shelf-package-narations/:id", [authMiddleware, authorized], as
 });
 router.post("/package/delivery-charge", async (req, res) => {
   try {
-    let price = 100;
+    let price;
     const { senderAgentID, receieverAgentID } = req.body;
 
     const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
 
-    const receiver = await Agent.findOne({ _id: receieverAgentID }).populate(
-      "zone"
-    );
+    const receiver = await Agent.findOne({ _id: receieverAgentID }).populate("zone");
     if (
-      (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B") ||
-      (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")
-    ) {
-      price = 120;
-    } else if (
-      (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B") ||
-      (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C")
-    ) {
-      price = 210;
-    } else if (
-      (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A") ||
-      (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
-    ) {
-      price = 250;
-    } else if (
-      sender?.zone.name === "Zone A" &&
-      receiver?.zone.name === "Zone A"
+      (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B")
     ) {
       price = 100;
-    } else if (
-      sender?.zone.name === "Zone B" &&
-      receiver?.zone.name === "Zone A"
-    ) {
-      price = 120;
-    } else if (
-      sender?.zone.name === "Zone C" &&
-      receiver?.zone.name === "Zone C"
-    ) {
-      price = 250;
     }
+    else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")) {
+      price = 150;
+    } else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone B")
+    ) {
+      price = 100
+    } else if ((sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
+    ) { price = 250 }
+    else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
+      price = 200;
+    } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
+      price = 100;
+    }
+    else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C") { price = 250 }
     return res.status(200).json({ message: "price set successfully ", price });
   } catch (error) {
     console.log(error);
