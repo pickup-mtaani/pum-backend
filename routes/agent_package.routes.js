@@ -302,11 +302,11 @@ router.get("/agent-search/:state", [authMiddleware, authorized], async (req, res
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
     let agent_packages
 
-    agent_packages = await Sent_package.find({ payment_status: "paid", state: req.params.state, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+    agent_packages = await Sent_package.find({ state: req.params.state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name')
       .populate('receieverAgentID', 'business_name')
       .populate('senderAgentID', 'business_name')
-      .populate('businessId')
+      .populate('businessId', 'name')
     return res
       .status(200)
       .json(agent_packages);

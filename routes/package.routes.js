@@ -450,32 +450,32 @@ router.post("/package/delivery-charge", async (req, res) => {
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B") ||
       (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")
     ) {
-      price = 1;
+      price = 120;
     } else if (
       (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone B") ||
       (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C")
     ) {
-      price = 2;
+      price = 210;
     } else if (
       (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone A") ||
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
     ) {
-      price = 2;
+      price = 250;
     } else if (
       sender?.zone.name === "Zone A" &&
       receiver?.zone.name === "Zone A"
     ) {
-      price = 1;
+      price = 100;
     } else if (
       sender?.zone.name === "Zone B" &&
       receiver?.zone.name === "Zone A"
     ) {
-      price = 1;
+      price = 120;
     } else if (
       sender?.zone.name === "Zone C" &&
       receiver?.zone.name === "Zone C"
     ) {
-      price = 2;
+      price = 250;
     }
     return res.status(200).json({ message: "price set successfully ", price });
   } catch (error) {
@@ -783,7 +783,7 @@ router.get("/rent-rider-shelf-package-count", [authMiddleware, authorized], asyn
     let cancelled = await Rent_a_shelf_deliveries.find({ assignedTo: req.user._id, state: "cancelled" })
     let droppedToagent = await Rent_a_shelf_deliveries.find({ assignedTo: req.user._id, state: "dropped-to-agent" })
     let assigned = await Rent_a_shelf_deliveries.find({ assignedTo: req.user._id, state: "assigned" })
-    let agentOrderRequest = await Sent_package.find({ payment_status: "paid", state: "pending-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+    let agentOrderRequest = await Sent_package.find({ payment_status: "paid", state: "pending-agent" }).sort({ createdAt: -1 }).limit(100)
     let earlyOrderRequest = await Rent_a_shelf_deliveries.find({ assignedTo: req.user._id, $or: [{ state: "early_collection" }] })
     let doorSteporderRequest = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
     let pickedfromSender = await Rent_a_shelf_deliveries.find({ assignedTo: req.user._id, $or: [{ state: "picked-from-seller" }] })
