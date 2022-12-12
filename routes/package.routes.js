@@ -494,6 +494,28 @@ router.post("/package/delivery-charge", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/agents/test/viaob/hgfh", async (req, res) => {
+  try {
+
+    let price;
+
+    const sender = await AgentDetails.findOne({ _id: senderAgentID }).populate("location_id");
+
+    const receiver = await AgentDetails.findOne({ _id: receieverAgentID }).populate("location_id");
+    // let recieverZone = await AgentLocation.findOne({ _id: sender.location_id }).populate('zone')
+    let senderZone = await AgentLocation.find().populate('zone')
+    // console.log("sender", recieverZone)
+    console.log("reciever", senderZone)
+
+    return res.status(200).json({ message: "price set successfully ", price });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 // change the package state as it is dropped to when its picked up
 router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async (req, res) => {

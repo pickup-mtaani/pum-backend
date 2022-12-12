@@ -44,6 +44,14 @@ const PackageSchema = new Schema(
       type: String,
       required: true,
     },
+    fromLocation: {
+      type: String,
+      required: true,
+    },
+    toLocation: {
+      type: String,
+      required: true,
+    },
     customerPhoneNumber: {
       type: String,
       required: true,

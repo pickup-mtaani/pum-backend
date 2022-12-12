@@ -1,5 +1,5 @@
 const express = require('express');
-var AgentLocation = require('models/agents.model')
+
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require('models/agentAddmin.model')
