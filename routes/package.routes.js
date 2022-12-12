@@ -1,12 +1,13 @@
 const express = require("express");
 var Rent = require("models/rent_a_shelf_delivery.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
-var Agent = require("models/agents.model");
+// var Agent = require("models/agents.model");
 var AgentDetails = require("models/agentAddmin.model");
 var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Customer = require("models/customer.model");
 var Unavailable = require("models/unavailable.model");
+// var AgentLocation = require('models/agents.model')
 var Zone = require('models/zones.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
@@ -34,7 +35,7 @@ const { Makeid } = require("../helpers/randomNo.helper");
 const { SendMessage } = require("../helpers/sms.helper");
 const moment = require("moment");
 const Mpesa_stk = require("../helpers/stk_push.helper");
-
+var AgentLocation = require('models/agents.model')
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { request } = require("express");
 const { reject } = require("../frontend/src/redux/actions/location.actions");
@@ -438,51 +439,53 @@ router.get("/rent-shelf-package-narations/:id", [authMiddleware, authorized], as
 });
 router.post("/package/delivery-charge", async (req, res) => {
   try {
+    console.log("Test", req.body)
     let price;
-    const { senderAgentID, receieverAgentID } = req.body;
+    // const { senderAgentID, receieverAgentID } = req.body;
 
-    const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
+    const sender = await AgentDetails.findOne({ _id: senderAgentID }).populate("location_id");
 
-    const receiver = await Agent.findOne({ _id: receieverAgentID }).populate("zone");
-    // console.log("sender", sender.zone)
-    // console.log("reciever", receiver.zone)
-    if (!sender || !receiver) {
-      return;
-
-    }
+    const receiver = await AgentDetails.findOne({ _id: receieverAgentID }).populate("location_id");
+    let recieverZone = await AgentLocation.findOne({ _id: sender.location_id }).populate('zone')
+    let senderZone = await AgentLocation.findOne({ _id: receiver.location_id }).populate('zone')
+    // console.log("sender", recieverZone)
+    // console.log("reciever", senderZone)
     if (
-      (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B")
+      (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone B")
     ) {
       price = 100;
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
-    else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")) {
+    else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A")) {
       price = 150;
       return res.status(200).json({ message: "price set successfully ", price });
 
-    } else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone B")
+    } else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone B")
     ) {
       price = 100
       return res.status(200).json({ message: "price set successfully ", price });
 
-    } else if ((sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
+    } else if ((senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone C")
     ) {
       price = 250
       return res.status(200).json({ message: "price set successfully ", price });
     }
-    else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
+    else if (senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone C") {
       price = 200;
-    } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
+      return res.status(200).json({ message: "price set successfully ", price });
+    } else if (senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A") {
       price = 100;
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
-    else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C") {
+
+    else if (senderZone?.zone.name === "Zone C" && recieverZone?.zone.name === "Zone C") {
       price = 250
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
+    return res.status(200).json({ message: "price set successfully ", price });
 
   } catch (error) {
     console.log(error);

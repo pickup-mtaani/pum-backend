@@ -15,7 +15,7 @@ const bcrypt = require('bcryptjs');
 const csv = require('csv-parser')
 var path = require('path');
 var User = require('models/user.model')
-var Agent = require('models/agentAddmin.model')
+
 var AgentUser = require('models/agent_user.model');
 const router = express.Router();
 const storage = multer.diskStorage({
