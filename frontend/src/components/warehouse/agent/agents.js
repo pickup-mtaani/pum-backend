@@ -1,20 +1,27 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { connect } from 'react-redux'
 import { get_agents, fetchpackages } from '../../../redux/actions/riders.actions'
 import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
-import { DashboardRider } from '../../DashboardItems'
+import { Dashboardagents, DashboardRider } from '../../DashboardItems'
 
 function ActionPage(props) {
     const location = useLocation()
+    const [data, setData] = useState([])
 
+    const fetch = async () => {
+        const result = await props.get_agents(location?.state?.id)
+
+        setData(result)
+    }
     useEffect(() => {
+        fetch()
 
-        props.get_agents({ limit: 10 })
 
     }, [])
 
+    console.log("Agents", props.riders)
     return (
         <Layout>
             <div className='flex justify-center items-center py-10'>
@@ -24,8 +31,8 @@ function ActionPage(props) {
             <h2 className='text-center p-10 text-xl '> </h2>
             <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
-                    {props.riders.map((rider, i) => (
-                        <DashboardRider key={i} rider={rider} id={rider?.agent?._id} title={location?.state?.title} path={location?.state?.lis} agent={rider?.user?._id} name={rider?.agent?.business_name} />
+                    {data.map((agent, i) => (
+                        <Dashboardagents key={i} agent={agent} id={agent?.agent?._id} title={"ocation?.state?.title"} path={location?.state?.lis} name={agent?.agent?.business_name} />
                     ))}
                 </div>
             </div>

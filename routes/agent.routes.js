@@ -1,5 +1,5 @@
 const express = require('express');
-
+var AgentLocation = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var Agent = require('models/agentAddmin.model')
@@ -15,7 +15,7 @@ const bcrypt = require('bcryptjs');
 const csv = require('csv-parser')
 var path = require('path');
 var User = require('models/user.model')
-
+var Agent = require('models/agentAddmin.model')
 var AgentUser = require('models/agent_user.model');
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -374,19 +374,11 @@ router.get('/agents-grouped', async (req, res) => {
     try {
         let t = await Agent.aggregate(
             [
-                // First Stage
-                // {
-                //     $match: { "createdAt": { $gte: new Date("2022-10-11"), $lt: new Date("2022-12-12") } }
-                // },
-                // Second Stage
-
                 {
 
                     $group: {
                         _id: '$location_id',
-
                         count: { $sum: 1 },
-
                         data: {
                             $addToSet: {
                                 business_name: "$business_name",
@@ -447,15 +439,36 @@ router.get('/agents-locations', async (req, res) => {
     try {
         let zoneA = await Zone.findOne({ name: "Zone A" })
         let zoneB = await Zone.findOne({ name: "Zone B" })
+        let zones
         if (req.query.searchKey) {
             var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-            const agents = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }], name: searchKey }).sort({ name: 1 });
-            return res.status(200).json(agents);
+            zones = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }], name: searchKey }).sort({ name: 1 });
+            return res.status(200).json(zones);
         } else {
-            const agents = await AgentLocation.find().sort({ name: 1 });
-            // const agents = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }] }).sort({ name: 1 });
+            zones = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }] }).sort({ name: 1 });
 
-            return res.status(200).json(agents);
+
+            return res.status(200).json(zones);
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.get('/agents-zones-abc', async (req, res) => {
+    try {
+        let zones
+        if (req.query.searchKey) {
+            var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+            zones = await AgentLocation.find({ name: searchKey }).sort({ name: 1 });
+            return res.status(200).json(zones);
+        } else {
+            zones = await AgentLocation.find().sort({ name: 1 });
+
+
+            // const agents = await AgentLocation.find({ $or: [{ zone: zoneA._id }, { zone: zoneB._id }] }).sort({ name: 1 });
+            // console.log("Agents", agents)
+            return res.status(200).json(zones);
         }
     } catch (error) {
         console.log(error)

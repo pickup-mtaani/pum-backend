@@ -46,11 +46,11 @@ const PackageSchema = new Schema(
     },
     fromLocation: {
       type: String,
-      required: true,
+      // required: true,
     },
     toLocation: {
       type: String,
-      required: true,
+      // required: true,
     },
     customerPhoneNumber: {
       type: String,

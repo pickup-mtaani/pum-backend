@@ -330,9 +330,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
         }
-
         let route = await RiderRoutes.findOne({ agent: agent._id })
-
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -368,8 +366,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].packageName = products_name;
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
-
-
         }
         if (packages[i].pipe === "agent") {
           packages[i].state = "pending-agent"
@@ -443,13 +439,13 @@ router.post("/package/delivery-charge", async (req, res) => {
     let price;
     const { senderAgentID, receieverAgentID } = req.body;
 
-    const sender = await AgentDetails.findOne({ _id: senderAgentID }).populate("location_id");
+    const sender = await AgentDetails.findOne({ _id: senderAgentID })
 
-    const receiver = await AgentDetails.findOne({ _id: receieverAgentID }).populate("location_id");
-    let recieverZone = await AgentLocation.findOne({ _id: sender.location_id }).populate('zone')
-    let senderZone = await AgentLocation.findOne({ _id: receiver.location_id }).populate('zone')
-    // console.log("sender", recieverZone)
-    // console.log("reciever", senderZone)
+    const receiver = await AgentDetails.findOne({ _id: receieverAgentID })
+    let recieverZone = await AgentLocation.findOne({ _id: sender?.location_id }).populate('zone')
+    let senderZone = await AgentLocation.findOne({ _id: receiver?.location_id }).populate('zone')
+    console.log("sender", senderZone?.zone?.name)
+    console.log("reciever", recieverZone?.zone?.name)
     if (
       (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone B")
     ) {
@@ -484,8 +480,11 @@ router.post("/package/delivery-charge", async (req, res) => {
       price = 250
       return res.status(200).json({ message: "price set successfully ", price });
 
+    } else {
+
+      return res.status(200).json({ message: "price setting in progress  " })
+
     }
-    return res.status(200).json({ message: "price set successfully ", price });
 
   } catch (error) {
     console.log(error);

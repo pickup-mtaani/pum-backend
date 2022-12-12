@@ -46,16 +46,19 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
   try {
     const { type, } = req.query
+
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
     let shelf = await AgentDetails.findById(package.senderAgentID)
     let reciever = await AgentDetails.findById(package.receieverAgentID)
     let rider = await Rider.findOne({ user: package.assignedTo })
+
     let narration = await Track_agent_packages.findOne({ package: req.params.id })
     let notefications = []
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+
     if (seller) {
       switch (state) {
         case "request":
@@ -168,6 +171,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
     if (req.params.state === "assigned") {
       console.log("Rider", package.assignedTo)
+      let rider = await User.findOne({ _id: package.assignedTo })
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was assigned to ${rider?.name} ` }]
@@ -217,7 +221,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "dropped") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area and was recieved  by  ${auth?.name} ` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area  by  ${auth?.name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
@@ -286,6 +290,62 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
 
       return res
         .status(200)
+        .json(agent_packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agent_packages
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      agent_packages = await Sent_package.find({ state: "rejected", createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+        // .populate('location')
+        .populate('businessId')
+        .populate('createdBy')
+      // .populate("rejectedId")
+      return res.status(200)
+        .json(agent_packages);
+    } else {
+      agent_packages = await Sent_package.find({ state: "rejected", createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
+        // .populate('location')
+        .populate('businessId')
+        .populate('createdBy')
+      // .populate("rejectedId")
+      return res.status(200)
+        .json(agent_packages);
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agent-agent-package-expired", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agent_packages
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      agent_packages = await Sent_package.find({ updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+        // .populate('location')
+        .populate('businessId')
+        .populate('createdBy')
+
+      return res.status(200)
+        .json(agent_packages);
+    } else {
+      agent_packages = await Sent_package.find({ updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
+        // .populate('location')
+        .populate('businessId')
+        .populate('createdBy')
+
+      return res.status(200)
         .json(agent_packages);
     }
   } catch (error) {
@@ -458,7 +518,7 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
 
     for (let i = 0; i < packages.length; i++) {
 
-      agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : []
+      agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
 
     }
 
@@ -1028,43 +1088,34 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
 router.get("/agent/track/packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     let packages
-    if (req.query.searchKey) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_agent_packages.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate('package')
+
+
+    packages = await Track_agent_packages.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
+
       // .populate("collectedby")
-      // .populate("droppedTo")
-      return res.status(200)
-        .json(packages);
-    } else {
+      .populate({
+        path: 'package', populate: {
+          path: 'receieverAgentID'
+        }
+      })
+      .populate({
+        path: 'package',
+        populate: {
+          path: 'businessId',
+        },
+        populate: {
+          path: 'assignedTo'
+        },
+        populate: {
+          path: 'receieverAgentID'
+        },
+        populate: {
+          path: 'senderAgentID'
+        }
+      })
 
-      packages = await Track_agent_packages.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
-
-        // .populate("collectedby")
-        .populate({
-          path: 'package', populate: {
-            path: 'receieverAgentID'
-          }
-        })
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'businessId',
-          },
-          populate: {
-            path: 'assignedTo'
-          },
-          populate: {
-            path: 'receieverAgentID'
-          },
-          populate: {
-            path: 'senderAgentID'
-          }
-        })
-
-      return res.status(200)
-        .json(packages);
-    }
+    return res.status(200)
+      .json(packages);
   } catch (error) {
     console.log(error);
     return res

@@ -128,4 +128,36 @@ export function DashboardRider(props) {
         </div>
     )
 }
+export function Dashboardagents(props) {
+    //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
+    return (
+        <div className="bg-white  w-80  " >
+            <Link
+                to={{
+                    pathname: `/wahehouse/agent-agent/pick-package-from-rider/${props?.agent?.agent?.business_name.replace(/\s/g, '')}`
+
+
+                }}
+                state={{
+
+                    lis: props.path,
+                    id: props?.rider?.user?._id,
+                    rider: props.name,
+                    agent: props.agent?._id,
+                    title: props.title,
+                    type: props.type
+                }}
+            >  <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
+                    <div className="h-full w-full flex justify-center items-center">
+                        <h1 className="font-bold text-gray-400 text-2xs pr-10">{props?.name}</h1>
+                        {/* <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
+                            {props?.rider.no_of_packages}
+                        </div> */}
+                    </div>
+                </div>
+            </Link>
+
+        </div>
+    )
+}
 export default DashboardItems

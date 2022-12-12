@@ -67,7 +67,7 @@ const App = () => {
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
 
-    { path: "/wahehouse/agent-agent/pick-package-from/:rider", element: <PickFromAgentRider /> },
+    { path: "/wahehouse/agent-agent/pick-package-from-rider/:rider", element: <PickFromAgentRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },
     { path: "/wahehouse/agent-agent/:slug/agents", element: <RiderAgents /> },
