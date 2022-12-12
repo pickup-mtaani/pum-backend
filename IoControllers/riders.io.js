@@ -96,6 +96,7 @@ module.exports = (http) => {
 
     });
     socket.on("seller-notification", (data) => {
+      console.log("Seller", data)
       const index = notificationrooms.findIndex(object => object.seller === data.id);
       if (index === -1) {
         notificationrooms.push({ seller: data?.id, socket: socket.id });

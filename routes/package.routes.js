@@ -444,27 +444,46 @@ router.post("/package/delivery-charge", async (req, res) => {
     const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
 
     const receiver = await Agent.findOne({ _id: receieverAgentID }).populate("zone");
-    console.log("sender", sender.zone)
-    console.log("reciever", receiver.zone)
+    // console.log("sender", sender.zone)
+    // console.log("reciever", receiver.zone)
+    if (!sender || !receiver) {
+      return res.status(400).json({ message: "Kindly select both origin and destinations ", price });
+
+    }
     if (
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B")
     ) {
       price = 100;
+      return res.status(200).json({ message: "price set successfully ", price });
+
     }
     else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A")) {
       price = 150;
+      return res.status(200).json({ message: "price set successfully ", price });
+
     } else if ((sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone B")
     ) {
       price = 100
+      return res.status(200).json({ message: "price set successfully ", price });
+
     } else if ((sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone C")
-    ) { price = 250 }
+    ) {
+      price = 250
+      return res.status(200).json({ message: "price set successfully ", price });
+    }
     else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone C") {
       price = 200;
     } else if (sender?.zone.name === "Zone B" && receiver?.zone.name === "Zone A") {
       price = 100;
+      return res.status(200).json({ message: "price set successfully ", price });
+
     }
-    else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C") { price = 250 }
-    return res.status(200).json({ message: "price set successfully ", price });
+    else if (sender?.zone.name === "Zone C" && receiver?.zone.name === "Zone C") {
+      price = 250
+      return res.status(200).json({ message: "price set successfully ", price });
+
+    }
+
   } catch (error) {
     console.log(error);
     return res

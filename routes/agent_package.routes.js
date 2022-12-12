@@ -53,7 +53,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let rider = await Rider.findOne({ user: package.assignedTo })
     let narration = await Track_agent_packages.findOne({ package: req.params.id })
     let notefications = []
-    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`).socket
+    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     if (seller) {
