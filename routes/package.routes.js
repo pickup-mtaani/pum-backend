@@ -444,6 +444,8 @@ router.post("/package/delivery-charge", async (req, res) => {
     const sender = await Agent.findOne({ _id: senderAgentID }).populate("zone");
 
     const receiver = await Agent.findOne({ _id: receieverAgentID }).populate("zone");
+    console.log("sender", sender.zone)
+    console.log("reciever", receiver.zone)
     if (
       (sender?.zone.name === "Zone A" && receiver?.zone.name === "Zone B")
     ) {

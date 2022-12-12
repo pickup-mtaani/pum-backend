@@ -167,7 +167,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     }
     if (req.params.state === "assigned") {
-
+      console.log("Rider", package.assignedTo)
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was assigned to ${rider?.name} ` }]
@@ -474,7 +474,6 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
 });
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    let user = await User.findById(req.user._id)
 
     let agent = await AgentUser.findOne({ user: req.user._id })
 
@@ -594,6 +593,35 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
     }
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/agent-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const { state } = req.query
+    let packages = await Sent_package.find({ senderAgentID: req.params.id, state: state, })
+      .populate("createdBy", "l_name f_name phone_number")
+      .populate({
+        path: 'senderAgentID',
+        populate: {
+          path: 'location_id',
+        }
+      })
+      .populate({
+        path: 'receieverAgentID',
+        populate: {
+          path: 'location_id',
+        }
+      })
+      .populate("businessId", "name loc")
+      .sort({ createdAt: -1 });
+
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     console.log(error)

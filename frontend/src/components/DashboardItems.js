@@ -97,12 +97,14 @@ export function WHItem(props) {
     )
 }
 export function DashboardRider(props) {
-
+    //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
     return (
         <div className="bg-white  w-80  " >
             <Link
                 to={{
-                    pathname: `/wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
+                    pathname: `/wahehouse/agent-agent/${props?.rider?.user?.name.replace(/\s/g, '')}/agents`
+
+
                 }}
                 state={{
 

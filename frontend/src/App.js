@@ -20,6 +20,7 @@ import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
 import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
 import PickFromAgentRider from "./components/warehouse/agent/pickPackage";
+import RiderAgents from "./components/warehouse/agent/agents";
 import GIvetoRiderPage from "./components/warehouse/doorstep/give";
 import AsRiderPage from "./components/warehouse/doorstep/assignRider";
 
@@ -65,7 +66,12 @@ const App = () => {
     { path: "/wahehouse", element: <WareHouse /> },
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
+
     { path: "/wahehouse/agent-agent/pick-package-from/:rider", element: <PickFromAgentRider /> },
+    { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
+    { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },
+    { path: "/wahehouse/agent-agent/:slug/agents", element: <RiderAgents /> },
+
     { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },
     { path: "/wahehouse/doorstep/pick-packages", element: <PickFromRider /> },
     { path: "/wahehouse/doorstep/pick-packages-from/:rider", element: <PickFromRiderPage /> },
@@ -82,8 +88,7 @@ const App = () => {
 
     { path: "/switch-board", element: <SwitchBoard /> },
     { path: "/track/:riders", element: <AssignRider /> },
-    { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
-    { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },
+
 
     { path: "/agents", element: <Agents /> },
     { path: "/agent/:name", element: <AgentsDetails /> },
