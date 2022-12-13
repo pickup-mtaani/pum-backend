@@ -310,6 +310,30 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+// count packages assigned by a rider
+router.get("/agents-rider-package-count", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+
+
+    let OnTransit = await Sent_package.find({ payment_status: "paid", state: "on-transit", assignedTo: req.user._id })
+
+    let assigned = await Sent_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
+    let warehouseTransit = await Sent_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
+    let assignedWarehouse = await Sent_package.find({ payment_status: "paid", state: "", assignedTo: req.user._id })
+
+
+    return res
+      .status(200)
+      .json({ OnTransit: OnTransit.length, assigned: assigned.length, warehouseTransit: warehouseTransit.length, assignedWarehouse: assignedWarehouse.length });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent_packages
