@@ -220,6 +220,20 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "dropped") {
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area  by  ${auth?.name} ` }]
 
+      // await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+      //   warehouse:
+      //   {
+      //     recievedBy: req.user._id,
+
+      //     warehouseAt: moment()
+      //   }, descriptions: new_des
+      // }, { new: true, useFindAndModify: false })
+
+      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
+    }
+    if (req.params.state === "recieved-warehouse") {
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area  by  ${auth?.name} ` }]
+
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
         {
