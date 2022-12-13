@@ -146,8 +146,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         console.log(t)
         const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
         await SendMessage(textbody)
-
-
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.receieverAgentID.business_name})` }).save()
         let payments = getRandomNumberBetween(100, 200)
         await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
@@ -158,19 +156,18 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "delivered") {
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} and will be shipped to in 2hrs ` }
       await SendMessage(textbody)
-
     }
     if (req.params.state === "rejected") {
-
-      let rejected = await new Reject({ package: req.params.id, reject_reason: req.body.reason }).save()
-      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
+      console.log("first", req.body)
+      let reject = await new Reject({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { rejectedId: reject._id }, { new: true, useFindAndModify: false })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was rejected by ${auth?.name} because ${req.body.rejectReason} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, rejectedAt: Date.now() }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "assigned") {
-      console.log("Rider", package.assignedTo)
+
       let rider = await User.findOne({ _id: package.assignedTo })
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
@@ -206,7 +203,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
       let newrider = await User.findById(req.params.rider)
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was reassigned to ${newrider.name} at the sorting area  by  ${auth?.name} ` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was reassigned to ${newrider.name} at the sorting` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         reAssigned:
@@ -308,7 +305,7 @@ router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
-      // .populate("rejectedId")
+        .populate("rejectedId")
       return res.status(200)
         .json(agent_packages);
     } else {
@@ -316,7 +313,7 @@ router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
-      // .populate("rejectedId")
+        .populate("rejectedId")
       return res.status(200)
         .json(agent_packages);
     }

@@ -18,7 +18,8 @@ function Riderpage(props) {
     const [show, setShow] = useState(false)
     const fetch = async (data, agent) => {
         let res = await props.fetchpackages("dropped", agent)
-        let agents = await props.Rideagents(location?.state?.id)
+        // alert(location?.state?.id)
+        let agents = await props.Rideagents(location?.state?.rider)
 
         setAssign(agents)
         let resr = await props.fetchpackages("recieved-warehouse", agent)
@@ -33,16 +34,9 @@ function Riderpage(props) {
 
         await fetch("dropped", location?.state?.agent)
     }
-    const complete = () => {
-        // if (location?.state?.lis === "on-transit") {
-        //     packAction(id, "recieved-warehouse", location?.state?.id)
-        // } else {
-        //     packAction(id, "assigned-warehouse", location?.state?.id)
-        // }
 
-    }
     useEffect(() => {
-
+        alert(location?.state?.agent)
         fetch("dropped", location?.state?.agent)
 
 

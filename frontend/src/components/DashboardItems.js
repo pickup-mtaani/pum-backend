@@ -129,6 +129,7 @@ export function DashboardRider(props) {
     )
 }
 export function Dashboardagents(props) {
+    console.log("Ag", props.agent)
     //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
     return (
         <div className="bg-white  w-80  " >
@@ -141,9 +142,9 @@ export function Dashboardagents(props) {
                 state={{
 
                     lis: props.path,
-                    id: props?.rider?.user?._id,
-                    rider: props.name,
-                    agent: props.agent?._id,
+                    id: props?.agent?.user?._id,
+                    rider: props.rider,
+                    agent: props.agent?.agent?._id,
                     title: props.title,
                     type: props.type
                 }}

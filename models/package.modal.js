@@ -73,6 +73,10 @@ const PackageSchema = new Schema(
       type: Number,
 
     },
+    rejectedId: {
+      type: Schema.Types.ObjectId,
+      ref: "rejected",
+    },
     senderAgentID: {
       type: Schema.Types.ObjectId,
       ref: "agents_details ",
