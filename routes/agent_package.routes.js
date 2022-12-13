@@ -132,7 +132,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "picked-from-sender") {
       try {
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-        let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  at ${shelf.business_name} ` }]
+        let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  at ${reciever.business_name} ` }]
         console.log("Descriptions", new_description)
         let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
           dropped: {
@@ -171,7 +171,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       let rider = await User.findOne({ _id: package.assignedTo })
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was assigned to ${rider?.name} ` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was assigned to ${rider?.name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         assignedTo:
