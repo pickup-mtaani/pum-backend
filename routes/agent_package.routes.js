@@ -167,7 +167,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     }
     if (req.params.state === "assigned") {
-
+      console.log("first", narration)
       let rider = await User.findOne({ _id: package.assignedTo })
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
