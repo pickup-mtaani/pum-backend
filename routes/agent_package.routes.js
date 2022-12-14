@@ -132,7 +132,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "picked-from-sender") {
       try {
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-        let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  at ${reciever.business_name} ` }]
+        let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  ` }]
         console.log("Descriptions", new_description)
         let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
           dropped: {
@@ -232,7 +232,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
     if (req.params.state === "recieved-warehouse") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area  by  ${auth?.name} ` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
