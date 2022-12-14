@@ -40,26 +40,26 @@ function Users(props) {
 
   }
   const conditionalRowStyles = [
-    {
-      when: row => row.has_shelf,
-      style: {
-        backgroundColor: '#dbdbdb',
-        color: 'white',
-        '&:hover': {
-          cursor: 'pointer',
-        },
-      },
-    },
-    {
-      when: row => row.request_shelf,
-      style: {
-        backgroundColor: '#d5d3e5',
-        color: 'white',
-        '&:hover': {
-          cursor: 'pointer',
-        },
-      },
-    },
+    // {
+    //   when: row => row.has_shelf,
+    //   style: {
+    //     backgroundColor: '#dbdbdb',
+    //     color: 'white',
+    //     '&:hover': {
+    //       cursor: 'pointer',
+    //     },
+    //   },
+    // },
+    // {
+    //   when: row => row.request_shelf,
+    //   style: {
+    //     backgroundColor: '#d5d3e5',
+    //     color: 'white',
+    //     '&:hover': {
+    //       cursor: 'pointer',
+    //     },
+    //   },
+    // },
 
   ];
 
