@@ -435,12 +435,9 @@ router.get("/rent-shelf-package-narations/:id", [authMiddleware, authorized], as
 });
 router.post("/package/delivery-charge", async (req, res) => {
   try {
-
     let price;
     const { senderAgentID, receieverAgentID } = req.body;
-
     const sender = await AgentDetails.findOne({ _id: senderAgentID })
-
     const receiver = await AgentDetails.findOne({ _id: receieverAgentID })
     let recieverZone = await AgentLocation.findOne({ _id: sender?.location_id }).populate('zone')
     let senderZone = await AgentLocation.findOne({ _id: receiver?.location_id }).populate('zone')
