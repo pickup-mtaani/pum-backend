@@ -590,8 +590,6 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, rent_shelf: req.params.id, commision: 0.1 * parseInt(payments) }).save()
-
-
     }
 
     if (req.params.state === "collected" && package.booked === true) {
