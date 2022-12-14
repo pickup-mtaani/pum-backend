@@ -453,6 +453,13 @@ router.post("/package/delivery-charge", async (req, res) => {
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
+    else if (
+      (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone A")
+    ) {
+      price = 100;
+      return res.status(200).json({ message: "price set successfully ", price });
+
+    }
     else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A")) {
       price = 150;
       return res.status(200).json({ message: "price set successfully ", price });
