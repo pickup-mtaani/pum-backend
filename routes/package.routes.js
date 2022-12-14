@@ -583,7 +583,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     }
     if (req.params.state === "picked-from-seller") {
 
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  at ${shelf.business_name} ` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name} ` }]
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
         droppedTo: business.shelf_location, droppedAt: Date.now(),
         descriptions: new_des

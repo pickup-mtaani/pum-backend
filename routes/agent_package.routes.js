@@ -320,7 +320,7 @@ router.get("/agents-rider-package-count", [authMiddleware, authorized], async (r
 
     let assigned = await Sent_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
     let warehouseTransit = await Sent_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
-    let assignedWarehouse = await Sent_package.find({ payment_status: "paid", state: "", assignedTo: req.user._id })
+    let assignedWarehouse = await Sent_package.find({ payment_status: "paid", state: "assigned-warehouse", assignedTo: req.user._id })
 
 
     return res
