@@ -399,7 +399,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         if (req.body.payment_option === "collection") {
           // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
-          await Sent_package.findOneAndUpdate({ _id: newpackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
+          await Sent_package.findOneAndUpdate({ _id: savedPackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
         }
       }
       if (req.body.payment_option === "vendor") {
