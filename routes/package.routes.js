@@ -529,7 +529,7 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let notefications = []
     const { state } = req.params
-    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`).socket
+    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     if (seller) {
       switch (state) {
         case "request":
