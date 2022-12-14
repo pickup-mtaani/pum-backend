@@ -259,7 +259,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           collected: {
             collectedby: collector._id,
             collectedAt: moment(),
-            dispatchedBy: request.user._id
+            dispatchedBy: req.user._id
           },
           descriptions: new_des
         }, { new: true, useFindAndModify: false })
