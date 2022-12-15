@@ -45,6 +45,7 @@ function getRandomNumberBetween(min, max) {
 }
 router.post("/package", [authMiddleware, authorized], async (req, res) => {
   let auth = await User.findById(req.user._id)
+  let savedPackages = []
   let newpackage
   try {
     const body = req.body;
@@ -376,6 +377,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].time = moment().format('hh:mm');
 
         let savedPackage = await new Sent_package(packages[i]).save();
+        savedPackages.push(savedPackage._id)
         await new Track_agent_packages({
           package: savedPackage._id,
           created: moment(),
@@ -409,7 +411,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "Package successfully Saved" });
+        .json(savedPackages);
     }
   } catch (error) {
     console.log(error);

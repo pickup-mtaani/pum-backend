@@ -34,7 +34,7 @@ import AssignErrandRiderPage from "./components/warehouse/errand/assignRider";
 import WHAgent from "./components/warehouse/agent";
 import Routes from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
-import 'mapbox-gl/dist/mapbox-gl.css';
+
 import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/agents /agentsDetails";
 import SwitchBoard from "./components/packages/switchboard";
@@ -69,7 +69,7 @@ const App = () => {
 
     { path: "/wahehouse/agent-agent/pick-package-from-rider/:rider", element: <PickFromAgentRider /> },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
-    { path: "/wahehouse/agent-agent/assign-rider", element: <Assign_Agent_package_riderWareHouse /> },
+    { path: "/wahehouse/agent-agent/assign-package-to/:rider", element: <Assign_Agent_package_riderWareHouse /> },
     { path: "/wahehouse/agent-agent/:slug/agents", element: <RiderAgents /> },
 
     { path: "/wahehouse/doorstep/packages", element: <WHdoorstep /> },

@@ -8,29 +8,22 @@ import { DashboardRider } from '../DashboardItems'
 
 function ActionPage(props) {
     const location = useLocation()
-
     useEffect(() => {
-
         props.get_riders({ limit: 10 })
-
     }, [])
-
     return (
         <Layout>
             <div className='flex justify-center items-center py-10'>
                 <h2 className='text-uppercase text-3xl underline'>{location?.state?.title}</h2>
             </div>
-
             <h2 className='text-center p-10 text-xl '> </h2>
             <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
                     {props.riders.map((rider, i) => (
-                        <DashboardRider key={i} rider={rider} id={rider?.user?._id} title={location?.state?.title} path={location?.state?.lis} agent={rider?.user?._id} name={rider?.user?.name} />
+                        <DashboardRider key={i} rider={rider} id={rider?.user?._id} title={location?.state?.title} path={location?.state?.lis} name={rider?.user?.name} />
                     ))}
                 </div>
             </div>
-
-
         </Layout>
     )
 }

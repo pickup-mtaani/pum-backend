@@ -3,7 +3,7 @@ import DataTable from 'react-data-table-component'
 import { Link, useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
-import { get_agents, Rideagents, get_zones, assign, fetchpackages, fetchdoorpackages } from '../../../redux/actions/agents.actions'
+import { get_agents, Rideagents, fetchpackages, get_zones, assign, fetchdropped, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 
@@ -16,11 +16,9 @@ function Riderpage(props) {
     const [data1, setData1] = useState([])
     const [id, setId] = useState(null)
     const [show, setShow] = useState(false)
-    const fetch = async (data, agent) => {
-        let res = await props.fetchpackages("dropped", agent)
-        // alert(location?.state?.id)
+    const fetch = async (rider, agent) => {
+        let res = await props.fetchdropped(rider, agent)
         let agents = await props.Rideagents(location?.state?.rider)
-
         setAssign(agents)
         let resr = await props.fetchpackages("recieved-warehouse", agent)
         setData(res)
@@ -29,15 +27,13 @@ function Riderpage(props) {
     }
     const packAction = async (id, state, rider) => {
         await props.assignwarehouse(id, state, rider)
-        setData(await props.fetchpackages("dropped", location?.state?.agent))
+        setData(await props.fetchdropped(location?.state?.rider, location?.state?.agent))
 
-
-        await fetch("dropped", location?.state?.agent)
     }
 
     useEffect(() => {
-        alert(location?.state?.agent)
-        fetch("dropped", location?.state?.agent)
+        // alert(location?.state?.agent)
+        fetch(location?.state?.rider, location?.state?.agent)
 
 
 
@@ -76,6 +72,7 @@ function Riderpage(props) {
 
     ]
 
+    // console.log("first", location.state)
     return (
         <Layout>
             {location?.state?.title === "Collect From Riders" ? <div className=" mx-2">
@@ -111,7 +108,8 @@ function Riderpage(props) {
                                     }}
                                     state={{
                                         agent: rider?.agent?._id,
-                                        rider: location.state.id
+                                        rider: location.state.rider,
+
                                     }}
                                 >
                                     <div className='m-1 w-full h-60 bg-red-100 flex justify-center items-center'>
@@ -145,6 +143,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, Rideagents, assign, fetchpackages, fetchdoorpackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, Rideagents, assign, fetchpackages, fetchdropped, fetchdoorpackages, assignwarehouse })(Riderpage)
 
 

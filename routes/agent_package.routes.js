@@ -12,6 +12,7 @@ var AgentUser = require('models/agent_user.model');
 var Reject = require("models/Rejected_parcels.model");
 var Track_agent_packages = require('models/agent_package_track.model');
 var Notification = require("models/notification.model");
+var RiderRoutes = require('models/rider_routes.model')
 var mongoose = require('mongoose')
 var {
   authMiddleware,
@@ -42,6 +43,32 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
   }
 })
 
+router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    if (req.body.type === "agent") {
+      let package = await Sent_package.findById(req.params.id)
+      let seller = await User.findById(package.createdBy)
+      let reciever = await Agent.findById(package.senderAgentID)
+      // console.log(`Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  `)
+      // await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent")
+      let paid = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
+      let narration = await Track_agent_packages.findOne({ package: req.params.id })
+      let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]
+      let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        descriptions: new_description
+      }, { new: true, useFindAndModify: false })
+    }
+    return res
+      .status(200)
+      .json("paid");
+
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -49,9 +76,9 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
-    let shelf = await AgentDetails.findById(package.senderAgentID)
+    let sender = await AgentDetails.findById(package.senderAgentID)
     let reciever = await AgentDetails.findById(package.receieverAgentID)
-    let rider = await Rider.findOne({ user: package.assignedTo })
+    let rider = await User.findById(package.assignedTo)
 
     let narration = await Track_agent_packages.findOne({ package: req.params.id })
     let notefications = []
@@ -132,8 +159,10 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "picked-from-sender") {
       try {
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-        let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} drop-off confirmed by ${auth?.name}  ` }]
-        console.log("Descriptions", new_description)
+        let new_description = [...narration.descriptions, {
+          time: Date.now(), desc: `Pkg ${package.receipt_no} drop off confimed  by ${auth?.name} at  ${sender.business_name}  awaiting  to be assigned to rider ${rider.name} 
+          ` }]
+
         let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
           dropped: {
             droppedBy: package?.assignedTo,
@@ -143,7 +172,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           },
           descriptions: new_description
         }, { new: true, useFindAndModify: false })
-        console.log(t)
+
         const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
         await SendMessage(textbody)
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.receieverAgentID.business_name})` }).save()
@@ -154,7 +183,13 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       }
     }
     if (req.params.state === "delivered") {
-      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} and will be shipped to in 2hrs ` }
+      // packge deliverd to agent  by rider
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} deliverd ${reciever.business_name}  by  ${rider?.name} ` }]
+
+      await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        descriptions: new_des
+      }, { new: true, useFindAndModify: false })
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} and will be shipped to you in 2hrs ` }
       await SendMessage(textbody)
     }
     if (req.params.state === "rejected") {
@@ -167,11 +202,12 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     }
     if (req.params.state === "assigned") {
-      console.log("first", narration)
+
       let rider = await User.findOne({ _id: package.assignedTo })
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
+      // assigned  to rider name for delivery to agent
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
-      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was assigned to ${rider?.name} ` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         assignedTo:
@@ -185,7 +221,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider?.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "dropped-to-agent") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at ${reciever.business_name} and was recieved  by  ${auth?.name} ` }]
+      // package dropped at agent and confirmed by name
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}   dropped at ${reciever.business_name} and confirmed by ${auth.name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         droppedToagentAt:
@@ -232,7 +269,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
     if (req.params.state === "recieved-warehouse") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area ` }]
+      // recieved at sorting point phil and awaiting to  be assigned rider for delivery to agent
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} recieved at sorting point philadelphia and awaiting to  be assigned ${rider.name} for delivery to ${reciever.name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
@@ -253,7 +291,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         req.body.package = req.params.id
         req.body.dispatchedBy = req.user._id
         let collector = await new Collected(req.body).save()
-        let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of ID no ${collector.collector_national_id} phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx  served by  ${auth?.name} ` }]
+        let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of ID no ${collector.collector_national_id} phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
 
         await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
           collected: {
@@ -303,6 +341,86 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .status(200)
         .json(agent_packages);
     }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/agents-wh-droped-package", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    // let agent = await AgentUser.findOne({ user: req.user._id })
+    const { rider, agent } = req.query
+
+    let agent_packages
+
+
+    agent_packages = await Sent_package.find({ payment_status: "paid", state: "dropped", assignedTo: rider, senderAgentID: agent }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
+      .populate('assignedTo')
+
+    return res
+      .status(200)
+      .json(agent_packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+
+// router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+//   try {
+//     let agents = []
+
+//     let { state } = req.query
+
+//     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+//     let agents_count = {}
+
+//     for (let i = 0; i < packages.length; i++) {
+
+//       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
+
+//     }
+
+//     return res.status(200)
+//       .json(agents_count);
+
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "operation failed ", error });
+//   }
+// });
+router.get("/agents-wh-recieved-warehouse-package", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    // let agent = await AgentUser.findOne({ user: req.user._id })
+    const { rider, agent } = req.query
+
+    let packages
+
+    packages = await Sent_package.find({ payment_status: "paid", state: "recieved-warehouse", assignedTo: rider, receieverAgentID: agent }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
+      .populate('assignedTo')
+
+    return res
+      .status(200)
+      .json(packages);
+
   } catch (error) {
     console.log(error);
     return res

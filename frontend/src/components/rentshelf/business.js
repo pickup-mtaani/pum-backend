@@ -40,7 +40,7 @@ const Agents = (props) => {
                                     <div className='m-1 w-full bg-red-100 flex flex-col pb-2' >
                                         <div className='m-1 w-full h-20  bg-red-100 flex justify-center items-center'>
                                             <div className='text-center justify-center items-center flex flex-col '>
-                                                <div className=' bg-slate-100 h-12 w-12 rounded-full flex justify-center align-center flex items-center'>{rider?.package_count} </div>
+                                                {/* <div className=' bg-slate-100 h-12 w-12 rounded-full flex justify-center align-center flex items-center'>{rider?.package_count} </div> */}
                                                 {rider?.name}
                                             </div>
                                         </div>

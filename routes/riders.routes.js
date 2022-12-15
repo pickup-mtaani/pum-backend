@@ -9,6 +9,7 @@ var AgentUser = require('models/agent_user.model')
 var User = require('models/user.model')
 var Package = require('models/package.modal')
 var RiderRoutes = require('models/rider_routes.model')
+var Sent_package = require("models/package.modal.js");
 var Conversation = require('models/conversation.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
 const { SendMessage } = require('../helpers/sms.helper');
@@ -312,6 +313,9 @@ router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
 
     // const riders = await User.find({ role: 'rider' })
     const agents = await RiderRoutes.find({ rider: req.user._id }).populate('agent', 'business_name')
+
+
+
     return res.status(200).json(agents);
   } catch (error) {
     console.log(error);
@@ -323,6 +327,20 @@ router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
 router.get("/riders-agents/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name')
+
+    let agents_count = {}
+
+    for (let j = 0; j < agents.length; j++) {
+      let packages = await Sent_package.find({ payment_status: "paid", state: "recieved-warehouse", assignedTo: req.params.id, receieverAgentID: agents[j].agent }).sort({ createdAt: -1 }).limit(100)
+
+      // if (packages[i].receieverAgentID === agents[j].agent) {
+      //   console.log("first")
+      // }
+
+      agents_count[agents[j]?.agent?.business_name.toString()] = agents_count[agents[j]?.agent?.business_name.toString()] ? [...agents_count[agents[j]?.agent?.business_name.toString()], agents[j]._id] : [agents[j]._id]
+
+    }
+    console.log("first", agents_count)
     return res.status(200).json(agents);
   } catch (error) {
     console.log(error);

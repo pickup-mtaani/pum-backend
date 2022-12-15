@@ -97,13 +97,13 @@ export function WHItem(props) {
     )
 }
 export function DashboardRider(props) {
+
     //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
     return (
         <div className="bg-white  w-80  " >
             <Link
                 to={{
                     pathname: `/wahehouse/agent-agent/${props?.rider?.user?.name.replace(/\s/g, '')}/agents`
-
 
                 }}
                 state={{
@@ -129,13 +129,13 @@ export function DashboardRider(props) {
     )
 }
 export function Dashboardagents(props) {
-    console.log("Ag", props.agent)
-    //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
+
     return (
         <div className="bg-white  w-80  " >
             <Link
                 to={{
-                    pathname: `/wahehouse/agent-agent/pick-package-from-rider/${props?.agent?.agent?.business_name.replace(/\s/g, '')}`
+                    pathname: props.title === "Collect From Riders" ? `/wahehouse/agent-agent/pick-package-from-rider/${props?.agent?.agent?.business_name.replace(/\s/g, '')}` :
+                        `/wahehouse/agent-agent/assign-package-to/${props?.agent?.agent?.business_name.replace(/\s/g, '')}`
 
 
                 }}

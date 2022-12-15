@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { getTodo, postTodo } from "../redux/actions/package.actions";
 const ConfirmModal = (props) => {
-  const { toggleModal, show, locations, Submit, changeInput, loading } = props;
+  const { toggleModal, show, setShow, Submit, changeInput, loading } = props;
 
   return (
     <>
@@ -22,7 +22,7 @@ const ConfirmModal = (props) => {
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                     type="button"
-                    onClick={() => toggleModal()}
+                    onClick={() => setShow(false)}
                   >
                     Cancel
                   </button>

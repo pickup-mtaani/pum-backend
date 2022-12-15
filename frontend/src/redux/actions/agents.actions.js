@@ -285,6 +285,38 @@ export const fetchpackages = (state, agent) => async (dispatch) => {
         ;
     }
 };
+export const fetchdropped = (rider, agent) => async (dispatch) => {
+    //alert(JSON.stringify(agent))recieved-warehouse
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/agents-wh-droped-package?agent=${agent}&rider=${rider}`);
+        let payload = [];
+        payload = data;
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
+export const fetchrecieved = (rider, agent) => async (dispatch) => {
+    //alert(JSON.stringify(agent))recieved-warehouse
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/agents-wh-recieved-warehouse-package?agent=${agent}&rider=${rider}`);
+        let payload = [];
+        payload = data;
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
 export const fetchdoorpack = (state) => async (dispatch) => {
     //alert(JSON.stringify(agent))
     try {

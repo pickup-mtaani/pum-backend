@@ -4,20 +4,23 @@ import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
 import { get_riders, } from '../../../redux/actions/riders.actions'
-import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchAgentpack } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, CollectDoorStep, assign, fetchrecieved, fetchpackages, fetchAgentpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
+import ConfirmModal from '../../confirm'
 function Riderpage(props) {
 
     const location = useLocation()
     const [data, setData] = useState([])
     const [data1, setData1] = useState([])
-    const fetch = async (data, agent) => {
-        let res = await props.fetchAgentpack(location?.state?.agent)
+    const [show, setShow] = useState(false)
+    const [id, setId] = useState(null)
+    const fetch = async (rider, agent) => {
+        let res = await props.fetchrecieved(rider, agent)
         setData(res)
     }
     useEffect(() => {
         console.log(location.state)
-        fetch()
+        fetch(location?.state?.rider, location?.state?.agent)
 
     }, [])
     const packAction = async (id, state, rider) => {
@@ -25,6 +28,7 @@ function Riderpage(props) {
         let res = await props.fetchAgentpack(location?.state?.agent)
         setData(res)
     }
+
     const Sellers_columns = [
 
         {
@@ -46,26 +50,27 @@ function Riderpage(props) {
             selector: row => (
 
                 <>
-                    <div className=' p-2 bg-slate-200 border' onClick={() => packAction(row._id, "assigned-warehouse", location.state.rider)}> Assign</div>
-                    {/* <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={
-
-                        (e) => packAction(row._id, "assigned-warehouse", e.target.value)
-                    }>
-                        <option value="">Assign a new Rider</option>
-                        {props.riders?.map((rider, i) => (
-                            <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
-                        ))}
-
-                    </select> */}
+                    <div className=' p-2 bg-slate-200 border' onClick={() => assign(row)}> Assign</div>
 
                 </>)
         },
 
     ]
 
+    const assign = (row) => {
+        setId(row._id)
+        setShow(true)
+
+    }
 
     return (
         <Layout>
+            <ConfirmModal
+                msg=" Recieve this package"
+                show={show}
+
+                Submit={async () => { await packAction(id, "assigned-warehouse", location.state.rider); await fetch(location?.state?.rider, location?.state?.agent); setShow(false); }}
+            />
             <div className=" mx-2">
                 <DataTable
                     title={location?.state?.title}
@@ -104,6 +109,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectDoorStep, get_riders, fetchAgentpack, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, fetchrecieved, get_zones, assign, CollectDoorStep, get_riders, fetchAgentpack, assignwarehouse })(Riderpage)
 
 

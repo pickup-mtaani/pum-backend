@@ -22,7 +22,7 @@ function Users(props) {
   const [date, setDate] = useState("")
   const [show, setShow] = useState(false)
   const [id, setId] = useState([])
-  const [popupMark, setlocapopup] = useState({
+  const [obj, setobj] = useState({
 
   })
   const [showModal, setShowModal] = useState(false);
@@ -94,6 +94,7 @@ function Users(props) {
 
     setId(data._id)
     setShow(true)
+    setobj(data)
     await props.activateShelf(data._id)
     await props.get_business()
   }
@@ -147,9 +148,9 @@ function Users(props) {
 
       </div>
       <ConfirmModal
-        msg=" Recieve this package"
+        msg={`Approve ${obj.name} for Rent a Shelf service`}
         show={show}
-
+        setShow={setShow}
         Submit={async () => { await props.activateShelf(id); setShow(false); fetch() }}
       />
     </Layout>
