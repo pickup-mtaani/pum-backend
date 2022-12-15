@@ -99,7 +99,7 @@ router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
 router.get('/single-business/:id', async (req, res) => {
 
     try {
-        const bussiness = await Business.findById(req.params.id).populate('details');
+        const bussiness = await Business.findById(req.params.id).populate('details').populate('shelf_location');
         return res.status(200).json(bussiness);
 
     } catch (error) {
