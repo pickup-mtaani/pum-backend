@@ -206,7 +206,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Erand_package(packages[i]).save();
-        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
+        await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${package[i].receipt_no}  created` }).save()
 
         let V = await new Track_Erand({
           package: newpackage._id, created: {
