@@ -231,6 +231,22 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           recievedAt: moment(),
           droppedToagent: package?.receieverAgentID
         },
+        // descriptions: new_des
+      }, { new: true, useFindAndModify: false })
+
+      // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
+    }
+    if (req.params.state === "recieved-warehouse") {
+      // package dropped at agent and confirmed by name
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed by ${auth.name} ` }]
+
+      await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        droppedToagentAt:
+        {
+          droppedToagentBy: package?.assignedTo,
+          recievedAt: moment(),
+          droppedToagent: package?.receieverAgentID
+        },
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
 
@@ -254,20 +270,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
       // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
-    if (req.params.state === "dropped") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was dropped at the sorting area  by  ${auth?.name} ` }]
 
-      // await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-      //   warehouse:
-      //   {
-      //     recievedBy: req.user._id,
-
-      //     warehouseAt: moment()
-      //   }, descriptions: new_des
-      // }, { new: true, useFindAndModify: false })
-
-      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
-    }
     if (req.params.state === "recieved-warehouse") {
       // recieved at sorting point phil and awaiting to  be assigned rider for delivery to agent
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} recieved at sorting point philadelphia and awaiting to  be assigned ${rider.name} for delivery to ${reciever.name} ` }]
