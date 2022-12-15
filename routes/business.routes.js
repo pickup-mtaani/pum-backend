@@ -99,7 +99,6 @@ router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
 router.get('/single-business/:id', [authMiddleware, authorized], async (req, res) => {
 
     try {
-
         const bussiness = await Business.findById(req.params.id).populate('details');
         return res.status(200).json(bussiness);
 
