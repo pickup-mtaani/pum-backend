@@ -284,7 +284,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
     if (req.params.state === "dropped" || req.params.state === "delivered" || req.params.state === "dropped-to-agent") {
-      await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages - 1) }, { new: true, useFindAndModify: false })
+      // await Rider.findOneAnno_of_packagesdUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages - 1) }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "collected") {
       try {
