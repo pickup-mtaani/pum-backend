@@ -96,7 +96,7 @@ router.get('/busi/:id', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-router.get('/single-business/:id', [authMiddleware, authorized], async (req, res) => {
+router.get('/single-business/:id', async (req, res) => {
 
     try {
         const bussiness = await Business.findById(req.params.id).populate('details');
