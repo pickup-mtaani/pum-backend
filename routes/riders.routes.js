@@ -333,9 +333,9 @@ router.get("/riders-agents/:id", [authMiddleware, authorized], async (req, res) 
     for (let j = 0; j < agents.length; j++) {
       let packages = await Sent_package.find({ payment_status: "paid", state: "recieved-warehouse", assignedTo: req.params.id, receieverAgentID: agents[j].agent }).sort({ createdAt: -1 }).limit(100)
 
-      if (packages[j].receieverAgentID === agents[j].agent) {
-        console.log("first")
-      }
+      // if (packages[j].receieverAgentID === agents[j].agent) {
+      //   console.log("first")
+      // }
 
       agents_count[agents[j]?.agent?.business_name.toString()] = agents_count[agents[j]?.agent?.business_name.toString()] ? [...agents_count[agents[j]?.agent?.business_name.toString()], agents[j]._id] : [agents[j]._id]
 
