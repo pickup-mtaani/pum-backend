@@ -295,6 +295,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         req.body.package = req.params.id
         req.body.dispatchedBy = req.user._id
         let collector = await new Collected(req.body).save()
+        // servedById
+        await Sent_package.findOneAndUpdate({ package: req.params.id }, { servedById: collector._id }, { new: true, useFindAndModify: false })
         let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of ID no ${collector.collector_national_id} phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
 
         await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
@@ -331,6 +333,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
         .populate('businessId')
+        .populate('servedById')
       return res
         .status(200)
         .json(agent_packages);
@@ -340,7 +343,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
         .populate('receieverAgentID', 'business_name')
         .populate('senderAgentID', 'business_name')
         .populate('businessId')
-
+        .populate('servedById')
       return res
         .status(200)
         .json(agent_packages);
@@ -393,6 +396,32 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
     for (let i = 0; i < packages.length; i++) {
 
       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
+
+    }
+
+    return res.status(200)
+      .json(packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/reciever-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agents = []
+
+    let { state } = req.query
+
+    let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+
+      agents_count[packages[i].receieverAgentID.toString()] = agents_count[packages[i].receieverAgentID.toString()] ? [...agents_count[packages[i].receieverAgentID.toString()], packages[i]._id] : [packages[i]._id]
 
     }
 

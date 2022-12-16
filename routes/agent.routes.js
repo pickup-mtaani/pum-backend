@@ -2,6 +2,7 @@ const express = require('express');
 var AgentLocation = require('models/agents.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
+var Error = require("models/error.model");
 var Agent = require('models/agentAddmin.model')
 var Zone = require('models/zones.model')
 const { v4: uuidv4 } = require('uuid');
@@ -603,6 +604,34 @@ router.delete('/delete-agent/:id', async (req, res, next) => {
 
 });
 
+
+// ERr
+router.post('/error', async (req, res) => {
+
+    try {
+
+        const body = req.body
+
+        new Error(body).save()
+
+        return res.status(200).json({ message: 'error Added successfully' });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
+router.get('/error', async (req, res) => {
+
+    try {
+        const body = await Error.find()
+        return res.status(200).json(body);
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+
+});
 
 
 module.exports = router;
