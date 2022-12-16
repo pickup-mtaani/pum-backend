@@ -119,23 +119,24 @@ function Agent(props) {
             minWidth: '250px',
             selector: row => row.total_fee
         },
+        {
+            sortable: true,
+            name: 'Sender',
+            minWidth: '250px',
+            selector: row => row.senderAgentID.business_name
+        },
+        {
+            sortable: true,
+            name: 'Reciever',
+            minWidth: '250px',
+            selector: row => row.receieverAgentID.business_name
+        },
 
         {
             sortable: true,
             name: 'Sent At ',
             minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-            sortable: true,
-            name: 'Assign Rider',
-            minWidth: '150px',
-            selector: row => <>
-                {row.state !== "assigned" ? <div className='px-2 py-10 '>
-                    <button style={{ backgroundColor: row.state !== "assigned" ? "green" : "red", padding: 5 }} onClick={() => { setShowModal(true); setItem(row) }}>{row.state !== "assigned" ? "Assign" : 'Already Assigned'} </button>
-
-                </div> : `${row?.assignedTo?.name}(${row?.assignedTo?.phone_number})`}
-            </>
         },
 
 

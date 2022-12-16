@@ -1012,10 +1012,10 @@ router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], asy
   try {
     let packages = await Sent_package.find()
 
-    // .populate('createdBy', 'f_name l_name name')
-    // .populate('receieverAgentID', 'business_name')
-    // .populate('senderAgentID', 'business_name')
-    // .populate('businessId')
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
     return res
       .status(200)
       .json(packages);
