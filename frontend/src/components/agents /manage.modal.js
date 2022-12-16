@@ -79,7 +79,7 @@ function Manage(props) {
                                                                     <td className='border px-2 border-slate-300'>{emp?.role}</td>
                                                                     <td className='border px-2 border-slate-300'>
                                                                         <div className='flex gap-x-2'>
-                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => { setShowModal(true) }}>Delete</div>
+                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => { setShowModal(false) }}>Delete</div>
 
                                                                             <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
                                                                                 setShowModal(true); setItem({

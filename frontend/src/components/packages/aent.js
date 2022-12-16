@@ -77,9 +77,9 @@ function Agent(props) {
         {
             sortable: true,
             name: 'Name',
-            minWidth: '250px',
+            minWidth: '550px',
             defaultExpanded: true,
-            selector: row => row.packageName
+            selector: row => <>{row.packageName}{row._id}</>
         },
         {
             sortable: true,

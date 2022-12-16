@@ -30,6 +30,7 @@ router.post('/login', async (req, res) => {
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         let user = {}
         let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
+        console.log("first", userOBJ)
 
 
         if (oldDb && !userOBJ) {
@@ -82,11 +83,19 @@ router.post('/login', async (req, res) => {
                 return res.status(200).json({ token, user });
             }
             if (userOBJ.role === "agent") {
-                const agent = await Agent.findOne({ user: userOBJ._id })
+                let agent
+                let userAgent = await AgentUser.findOne({ user: userOBJ._id })
+                if (userAgent) {
+                    agent = await Agent.findOne({ userAgent: agent })
+                } else {
+                    agent = await Agent.findOne({ user: userOBJ._id })
+                }
+
 
                 if (!agent) {
                     user = userOBJ
                 } else {
+
                     // let location = await AgentLocation.findById(agent.location_id)
                     user.token = token
                     user.business_name = agent.business_name
@@ -117,7 +126,7 @@ router.post('/login', async (req, res) => {
                 user = userOBJ
             )
 
-            // console.log(user)
+
             return res.status(200).json({ token, user });
         }
 

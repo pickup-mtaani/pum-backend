@@ -255,7 +255,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "assigned-warehouse") {
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
-      let newrider = await User.findById(req.params.rider)
+      let newrider = await User.findById(req.query.rider)
+      console.log(req.query.rider)
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was reassigned to ${newrider.name} at the sorting` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
@@ -380,31 +381,31 @@ router.get("/agents-wh-droped-package", [authMiddleware, authorized], async (req
 });
 
 
-// router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
-//   try {
-//     let agents = []
+router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agents = []
 
-//     let { state } = req.query
+    let { state } = req.query
 
-//     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
-//     let agents_count = {}
+    let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+    let agents_count = {}
 
-//     for (let i = 0; i < packages.length; i++) {
+    for (let i = 0; i < packages.length; i++) {
 
-//       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
+      agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
 
-//     }
+    }
 
-//     return res.status(200)
-//       .json(agents_count);
+    return res.status(200)
+      .json(packages);
 
-//   } catch (error) {
-//     console.log(error);
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "operation failed ", error });
-//   }
-// });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/agents-wh-recieved-warehouse-package", [authMiddleware, authorized], async (req, res) => {
 
   try {
