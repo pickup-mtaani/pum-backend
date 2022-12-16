@@ -254,7 +254,7 @@ router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
 
     const aggent = await AgentUser.findOne({ agent: req.params.agent, role: "rider" })
     if (aggent) {
-      await Agent.AgentUser({ agent: req.params.agent }, { user: req.params.id }, { new: true, useFindAndModify: false })
+      await Agent.AgentUser({ agent: req.params.agent, role: "rider" }, { user: req.params.id }, { new: true, useFindAndModify: false })
 
     } else {
       await new AgentUser({
