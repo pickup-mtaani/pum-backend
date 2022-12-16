@@ -182,7 +182,7 @@ router.get('/rent-a-shelf-agents', [authMiddleware, authorized], async (req, res
     }
 
 });
-router.get('/shelf-locations', [authMiddleware, authorized], async (req, res) => {
+router.get('/shelf-locations', async (req, res) => {
     try {
 
         const agents = await Agent.find({ hasShelf: true })

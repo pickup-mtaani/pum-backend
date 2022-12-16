@@ -79,7 +79,7 @@ export const make_super = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);
         const { data } = await axios.put(`/api/user/make-super/${id}`);
-        alert(data)
+
         return data;
     } catch (error) {
         console.log(error)

@@ -397,6 +397,8 @@ router.put('/user/:id/activate-user', async (req, res) => {
 router.put('/user/make-super/:id', async (req, res) => {
     try {
         let userObj = await Agent.findOneAndUpdate({ user: req.params.id }, { isSuperAgent: true }, { new: true, useFindAndModify: false })
+        let user = await User.findById(req.params.id)
+        console.log("User", user)
         return res.status(200).json({ message: ' !!', userObj });
 
     } catch (error) {

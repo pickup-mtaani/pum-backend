@@ -57,6 +57,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        if (agent_id?.hasShelf) {
+          packages[i].state = "recieved-warehouse"
+        }
         let zone = await Zone.findOne({ _id: agent_id.location_id })
         let newPackageCount = 1
         if (agent_id.package_count) {
@@ -145,6 +148,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        if (agent_id?.hasShelf) {
+          packages[i].state = "recieved-warehouse"
+        }
         let newPackageCount = 1
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
@@ -327,6 +333,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
+
+        if (agent?.hasShelf) {
+          packages[i].state = "recieved-warehouse"
+        }
         let newPackageCount = 1
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
@@ -378,13 +388,23 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         let savedPackage = await new Sent_package(packages[i]).save();
         savedPackages.push(savedPackage._id)
-        await new Track_agent_packages({
-          package: savedPackage._id,
-          created: moment(),
-          state: "request",
-          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }],
-          reciept: savedPackage.receipt_no
-        }).save()
+        if (agent.hasShelf) {
+          await new Track_agent_packages({
+            package: savedPackage._id,
+            created: moment(),
+            state: "request",
+            descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name} and dropped at ${agent.business_name} for sorting` }],
+            reciept: savedPackage.receipt_no
+          }).save()
+        } else {
+          await new Track_agent_packages({
+            package: savedPackage._id,
+            created: moment(),
+            state: "request",
+            descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }],
+            reciept: savedPackage.receipt_no
+          }).save()
+        }
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
         // packages[i].assignedTo = route.rider

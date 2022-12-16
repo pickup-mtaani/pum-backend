@@ -284,9 +284,9 @@ router.post('/rider', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/agents/:id', [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log(req.params.id)
+
     const riders = await RiderRoutes.find({ rider: req.params.id }).populate('agent')
-    console.log(riders)
+
     return res.status(200).json(riders);
 
   } catch (error) {
