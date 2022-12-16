@@ -251,11 +251,11 @@ router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
     }
     await Agent.findOneAndUpdate({ _id: req.params.id }, { riders: newriders, rider: req.params.id }, { new: true, useFindAndModify: false })
 
-    await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
+    // await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
 
     const aggent = await AgentUser.findOne({ agent: req.params.agent, role: "rider" })
     if (aggent) {
-      await Agent.AgentUser({ agent: req.params.agent, role: "rider" }, { user: req.params.id }, { new: true, useFindAndModify: false })
+      await AgentUser.findOneAndUpdate({ agent: req.params.agent, role: "rider" }, { user: req.params.id }, { new: true, useFindAndModify: false })
       console.log("Updated")
     } else {
       console.log("Created")
