@@ -81,7 +81,7 @@ function Agent(props) {
             minWidth: '550px',
             defaultExpanded: true,
             selector: row => <>{row.packageName}
-                {/* {row._id}{row.state} */}
+                {row._id}{row.state}
             </>
         },
         {

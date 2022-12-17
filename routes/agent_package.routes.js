@@ -210,7 +210,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-        assignedTo:
+        assigned:
         {
           assignedTo: package.assignedTo,
           assignedAt: Date.now(),
@@ -241,11 +241,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed by ${auth.name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-        droppedToagentAt:
+        warehouse:
         {
-          droppedToagentBy: package?.assignedTo,
-          recievedAt: moment(),
-          droppedToagent: package?.receieverAgentID
+          droppedTowarehouseBy: package?.assignedTo,
+          warehouseAt: moment(),
+
         },
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
@@ -1239,7 +1239,7 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'receieverAgentID'
           }
         })
-        .populate("collectedBy")
+        // .populate("collectedBy")
         .populate({
           path: 'package',
           populate: {

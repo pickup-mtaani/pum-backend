@@ -45,7 +45,7 @@ export function DashboardWHItem(props) {
             > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
                     <div className="h-full w-4/6 ">
                         <div className=" w-full flex flex-col p-3">
-                            <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
+                            <h1 className="font-bold text-gray-400 text-xl">{props.obj.title} kennedy</h1>
                         </div>
                     </div>
                     {/* <div className="h-full w-2/6 flex justify-center items-center">

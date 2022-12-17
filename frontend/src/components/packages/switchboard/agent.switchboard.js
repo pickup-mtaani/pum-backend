@@ -68,6 +68,9 @@ function Agent(props) {
                             Created
                         </th>
                         <th className='border text-20 text-bold p-5'>
+                            picked from Sender
+                        </th>
+                        <th className='border text-20 text-bold p-5'>
                             Agent Rider
                         </th>
                         <th className='border text-20 text-bold p-5'>
@@ -115,6 +118,12 @@ function Agent(props) {
                             {rent?.created &&
                                 moment(rent?.created).format("yyyy-MM-dd HH:mm:ss")}
 
+                        </td>
+                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.dropped?.droppedAt ? 'green' : null, }}>
+                            {rent?.dropped?.droppedAt && <div >
+                                <div>Dropped at: {moment(rent?.dropped?.droppedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
+                                <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
+                            </div>}
                         </td>
                         <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>
                             {rent?.droppedAt && <div >
