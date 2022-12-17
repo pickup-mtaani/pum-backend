@@ -243,15 +243,10 @@ router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
 
     let agent = await Agent.findById(req.params.agent)
 
-    let newriders = []
-    if (agent?.rider) {
-      newriders = agent.rider.push(req.params.id)
-    } else {
-      newriders.push(req.params.id)
-    }
+
     let v = await Agent.findOneAndUpdate({ _id: req.params.agent }, { rider: req.params.id }, { new: true, useFindAndModify: false })
 
-    // await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
+    await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
 
     const aggent = await AgentUser.findOne({ agent: req.params.agent, role: "rider" })
     if (aggent) {
@@ -355,6 +350,7 @@ router.get("/riders-agents-package-count/:id", [authMiddleware, authorized], asy
 
     const { state } = req.query
     const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name rider')
+    console.log("RiderRoutes", agents)
     let sender_agents_count = []
     let reciever_agents_count = []
 
@@ -372,7 +368,7 @@ router.get("/riders-agents-package-count/:id", [authMiddleware, authorized], asy
     for (let j = 0; j < agents.length; j++) {
 
       let packages = await Sent_package.find({ assignedTo: req.params.id, senderAgentID: agents[j].agent?._id, state: state })
-
+      console.log("first", packages)
       sender_agents_count.push({
         name: agents[j].agent?.business_name.toString(),
         agent: agents[j].agent,
