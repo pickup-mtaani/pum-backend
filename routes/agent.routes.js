@@ -289,12 +289,12 @@ router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) =>
                     obj.location_id = locations[i]._id
                     obj.zone = locations[i].zone
                     if (Object.values(custom_locations)[j].CONTACTS !== "") {
-                        if (!await User.findOne({ name: `${Object.values(custom_locations)[j].agent_location}'s Super Agent` })) {
+                        if (!await User.findOne({ name: `${Object.values(custom_locations)[j].agent_location} Agent` })) {
 
                             let phone = await Format_phone_number(`0${Object.values(custom_locations)[j].CONTACTS}`)
                             let saved = await new User({
 
-                                name: `${Object.values(custom_locations)[j].agent_location}'s Super Agent`,
+                                name: `${Object.values(custom_locations)[j].agent_location} Agent`,
                                 phone_number: phone,
                                 activated: false,
                                 role: 'agent',
@@ -329,6 +329,25 @@ router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) =>
 
 
         return res.json([])
+    } catch (error) {
+        console.log(error)
+    }
+})
+router.post('/agents/useragents', async (req, res) => {
+    try {
+
+        let AgentsArr = await Agent.find()
+
+        for (i = 0; i < AgentsArr.length; i++) {
+            console.log("first", AgentsArr[i])
+            await new AgentUser({
+                agent: AgentsArr[i]._id,
+                user: AgentsArr[i].user,
+                role: "agent"
+            }).save()
+        }
+
+        return res.json(AgentsArr)
     } catch (error) {
         console.log(error)
     }

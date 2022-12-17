@@ -742,7 +742,11 @@ router.get("/rider-packages/:state", [authMiddleware, authorized], async (req, r
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
+    // let agent 
+
+    // await AgentDetails.findOne({ user: req.user._id })
     let agent = await AgentUser.findOne({ user: req.user._id })
+
 
     const { period, state } = req.query
     let packages
@@ -873,6 +877,34 @@ router.get("/agent-packages/:id", [authMiddleware, authorized], async (req, res)
   try {
     const { state } = req.query
     let packages = await Sent_package.find({ senderAgentID: req.params.id, state: state, })
+      .populate("createdBy", "l_name f_name phone_number")
+      .populate({
+        path: 'senderAgentID',
+        populate: {
+          path: 'location_id',
+        }
+      })
+      .populate({
+        path: 'receieverAgentID',
+        populate: {
+          path: 'location_id',
+        }
+      })
+      .populate("businessId", "name loc")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/receiever-agent-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const { state } = req.query
+    let packages = await Sent_package.find({ receieverAgentID: req.params.id, state: state, })
       .populate("createdBy", "l_name f_name phone_number")
       .populate({
         path: 'senderAgentID',
