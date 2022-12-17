@@ -442,7 +442,7 @@ router.get("/reciever-agents-rider-packages", [authMiddleware, authorized], asyn
     }
 
     return res.status(200)
-      .json(packages);
+      .json(agents_count);
 
   } catch (error) {
     console.log(error);

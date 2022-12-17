@@ -75,6 +75,9 @@ function Agent(props) {
                             assign rider
                         </th>
                         <th className='border text-20 text-bold p-5'>
+                            rider accepted
+                        </th>
+                        <th className='border text-20 text-bold p-5'>
                             Dropped warehouse
                         </th>
 
@@ -129,6 +132,13 @@ function Agent(props) {
                                 <div>Assigned At: {moment(rent?.assignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Rider:{rent?.package?.assignedTo.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>
+                            </div>}
+                        </td>
+                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent.accepted?.acceptedAt ? 'green' : null, }}>
+                            {rent?.accepted?.acceptedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div>Confirmed At: {moment(rent?.acceptedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
+                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                {/* <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div> */}
                             </div>}
                         </td>
                         <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>
