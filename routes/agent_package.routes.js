@@ -240,7 +240,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       console.log("state", req.params.state)
       // package dropped at agent and confirmed by name
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed by ${auth.name} ` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
