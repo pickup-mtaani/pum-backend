@@ -38,7 +38,7 @@ function ActionPage(props) {
             <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
                     {data.map((agent, i) => (
-                        <Dashboardagents key={i} agent={agent} count={agent.count} rider={agent.rider} id={agent?.agent?._id} title={location?.state?.title} path={location?.state?.lis} name={agent?.agent?.business_name} />
+                        <Dashboardagents key={i} agent={agent} count={agent.count} rider={location?.state?.id} id={agent?.agent?._id} title={location?.state?.title} path={location?.state?.lis} name={agent?.agent?.business_name} />
                     ))}
                 </div>
             </div>
