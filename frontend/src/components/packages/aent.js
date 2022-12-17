@@ -72,14 +72,17 @@ function Agent(props) {
             sortable: true,
             name: 'payment_status ',
             minWidth: '250px',
-            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500' onClick={() => props.togglePayment(row._id, "agent")}>Pay Now</div> : "Paid"}</>),
+            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'
+                onClick={async () => { await props.togglePayment(row._id, "agent"); await fetch }}>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Name',
             minWidth: '550px',
             defaultExpanded: true,
-            selector: row => <>{row.packageName}{row._id}</>
+            selector: row => <>{row.packageName}
+                {/* {row._id}{row.state} */}
+            </>
         },
         {
             sortable: true,

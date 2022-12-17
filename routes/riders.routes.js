@@ -337,23 +337,50 @@ router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
 router.get("/riders-agents/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    // for (let i = 0; i < packages.length; i++) {
 
+    const { state } = req.query
     const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name')
-    let agents_count = {}
 
-    // for (let i = 0; i < packages.length; i++) {
+    return res.status(200).json(agents);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/riders-agents-package-count/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+
+    const { state } = req.query
+    const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name rider')
+    let sender_agents_count = []
+    let reciever_agents_count = []
+
+    for (let i = 0; i < agents.length; i++) {
+
+      let packages = await Sent_package.find({ assignedTo: req.params.id, receieverAgentID: agents[i].agent?._id, state: state })
+
+      reciever_agents_count.push({
+        name: agents[i].agent?.business_name.toString(),
+        agent: agents[i].agent,
+        count: packages.length
+      })
+    }
 
     for (let j = 0; j < agents.length; j++) {
 
-      let packages = await Sent_package.find({ assignedTo: req.params.id, senderAgentID: agents[j].agent?._id })
-      console.log("PACKages", agents[j].agent?._id)
-      console.log("pack", packages)
-      // agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
+      let packages = await Sent_package.find({ assignedTo: req.params.id, senderAgentID: agents[j].agent?._id, state: state })
 
+      sender_agents_count.push({
+        name: agents[j].agent?.business_name.toString(),
+        agent: agents[j].agent,
+        count: packages.length
+      })
     }
-    // console.log("first,agents_count", agents_count)
-    return res.status(200).json(agents);
+
+    return res.status(200).json({ reciever_agents_count, sender_agents_count });
   } catch (error) {
     console.log(error);
     return res

@@ -11,9 +11,17 @@ function ActionPage(props) {
     const [data, setData] = useState([])
 
     const fetch = async () => {
-        const result = await props.get_agents(location?.state?.id)
 
-        setData(result)
+        if (location?.state?.title === "Collect From Riders") {
+            const result = await props.get_agents(location?.state?.id, "dropped")
+            setData(result.sender_agents_count)
+
+        } else {
+            const result = await props.get_agents(location?.state?.id, "recieved-warehouse")
+            setData(result.reciever_agents_count)
+
+        }
+
     }
     useEffect(() => {
         fetch()
@@ -30,7 +38,7 @@ function ActionPage(props) {
             <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
                     {data.map((agent, i) => (
-                        <Dashboardagents key={i} agent={agent} rider={agent.rider} id={agent?.agent?._id} title={location?.state?.title} path={location?.state?.lis} name={agent?.agent?.business_name} />
+                        <Dashboardagents key={i} agent={agent} count={agent.count} rider={agent.rider} id={agent?.agent?._id} title={location?.state?.title} path={location?.state?.lis} name={agent?.agent?.business_name} />
                     ))}
                 </div>
             </div>

@@ -18,12 +18,12 @@ export const get_riders = () => async (dispatch) => {
     }
 };
 
-export const get_agents = (id) => async (dispatch) => {
+export const get_agents = (id, state) => async (dispatch) => {
 
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_RIDERS" });
-        const { data } = await axios.get(`/api/riders-agents/${id}`);
+        const { data } = await axios.get(`/api/riders-agents-package-count/${id}?state=${state}`);
         let payload = [];
         payload = data;
         dispatch({ type: "FETCH_RIDERS_SUCCESSFUL", payload });

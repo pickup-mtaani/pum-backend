@@ -116,13 +116,13 @@ export function DashboardRider(props) {
                     type: props.type
                 }}
             >  <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
-                    <p>{props?.rider?.user?._id}</p>
+                    {/* <p>{props?.rider?.user?._id}</p> */}
                     <div className="h-full w-full flex justify-center items-center">
                         <h1 className="font-bold text-gray-400 text-2xs pr-10">{props?.rider?.user?.name}</h1>
                         <br />
 
                         {/* <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
-                            {props?.rider.no_of_packages}
+                            {props.count}
                         </div> */}
                     </div>
                 </div>
@@ -154,9 +154,9 @@ export function Dashboardagents(props) {
             >  <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
                     <div className="h-full w-full flex justify-center items-center">
                         <h1 className="font-bold text-gray-400 text-2xs pr-10">{props?.name}</h1>
-                        {/* <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
-                            {props?.rider.no_of_packages}
-                        </div> */}
+                        <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-10 w-10 shadow-xl rounded-full flex justify-center items-center">
+                            {props.count}
+                        </div>
                     </div>
                 </div>
             </Link>
