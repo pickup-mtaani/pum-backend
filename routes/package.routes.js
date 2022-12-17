@@ -412,7 +412,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { agent_package_count: parseInt(customer.agent_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
         await AgentDetails.findOneAndUpdate({ _id: packages[i].senderAgentID }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
-        await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
+        // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
 
 
         if (req.body.payment_option === "collection") {
