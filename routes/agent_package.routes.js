@@ -1119,6 +1119,25 @@ router.get("/agent-packages-web", async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/agent-packages-web-recieved-warehouse", async (req, res) => {
+  try {
+    let packages
+
+
+    packages = await Sent_package.find({ state: "recieved-warehouse" })
+      .populate('createdBy', 'f_name l_name name phone_number')
+      .populate('receieverAgentID')
+      .populate('senderAgentID')
+      .populate("businessId", "name")
+
+
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req, res) => {
 
   try {

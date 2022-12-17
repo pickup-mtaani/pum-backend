@@ -17,13 +17,13 @@ function ActionPage(props) {
                 <h2 className='text-uppercase text-3xl underline'>{location?.state?.title}</h2>
             </div>
             <h2 className='text-center p-10 text-xl '> </h2>
-            <div className='flex  w-full'>
+            {location?.state?.title === "Assign to Riders" ? <div></div> : <div className='flex  w-full'>
                 <div className='flex flex-wrap gap-1  w-full'>
                     {props?.riders?.map((rider, i) => (
                         <DashboardRider key={i} rider={rider} id={rider?.user?._id} title={location?.state?.title} path={location?.state?.lis} name={rider?.user?.name} />
                     ))}
                 </div>
-            </div>
+            </div>}
         </Layout>
     )
 }

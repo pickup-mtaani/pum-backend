@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
 import { get_riders, } from '../../../redux/actions/riders.actions'
-import { get_agents, get_zones, CollectDoorStep, assign, fetchrecieved, fetchpackages, fetchAgentpack } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, CollectDoorStep, assign, fetchrecieved, packstoassign, fetchAgentpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 function Riderpage(props) {
@@ -15,12 +15,12 @@ function Riderpage(props) {
     const [show, setShow] = useState(false)
     const [id, setId] = useState(null)
     const fetch = async (rider, agent) => {
-        let res = await props.fetchrecieved(rider, agent)
+        let res = await props.packstoassign(rider, agent)
         setData(res)
     }
     useEffect(() => {
         console.log(location.state)
-        fetch(location?.state?.rider, location?.state?.agent)
+        fetch()
 
     }, [])
     const packAction = async (id, state, rider) => {
@@ -109,6 +109,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, fetchrecieved, get_zones, assign, CollectDoorStep, get_riders, fetchAgentpack, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, fetchrecieved, packstoassign, get_zones, assign, CollectDoorStep, get_riders, fetchAgentpack, assignwarehouse })(Riderpage)
 
 

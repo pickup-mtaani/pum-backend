@@ -268,6 +268,23 @@ export const add_employee = (id, data, role) => async (dispatch) => {
         ;
     }
 };
+export const packstoassign = (state, agent) => async (dispatch) => {
+    //alert(JSON.stringify(agent))
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/agent-packages-web-recieved-warehouse`);
+        let payload = [];
+        payload = data.packages;
+
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
 export const fetchpackages = (state, agent) => async (dispatch) => {
     //alert(JSON.stringify(agent))
     try {
