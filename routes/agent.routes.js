@@ -606,12 +606,12 @@ router.delete('/delete-agent/:id', async (req, res, next) => {
 
 
 // ERr
-router.post('/error', async (req, res) => {
+router.post('/error', [authMiddleware, authorized], async (req, res) => {
 
     try {
 
         const body = req.body
-
+        body.user_id = req.user._id
         new Error(body).save()
 
         return res.status(200).json({ message: 'error Added successfully' });
