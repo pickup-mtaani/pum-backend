@@ -245,7 +245,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
         {
-          droppedTowarehouseBy: package?.assignedTo,
+          // droppedTowarehouseBy: package?.assignedTo,
           warehouseAt: moment(),
 
         },
