@@ -273,6 +273,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "assigned-warehouse") {
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
+
       let newrider = await User.findById(req.query.rider)
       console.log(req.query.rider)
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was reassigned to ${newrider.name} at the sorting` }]
@@ -435,6 +437,7 @@ router.get("/reciever-agents-rider-packages", [authMiddleware, authorized], asyn
     let { state } = req.query
 
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+
     let agents_count = {}
 
     for (let i = 0; i < packages.length; i++) {

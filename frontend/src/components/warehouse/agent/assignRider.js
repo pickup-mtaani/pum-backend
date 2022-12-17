@@ -52,7 +52,7 @@ function Riderpage(props) {
             selector: row => (
 
                 <>
-                    {row.receieverAgentID?.rider ? <div className=' p-2 bg-slate-200 border' onClick={() => assign(row, row.receieverAgentID?.rider)}> Assign </div> : <>Kindly assign {row.receieverAgentID.business_name} a rider</>}
+                    {row.receieverAgentID?.rider ? <div className=' p-2 bg-slate-200 border' onClick={() => assign(row, row.receieverAgentID)}> Assign </div> : <>Kindly assign {row.receieverAgentID.business_name} a rider</>}
 
                 </>)
         },
@@ -60,7 +60,7 @@ function Riderpage(props) {
     ]
 
     const assign = (row, id) => {
-
+        console.log(id)
         setId(row._id)
         setRider(id)
         setShow(true)
