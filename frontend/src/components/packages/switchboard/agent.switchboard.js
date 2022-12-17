@@ -131,8 +131,8 @@ function Agent(props) {
                                 <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
                             </div>}
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.assignedAt ? 'green' : null, }}>
-                            {rent?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent.assigned?.assignedAt ? 'green' : null, }}>
+                            {rent?.assigned?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dispatched: {moment(rent?.assignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Rider:{rent?.package?.assignedTo.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>

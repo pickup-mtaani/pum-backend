@@ -400,7 +400,7 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
     }
 
     return res.status(200)
-      .json(packages);
+      .json(agents_count);
 
   } catch (error) {
     console.log(error);
@@ -693,31 +693,31 @@ router.get("/rider-packages/:state", [authMiddleware, authorized], async (req, r
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
-  try {
-    let agents = []
+// router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+//   try {
+//     let agents = []
 
-    let { state } = req.query
+//     let { state } = req.query
 
-    let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
-    let agents_count = {}
+//     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+//     let agents_count = {}
 
-    for (let i = 0; i < packages.length; i++) {
+//     for (let i = 0; i < packages.length; i++) {
 
-      agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
+//       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
 
-    }
+//     }
 
-    return res.status(200)
-      .json(agents_count);
+//     return res.status(200)
+//       .json(agents_count);
 
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "operation failed ", error });
+//   }
+// });
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
