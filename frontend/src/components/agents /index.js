@@ -90,7 +90,7 @@ function Agents(props) {
           }}>Edit Agent</div> */}
           {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { props.activate_agents(row._id); fetch() }}>Activate contact person</div> */}
           <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { toggleManage(row); setAgent(row._id); fetch(); console.log(JSON.stringify(row)) }}>Manage Attendants</div>
-          <div onClick={async () => { await props.delete_agents(row._id); await fetch() }}>Delete Agent</div>
+          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={async () => { await props.delete_agents(row._id); await fetch() }}>Delete Agent</div> */}
         </div>
       )
     },

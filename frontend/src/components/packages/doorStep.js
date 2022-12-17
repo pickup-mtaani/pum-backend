@@ -35,32 +35,27 @@ function Doorstep(props) {
         {
             sortable: true,
             name: 'Business Name',
-            minWidth: '250px',
             selector: row => row.businessId?.name
         },
 
         {
             sortable: true,
             name: 'Reciept',
-            minWidth: '250px',
             selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Stored At ',
-            minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             sortable: true,
             name: 'payment_status ',
-            minWidth: '250px',
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Packages',
-            minWidth: '250px',
             selector: row => (<>
                 {row.packages.map((pack, i) => (
                     <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
@@ -111,14 +106,12 @@ function Doorstep(props) {
         {
             sortable: true,
             name: 'Package',
-            minWidth: '250px',
 
             selector: row => row.packageName
         },
         {
             sortable: true,
             name: 'Package value',
-            minWidth: '250px',
 
             selector: row => row.package_value
         },
@@ -126,25 +119,21 @@ function Doorstep(props) {
         {
             sortable: true,
             name: 'payment_status ',
-            minWidth: '250px',
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500' onClick={() => props.togglePayment(row._id, "doorstep")}>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Business Name',
-            minWidth: '250px',
             selector: row => row.businessId?.name
         },
         {
             sortable: true,
             name: 'Sent At ',
-            minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             sortable: true,
             name: 'Assigned to ',
-            minWidth: '250px',
             selector: row => row?.assignedTo?.name,
         },
 

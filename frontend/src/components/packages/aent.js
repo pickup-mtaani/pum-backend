@@ -71,17 +71,23 @@ function Agent(props) {
         {
             sortable: true,
             name: 'payment_status ',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'
-                onClick={async () => { await props.togglePayment(row._id, "agent"); await fetch }}>Pay Now</div> : "Paid"}</>),
+                onClick={async () => { await props.togglePayment(row._id, "agent"); await fetch() }}>Pay Now</div> : "Paid"}</>),
+        },
+        {
+            sortable: true,
+            name: 'Reciept',
+            // minWidth: '250px',
+            selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Name',
-            minWidth: '550px',
+            // minWidth: '550px',
             defaultExpanded: true,
             selector: row => <>{row.packageName}
-                {row._id}
+                {/* {row._id} */}
                 {/* {row.state}  */}
                 {/* {row.assignedTo} */}
             </>
@@ -89,31 +95,39 @@ function Agent(props) {
         {
             sortable: true,
             name: 'Value',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => row.package_value
         },
-        {
-            sortable: true,
-            name: 'Reciept',
-            minWidth: '250px',
-            selector: row => row.receipt_no
-        },
+
         {
             sortable: true,
             name: 'Customer',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => row.customerName
         },
         {
             sortable: true,
             name: 'Customer Phone',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => row.customerPhoneNumber
         },
         {
             sortable: true,
+            name: 'Sender',
+            // minWidth: '250px',
+            selector: row => row.senderAgentID.business_name
+        },
+        {
+            sortable: true,
+            name: 'Reciever',
+            // minWidth: '250px',
+            selector: row => row.receieverAgentID.business_name
+        },
+
+        {
+            sortable: true,
             name: 'Delivery Fee',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => row.delivery_fee
         },
 
@@ -121,26 +135,14 @@ function Agent(props) {
         {
             sortable: true,
             name: 'Total Fee Paid',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => row.total_fee
-        },
-        {
-            sortable: true,
-            name: 'Sender',
-            minWidth: '250px',
-            selector: row => row.senderAgentID.business_name
-        },
-        {
-            sortable: true,
-            name: 'Reciever',
-            minWidth: '250px',
-            selector: row => row.receieverAgentID.business_name
         },
 
         {
             sortable: true,
             name: 'Sent At ',
-            minWidth: '250px',
+            // minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
 

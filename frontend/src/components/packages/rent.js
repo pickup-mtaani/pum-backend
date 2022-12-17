@@ -35,26 +35,22 @@ function Rent(props) {
         {
             sortable: true,
             name: 'Business Name',
-            minWidth: '250px',
             selector: row => row.businessId?.name
         },
 
         {
             sortable: true,
             name: 'Reciept',
-            minWidth: '250px',
             selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Stored At ',
-            minWidth: '250px',
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+            selector: row => moment(row.createdAt).format('YYYY-MM-DD'),
         },
         {
             sortable: true,
             name: 'Packages',
-            minWidth: '250px',
             selector: row => (<>
                 {row.packages.map((pack, i) => (
                     <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>

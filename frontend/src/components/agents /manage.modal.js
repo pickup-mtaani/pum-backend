@@ -19,7 +19,6 @@ function Manage(props) {
     }
 
     const submit = async () => {
-
         await props.add_employee(props.agent, item, item.role)
         await props.get_agents_employees(props.agent)
         setItem(initialState)
@@ -53,10 +52,10 @@ function Manage(props) {
                                                 <div className='p-5'>
                                                     <h2 className='text-center py-5 text-2xl tuppercase'>ATTENDANTS</h2>
                                                     <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => setShowModal(true)}> Add an attendant</div>
-                                                    <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => props.activate_agents(props?.data?._id)}>Activate Super Attendant</div>
+                                                    <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={async () => { await props.activate_agents(props?.data?._id); await props.props.toggle() }}>Activate Super Attendant</div>
 
-                                                    <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={(e) => props.assign(e.target.value, props.agent)}>
-                                                        <option value="">Assign a new Rider</option>
+                                                    <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={async (e) => { await props.assign(e.target.value, props.agent); await props.toggle() }}>
+                                                        <option value="">Assign a Rider</option>
                                                         {props.riders?.map((rider, i) => (
                                                             <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
                                                         ))}
@@ -79,13 +78,13 @@ function Manage(props) {
                                                                     <td className='border px-2 border-slate-300'>{emp?.role}</td>
                                                                     <td className='border px-2 border-slate-300'>
                                                                         <div className='flex gap-x-2'>
-                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => { setShowModal(false) }}>Delete</div>
+                                                                            {/* <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => { setShowModal(false) }}>Delete</div> */}
 
-                                                                            <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                            {/* <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
                                                                                 setShowModal(true); setItem({
                                                                                     name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
                                                                                 })
-                                                                            }}>Edit</div>
+                                                                            }}>Edit</div> */}
                                                                             {emp?.user?.role === "agent" && <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
                                                                                 props.make_super(emp?.user?._id)
                                                                             }}>Make Super</div>}
@@ -109,13 +108,13 @@ function Manage(props) {
                                         >
                                             Close
                                         </button>
-                                        <button
+                                        {/* <button
                                             className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                                             type="button"
                                             onClick={props.submit}
                                         >
                                             Submit
-                                        </button>
+                                        </button> */}
                                     </div>
 
                                 </div>

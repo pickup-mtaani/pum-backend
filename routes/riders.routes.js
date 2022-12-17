@@ -4,8 +4,9 @@ var Rider_Package = require('models/rider_package.model')
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 var Path = require("./../models/riderroute.model");
-var Agent = require('models/agentAddmin.model')
+
 var AgentUser = require('models/agent_user.model')
+var Agent = require('models/agentAddmin.model')
 var User = require('models/user.model')
 var Package = require('models/package.modal')
 var RiderRoutes = require('models/rider_routes.model')

@@ -27,11 +27,25 @@ function Index(props) {
 
     return (
         <Layout>
-            <div className='flex w-full justify-center'>
-                <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("agent")}>Agent</div>
-                <div className="flex justify-center items-center border p-2 w-1/3" onClick={async () => { setView("rent") }}>Rent  a Shelf</div>
-                <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("door")}>Door Step</div>
+
+
+            <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
+                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={() => setView("agent")} style={{ backgroundColor: view === "agent" && "gray" }} >
+                    Agents to Agent {view === "agent"}
+                </div>
+
+                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setView("rent") }} style={{ backgroundColor: view === "rent" && "gray" }} >
+                    Rent A Shelf {view === "rent"}
+                </div>
+                <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setView("door") }} style={{ backgroundColor: view === "door" && "gray" }} >
+                    Door Step {view === "door"}
+                </div>
+
             </div>
+            {/* <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("agent")}>Agent</div>
+                <div className="flex justify-center items-center border p-2 w-1/3" onClick={async () => { setView("rent") }}>Rent  a Shelf</div>
+                <div className="flex justify-center items-center border p-2 w-1/3" onClick={() => setView("door")}>Door Step</div> */}
+
             <h3 style={{ textAlign: 'center', textTransform: 'uppercase', textDecoration: 'underline' }}>{view}'s SwitchBoard</h3>
             {view === "agent" ? <Agent data={props.agentTracks} /> : view === "rent" ? <Rent data={props.rentTracks} /> : <Door data={props.doorTacks} />}
             {/* {view === "rent" && <Rent />} */}
