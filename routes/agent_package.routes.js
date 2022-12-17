@@ -237,6 +237,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
     if (req.params.state === "recieved-warehouse") {
+
+      console.log("state", req.params.state)
       // package dropped at agent and confirmed by name
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed by ${auth.name} ` }]
 
