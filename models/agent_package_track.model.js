@@ -92,6 +92,16 @@ const NarationsSchema = new Schema({
             ref: 'user'
         },
     },
+    rideraccepted: {
+        acceptedAt: {
+            type: Date,
+            default: null
+        },
+        acceptedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+    },
     droppedToagent: {
         droppedToagentBy: {
             type: Schema.Types.ObjectId,

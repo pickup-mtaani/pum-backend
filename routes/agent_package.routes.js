@@ -252,6 +252,22 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
+    if (req.params.state === "on-transit") {
+      // package dropped at agent and confirmed by name
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed by ${auth.name} ` }]
+
+      await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        accepted:
+        {
+          acceptedBy: package?.assignedTo,
+          acceptedAt: moment(),
+
+        },
+        // descriptions: new_des
+      }, { new: true, useFindAndModify: false })
+
+      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
+    }
     if (req.params.state === "assigned-warehouse") {
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
@@ -1237,6 +1253,11 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
         .populate({
           path: 'package', populate: {
             path: 'receieverAgentID'
+          }
+        })
+        .populate({
+          path: 'package', populate: {
+            path: 'assignedTo'
           }
         })
         // .populate("collectedBy")
