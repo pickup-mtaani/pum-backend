@@ -6,6 +6,7 @@ var User = require('models/user.model')
 var Role = require('models/roles.model')
 var moment = require('moment');
 var jwt = require('jsonwebtoken');
+
 var Rider = require('models/rider.model')
 var Agent = require('models/agentAddmin.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
@@ -30,7 +31,6 @@ router.post('/login', async (req, res) => {
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         let user = {}
         let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
-        console.log("first", userOBJ)
 
 
         if (oldDb && !userOBJ) {
@@ -77,7 +77,7 @@ router.post('/login', async (req, res) => {
             }
             const token = await jwt.sign({ email: userOBJ.email, _id: userOBJ._id }, process.env.JWT_KEY);
             const userUpdate = await User.findOneAndUpdate({ phone_number: req.body.phone_number }, { verification_code: null }, { new: true, useFindAndModify: false })
-
+            // AgentLocation
             if (userOBJ.role === "rider") {
                 user = await User.findOne({ _id: userOBJ._id }).populate('rider')
                 return res.status(200).json({ token, user });
@@ -85,13 +85,14 @@ router.post('/login', async (req, res) => {
             if (userOBJ.role === "agent") {
                 let agent
                 let userAgent = await AgentUser.findOne({ user: userOBJ._id })
+                let agent1 = await Agent.findOne({ user: userOBJ._id })
                 if (userAgent) {
                     agent = await Agent.findOne({ userAgent: agent })
                 } else {
                     agent = await Agent.findOne({ user: userOBJ._id })
                 }
 
-
+                console.log(agent)
                 if (!agent) {
                     user = userOBJ
                 } else {
@@ -101,7 +102,7 @@ router.post('/login', async (req, res) => {
                     user.business_name = agent.business_name
                     user.working_days = agent.working_days
                     user.loc = agent.loc
-                    user.location_name = location.name
+                    // user.location_name = location.name
                     user.opening_hours = agent.opening_hours
                     user.location_id = agent.location_id
                     user.closing_hours = agent.closing_hours
@@ -110,7 +111,7 @@ router.post('/login', async (req, res) => {
                     user.phone_number = agent.phone_number
                     user.working_hours = agent.working_hours
                     user.working_days = agent.working_days
-                    user.rider = agent.rider
+                    user.rider = agent1.rider
                     user.isSubAgent = userOBJ.isSubAgent
                     user.location = agent.loc
                     user.hasShelf = agent.hasShelf
