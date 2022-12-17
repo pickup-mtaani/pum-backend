@@ -13,6 +13,7 @@ function Riderpage(props) {
     const [data, setData] = useState([])
     const [data1, setData1] = useState([])
     const [show, setShow] = useState(false)
+    const [rider, setRider] = useState(null)
     const [id, setId] = useState(null)
     const fetch = async (rider, agent) => {
         let res = await props.packstoassign(rider, agent)
@@ -25,8 +26,9 @@ function Riderpage(props) {
     }, [])
     const packAction = async (id, state, rider) => {
         await props.assignwarehouse(id, state, rider)
-        let res = await props.fetchAgentpack(location?.state?.agent)
-        setData(res)
+        await fetch()
+        // let res = await props.fetchAgentpack(location?.state?.agent)
+        // setData(res)
     }
 
     const Sellers_columns = [
@@ -50,26 +52,28 @@ function Riderpage(props) {
             selector: row => (
 
                 <>
-                    <div className=' p-2 bg-slate-200 border' onClick={() => assign(row)}> Assign</div>
+                    {row.receieverAgentID?.rider ? <div className=' p-2 bg-slate-200 border' onClick={() => assign(row, row.receieverAgentID?.rider)}> Assign </div> : <>Kindly assign {row.receieverAgentID.business_name} a rider</>}
 
                 </>)
         },
 
     ]
 
-    const assign = (row) => {
+    const assign = (row, id) => {
+
         setId(row._id)
+        setRider(id)
         setShow(true)
 
     }
-
+    // console.log(data[0]?.receieverAgentID?.rider)
     return (
         <Layout>
             <ConfirmModal
-                msg=" Recieve this package"
+                msg={`Assign this package `}
                 show={show}
 
-                Submit={async () => { await packAction(id, "assigned-warehouse", location.state.rider); await fetch(location?.state?.rider, location?.state?.agent); setShow(false); }}
+                Submit={async () => { await packAction(id, "assigned-warehouse", rider); await fetch(location?.state?.rider, location?.state?.agent); setShow(false); }}
             />
             <div className=" mx-2">
                 <DataTable

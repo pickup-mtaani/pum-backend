@@ -249,7 +249,7 @@ router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
     } else {
       newriders.push(req.params.id)
     }
-    await Agent.findOneAndUpdate({ _id: req.params.id }, { rider: req.params.id }, { new: true, useFindAndModify: false })
+    let v = await Agent.findOneAndUpdate({ _id: req.params.agent }, { rider: req.params.id }, { new: true, useFindAndModify: false })
 
     // await new RiderRoutes({ agent: req.params.agent, rider: req.params.id }).save();
 

@@ -76,7 +76,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
-    let sender = await AgentDetails.findById(package.senderAgentID)
+    let sender = await AgentDetails.findById(package?.senderAgentID)
     let reciever = await AgentDetails.findById(package.receieverAgentID)
     let rider = await User.findById(package.assignedTo)
 
@@ -208,11 +208,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       // assigned  to rider name for delivery to agent
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
       let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
-
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender?.rider }, { new: true, useFindAndModify: false })
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         assigned:
         {
-          assignedTo: package.assignedTo,
+          assignedTo: sender?.rider,
           assignedAt: Date.now(),
           assignedBy: req.user._id,
         }, descriptions: new_des
