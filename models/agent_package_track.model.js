@@ -92,7 +92,7 @@ const NarationsSchema = new Schema({
             ref: 'user'
         },
     },
-    rideraccepted: {
+    accepted: {
         acceptedAt: {
             type: Date,
             default: null
