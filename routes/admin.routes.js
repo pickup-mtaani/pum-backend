@@ -80,6 +80,8 @@ router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, 
 
     try {
         const body = req.body
+        // console.log("BODY", body)
+        console.log(req.params)
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         const user = await Employee.findOne({ email: req.body.email, agent_id: req.params.id, role: req.body.role });
         const phone = await Employee.findOne({ phone_number: req.body.phone_number, agent_id: req.params.id, role: req.body.role });

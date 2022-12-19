@@ -87,16 +87,20 @@ router.post('/login', async (req, res) => {
                 let userAgent = await AgentUser.findOne({ user: userOBJ._id })
 
                 let agent1 = await Agent.findOne({ user: userOBJ._id })
+                // console.log(first)
                 let rider = agent1?.rider
+                let agent_id
                 if (userAgent) {
 
                     agent = await Agent.findOne({ userAgent: agent })
+                    agent_id = agent?.agent
 
                 } else {
+                    agent_id = agent1._id
                     agent = await Agent.findOne({ user: userOBJ._id })
                 }
 
-                console.log(agent)
+                console.log(agent1)
                 if (!agent) {
                     user = userOBJ
                 } else {
@@ -122,7 +126,7 @@ router.post('/login', async (req, res) => {
                     user.images = agent.images
                     user.name = userOBJ.name
                     user.phone_number = userOBJ.phone_number
-                    user.agent_id = agent._id
+                    user.agent_id = agent_id
                     user.email = userOBJ.email
                     user.role = userOBJ.role
                 }
