@@ -74,10 +74,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
   try {
     const { type, } = req.query
 
+
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
     // let sender = await AgentDetails.findById(package?.senderAgentID)
-    let sender = await AgentDetails.findOne({ user: auth._id })
+    let sender = await AgentDetails.findOne({ user: auth?._id })
     let reciever = await AgentDetails.findById(package.receieverAgentID)
     let rider = await User.findById(package.assignedTo)
 
@@ -275,12 +276,13 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
     if (req.params.state === "assigned-warehouse") {
+
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
 
       let newrider = await User.findById(req.query.rider)
-      console.log(req.query.rider)
+
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was reassigned to ${newrider.name} at the sorting` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
@@ -992,10 +994,11 @@ router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req
 
 router.get("/agent-packages-count", [authMiddleware, authorized], async (req, res) => {
   try {
-
+    let auth = await User.findById(req.user._id)
     let agent = await AgentUser.findOne({ user: req.user._id })
-
-
+    // let agent = await AgentDetails.findOne({ user: auth?._id })
+    console.log("Agent", agent)
+    return
     const { period, state } = req.query
     let packages
 

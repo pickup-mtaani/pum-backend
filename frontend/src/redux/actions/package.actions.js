@@ -49,7 +49,7 @@ export const geterrands = () => async (dispatch) => {
 export const assignwarehouse = (id, state, rider) => async (dispatch) => {
 
   try {
-
+    await setAuthToken(axios);
     dispatch({ type: "FETCH_DOORSTEP" });
     let payload = [];
     const { data } = await axios.put(`/api/agent/package/${id}/${state}?rider=${rider}`);
