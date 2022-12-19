@@ -643,7 +643,7 @@ router.post('/error', [authMiddleware, authorized], async (req, res) => {
 router.get('/error', async (req, res) => {
 
     try {
-        const body = await Error.find()
+        const body = await Error.find().populate('user_id')
         return res.status(200).json(body);
 
     } catch (error) {

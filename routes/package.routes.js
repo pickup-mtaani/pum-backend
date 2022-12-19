@@ -199,7 +199,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].origin = { lng: null, lat: null, name: '' }
         packages[i].destination = body?.packages[i]?.destination
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
-        packages[i].assignedTo = route.rider
+        // packages[i].assignedTo = route.rider
 
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
@@ -359,7 +359,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix ? agent.prefix : "PMT-"}${newPackageCount}`;
 
-        packages[i].assignedTo = route.rider
+        // packages[i].assignedTo = route.rider
 
         if (packages[i].products?.length !== 0) {
           const item = packages[i].products

@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const ErrorSchema = new Schema({
     user_id: {
         type: Schema.Types.ObjectId,
-        ref: 'agent_agent_sent_packages'
+        ref: 'user'
     },
     error: {
 
