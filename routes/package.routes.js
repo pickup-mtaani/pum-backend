@@ -57,15 +57,16 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
+        let business = await Bussiness.findById(packages[i].businessId)
         if (agent_id?.hasShelf) {
           packages[i].state = "recieved-warehouse"
         }
-        let zone = await Zone.findOne({ _id: agent_id.location_id })
+        // let zone = await Zone.findOne({ _id: agent_id.location_id })
         let newPackageCount = 1
         if (agent_id.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
-        let route = await RiderRoutes.findOne({ agent: agent_id._id })
+        // let route = await RiderRoutes.findOne({ agent: agent_id._id })
         if (packages[i]?.product) {
 
           const product = await Product.findById(packages[i].product);
@@ -98,6 +99,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdBy = req.user._id
         packages[i].origin = { lng: null, lat: null, name: '' }
+
         packages[i].destination = {
           name: body?.packages[i]?.destination?.name,
           lat: body?.packages[i]?.destination?.latitude,
@@ -105,7 +107,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         packages[i].receipt_no = `${agent_id.prefix}${newPackageCount}`;
-        packages[i].assignedTo = route.rider
+        // packages[i].assignedTo = route.rider
 
         let customer = await Customer.findOne({ seller: req.user._id, customer_phone_number: packages[i].customerPhoneNumber })
         if (customer === null) {
@@ -123,11 +125,12 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
-        let V = await new Track_door_step({
+        await new Track_door_step({
           package: newpackage._id, created: {
             createdAt: moment(),
             createdBy: req.user._id
-          }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+          }, state: "request",
+          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }]
         }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
@@ -218,7 +221,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           package: newpackage._id, created: {
             createdAt: moment(),
             createdBy: req.user._id
-          }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
+          }, state: "request", descriptions: [{
+
+            time: Date.now(), desc: `Pkg ${newpackage.receipt_no}  created  
+        `
+          }]
         }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()

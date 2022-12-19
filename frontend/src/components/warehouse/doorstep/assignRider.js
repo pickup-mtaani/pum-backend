@@ -43,9 +43,21 @@ function Riderpage(props) {
         },
         {
             sortable: true,
-            name: 'Business',
+            name: 'Reciept',
+            minWidth: '250px',
+            selector: row => row.receipt_no
+        },
+        {
+            sortable: true,
+            name: 'From',
             minWidth: '250px',
             selector: row => row.businessId?.name
+        },
+        {
+            sortable: true,
+            name: 'To',
+            minWidth: '250px',
+            selector: row => row.customerName
         },
         {
             sortable: true,

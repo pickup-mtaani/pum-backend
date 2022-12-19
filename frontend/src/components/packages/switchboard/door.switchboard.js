@@ -113,7 +113,7 @@ function Agent(props) {
                         </td>
                         <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
                             {rent?.created &&
-                                moment(rent?.created).format("yyyy-MM-dd HH:mm:ss")}
+                                moment(rent?.created).format("yyyy-mm-ddd HH:mm:ss")}
 
                         </td>
                         <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>

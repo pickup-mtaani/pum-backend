@@ -74,6 +74,17 @@ const NarationsSchema = new Schema({
             ref: 'rider'
         },
     },
+    rejected: {
+
+        rejectedAt: {
+            type: Date,
+            default: null
+        },
+        reason: {
+            type: String,
+
+        },
+    },
     reAssigned: {
         reAssignedTo: {
             type: Schema.Types.ObjectId,
@@ -144,8 +155,7 @@ const NarationsSchema = new Schema({
         ref: 'doorStep_delivery_packages'
     },
     descriptions: {
-        type: String,
-        required: true
+        type: Array,
     },
 
     deleted_at: {

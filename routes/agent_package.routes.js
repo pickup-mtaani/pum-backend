@@ -76,7 +76,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
-    let sender = await AgentDetails.findById(package?.senderAgentID)
+    // let sender = await AgentDetails.findById(package?.senderAgentID)
+    let sender = await AgentDetails.findOne({ user: auth._id })
     let reciever = await AgentDetails.findById(package.receieverAgentID)
     let rider = await User.findById(package.assignedTo)
 
@@ -160,8 +161,8 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       try {
         await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
         let new_description = [...narration.descriptions, {
-          time: Date.now(), desc: `Pkg ${package.receipt_no} drop off confimed  by ${auth?.name} at  ${sender.business_name}  awaiting  to be assigned to rider ${rider.name} 
-          ` }]
+          time: Date.now(), desc: `Pkg ${package.receipt_no} drop off confimed  by ${auth?.name} at  ${sender.business_name}`
+        }]
 
         let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
           dropped: {
@@ -193,7 +194,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await SendMessage(textbody)
     }
     if (req.params.state === "rejected") {
-      console.log("first", req.body)
+
       let reject = await new Reject({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { rejectedId: reject._id }, { new: true, useFindAndModify: false })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was rejected by ${auth?.name} because ${req.body.rejectReason} ` }]
@@ -203,7 +204,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
     if (req.params.state === "assigned") {
 
-      let rider = await User.findOne({ _id: package.assignedTo })
+      let rider = await User.findOne({ _id: sender.rider })
+      console.log(sender)
+      return
+      await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
+
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       // assigned  to rider name for delivery to agent
       let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
@@ -1098,7 +1103,7 @@ router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], asy
       .populate('createdBy', 'f_name l_name name')
       .populate('receieverAgentID', 'business_name')
       .populate('senderAgentID', 'business_name')
-      .populate('businessId')
+      .populate('businessId').sort({ createdAt: -1 });
     return res
       .status(200)
       .json(packages);

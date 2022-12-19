@@ -582,7 +582,7 @@ router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) =
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, res) => {
+router.get("/wh-errand-step-packages/", [authMiddleware, authorized], async (req, res) => {
   try {
     const errand_packages = await Erand_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
     return res
