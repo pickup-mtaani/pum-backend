@@ -205,8 +205,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "assigned") {
 
       let rider = await User.findOne({ _id: sender.rider })
-      console.log(sender)
-      return
+
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
 
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
