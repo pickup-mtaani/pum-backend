@@ -997,8 +997,7 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
     let auth = await User.findById(req.user._id)
     let agent = await AgentUser.findOne({ user: req.user._id })
     // let agent = await AgentDetails.findOne({ user: auth?._id })
-    console.log("Agent", agent)
-    return
+
     const { period, state } = req.query
     let packages
 
