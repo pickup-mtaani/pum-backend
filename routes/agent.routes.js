@@ -533,7 +533,7 @@ router.put('/activate-deactivate/:id', async (req, res) => {
 });
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
     try {
-        console.log("Params", req.params)
+        console.log("Params", req.body)
 
 
         // const { errors, isValid } = hairstyleValidation(req.body);

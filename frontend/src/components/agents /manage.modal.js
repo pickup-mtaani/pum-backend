@@ -54,7 +54,11 @@ function Manage(props) {
                                                     <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={() => setShowModal(true)}> Add an attendant</div>
                                                     <div className='bg-primary-500 w-38 mb-2 rounded-md float-right h-10 flex justify-center items-center px-2' onClick={async () => { await props.activate_agents(props?.data?._id); await props.props.toggle() }}>Activate Super Attendant</div>
 
-                                                    <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none" onChange={async (e) => { await props.assign(e.target.value, props.agent); await props.toggle() }}>
+                                                    <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none"
+                                                        onChange={async (e) => {
+                                                            await props.assign(e.target.value, props.agent);
+                                                            await props.toggle()
+                                                        }}>
                                                         <option value="">Assign a Rider</option>
                                                         {props.riders?.map((rider, i) => (
                                                             <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>

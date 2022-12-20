@@ -41,9 +41,16 @@ function Riderpage(props) {
         },
         {
             sortable: true,
+            name: 'Receipt',
+            minWidth: '250px',
+            selector: row => row.receipt_no
+        },
+        {
+
+            sortable: true,
             name: 'Business',
             minWidth: '250px',
-            selector: row => row.businessId?.name
+            selector: row => row.receieverAgentID.rider?.name
         },
         {
             sortable: true,
@@ -66,7 +73,7 @@ function Riderpage(props) {
         setShow(true)
 
     }
-    // console.log(data[0]?.receieverAgentID?.rider)
+    console.log(data[0])
     return (
         <Layout>
             <ConfirmModal

@@ -341,9 +341,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
 
-        if (agent?.hasShelf) {
-          packages[i].state = "recieved-warehouse"
-        }
+        // if (agent?.hasShelf) {
+        //   packages[i].state = "recieved-warehouse"
+        // }
         let newPackageCount = 1
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
@@ -471,7 +471,7 @@ router.post("/package/delivery-charge", async (req, res) => {
     if (
       (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone B")
     ) {
-      price = 100;
+      price = 120;
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
@@ -483,33 +483,24 @@ router.post("/package/delivery-charge", async (req, res) => {
 
     }
     else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A")) {
-      price = 150;
+      price = 120;
       return res.status(200).json({ message: "price set successfully ", price });
 
     } else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone B")
     ) {
-      price = 100
+      price = 210
       return res.status(200).json({ message: "price set successfully ", price });
 
     } else if ((senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone C")
     ) {
-      price = 250
+      price = 240
       return res.status(200).json({ message: "price set successfully ", price });
     }
     else if (senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone C") {
-      price = 200;
+      price = 290;
       return res.status(200).json({ message: "price set successfully ", price });
-    } else if (senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A") {
-      price = 100;
-      return res.status(200).json({ message: "price set successfully ", price });
-
     }
-
-    else if (senderZone?.zone.name === "Zone C" && recieverZone?.zone.name === "Zone C") {
-      price = 250
-      return res.status(200).json({ message: "price set successfully ", price });
-
-    } else {
+    else {
 
       return res.status(200).json({ message: "price setting in progress  " })
 

@@ -252,9 +252,9 @@ router.put("/assign-agent-rider/:id/:agent", async (req, res) => {
     const aggent = await AgentUser.findOne({ agent: req.params.agent, role: "rider" })
     if (aggent) {
       await AgentUser.findOneAndUpdate({ agent: req.params.agent, role: "rider" }, { user: req.params.id }, { new: true, useFindAndModify: false })
-      console.log("Updated")
+
     } else {
-      console.log("Created")
+
       await new AgentUser({
         agent: req.params.agent,
         user: req.params.id,
@@ -316,11 +316,7 @@ router.get("/riders", async (req, res) => {
 });
 router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
   try {
-
-    // const riders = await User.find({ role: 'rider' })
-    const agents = await RiderRoutes.find({ rider: req.user._id }).populate('agent', 'business_name')
-
-
+    const agents = await Agent.find({ rider: req.user._id })
 
     return res.status(200).json(agents);
   } catch (error) {
@@ -332,11 +328,7 @@ router.get("/riders-agents", [authMiddleware, authorized], async (req, res) => {
 });
 router.get("/riders-agents/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-
-
-    const { state } = req.query
-    const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name')
-
+    const agents = await Agent.find({ rider: req.params.id })
     return res.status(200).json(agents);
   } catch (error) {
     console.log(error);

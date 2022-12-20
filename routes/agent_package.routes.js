@@ -160,26 +160,51 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     }
     if (req.params.state === "picked-from-sender") {
       try {
-        await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-        let new_description = [...narration.descriptions, {
-          time: Date.now(), desc: `Pkg ${package.receipt_no} drop off confimed  by ${auth?.name} at  ${sender.business_name}`
-        }]
+        let agent = await AgentDetails.findOne({ _id: package.senderAgentID })
 
-        let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-          dropped: {
-            droppedBy: package?.assignedTo,
-            droppedTo: package?.senderAgentID?._id,
-            recievedBy: req.user._id,
-            droppedAt: moment(),
-          },
-          descriptions: new_description
-        }, { new: true, useFindAndModify: false })
+        if (agent?.hasShelf) {
+          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
+          await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
+          let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area confirmed` }]
+          await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+            warehouse:
+            {
+              warehouseAt: moment(),
 
-        const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
-        await SendMessage(textbody)
-        await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.receieverAgentID.business_name})` }).save()
-        let payments = getRandomNumberBetween(100, 200)
-        await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+            },
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
+
+
+          const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
+          await SendMessage(textbody)
+          await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.receieverAgentID.business_name})` }).save()
+          let payments = getRandomNumberBetween(100, 200)
+          await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+
+        } else {
+          await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
+          let new_description = [...narration.descriptions, {
+            time: Date.now(), desc: `Pkg ${package.receipt_no} drop off confimed  by ${auth?.name} at  ${sender.business_name}`
+          }]
+
+          let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+            dropped: {
+              droppedBy: package?.assignedTo,
+              droppedTo: package?.senderAgentID?._id,
+              recievedBy: req.user._id,
+              droppedAt: moment(),
+            },
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
+
+          const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
+          await SendMessage(textbody)
+          await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent(${package.receieverAgentID.business_name})` }).save()
+          let payments = getRandomNumberBetween(100, 200)
+          await new Commision({ agent: req.user._id, agent_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+        }
+
       } catch (error) {
         console.log(error)
       }
@@ -257,7 +282,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
 
-      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
+      // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
     if (req.params.state === "on-transit") {
       // package dropped at agent and confirmed by name
@@ -350,6 +375,7 @@ router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, 
 
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
+
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
     let agent_packages
 
@@ -415,7 +441,6 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
     let agents = []
 
     let { state } = req.query
-
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
     let agents_count = {}
 
@@ -435,13 +460,28 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.put("/wh-agentassign-package/:id/:state", [authMiddleware, authorized], async (req, res) => {
+  try {
 
+
+    let { rider } = req.query
+    let packages = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: rider }, { new: true, useFindAndModify: false })
+
+    return res.status(200)
+      .json(packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/reciever-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    let agents = []
 
     let { state } = req.query
-
+    // console.log()
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
 
     let agents_count = {}
@@ -748,16 +788,11 @@ router.get("/rider-packages/:state", [authMiddleware, authorized], async (req, r
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    // let agent 
+    const { period, state, id } = req.query
 
-    // await AgentDetails.findOne({ user: req.user._id })
-    let agent = await AgentUser.findOne({ user: req.user._id })
-
-
-    const { period, state } = req.query
     let packages
     if (state === "rejected") {
-      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate({
           path: 'senderAgentID',
@@ -777,7 +812,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "request") {
-      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: agent.agent, state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: state, })
         .populate("createdBy", "l_name f_name phone_number")
 
         .populate({
@@ -797,7 +832,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "delivered") {
-      packages = await Sent_package.find({ payment_status: "paid", $or: [{ receieverAgentID: agent.agent },], state: state, })
+      packages = await Sent_package.find({ payment_status: "paid", $or: [{ receieverAgentID: id },], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
         .populate({
           path: 'senderAgentID',
@@ -818,7 +853,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     }
     if (period === 0 || period === undefined || period === null) {
 
-      packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }, { receieverAgentID: agent.agent }], state: state, })
+      packages = await Sent_package.find({ $or: [{ senderAgentID: id }, { receieverAgentID: id }], state: state, })
         .populate("createdBy", "l_name f_name phone_number")
 
         .populate({
@@ -842,7 +877,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ $or: [{ senderAgentID: agent.agent }], state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ $or: [{ senderAgentID: id }], state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -854,7 +889,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
     }
     else if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ agent: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
 
@@ -863,7 +898,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .sort({ createdAt: -1 });
     }
     else {
-      packages = await Sent_package.find({ agent: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
@@ -878,7 +913,6 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
 router.get("/agent-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const { state } = req.query
@@ -994,33 +1028,28 @@ router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req
 
 router.get("/agent-packages-count", [authMiddleware, authorized], async (req, res) => {
   try {
-    let auth = await User.findById(req.user._id)
-    let agent = await AgentUser.findOne({ user: req.user._id })
 
-    // console.log(auth.agent_id)
-    // return
-    // let agent = await AgentDetails.findOne({ user: auth?._id })
 
-    const { period, state } = req.query
+    const { period, state, id } = req.query
     let packages
 
     if (period === 0 || period === undefined || period === null) {
       let packages = await Sent_package.find({ payment_status: "paid", state: state, });
-      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "dropped" })
-      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "assigned-warehouse" })
-      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "warehouse-transit" })
-      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "unavailable" })
-      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "picked" })
-      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "request" })
-      let delivered = await Sent_package.find({ payment_status: "paid", receieverAgentID: auth?.agent_id, state: "delivered" })
-      let collected = await Sent_package.find({ payment_status: "paid", receieverAgentID: auth?.agent_id, state: "collected" })
-      let rejected = await Sent_package.find({ payment_status: "paid", receieverAgentID: auth?.agent_id, state: "rejected" })
-      let onTransit = await Sent_package.find({ payment_status: "paid", receieverAgentID: auth?.agent_id, state: "on-transit" })
-      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "cancelled" })
-      let droppedToagent = await Sent_package.find({ payment_status: "paid", receieverAgentID: auth?.agent_id, state: "dropped-to-agent" })
-      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "assigned" })
-      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "recieved-warehouse" })
-      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: "picked-from-sender" })
+      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "dropped" })
+      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "assigned-warehouse" })
+      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "warehouse-transit" })
+      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "unavailable" })
+      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "picked" })
+      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "request" })
+      let delivered = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: "delivered" })
+      let collected = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: "collected" })
+      let rejected = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: "rejected" })
+      let onTransit = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: "on-transit" })
+      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "cancelled" })
+      let droppedToagent = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: "dropped-to-agent" })
+      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "assigned" })
+      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "recieved-warehouse" })
+      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "picked-from-sender" })
 
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
@@ -1028,66 +1057,66 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
 
     else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      let packages = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped" })
-      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "assigned-warehouse" })
-      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "warehouse-transit" })
-      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "unavailable" })
-      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "picked" })
-      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "request" })
-      let delivered = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "delivered" })
-      let collected = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "collected" })
-      let rejected = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "rejected" })
-      let onTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "on-transit" })
-      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "cancelled" })
-      let droppedToagent = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped-to-agent" })
-      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "assigned" })
-      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "recieved-warehouse" })
-      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "picked-from-sender" })
+      let packages = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped" })
+      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "assigned-warehouse" })
+      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "warehouse-transit" })
+      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "unavailable" })
+      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "picked" })
+      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "request" })
+      let delivered = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "delivered" })
+      let collected = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "collected" })
+      let rejected = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "rejected" })
+      let onTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "on-transit" })
+      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "cancelled" })
+      let droppedToagent = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped-to-agent" })
+      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "assigned" })
+      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "recieved-warehouse" })
+      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "picked-from-sender" })
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
 
     else if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ payment_status: "paid", agent: auth?.agent_id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped" })
-      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned-warehouse" })
-      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "warehouse-transit" })
-      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "unavailable" })
-      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked" })
-      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "request" })
-      let delivered = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "delivered" })
-      let collected = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "collected" })
-      let rejected = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "rejected" })
-      let onTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "on-transit" })
-      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "cancelled" })
-      let droppedToagent = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "dropped-to-agent" })
-      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned" })
-      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "recieved-warehouse" })
-      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: auth?.agent_id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked-from-sender" })
+      packages = await Sent_package.find({ payment_status: "paid", agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped" })
+      let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned-warehouse" })
+      let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "warehouse-transit" })
+      let unavailable = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "unavailable" })
+      let picked = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked" })
+      let request = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "request" })
+      let delivered = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "delivered" })
+      let collected = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "collected" })
+      let rejected = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "rejected" })
+      let onTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "on-transit" })
+      let cancelled = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "cancelled" })
+      let droppedToagent = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "dropped-to-agent" })
+      let assigned = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned" })
+      let recievedWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "recieved-warehouse" })
+      let pickedfromSender = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked-from-sender" })
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
 
 
     else {
-      packages = await Sent_package.find({ agent: auth?.agent_id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
-      let dropped = await Sent_package.find({ agent: auth?.agent_id, state: "dropped" })
-      let assigneWarehouse = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned-warehouse" })
-      let warehouseTransit = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "warehouse-transit" })
-      let unavailable = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "unavailable" })
-      let picked = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked" })
-      let request = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "request" })
-      let delivered = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "delivered" })
-      let collected = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "collected" })
-      let rejected = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "rejected" })
-      let onTransit = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "on-transit" })
-      let cancelled = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "cancelled" })
-      let droppedToagent = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "dropped-to-agent" })
-      let assigned = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned" })
-      let recievedWarehouse = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "recieved-warehouse" })
-      let pickedfromSender = await Sent_package.find({ agent: auth?.agent_id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked-from-sender" })
+      packages = await Sent_package.find({ agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      let dropped = await Sent_package.find({ agent: id, state: "dropped" })
+      let assigneWarehouse = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned-warehouse" })
+      let warehouseTransit = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "warehouse-transit" })
+      let unavailable = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "unavailable" })
+      let picked = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked" })
+      let request = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "request" })
+      let delivered = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "delivered" })
+      let collected = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "collected" })
+      let rejected = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "rejected" })
+      let onTransit = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "on-transit" })
+      let cancelled = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "cancelled" })
+      let droppedToagent = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "dropped-to-agent" })
+      let assigned = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "assigned" })
+      let recievedWarehouse = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "recieved-warehouse" })
+      let pickedfromSender = await Sent_package.find({ agent: id, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, state: "picked-from-sender" })
       return res.status(200)
         .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
     }
@@ -1166,15 +1195,12 @@ router.get("/agent-packages-web", async (req, res) => {
 router.get("/agent-packages-web-recieved-warehouse", async (req, res) => {
   try {
     let packages
-
-
     packages = await Sent_package.find({ state: "recieved-warehouse" })
       .populate('createdBy', 'f_name l_name name phone_number')
       .populate('receieverAgentID')
+
       .populate('senderAgentID')
       .populate("businessId", "name")
-
-
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     return res
@@ -1187,12 +1213,13 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
   try {
     let agent = await AgentUser.findOne({ user: req.user._id })
 
-    const { period, state } = req.query
+    const { period, state, id } = req.query
+
     let packages
     if (period === 0 || period === undefined || period === null) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
 
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -1203,7 +1230,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     } else if (req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID")
         .populate("receieverAgentID")
@@ -1215,7 +1242,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     else if (state && req.query.searchKey) {
 
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
@@ -1225,7 +1252,7 @@ router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req,
     }
     else {
 
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: agent.agent, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")

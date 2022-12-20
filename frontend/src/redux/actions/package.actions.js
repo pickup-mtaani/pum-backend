@@ -52,7 +52,7 @@ export const assignwarehouse = (id, state, rider) => async (dispatch) => {
     await setAuthToken(axios);
     dispatch({ type: "FETCH_DOORSTEP" });
     let payload = [];
-    const { data } = await axios.put(`/api/agent/package/${id}/${state}?rider=${rider}`);
+    const { data } = await axios.put(`/api/wh-agentassign-package/${id}/${state}?rider=${rider}`);
     payload = data;
     dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
     return payload;
