@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
 import { get_agents, Rideagents, fetchpackages, get_zones, assign, fetchdropped, fetchdoorpackages } from '../../../redux/actions/agents.actions'
-import { assignwarehouse } from '../../../redux/actions/package.actions'
+import { pickrehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 
 // Rideagents
@@ -26,7 +26,8 @@ function Riderpage(props) {
 
     }
     const packAction = async (id, state, rider) => {
-        await props.assignwarehouse(id, state, rider)
+
+        await props.pickrehouse(id, state, rider)
         setData(await props.fetchdropped(location?.state?.rider, location?.state?.agent))
 
     }
@@ -143,6 +144,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, Rideagents, assign, fetchpackages, fetchdropped, fetchdoorpackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, Rideagents, assign, fetchpackages, fetchdropped, fetchdoorpackages, pickrehouse })(Riderpage)
 
 

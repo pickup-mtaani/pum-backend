@@ -460,6 +460,23 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.put("/wh-agent-pick-package/:id/:state", [authMiddleware, authorized], async (req, res) => {
+  try {
+    console.log(req.params)
+
+    let packages = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+
+    return res.status(200)
+      .json(packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 router.put("/wh-agentassign-package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
 
@@ -482,7 +499,7 @@ router.get("/reciever-agents-rider-packages", [authMiddleware, authorized], asyn
 
     let { state } = req.query
     // console.log()
-    let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+    let packages = await Sent_package.find({ assignedTo: req.user._id, state: state })
 
     let agents_count = {}
 

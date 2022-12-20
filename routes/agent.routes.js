@@ -352,6 +352,28 @@ router.post('/agents/useragents', async (req, res) => {
         console.log(error)
     }
 })
+router.post('/agents-details/revokeUseragent', async (req, res) => {
+    try {
+
+        let AgentsArr = await Agent.find()
+
+        for (i = 0; i < AgentsArr.length; i++) {
+
+            if (AgentsArr[i]._id === "63575250602a3e763b1305ed") {
+                console.log("first,", AgentsArr[i].business_name)
+            }
+            // await new AgentUser({
+            //     agent: AgentsArr[i]._id,
+            //     user: AgentsArr[i].user,
+            //     role: "agent"
+            // }).save()
+        }
+
+        return res.json(AgentsArr)
+    } catch (error) {
+        console.log(error)
+    }
+})
 router.get('/agents', async (req, res) => {
     try {
         if (req.query.searchKey) {

@@ -61,6 +61,22 @@ export const assignwarehouse = (id, state, rider) => async (dispatch) => {
   }
 };
 
+export const pickrehouse = (id, state, rider) => async (dispatch) => {
+
+  try {
+    await setAuthToken(axios);
+    dispatch({ type: "FETCH_DOORSTEP" });
+    let payload = [];
+    alert(id)
+    const { data } = await axios.put(`/api/wh-agent-pick-package/${id}/${state}`);
+    payload = data;
+    dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });
+    return payload;
+  } catch (error) {
+    console.log(error)
+  }
+};
+
 export const togglePayment = (id, type) => async (dispatch) => {
 
   try {
