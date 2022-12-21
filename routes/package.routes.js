@@ -243,6 +243,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
 
         let business = await Bussiness.findById(packages[i].businessId)
+        console.log("Bix", business)
         let details = await BizDetails.findById(business.details)
         let agent_id = await AgentDetails.findOne({ _id: details.agent })
         // console.log("Paack", agent_id)
@@ -654,11 +655,13 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 });
 // get packages as per the state filter
 router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) => {
-  let agent = await AgentUser.findOne({ user: req.user._id })
+
+
   try {
     let agent_packages
+    let { id } = req.query
 
-    agent_packages = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: req.params.state }).sort({ createdAt: -1 }).limit(100)
+    agent_packages = await Rent_a_shelf_deliveries.find({ location: id, state: req.params.state }).sort({ createdAt: -1 }).limit(100)
       .populate('location')
       .populate('businessId')
       .populate('createdBy')
@@ -673,14 +676,16 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/rent-shelf-search/:state", [authMiddleware, authorized], async (req, res) => {
-  let agent = await AgentUser.findOne({ user: req.user._id })
+router.get("/rent-shelf-search/:state", async (req, res) => {
+  let { id } = req.query
+  console.log(req.query)
+
   try {
     let agent_packages
 
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-    console.log(searchKey)
-    agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+
+    agent_packages = await Rent_a_shelf_deliveries.find({ location: id, state: req.params.state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
       .populate('location')
       .populate('businessId')
       .populate('createdBy')
@@ -764,47 +769,35 @@ router.get("/rent-shelf/track/packages/:id", [authMiddleware, authorized], async
   }
 });
 router.get("/rent-shelf-package-count", [authMiddleware, authorized], async (req, res) => {
+  let { id } = req.query
   let agent = await AgentUser.findOne({ user: req.user._id })
   const agentDetaoils = await AgentDetails.findOne({ user: req.user._id });
 
 
   try {
-    if (req.query.searchKey) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      let dropped = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-seller", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let unavailable = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "unavailable", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let picked = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let request = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "request", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let collected = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "collected", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let rejected = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "rejected", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "dropped-to-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let assigned = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "assigned", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent.agent, state: "picked-from-seller", $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
-      return res.status(200)
-        .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
-    } else {
-      let dropped = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked-from-seller" })
-      let unavailable = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "unavailable" })
-      let picked = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "picked" })
-      let request = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "request" })
-      let collected = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "collected" })
-      let rejected = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "rejected" })
-      let onTransit = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "on-transit" })
-      let cancelled = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "cancelled" })
-      let droppedToagent = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "dropped-to-agent" })
-      let assigned = await Rent_a_shelf_deliveries.find({ location: agent?.agent, state: "assigned" })
-      let agentOrderRequest = await Sent_package.find({ payment_status: "paid", state: "pending-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-      let earlyOrderRequest = await Rent_a_shelf_deliveries.find({ location: agent?.agent, $or: [{ state: "early_collection" }] })
-      let doorSteporderRequest = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
-      let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: agent?.agent, $or: [{ state: "picked-from-seller" }] })
-      let incomingStock = await Product.find({
-        pending_stock: {
-          $gt: 0
-        }
-      })
-      return res.status(200)
-        .json({ message: "Fetched Sucessfully after", earlyOrderRequest: earlyOrderRequest.length, doorSteporderRequest: doorSteporderRequest.length, agentOrderRequest: agentOrderRequest.length, incomingStock: incomingStock.length, pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
-    }
+
+    let dropped = await Rent_a_shelf_deliveries.find({ location: id, state: "picked-from-seller" })
+    let unavailable = await Rent_a_shelf_deliveries.find({ location: id, state: "unavailable" })
+    let picked = await Rent_a_shelf_deliveries.find({ location: id, state: "picked" })
+    let request = await Rent_a_shelf_deliveries.find({ location: id, state: "request" })
+    let collected = await Rent_a_shelf_deliveries.find({ location: id, state: "collected" })
+    let rejected = await Rent_a_shelf_deliveries.find({ location: id, state: "rejected" })
+    let onTransit = await Rent_a_shelf_deliveries.find({ location: id, state: "on-transit" })
+    let cancelled = await Rent_a_shelf_deliveries.find({ location: id, state: "cancelled" })
+    let droppedToagent = await Rent_a_shelf_deliveries.find({ location: id, state: "dropped-to-agent" })
+    let assigned = await Rent_a_shelf_deliveries.find({ location: id, state: "assigned" })
+    let agentOrderRequest = await Sent_package.find({ payment_status: "paid", state: "pending-agent" }).sort({ createdAt: -1 }).limit(100)
+    let earlyOrderRequest = await Rent_a_shelf_deliveries.find({ location: id, $or: [{ state: "early_collection" }] })
+    let doorSteporderRequest = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
+    let pickedfromSender = await Rent_a_shelf_deliveries.find({ location: id, $or: [{ state: "picked-from-seller" }] })
+    let incomingStock = await Product.find({
+      pending_stock: {
+        $gt: 0
+      }
+    })
+    return res.status(200)
+      .json({ message: "Fetched Sucessfully after", earlyOrderRequest: earlyOrderRequest.length, doorSteporderRequest: doorSteporderRequest.length, agentOrderRequest: agentOrderRequest.length, incomingStock: incomingStock.length, pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, dropped: dropped.length, unavailable: unavailable.length, picked: picked.length, request: request.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
+
   } catch (error) {
     console.log(error);
     return res
