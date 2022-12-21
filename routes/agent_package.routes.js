@@ -170,6 +170,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           }, { new: true, useFindAndModify: false })
           const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} ready for collection  ` }
           await SendMessage(textbody)
+          return
         }
 
         if (agent?.hasShelf) {
@@ -1163,6 +1164,7 @@ router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], asy
       .populate('createdBy', 'f_name l_name name')
       .populate('receieverAgentID', 'business_name')
       .populate('senderAgentID', 'business_name')
+      .populate('assignedTo', 'name')
       .populate('businessId').sort({ createdAt: -1 });
     return res
       .status(200)

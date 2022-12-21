@@ -113,6 +113,12 @@ function Agent(props) {
         },
         {
             sortable: true,
+            name: 'Assined To',
+            // minWidth: '250px',
+            selector: row => row.assignedTo?.name
+        },
+        {
+            sortable: true,
             name: 'Sender',
             // minWidth: '250px',
             selector: row => row.senderAgentID.business_name
