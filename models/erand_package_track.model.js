@@ -74,6 +74,17 @@ const ErandSchema = new Schema({
             ref: 'rider'
         },
     },
+    rejected: {
+
+        rejectedAt: {
+            type: Date,
+            default: null
+        },
+        reason: {
+            type: String,
+
+        },
+    },
     reAssigned: {
         reAssignedTo: {
             type: Schema.Types.ObjectId,
@@ -141,11 +152,10 @@ const ErandSchema = new Schema({
 
     package: {
         type: Schema.Types.ObjectId,
-        ref: 'erand_delivery_packages'
+        ref: 'doorStep_delivery_packages'
     },
     descriptions: {
-        type: String,
-        required: true
+        type: Array,
     },
 
     deleted_at: {

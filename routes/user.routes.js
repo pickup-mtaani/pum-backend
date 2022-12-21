@@ -14,6 +14,7 @@ const { SendMessage } = require('../helpers/sms.helper');
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var transporter = require('../helpers/transpoter');
 var AgentUser = require('models/agent_user.model');
+
 var { validateRegisterInput, validateLoginInput, validatePasswordInput } = require('./../va;lidations/user.validations');
 const Format_phone_number = require('../helpers/phone_number_formater');
 const { request } = require('express');
@@ -31,7 +32,6 @@ router.post('/login', async (req, res) => {
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         let user = {}
         let userOBJ = await User.findOne({ phone_number: req.body.phone_number })
-
 
         if (oldDb && !userOBJ) {
 
@@ -84,8 +84,15 @@ router.post('/login', async (req, res) => {
             }
             if (userOBJ.role === "agent") {
                 let agent
+                console.log("first", userOBJ._id)
                 let userAgent = await AgentUser.findOne({ user: userOBJ._id })
-
+                // let useAgent = await AgentUser.find({ user: userOBJ._id })
+                // for (let i = 0; i < useAgent.length; i++) {
+                //     console.log("**********************")
+                //     console.log("user", userOBJ._id)
+                //     console.log("user", useAgent[i].user)
+                // }
+                // console.log("Afe", useAgent)
                 let agent1 = await Agent.findOne({ user: userOBJ._id })
 
                 let rider = agent1?.rider
@@ -96,9 +103,9 @@ router.post('/login', async (req, res) => {
                     agent = await Agent.findOne({ userAgent: agent })
                     // agent_id = 
                     agent_id = userAgent?.agent
-                    console.log("n", userAgent)
+
                 } else {
-                    console.log("y")
+
                     agent_id = agent?.agent || agent1?._id
                     agent = await Agent.findOne({ user: userOBJ._id })
                 }
@@ -119,7 +126,7 @@ router.post('/login', async (req, res) => {
                     user.location_id = agent.location_id
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number
-                    user.isSuperAgent = agent.isSuperAgent
+                    user.isSuperAgent = agent1?.isSuperAgent
                     user.phone_number = agent.phone_number
                     user.working_hours = agent.working_hours
                     user.working_days = agent.working_days

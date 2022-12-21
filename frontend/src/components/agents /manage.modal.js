@@ -89,9 +89,9 @@ function Manage(props) {
                                                                                     name: emp.user.name, email: emp.user.email, phone_number: emp.user.phone_number, id: emp.user._id
                                                                                 })
                                                                             }}>Edit</div> */}
-                                                                            {emp?.user?.role === "agent" && <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
+                                                                            {/* {emp?.user?.role === "agent" && <div className='px-2 bg-slate-300 my-1 rounded-md' onClick={() => {
                                                                                 props.make_super(emp?.user?._id)
-                                                                            }}>Make Super</div>}
+                                                                            }}>Make Super</div>} */}
 
                                                                         </div>
                                                                     </td>

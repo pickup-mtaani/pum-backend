@@ -61,12 +61,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         if (agent_id?.hasShelf) {
           packages[i].state = "recieved-warehouse"
         }
-        // let zone = await Zone.findOne({ _id: agent_id.location_id })
+
         let newPackageCount = 1
         if (agent_id.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
-        // let route = await RiderRoutes.findOne({ agent: agent_id._id })
         if (packages[i]?.product) {
 
           const product = await Product.findById(packages[i].product);
@@ -124,7 +123,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
-
         await new Track_door_step({
           package: newpackage._id, created: {
             createdAt: moment(),
@@ -133,8 +131,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }]
         }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
-        // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
-        // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
       }
       // if (req.body.payment_option === "vendor") {
       //   // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -150,6 +146,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
     } else if (body.delivery_type === "errand") {
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
+        let business = await Bussiness.findById(packages[i].businessId)
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         if (agent_id?.hasShelf) {
           packages[i].state = "recieved-warehouse"
@@ -216,17 +213,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Erand_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
-
-        let V = await new Track_Erand({
+        await new Track_Erand({
           package: newpackage._id, created: {
             createdAt: moment(),
             createdBy: req.user._id
-          }, state: "request", descriptions: [{
-
-            time: Date.now(), desc: `Pkg ${newpackage.receipt_no}  created  
-        `
-          }]
+          }, state: "request",
+          descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }]
         }).save()
+
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
@@ -307,13 +301,16 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         } else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { rent_shelf_package_count: parseInt(customer.rent_shelf_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
-        await new Track_rent_a_shelf({
+        let v = await new Track_rent_a_shelf({
           package: savedPackage._id,
           created: moment(),
           state: "request",
           descriptions: [{ time: moment(), descriptions: `Pkg ${packages[i].receipt_no} created by ${business.name}` }],
           reciept: savedPackage.receipt_no
-        }).save()
+        })
+
+        await v.save()
+        console.log(v)
         if (req.body.payment_option === "collection") {
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: savedPackage._id, }, { hasBalance: true }, { new: true, useFindAndModify: false })
         }

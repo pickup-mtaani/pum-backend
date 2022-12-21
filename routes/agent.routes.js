@@ -333,40 +333,44 @@ router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) =>
         console.log(error)
     }
 })
-router.post('/agents/useragents', async (req, res) => {
+// router.post('/agents/useragents', async (req, res) => {
+//     try {
+
+//         let AgentsArr = await Agent.find()
+
+//         for (i = 0; i < AgentsArr.length; i++) {
+//             console.log("first", AgentsArr[i])
+//             await new AgentUser({
+//                 agent: AgentsArr[i]._id,
+//                 user: AgentsArr[i].user,
+//                 role: "agent"
+//             }).save()
+//         }
+
+//         return res.json(AgentsArr)
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
+router.post('/agents-details/bulk-revoke-super-agent', async (req, res) => {
     try {
 
         let AgentsArr = await Agent.find()
 
         for (i = 0; i < AgentsArr.length; i++) {
-            console.log("first", AgentsArr[i])
-            await new AgentUser({
-                agent: AgentsArr[i]._id,
-                user: AgentsArr[i].user,
-                role: "agent"
-            }).save()
-        }
+            if (AgentsArr[i].business_name === "Pickup Mtaani Star Mall" || AgentsArr[i].business_name === "Philadelphia house ") {
+                await Agent.findOneAndUpdate({ _id: AgentsArr[i] }, {
+                    isSuperAgent: true, hasShelf: true
+                }, { new: true, useFindAndModify: false })
 
-        return res.json(AgentsArr)
-    } catch (error) {
-        console.log(error)
-    }
-})
-router.post('/agents-details/revokeUseragent', async (req, res) => {
-    try {
-
-        let AgentsArr = await Agent.find()
-
-        for (i = 0; i < AgentsArr.length; i++) {
-
-            if (AgentsArr[i]._id === "63575250602a3e763b1305ed") {
-                console.log("first,", AgentsArr[i].business_name)
             }
-            // await new AgentUser({
-            //     agent: AgentsArr[i]._id,
-            //     user: AgentsArr[i].user,
-            //     role: "agent"
-            // }).save()
+            else {
+                await Agent.findOneAndUpdate({ _id: AgentsArr[i] }, {
+                    isSuperAgent: true, hasShelf: true
+                }, { new: true, useFindAndModify: false })
+            }
+
+
         }
 
         return res.json(AgentsArr)

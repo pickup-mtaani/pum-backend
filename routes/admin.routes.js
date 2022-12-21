@@ -97,7 +97,7 @@ router.post('/add-user-to-agent/:id', [authMiddleware, authorized], async (req, 
         body.hashPassword = bcrypt.hashSync(body.password, 10);
         body.createdBy = req.user._id
         body.agent_id = req.params.id
-        body.isSuperAgent = true
+        body.isSuperAgent = false
         body.isSubAgent = true
         body.activated = true
         // body.agent = req.params.id
