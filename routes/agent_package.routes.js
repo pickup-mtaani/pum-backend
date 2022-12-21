@@ -161,6 +161,16 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "picked-from-sender") {
       try {
         let agent = await AgentDetails.findOne({ _id: package.senderAgentID })
+        if (package.senderAgentID === package.receieverAgentID || package.receieverAgentID === package.senderAgentID) {
+          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "delivered" }, { new: true, useFindAndModify: false })
+          let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} delivered ${reciever.business_name}  by  ${rider?.name} ` }]
+
+          await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+            descriptions: new_des
+          }, { new: true, useFindAndModify: false })
+          const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} ready for collection  ` }
+          await SendMessage(textbody)
+        }
 
         if (agent?.hasShelf) {
           await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })

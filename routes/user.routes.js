@@ -84,20 +84,22 @@ router.post('/login', async (req, res) => {
             }
             if (userOBJ.role === "agent") {
                 let agent
-                console.log("first", userOBJ._id)
+                console.log("first", userOBJ)
                 let userAgent = await AgentUser.findOne({ user: userOBJ._id })
                 // let useAgent = await AgentUser.find({ user: userOBJ._id })
                 // for (let i = 0; i < useAgent.length; i++) {
                 //     console.log("**********************")
                 //     console.log("user", userOBJ._id)
-                //     console.log("user", useAgent[i].user)
+                //     console.log("user", useAgent[i].user)0758647295 monday32
                 // }
                 // console.log("Afe", useAgent)
                 let agent1 = await Agent.findOne({ user: userOBJ._id })
-
+                let agent2 = await Agent.findById(userOBJ.agent_id)
+                console.log("Afe", agent2)
                 let rider = agent1?.rider
 
                 let agent_id = userAgent?.agent || agent1?._id
+                let agentsuperb = agent1?.isSuperAgent || agent2?.isSuperAgent
                 if (userAgent) {
 
                     agent = await Agent.findOne({ userAgent: agent })
@@ -126,7 +128,7 @@ router.post('/login', async (req, res) => {
                     user.location_id = agent.location_id
                     user.closing_hours = agent.closing_hours
                     user.mpesa_number = agent.mpesa_number
-                    user.isSuperAgent = agent1?.isSuperAgent
+                    user.isSuperAgent = agentsuperb
                     user.phone_number = agent.phone_number
                     user.working_hours = agent.working_hours
                     user.working_days = agent.working_days
