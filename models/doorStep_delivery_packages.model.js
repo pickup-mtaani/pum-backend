@@ -94,6 +94,10 @@ const doorstepSchema = new Schema(
       type: String,
       default: "doorstep",
     },
+    toLocation: {
+      type: String,
+
+    },
     businessId: {
       type: Schema.Types.ObjectId,
       ref: "business",

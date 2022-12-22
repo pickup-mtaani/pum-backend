@@ -311,21 +311,23 @@ router.get("/door-step-package-count", [authMiddleware, authorized], async (req,
   try {
 
     let agent = await AgentUser.findOne({ user: req.user._id })
-    let dropped = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "dropped" })
-    let assigneWarehouse = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "assigned-warehouse" })
-    let warehouseTransit = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "warehouse-transit" })
-    let unavailable = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "unavailable" })
-    let picked = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "picked" })
-    let request = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "request" })
-    let delivered = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "delivered" })
-    let collected = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "collected" })
-    let rejected = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "rejected" })
-    let onTransit = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "on-transit" })
-    let cancelled = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "cancelled" })
-    let droppedToagent = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "dropped-to-agent" })
-    let assigned = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "assigned" })
-    let recievedWarehouse = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "recieved-warehouse" })
-    let pickedfromSender = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: agent.agent, state: "picked-from-sender" })
+    let { id } = req.query
+    console.log("DOOstep agent", id)
+    let dropped = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "dropped" })
+    let assigneWarehouse = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "assigned-warehouse" })
+    let warehouseTransit = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "warehouse-transit" })
+    let unavailable = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "unavailable" })
+    let picked = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "picked" })
+    let request = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "request" })
+    let delivered = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "delivered" })
+    let collected = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "collected" })
+    let rejected = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "rejected" })
+    let onTransit = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "on-transit" })
+    let cancelled = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "cancelled" })
+    let droppedToagent = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "dropped-to-agent" })
+    let assigned = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "assigned" })
+    let recievedWarehouse = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "recieved-warehouse" })
+    let pickedfromSender = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "picked-from-sender" })
     return res.status(200)
       .json({ message: "Fetched Sucessfully after", pickedfromSender: pickedfromSender.length, cancelled: cancelled.length, droppedToagent: droppedToagent.length, assigned: assigned.length, recievedWarehouse: recievedWarehouse.length, dropped: dropped.length, assigneWarehouse: assigneWarehouse.length, warehouseTransit: warehouseTransit.length, unavailable: unavailable.length, picked: picked.length, request: request.length, delivered: delivered.length, collected: collected.length, rejected: rejected.length, onTransit: onTransit.length });
 
@@ -363,6 +365,8 @@ router.put("/doorstep/toogle-payment/:id", [authMiddleware, authorized], async (
 })
 router.get("/door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
+
+
     let period = 1000
     if (req.query.period) {
       period = req.query.period
@@ -437,8 +441,9 @@ router.get("/door-step-packages/:state", [authMiddleware, authorized], async (re
 router.get("/door-step-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
+    console.log(req.params, req.query)
 
-    const agent_packages = await Door_step_Sent_package.find({ agent: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Door_step_Sent_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
