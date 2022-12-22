@@ -411,6 +411,65 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
 //       .json({ success: false, message: "operation failed ", error });
 //   }
 // });
+
+router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let agents = []
+
+    let { state } = req.query
+    // console.log(req.query)
+    let packages = await Erand_package.find({ assignedTo: req.user._id, state: state })
+    // console.log("first", packages)
+
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+
+      agents_count[packages[i].agent.toString()] = agents_count[packages[i].agent.toString()] ? [...agents_count[packages[i].agent.toString()], packages[i]._id] : [packages[i]._id]
+
+    }
+    console.log("first", agents_count)
+    return res.status(200)
+      .json(agents_count);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+
+    const agent_packages = await Erand_package.find({ agent: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+// singlr business packages 
+router.get("/errand-rider-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    console.log("Params", req.params)
+    const agent_packages = await Erand_package.find({ assignedTo: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/errand-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent = await AgentDetails.findOne({ user: req.user._id });

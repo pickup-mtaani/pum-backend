@@ -855,6 +855,7 @@ router.get("/packages", async (req, res) => {
     let doorstep_packages
     if (req.query.state === "all") {
       agent_packages = await Sent_package.find().sort({ createdAt: -1 })
+
         .limit(limit).populate(
           "assignedTo", "name phone_number"
         );
@@ -863,7 +864,7 @@ router.get("/packages", async (req, res) => {
       })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
-        ).populate("assignedTo", "name phone_number").populate("businessId", "name")
+        ).populate("assignedTo", "name phone_number").populate("businessId", "name").populate('agent', "business_name")
         .sort({ createdAt: -1 })
         .limit(limit);
     } else {
@@ -974,25 +975,25 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        // .populate("agent")
+        .populate("agent")
         .limit(100);
       agent_packages.dropped = await Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        // .populate("agent")
+        .populate("agent")
         .limit(100);
       agent_packages.transit = await Sent_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        // .populate("agent")
+        .populate("agent")
         .limit(100);
       agent_packages.warehouse = await Sent_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .sort({ createdAt: -1 })
         .populate("senderAgentID")
         .populate("receieverAgentID")
-        // .populate("agent")
+        .populate("agent")
         .limit(100);
 
       agent_packages.delivered = await Sent_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
@@ -1115,28 +1116,49 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
       doorstep_packages.dropped = await Door_step_Sent_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
       doorstep_packages.transit = await Door_step_Sent_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
       doorstep_packages.warehouse = await Door_step_Sent_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
 
@@ -1144,14 +1166,24 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
       doorstep_packages.collected = await Door_step_Sent_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
         )
-        // .populate("agent")
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
         .sort({ createdAt: -1 })
         .limit(100);
       shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, })

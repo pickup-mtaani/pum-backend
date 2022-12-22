@@ -128,6 +128,12 @@ function Doorstep(props) {
         },
         {
             sortable: true,
+            name: 'From',
+
+            selector: row => row.agent.business_name
+        },
+        {
+            sortable: true,
             name: 'Sent At ',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
@@ -183,7 +189,7 @@ function Doorstep(props) {
     useEffect(() => {
         fetch()
     }, [])
-
+    console.log("Doot", props.to_door_packages[0])
     return (
 
 
