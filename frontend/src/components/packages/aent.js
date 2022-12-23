@@ -88,7 +88,7 @@ function Agent(props) {
             defaultExpanded: true,
             selector: row => <>{row.packageName}
                 {/* {row._id} */}
-                {/* {row.state}  */}
+                {row.state}
                 {/* {row.assignedTo} */}
             </>
         },

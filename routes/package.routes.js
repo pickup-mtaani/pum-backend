@@ -119,7 +119,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].state = "pending-doorstep"
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
         }
-        packages[i].createdAt = moment().format('YYYY-MM-DD');
+        packages[i].createdAt = moment().format('YYYY-MM-DDD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
@@ -665,6 +665,7 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
       .populate('location')
       .populate('businessId')
       .populate('createdBy')
+      .populate('location')
       .populate('rejectedId', 'reject_reason')
 
     return res.status(200)
@@ -969,6 +970,7 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
     let agent_packages = {}
     let doorstep_packages = {}
     let shelves = {}
+    console.log("Bud", req.params)
     // "request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "", "warehouse-transit"
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
@@ -1189,13 +1191,16 @@ router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) 
         .limit(100);
       shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
+        .populate('location')
         .limit(100);
       shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "agent" }, { state: "doorstep" }, { state: "picked-from-seller" }, { state: "early_collection" }], createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
+        .populate('location')
         .limit(100);
 
       shelves.collected = await Rent_a_shelf_deliveries.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, })
         .sort({ createdAt: -1 })
+        .populate('location')
         .limit(100);
     }
 

@@ -571,9 +571,10 @@ router.get("/agents-rider-package-count", [authMiddleware, authorized], async (r
 router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent_packages
+    let { id } = req.query
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      agent_packages = await Sent_package.find({ state: "rejected", createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ businessId: id, state: "rejected", createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
@@ -581,7 +582,7 @@ router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async
       return res.status(200)
         .json(agent_packages);
     } else {
-      agent_packages = await Sent_package.find({ state: "rejected", createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ businessId: id, state: "rejected", createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
@@ -598,10 +599,11 @@ router.get("/agent-agent-rejected-packages", [authMiddleware, authorized], async
 });
 router.get("/agent-agent-package-expired", [authMiddleware, authorized], async (req, res) => {
   try {
+    let { id } = req.query
     let agent_packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      agent_packages = await Sent_package.find({ updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ businessId: id, updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
@@ -609,7 +611,7 @@ router.get("/agent-agent-package-expired", [authMiddleware, authorized], async (
       return res.status(200)
         .json(agent_packages);
     } else {
-      agent_packages = await Sent_package.find({ updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
+      agent_packages = await Sent_package.find({ businessId: id, updatedAt: { $lte: moment().subtract(4, 'days').toDate() }, state: { $ne: "collected" }, createdBy: req.user._id, }).sort({ createdAt: -1 }).limit(100)
         // .populate('location')
         .populate('businessId')
         .populate('createdBy')
@@ -806,6 +808,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
 
     const { period, state, id } = req.query
     console.log(req.query)
+    console.log("63574a93a2f50e9fc6806963")
 
     let packages
     if (state === "rejected") {
@@ -846,7 +849,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         })
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
-
+      console.log(packages)
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "delivered") {
@@ -869,61 +872,15 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         .sort({ createdAt: -1 });
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
-    // if (period === 0 || period === undefined || period === null) {
-
-    //   packages = await Sent_package.find({ $or: [{ senderAgentID: id }, { receieverAgentID: id }], state: state, })
-    //     .populate("createdBy", "l_name f_name phone_number")
-
-    //     .populate({
-    //       path: 'senderAgentID',
-    //       populate: {
-    //         path: 'location_id',
-    //       }
-    //     })
-    //     // .populate("receieverAgentID")
-    //     .populate({
-    //       path: 'receieverAgentID',
-    //       populate: {
-    //         path: 'location_id',
-    //       }
-    //     })
-    //     .populate("businessId", "name loc")
-    //     .sort({ createdAt: -1 });
-    //   return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-
-    // }
-
-    // else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
-    //   var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-    //   packages = await Sent_package.find({ $or: [{ senderAgentID: id }], state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-    //     .populate("createdBy", "l_name f_name phone_number")
-    //     .populate("senderAgentID")
-    //     .populate("receieverAgentID")
-
-    //     .populate("businessId", "name loc")
-    //     .sort({ createdAt: -1 });
-    //   return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-
-    // }
-    // else if (req.query.searchKey) {
-    //   var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-    //   packages = await Sent_package.find({ agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-    //     .populate("createdBy", "l_name f_name phone_number")
-    //     .populate("senderAgentID")
-
-    //     .populate("receieverAgentID")
-    //     .populate("businessId", "name")
-    //     .sort({ createdAt: -1 });
-    // }
     else {
-      packages = await Sent_package.find({ agent: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
+      packages = await Sent_package.find({ senderAgentID: id, state: state })
         .populate("createdBy", "l_name f_name phone_number")
         .populate("senderAgentID",)
         .populate("receieverAgentID")
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
     }
-    console.log(packages)
+
     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
     console.log(error)
