@@ -90,10 +90,11 @@ router.post('/login', async (req, res) => {
                 let agent1 = await Agent.findOne({ user: userOBJ._id })
                 let agent2 = await Agent.findById(userOBJ.agent_id)
 
-                let rider = agent1?.rider
+                let rider = agent1?.rider || agent2?.rider
 
                 let agent_id = userAgent?.agent || agent1?._id
                 let agentsuperb = agent1?.isSuperAgent || agent2?.isSuperAgent
+
                 if (userAgent) {
 
                     agent = await Agent.findOne({ userAgent: agent })
