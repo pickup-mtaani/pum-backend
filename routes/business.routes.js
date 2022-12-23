@@ -6,6 +6,7 @@ var moment = require('moment');
 var multer = require('multer');
 const fs = require('fs');
 var path = require('path');
+var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 var Category = require('models/business_categories.model')
 const { validateBusinesInput } = require('../va;lidations/business.validations');
@@ -134,6 +135,23 @@ router.put('/request-shelf/:id', [authMiddleware, authorized], async (req, res) 
 
         if (body.choice) {
             const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { shelf_location: body.shelf_location, request_shelf: true }, { new: true, useFindAndModify: false })
+            return res.status(200).json({ message: 'Edited successfully', Edited });
+        } else {
+            return res.status(200).json({ message: 'Edited successfully' });
+        }
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+    }
+});
+router.put('/shift-shelf/:id/:new_location', [authMiddleware, authorized], async (req, res) => {
+    try {
+        const body = req.body
+
+        if (body.choice) {
+            // let packages = await Rent_a_shelf_deliveries({location:})
+            const Edited = await Business.findOneAndUpdate({ _id: req.params.id }, { shelf_location: req.params.new_location, request_shelf: true }, { new: true, useFindAndModify: false })
             return res.status(200).json({ message: 'Edited successfully', Edited });
         } else {
             return res.status(200).json({ message: 'Edited successfully' });

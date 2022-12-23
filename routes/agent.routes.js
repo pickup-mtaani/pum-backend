@@ -104,10 +104,12 @@ router.get("/rent-package/:id", async (req, res) => {
 });
 router.get("/rent-package/:id/:state", async (req, res) => {
     try {
+        let { agent } = req.query
+        console.log("first", req.query)
         let agent_packages
         if (req.query.searchKey) {
             var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-            agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+            agent_packages = await Rent_a_shelf_deliveries.find({ location: agent, state: req.params.state, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
                 .populate('location')
                 .populate('businessId')
                 .populate('createdBy')
@@ -115,7 +117,7 @@ router.get("/rent-package/:id/:state", async (req, res) => {
             return res.status(200)
                 .json(agent_packages);
         } else {
-            agent_packages = await Rent_a_shelf_deliveries.find({ state: req.params.state, businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
+            agent_packages = await Rent_a_shelf_deliveries.find({ location: agent, state: req.params.state, businessId: req.params.id, }).sort({ createdAt: -1 }).limit(100)
                 .populate('location', "business_name")
                 .populate('businessId', 'name')
                 .populate('createdBy')
