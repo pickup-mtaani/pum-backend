@@ -63,7 +63,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         let newPackageCount = 1
-        if (agent_id.package_count) {
+        if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
         if (packages[i]?.product) {
@@ -119,7 +119,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].state = "pending-doorstep"
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "doorstep" }, { new: true, useFindAndModify: false })
         }
-        packages[i].createdAt = moment().format('YYYY-MM-DDD');
+        packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
