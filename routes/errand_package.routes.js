@@ -230,7 +230,7 @@ router.get("/errand-package-count", [authMiddleware, authorized], async (req, re
 
     let agent = await AgentUser.findOne({ user: req.user._id })
     let { id } = req.query
-    console.log("Errand", id)
+
     let dropped = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "dropped" })
     let assigneWarehouse = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "assigned-warehouse" })
     let warehouseTransit = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "warehouse-transit" })

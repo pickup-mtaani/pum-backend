@@ -121,13 +121,13 @@ function Agent(props) {
             sortable: true,
             name: 'Sender',
             // minWidth: '250px',
-            selector: row => row.senderAgentID.business_name
+            selector: row => row.senderAgentID?.business_name
         },
         {
             sortable: true,
             name: 'Reciever',
             // minWidth: '250px',
-            selector: row => row.receieverAgentID.business_name
+            selector: row => row.receieverAgentID?.business_name
         },
 
         {
@@ -200,7 +200,7 @@ function Agent(props) {
     useEffect(() => {
         fetch()
     }, [])
-    console.log(data1)
+
     return (
 
         <div className=" mx-2">

@@ -130,7 +130,7 @@ function Doorstep(props) {
             sortable: true,
             name: 'From',
 
-            selector: row => row.agent.business_name
+            selector: row => row?.agent?.business_name
         },
         {
             sortable: true,
@@ -181,8 +181,6 @@ function Doorstep(props) {
     }, [searchValue, date, showModal]);
     const fetch = async () => {
         let result = await props.getdoorstep({ limit: limit, state: state })
-        await props.get_riders()
-
         setData(result);
 
     }

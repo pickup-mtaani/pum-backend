@@ -356,7 +356,7 @@ router.put("/doorstep/toogle-payment/:id", [authMiddleware, authorized], async (
   try {
     let paid = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
     return res
-      .status(400)
+      .status(200)
       .json(paid);
 
   } catch (err) {
