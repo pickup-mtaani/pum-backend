@@ -145,12 +145,26 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
 
     if (req.params.state === "picked-from-sender") {
       const package = await Erand_package.findById(req.params.id).populate("agent");
+      // await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+      //   droppedBy: package.assignedTo,
+      //   droppedTo: package?.senderAgentID?._id,
+      //   recievedBy: req.user._id,
+      //   droppedAt: moment()
+      //   , assignedAt: Date.now()
+      // }, { new: true, useFindAndModify: false })
+      let new_description = [...narration.descriptions, {
+        time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
+      }]
+
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
-        droppedBy: package.assignedTo,
-        droppedTo: package?.senderAgentID?._id,
-        recievedBy: req.user._id,
-        droppedAt: moment()
-        , assignedAt: Date.now()
+        dropped: {
+          droppedBy: package.assignedTo,
+          droppedTo: package?.senderAgentID?._id,
+          recievedBy: req.user._id,
+          droppedAt: moment()
+        },
+        descriptions: new_description
+
       }, { new: true, useFindAndModify: false })
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
