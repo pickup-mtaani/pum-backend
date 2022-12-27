@@ -418,6 +418,7 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
   try {
     const url = req.protocol + '://' + req.get('host');
     let package = await Erand_package.findById(req.params.id)
+    let narration = await Track_Erand.findOne({ package: req.params.id })
     if (req.file) {
 
       const body = req.body
