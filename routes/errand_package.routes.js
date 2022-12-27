@@ -366,12 +366,12 @@ router.get("/errand-package-delivery-price", async (req, res) => {
   }
 });
 
-router.put("/errand//toogle-payment/:id", [authMiddleware, authorized], async (req, res) => {
+router.put("/errand/toogle-payment/:id", [authMiddleware, authorized], async (req, res) => {
 
   try {
     let paid = await Erand_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
     return res
-      .status(400)
+      .status(200)
       .json(paid);
 
   } catch (err) {
@@ -534,7 +534,32 @@ router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async
 
 router.get("/erand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Erand_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Erand_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 })
+      .limit(100)
+      .populate('createdBy', 'f_name l_name name phone_number')
+      .populate('businessId')
+      .populate("courier")
+
+      ;
+    return res
+      .status(200)
+      .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/web-errand-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const agent_packages = await Erand_package.find().sort({ createdAt: 1 })
+      .limit(100)
+      .populate('createdBy', 'f_name l_name name phone_number')
+      .populate('businessId', "name")
+      .populate("assignedTo", 'name')
+      .populate("courier", "name")
+      ;
     return res
       .status(200)
       .json(agent_packages);

@@ -10,6 +10,7 @@ import DoorStep from './doorStep'
 import Rent from './rent'
 
 import { ShelfagentPackages, ShelfagentXPackages, ShelfstatePackages } from '../../redux/actions/agents.actions'
+import Errand from './errand'
 
 function Agents(props) {
   const [filterText, setFilterText] = React.useState('');
@@ -56,7 +57,7 @@ function Agents(props) {
         <Rent />
       </div>}
       {tab === "collected" && <div className=" mx-2 my-10">
-        <Rent />
+        <Errand />
       </div>}
     </Layout >
   )

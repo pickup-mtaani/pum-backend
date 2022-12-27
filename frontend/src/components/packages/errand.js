@@ -33,32 +33,27 @@ function Errand(props) {
         {
             sortable: true,
             name: 'Business Name',
-            minWidth: '250px',
             selector: row => row.businessId?.name
         },
 
         {
             sortable: true,
             name: 'Reciept',
-            minWidth: '250px',
             selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Stored At ',
-            minWidth: '250px',
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             sortable: true,
             name: 'payment_status ',
-            minWidth: '250px',
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Packages',
-            minWidth: '250px',
             selector: row => (<>
                 {row.packages.map((pack, i) => (
                     <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
@@ -100,49 +95,57 @@ function Errand(props) {
         const { value } = e.target;
         setstate(value)
         let result = await props.geterrands({ limit: limit, state: value })
-        await props.get_riders()
 
-        setData(result.data);
+        console.log(result)
+        setData(result);
     };
 
     const columns = [
         {
             sortable: true,
             name: 'Package',
-            minWidth: '250px',
 
             selector: row => row.packageName
         },
         {
             sortable: true,
-            name: 'Package value',
-            minWidth: '250px',
+            name: 'Reciept',
 
             selector: row => row.package_value
+        },
+        {
+            sortable: true,
+            name: 'Package value',
+
+            selector: row => row.receipt_no
         },
 
         {
             sortable: true,
             name: 'payment_status ',
-            minWidth: '250px',
-            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500' onClick={() => props.togglePayment(row._id, "doorstep")}>Pay Now</div> : "Paid"}</>),
+            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'
+                // errand//toogle-payment/:id
+                onClick={async () => { props.togglePayment(row._id, "errand"); await fetch() }}>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Business Name',
-            minWidth: '250px',
             selector: row => row.businessId?.name
         },
         {
             sortable: true,
+            name: 'Courier',
+            selector: row => row.courier?.name
+        },
+        {
+            sortable: true,
             name: 'Sent At ',
-            minWidth: '250px',
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+            selector: row => moment(row.createdAt).format('YYYY-MM-DD '),
         },
         {
             sortable: true,
             name: 'Assigned to ',
-            minWidth: '250px',
+
             selector: row => row?.assignedTo?.name,
         },
 
@@ -184,8 +187,8 @@ function Errand(props) {
     }, [searchValue, date, showModal]);
     const fetch = async () => {
         let result = await props.geterrands()
-        console.log("RESULT: " + result.data)
-        setData(result);
+
+        setData(result.data);
 
     }
     useEffect(() => {
@@ -202,7 +205,7 @@ function Errand(props) {
                 data={data1}
                 pagination
                 paginationServer
-                progressPending={props.loading}
+                // progressPending={props.loading}
                 paginationResetDefaultPage={resetPaginationToggle}
                 subHeader
                 subHeaderComponent={subHeaderComponentMemo}

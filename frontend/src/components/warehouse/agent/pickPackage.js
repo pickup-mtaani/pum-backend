@@ -33,7 +33,7 @@ function Riderpage(props) {
     }
 
     useEffect(() => {
-        // alert(location?.state?.agent)
+
         fetch(location?.state?.rider, location?.state?.agent)
 
 
