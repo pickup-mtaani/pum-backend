@@ -17,12 +17,7 @@ function Riderpage(props) {
         setData(res)
 
     }
-    const packAction = async (id, state, rider) => {
-        // recieved-warehouse
-        await props.assignwarehouse(id, state, rider)
-        setData(await props.fetchpackages("dropped", location?.state?.agent))
-        await fetch("dropped", location?.state?.agent)
-    }
+
     useEffect(() => {
 
         fetch("dropped", location?.state?.agent)

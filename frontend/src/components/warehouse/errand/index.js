@@ -1,30 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { Link, unstable_HistoryRouter } from 'react-router-dom'
+import React, { } from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { get_agents, get_zones, assign, fetchdoorpackages } from '../../../redux/actions/agents.actions'
 import Layout from '../../../views/Layouts'
-import { DashboardWHItem } from '../../DashboardItems'
-import { useLocation } from 'react-router-dom'
-import DataTable from 'react-data-table-component'
 import moment from 'moment'
 const Index = props => {
-    const [collect, setCollections] = useState([])
-    const [assign, setAssign] = useState([])
-    const [doorStep, setDoorstep] = useState([])
-    const [assignDoorstep, setAssignDoorStep] = useState([])
-    const location = useLocation()
-    const fetch = async () => {
 
-        setCollections(await props.fetchdoorpackages('dropped'))
-        setAssign(await props.fetchdoorpackages('recieved-warehouse'))
-        setDoorstep(await props.fetchdoorpackages('assigned'))
-        setAssignDoorStep(await props.fetchdoorpackages('assigned'))
-    }
 
-    useEffect(() => {
 
-        fetch()
-    }, [])
     const columns = [
         {
             sortable: true,

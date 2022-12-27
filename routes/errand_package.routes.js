@@ -169,7 +169,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
-      await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+      await new Commision({ agent: req.user._id, Erand_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
     if (req.params.state === "assigned") {
       p = await Erand_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
@@ -274,7 +274,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     if (req.params.state === "rejected") {
       let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
       await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
-      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         rejected: {
           reason: req.body.rejectReason,
           rejectedAt: moment()
@@ -293,20 +293,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     //     }, descriptions: new_des
     //   }, { new: true, useFindAndModify: false })
     // }
-    // if (req.params.state === "assigned-warehouse") {
-    //   //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
-    //   await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
-    //     reassignedTo:
-    //     {
-    //       reAssignedTo: req.query.assignedTo,
-    //       reAssignedAt: Date.now(),
-    //       reAssignedBy: req.user._id,
-    //     }
 
-    //   }, { new: true, useFindAndModify: false })
-    //   return res.status(200).json({ message: "Sucessfully" });
-
-    // }
 
     if (req.params.state === "unavailable") {
       await new UnavailableDoorStep({ package: req.params.id, reason: req.body.reason }).save()
@@ -441,7 +428,12 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
       let { customerPhoneNumber, payment_status, delivery_fee } = await Erand_package.findOne({ _id: req.params.id })
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
+      let courier = await Courier.findOne({ _id: package.courier })
       await Erand_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  delivered to ${courier.name}  waiting to be delivered to ${package.customerName} ` }]
+      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        descriptions: new_des
+      }, { new: true, useFindAndModify: false })
       return res.status(200).json("Parcel dispatched successfully");
       if (payment_status === "to-be-paid") {
         await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
