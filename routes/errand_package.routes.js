@@ -432,17 +432,19 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
       let courier = await Courier.findOne({ _id: package.courier })
       await Erand_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  delivered to ${courier.name}  waiting to be delivered to ${package.customerName} ` }]
-      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+
+      let v = await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
+
       return res.status(200).json("Parcel dispatched successfully");
+
       if (payment_status === "to-be-paid") {
         await Mpesa_stk(customerPhoneNumber, delivery_fee, req.user._id, "doorstep")
       }
 
 
     } else {
-      console.log("Error", error)
       return res.status(400).json("Reciept Image is Required");
     }
 
