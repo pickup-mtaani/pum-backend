@@ -417,7 +417,7 @@ router.get("/errand-packages", [authMiddleware, authorized], async (req, res) =>
 router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('ticket'), async (req, res) => {
   try {
     const url = req.protocol + '://' + req.get('host');
-
+    let package = await Erand_package.findById(req.params.id)
     if (req.file) {
 
       const body = req.body
