@@ -225,13 +225,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         // await new DoorstepNarations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
         // await new DoorstepNarations({ package: newpackage._id, state: "assigned", descriptions: `Package assigned rider` }).save()
       }
-      if (req.body.payment_option === "vendor") {
-        await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "erand")
-      }
-      else {
-        await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+      // if (req.body.payment_option === "vendor") {
+      //   await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "erand")
+      // }
+      // else {
+      await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
 
-      }
+      // }
 
       return res
         .status(200)
