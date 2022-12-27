@@ -105,7 +105,7 @@ router.get("/rent-package/:id", async (req, res) => {
 router.get("/rent-package/:id/:state", async (req, res) => {
     try {
         let { agent } = req.query
-        console.log("first", req.query)
+        // console.log("first", req.query)
         let agent_packages
         if (req.query.searchKey) {
             var searchKey = new RegExp(`${req.query.searchKey}`, 'i')

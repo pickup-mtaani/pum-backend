@@ -85,6 +85,9 @@ const erandSchema = new Schema(
     payment_phone_number: {
       type: String,
     },
+    fromLocation: {
+      type: String,
+    },
     type: {
       type: String,
       default: "courier",

@@ -67,7 +67,6 @@ export const pickrehouse = (id, state, rider) => async (dispatch) => {
     await setAuthToken(axios);
     dispatch({ type: "FETCH_DOORSTEP" });
     let payload = [];
-    alert(id)
     const { data } = await axios.put(`/api/wh-agent-pick-package/${id}/${state}`);
     payload = data;
     dispatch({ type: "FETCH_DOORSTEP_SUCCESSFUL", payload });

@@ -39,7 +39,7 @@ function Agents(props) {
     }
     const fetchState = async (state) => {
         let result = await props.ShelfstatePackages(location.state.id, state)
-        console.log("first", result)
+        // console.log("first", result)
         // console.log("Packs", props.rent_shelf)
         // await props.get_riders()
 

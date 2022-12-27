@@ -44,6 +44,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     let rider = await User.findOne({ _id: sender.rider })
     const { state } = req.params
     let p
+    let expr = ""
     if (seller) {
       switch (state) {
         case "request":
@@ -441,7 +442,6 @@ router.get("/doorstep-agent-search/:state", [authMiddleware, authorized], async 
     console.log(req.query)
     agent_packages = await Door_step_Sent_package.find({ state: req.params.state, $or: [{ agent: id }], $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name')
-
       .populate('agent', 'business_name')
       .populate('businessId', 'name')
     return res
@@ -476,7 +476,7 @@ router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) =
     let v = await Mpesa_stk(req.body.phone_number, 1, 1, req.body.type)
     if (req.body.type === "doorstep") {
       let update = await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
-      console.log(update)
+
     } else if (req.body.type == "rent") {
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.body.package_id, }, { hasBalance: false }, { new: true, useFindAndModify: false })
     } else {

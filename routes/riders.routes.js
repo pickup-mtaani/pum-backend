@@ -361,7 +361,7 @@ router.get("/riders-agents-package-count/:id", [authMiddleware, authorized], asy
     for (let j = 0; j < agents.length; j++) {
 
       let packages = await Sent_package.find({ assignedTo: req.params.id, senderAgentID: agents[j].agent?._id, state: state })
-      console.log("first", packages)
+      // console.log("first", packages)
       sender_agents_count.push({
         name: agents[j].agent?.business_name.toString(),
         agent: agents[j].agent,
