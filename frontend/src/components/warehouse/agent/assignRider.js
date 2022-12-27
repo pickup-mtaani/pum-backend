@@ -22,6 +22,7 @@ function Riderpage(props) {
     useEffect(() => {
         console.log(location.state)
         fetch()
+        fetch(location?.state?.rider, location?.state?.agent)
 
     }, [])
     const packAction = async (id, state, rider) => {
@@ -73,7 +74,7 @@ function Riderpage(props) {
         setShow(true)
 
     }
-    console.log(data[0])
+
     return (
         <Layout>
             <ConfirmModal

@@ -343,7 +343,7 @@ router.get("/riders-agents-package-count/:id", [authMiddleware, authorized], asy
 
     const { state } = req.query
     const agents = await RiderRoutes.find({ rider: req.params.id }).populate('agent', 'business_name rider')
-    console.log("RiderRoutes", agents)
+
     let sender_agents_count = []
     let reciever_agents_count = []
 

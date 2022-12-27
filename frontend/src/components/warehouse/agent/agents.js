@@ -12,7 +12,7 @@ function ActionPage(props) {
 
     const fetch = async () => {
 
-        if (location?.state?.title === "Collect From Riders") {
+        if (location.state?.title === "Collect From Riders") {
             const result = await props.get_agents(location?.state?.id, "dropped")
             setData(result.sender_agents_count)
 
@@ -27,7 +27,7 @@ function ActionPage(props) {
         fetch()
     }, [])
 
-
+    console.log(location)
     return (
         <Layout>
             <div className='flex justify-center items-center py-10'>

@@ -152,7 +152,7 @@ const ErandSchema = new Schema({
 
     package: {
         type: Schema.Types.ObjectId,
-        ref: 'doorStep_delivery_packages'
+        ref: 'erand_delivery_packages'
     },
     descriptions: {
         type: Array,

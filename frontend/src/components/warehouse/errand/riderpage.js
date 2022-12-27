@@ -3,7 +3,7 @@ import DataTable from 'react-data-table-component'
 import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
-import { get_agents, get_zones, recieveErrand, assign, fetchpackages, fetcherrandspackages } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, CollectErrand, assign, fetchpackages, fetcherrandpackages } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 function Riderpage(props) {
@@ -13,10 +13,8 @@ function Riderpage(props) {
     const [show, setShow] = useState(false)
     const [id, setId] = useState([])
     const fetch = async (data, agent) => {
-        let res = await props.fetcherrandspackages("dropped", location?.state?.id)
-
+        let res = await props.fetcherrandpackages("dropped", location?.state?.id)
         setData(res)
-
 
     }
     const packAction = async (id, state, rider) => {
@@ -92,7 +90,7 @@ function Riderpage(props) {
                 msg=" Recieve this package"
                 show={show}
 
-                Submit={async () => { await props.recieveErrand(id, "recieved-warehouse"); setShow(false); fetch("dropped", location?.state?.agent) }}
+                Submit={async () => { await props.CollectErrand(id, "recieved-warehouse", location.state.id); setShow(false); fetch("dropped", location?.state?.agent) }}
             />
         </Layout>
     )
@@ -107,6 +105,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, recieveErrand, fetcherrandspackages, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectErrand, fetcherrandpackages, assignwarehouse })(Riderpage)
 
 

@@ -16,25 +16,24 @@ const Index = props => {
     const location = useLocation()
     const fetch = async () => {
         await props.get_riders()
-
+        setCollections(await props.fetchdoorpackages('dropped'))
+        setAssign(await props.fetchdoorpackages('recieved-warehouse'))
+        setDoorstep(await props.fetchdoorpackages('assigned'))
+        setAssignDoorStep(await props.fetchdoorpackages('assigned'))
     }
 
     useEffect(() => {
-
         fetch()
     }, [])
 
     return (
         <Layout>
-
             <div className='w-full p-2 flex flex-wrap'>
                 {props.riders.map((rider, i) => (
-
                     <div className='w-1/4 p-2' key={i}>
                         <Link
                             to={{
                                 pathname: `/wahehouse/errand/pick-packages-from/${rider?.user?.name.replace(/\s/g, '')}`,
-
                             }}
                             state={{
                                 id: rider.user?._id,

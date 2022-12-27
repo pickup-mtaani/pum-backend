@@ -1,78 +1,120 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { agents, get_zones, assign, fetchdoorpackages } from '../../../redux/actions/agents.actions'
-import Layout from '../../../views/Layouts'
-import { get_riders, fetchpackages, assignAgent } from '../../../redux/actions/riders.actions'
-import { DashboardWHItem } from '../../DashboardItems'
-import { useLocation } from 'react-router-dom'
 import DataTable from 'react-data-table-component'
-import moment from 'moment'
-const Index = props => {
-    const [collect, setCollections] = useState([])
-    const [data, setAssign] = useState([])
-    const [doorStep, setDoorstep] = useState([])
-    const [assignDoorstep, setAssignDoorStep] = useState([])
-    const location = useLocation()
-    const fetch = async () => {
-        let results = await props.agents()
-        setAssign(results)
-    }
+import { useLocation } from 'react-router-dom'
+import Layout from '../../../views/Layouts'
+import { connect } from 'react-redux'
+import { get_riders, } from '../../../redux/actions/riders.actions'
+import { get_agents, get_zones, CollectErrand, assign, fetchpackages, fetcherrandpack } from '../../../redux/actions/agents.actions'
+import { assignwarehouse } from '../../../redux/actions/package.actions'
+import ConfirmModal from '../../confirm'
+function Riderpage(props) {
 
+    const location = useLocation()
+    const [data, setData] = useState([])
+    const [rider, setRider] = useState([])
+    const [show, setShow] = useState(false)
+    const [id, setId] = useState('')
+    const fetch = async (data, agent) => {
+        let res = await props.fetcherrandpack("recieved-warehouse")
+        await props.get_riders()
+        setData(res)
+
+
+    }
+    const packAction = async (id, state, rider) => {
+        // recieved-warehouse
+        await props.assignwarehouse(id, state, rider)
+        setData(await props.fetchpackages("dropped", location?.state?.agent))
+        await fetch("dropped", location?.state?.agent)
+    }
     useEffect(() => {
 
         fetch()
+
     }, [])
+
+    const Sellers_columns = [
+
+        {
+            sortable: true,
+            name: 'Name',
+            minWidth: '250px',
+            selector: row => row.packageName
+        },
+        {
+            sortable: true,
+            name: 'Reciept',
+            minWidth: '250px',
+            selector: row => row.receipt_no
+        },
+        {
+            sortable: true,
+            name: 'From',
+            minWidth: '250px',
+            selector: row => row.businessId?.name
+        },
+        {
+            sortable: true,
+            name: 'To',
+            minWidth: '250px',
+            selector: row => row.customerName
+        },
+        {
+            sortable: true,
+            name: 'Action',
+            minWidth: '150px',
+            selector: row => (<>
+                <select className=" bg-primary-500 w-38 mb-2 mx-2 rounded-md float-right h-10 flex justify-center items-center px-2 border-none"
+                    onChange={(e) => { setShow(true); setId(row._id); setRider(e.target.value) }}>
+                    <option value="">Assign a new Rider</option>
+                    {props.riders?.map((rider, i) => (
+                        <option key={i} value={rider?.user?._id} >{rider?.user?.name}</option>
+                    ))}
+
+                </select>
+            </>)
+        },
+
+    ]
 
     return (
         <Layout>
+            <div className=" mx-2">
+                <DataTable
+                    title={location?.state?.title}
+                    columns={Sellers_columns}
+                    data={data}
+                    pagination
+                    paginationServer
+                    // progressPending={props.loading}
+                    // paginationResetDefaultPage={resetPaginationToggle}
+                    subHeader
+                    // subHeaderComponent={subHeaderComponentMemo}
+                    persistTableHead
+                // onChangePage={handlePageChange}
+                // paginationTotalRows={totalRows}
+                // onChangeRowsPerPage={handlePerRowsChange}
+                /></div>
+            <ConfirmModal
+                msg=" Assign this package"
+                show={show}
 
-            <div className='w-full p-2 flex flex-wrap '>
-                {data.map((rider, i) => (
-                    <div className='w-1/4 p-2' key={i}>
-                        <Link
-                            to={{
-                                pathname: `/wahehouse/doorstep/assign-rider`,
-                            }}
-                            state={{
-                                id: rider.user?._id,
-
-                            }}
-                        >
-                            <div className='m-1 w-full h-60 bg-red-100 flex justify-center items-center'>
-                                <div className='text-center justify-center items-center flex flex-col'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    {rider?.business_name}
-                                </div>
-                            </div>
-                        </Link>
-                    </div>
-
-                ))}
-
-                {/* <div className='w-1/4'>
-                    <div className='m-1 w-full h-60 bg-red-200'></div>
-                </div> */}
-
-
-            </div>
-
+                Submit={async () => { await props.CollectErrand(id, "assigned-warehouse", rider); await fetch("dropped", location?.state?.agent); setShow(false); }}
+            />
         </Layout>
     )
 }
-
 const mapStateToProps = (state) => {
     return {
 
         agents: state.agentsData.agents,
         packages: state.agentsData.packs,
-        riders: state.ridersDetails.riders,
         loading: state.agentsData.loading,
+        riders: state.ridersDetails.riders,
 
     };
 };
 
-export default connect(mapStateToProps, { agents, get_zones, assign, fetchdoorpackages })(Index)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectErrand, get_riders, fetcherrandpack, assignwarehouse })(Riderpage)
+
 

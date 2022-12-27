@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Layout from '../../../views/Layouts'
 import { connect } from 'react-redux'
 import { get_riders, } from '../../../redux/actions/riders.actions'
-import { get_agents, get_zones, recieveErrand, assign, fetchpackages, fetchdoorpack } from '../../../redux/actions/agents.actions'
+import { get_agents, get_zones, CollectDoorStep, assign, fetchpackages, fetchdoorpack } from '../../../redux/actions/agents.actions'
 import { assignwarehouse } from '../../../redux/actions/package.actions'
 import ConfirmModal from '../../confirm'
 function Riderpage(props) {
@@ -43,9 +43,21 @@ function Riderpage(props) {
         },
         {
             sortable: true,
-            name: 'Business',
+            name: 'Reciept',
+            minWidth: '250px',
+            selector: row => row.receipt_no
+        },
+        {
+            sortable: true,
+            name: 'From',
             minWidth: '250px',
             selector: row => row.businessId?.name
+        },
+        {
+            sortable: true,
+            name: 'To',
+            minWidth: '250px',
+            selector: row => row.customerName
         },
         {
             sortable: true,
@@ -87,7 +99,7 @@ function Riderpage(props) {
                 msg=" Assign this package"
                 show={show}
 
-                Submit={async () => { await props.recieveErrand(id, "assigned-warehouse", rider); setShow(false); fetch("dropped", location?.state?.agent) }}
+                Submit={async () => { await props.CollectDoorStep(id, "assigned-warehouse", rider); setShow(false); fetch("dropped", location?.state?.agent) }}
             />
         </Layout>
     )
@@ -103,6 +115,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, recieveErrand, get_riders, fetchdoorpack, assignwarehouse })(Riderpage)
+export default connect(mapStateToProps, { get_agents, get_zones, assign, CollectDoorStep, get_riders, fetchdoorpack, assignwarehouse })(Riderpage)
 
 

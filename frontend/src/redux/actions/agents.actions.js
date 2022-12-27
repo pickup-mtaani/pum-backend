@@ -240,6 +240,19 @@ export const CollectDoorStep = (id, state, assignedTo) => async (dispatch) => {
         ;
     }
 };
+export const CollectErrand = (id, state, assignedTo) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+        const { data } = await axios.put(`/api/errand/package/${id}/${state}?assignedTo=${assignedTo}`);
+        let payload = [];
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_PAYMENTS_FAIL" });
+        ;
+    }
+};
 export const recieveErrand = (id, state, assignedTo) => async (dispatch) => {
 
     try {
@@ -355,7 +368,7 @@ export const fetcherrandpack = (state) => async (dispatch) => {
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
-        const { data } = await axios.get(`/api/wh-door-step-packages?state=${state}`);
+        const { data } = await axios.get(`/api/wh-errand-packages?state=${state}`);
         let payload = [];
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
@@ -391,6 +404,22 @@ export const fetchdoorpackages = (state, id) => async (dispatch) => {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_WEBPACKAGES" });
         const { data } = await axios.get(`/api/wh-door-step-packages/${id}?state=${state}`);
+        let payload = [];
+
+        dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });
+        return data;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_WEBPACKAGES_FAIL" });
+        ;
+    }
+};
+export const fetcherrandpackages = (state, id) => async (dispatch) => {
+    //alert(JSON.stringify(agent))
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_WEBPACKAGES" });
+        const { data } = await axios.get(`/api/wh-errands-packages/${id}?state=${state}`);
         let payload = [];
 
         dispatch({ type: "FETCH_WEBPACKAGES_SUCCESSFUL", payload });

@@ -32,13 +32,11 @@ export function DashboardWHItem(props) {
 
     return (
         <div className="bg-white  w-1/2  ">
-            {props.obj.title === "Collect From Riders" ? <Link
+            <Link
                 to={{
                     pathname: `/wahehouse/${props.obj.title.replace(/\s/g, '')}`,
 
                 }}
-
-                // wahehouse/agent-agent/assign-package-to/:rider
                 state={{
                     title: props.obj.title,
                     lis: props.obj.state,
@@ -56,32 +54,8 @@ export function DashboardWHItem(props) {
                         </div>
                     </div> */}
                 </div>
-            </Link> :
-                <Link
+            </Link>
 
-                    to={{
-                        pathname: `/wahehouse/agent-agent/assign-package-to/${props.obj.title.replace(/\s/g, '')}`,
-
-                    }}
-                    // wahehouse/agent-agent/assign-package-to/:rider
-                    state={{
-                        title: props.obj.title,
-                        lis: props.obj.state,
-                        type: props.obj.type
-                    }}
-                > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
-                        <div className="h-full w-4/6 ">
-                            <div className=" w-full flex flex-col p-3">
-                                <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
-                            </div>
-                        </div>
-                        {/* <div className="h-full w-2/6 flex justify-center items-center">
-                    <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
-                        {props?.obj?.value}
-                    </div>
-                </div> */}
-                    </div>
-                </Link>}
         </div >
     )
 }
@@ -125,12 +99,11 @@ export function WHItem(props) {
 }
 export function DashboardRider(props) {
 
-    //    // /wahehouse/agent-agent/pick-package-from/${props?.rider?.user?.name.replace(/\s/g, '')}`,
     return (
         <div className="bg-white  w-80  " >
             <Link
                 to={{
-                    pathname: `/wahehouse/agent-agent/${props?.rider?.user?.name.replace(/\s/g, '')}/agents`
+                    pathname: `/wahehouse/agent-agent/${props.title === "Assign to Riders" ? "Give-to-" : "Collectct-from-"}${props?.rider?.user?.name.replace(/\s/g, '')}/agents`
 
                 }}
                 state={{
@@ -192,3 +165,32 @@ export function Dashboardagents(props) {
     )
 }
 export default DashboardItems
+
+
+
+  // :
+            //     <Link
+
+            //         to={{
+            //             pathname: `/wahehouse/agent-agent/assign-package-to/${props.obj.title.replace(/\s/g, '')}`,
+
+            //         }}
+            //         // wahehouse/agent-agent/assign-package-to/:rider
+            //         state={{
+            //             title: props.obj.title,
+            //             lis: props.obj.state,
+            //             type: props.obj.type
+            //         }}
+            //     > <div className="bg-white h-40  w-full  rounded-xl shadow-sm flex">
+            //             <div className="h-full w-4/6 ">
+            //                 <div className=" w-full flex flex-col p-3">
+            //                     <h1 className="font-bold text-gray-400 text-xl">{props.obj.title}</h1>
+            //                 </div>
+            //             </div>
+            //             {/* <div className="h-full w-2/6 flex justify-center items-center">
+            //         <div className="bg-gradient-to-l from-primary-600 to-primary-500  h-14 w-14 shadow-xl rounded-md flex justify-center items-center">
+            //             {props?.obj?.value}
+            //         </div>
+            //     </div> */}
+            //         </div>
+            //     </Link>}

@@ -28,7 +28,7 @@ import WereHouseErrands from "./components/warehouse/errand/";
 import PickErrandFromRider from "./components/warehouse/errand/pick";
 import PickErrandFromRiderPage from "./components/warehouse/errand/riderpage";
 import GiveErrandtoRiderPage from "./components/warehouse/errand/give";
-import AssignErrandRiderPage from "./components/warehouse/errand/assignRider";
+import AssignErrandRiderPage from "./components/warehouse/errand/give";
 
 
 import WHAgent from "./components/warehouse/agent";
