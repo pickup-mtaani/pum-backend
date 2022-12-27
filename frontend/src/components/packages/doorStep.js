@@ -187,7 +187,7 @@ function Doorstep(props) {
     useEffect(() => {
         fetch()
     }, [])
-    console.log("Doot", props.to_door_packages[0])
+
     return (
 
 

@@ -68,6 +68,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
 
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`).socket
     let notefications = []
+    let expr = ""
     if (seller) {
       switch (state) {
         case "request":

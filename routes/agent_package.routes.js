@@ -89,7 +89,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
-
+    let expr = ""
     if (seller) {
       switch (state) {
         case "request":
