@@ -14,34 +14,16 @@ const router = express.Router();
 
 router.post('/stock', [authMiddleware, authorized], async (req, res) => {
     try {
+        console.log(req.body)
         const prod = await Product.findOne({ _id: req.body.product, business: req.body.business })
 
-        // if (Exists) {
-        //     const newqty = parseInt(req.body.qty) + parseInt(Exists.qty)
-        //     const Update = await Stock.findOneAndUpdate({ _id: Exists._id }, { qty: newqty, restock_at: Date.now() }, { new: true, useFindAndModify: false })
-        //     const newLog = new Logs({
-        //         type: 'Restocking',
-        //         initiator: user._id,
-        //         activity: `${user.username} Added a stock of ${req.body.qty} to ${Exists.qty} new qty for ${Exists.product.product_name} at ${Exists.business.name} is ${newqty}`
-        //     })
-        //     await newLog.save()
-        //     return res.status(200).json({ message: 'Restocked successfully !!', Update });
-        // }
-
         const body = req.body
+
         body.current_stock = prod.qty
         body.createdBy = req.user._id
         const newStock = new Stock(body)
         const saved = await newStock.save()
-        const Update = await Product.findOneAndUpdate({ business: body.business, _id: body.product }, { pending_stock_confirmed: false, pending_stock: body.qty }, { new: true, useFindAndModify: false })
-        //    
-        // const stocked = await Stock.findOne({ _id: saved._id }).populate(['business', 'createdBy', 'product']);
-        // const newLog = new Logs({
-        //     type: 'Initial stock',
-        //     initiator: user._id,
-        //     activity: `${user.username} Added The initial stock of ${stocked.qty} to ${stocked.product.product_name}  to ${stocked.business.name}`
-        // })
-        // await newLog.save()
+        await Product.findOneAndUpdate({ business: body.business, _id: body.product }, { pending_stock_confirmed: false, pending_stock: body.qty }, { new: true, useFindAndModify: false })
         return res.status(200).json({ message: 'Stock Added successfully', saved: saved });
 
     } catch (error) {
@@ -74,6 +56,19 @@ router.get('/stocks/:bussiness_id', [authMiddleware, authorized], async (req, re
         // let pending_stock = await Product.find({ business: req.params.bussiness_id, createdBy: req.user._id, pending_stock_confirmed: false, pending_stock: { $gt: 0 } })
 
         return res.status(200).json({ current_stock: current_stock, out_of_stock: out_of_stock });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.get('/shelf-location-stocks/:agent', [authMiddleware, authorized], async (req, res) => {
+    try {
+        let current_stock = await Product.find({ shelf_location: req.params.agent })
+
+        return res.status(200).json(current_stock);
 
     } catch (error) {
         console.log(error)

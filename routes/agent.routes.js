@@ -441,6 +441,7 @@ router.get('/agents-grouped', async (req, res) => {
                                 images: "$images",
                                 hasShelf: "$hasShelf",
                                 working_hours: "$working_hours",
+                                location_id: "$location_id",
 
                             }
                             //     $addToSet: "$agent_description",

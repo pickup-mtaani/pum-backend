@@ -3,7 +3,7 @@ var Product = require('models/products.model')
 var Stock = require('models/stocks.model')
 const imagemin = require('imagemin');
 const imageminMozJpeg = require('imagemin-mozjpeg')
-var Category = require('models/business_categories.model')
+var Bussiness = require('models/business.model')
 var Payment = require('models/payments.model')
 const { v4: uuidv4 } = require('uuid');
 var multer = require('multer');
@@ -37,6 +37,7 @@ var upload = multer({
 router.post('/product', upload.array('images'), [authMiddleware, authorized], async (req, res) => {
     try {
         const Exists = await Product.findOne({ product_name: req.body.product_name, createdBy: req.user._id });
+
         if (Exists) {
             return res.status(400).json({ message: 'You Already added this Product !!' });
         }
@@ -53,15 +54,10 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
                 })
 
             }
-            // if (req.body.other) {
-            //     const body = req.body;
-            //     body.createdBy = req.user._id
-            //     body.name = req.body.other
-            //     const newCategory = new Category(body)
-            //     const category = await newCategory.save()
-            //     body.category = category._id
-            // }
+            const business = await Bussiness.findOne({ _id: req.body.business })
+
             const body = req.body
+            body.shelf_location = business.shelf_location
             body.createdBy = req.user._id
             body.images = reqFiles
             if (body.type === "shelf") {
@@ -117,21 +113,7 @@ router.get('/products', [authMiddleware, authorized], async (req, res) => {
         return res.status(400).json({ success: false, message: 'operation failed ', error });
     }
 });
-// router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
-//     try {
-//         const { page, limit } = req.query
-//         const PAGE_SIZE = limit;
-//         const skip = (page - 1) * PAGE_SIZE;
-//         const products = await Product.find({ deleted_at: null, createdBy: req.params.id }).populate('category').skip(skip)
-//             .limit(PAGE_SIZE);
 
-//         return res.status(200).json({ message: 'Successfull pulled ', products });
-
-//     } catch (error) {
-
-//         return res.status(400).json({ success: false, message: 'operation failed ', error });
-//     }
-// });
 router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         const { page, limit } = req.query
@@ -148,10 +130,11 @@ router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
 });
 router.get('/stocks-pending', [authMiddleware, authorized], async (req, res) => {
     try {
+        console.log(req.query)
         const { page, limit } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null, pending_stock_confirmed: false }).populate('business').skip(skip)
+        const products = await Product.find({ shelf_location: req.query.id, deleted_at: null, pending_stock_confirmed: false }).populate('business').skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });

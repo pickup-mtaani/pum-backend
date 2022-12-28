@@ -8,6 +8,10 @@ const ProductSchema = new Schema({
     business: {
         type: Schema.Types.ObjectId,
         ref: 'business'
+    },
+    shelf_location: {
+        type: Schema.Types.ObjectId,
+        ref: 'agents_details '
     }
     ,
     desc: {

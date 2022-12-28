@@ -146,9 +146,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       }
     }
 
-    if (req.params.state === "rejected") {
-      await new Declined({ package: req.params.id, reason: req.body.reason }).save()
-    }
+
 
     if (req.params.state === "picked-from-sender") {
       const package = await Erand_package.findById(req.params.id).populate("agent");
@@ -273,15 +271,15 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
     if (req.params.state === "rejected") {
-      console.log(req.body)
-      // let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
-      // await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
-      // await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
-      //   rejected: {
-      //     reason: req.body.rejectReason,
-      //     rejectedAt: moment()
-      //   }
-      // })
+
+      let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
+      await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
+      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        rejected: {
+          reason: req.body.rejectReason,
+          rejectedAt: moment()
+        }
+      })
 
     }
     // if (req.params.state === "collected") {
@@ -487,7 +485,7 @@ router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async
 
 router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log("firs********t")
+
     const agent_packages = await Erand_package.find({
       agent: req.query.agent,
       $or: [
@@ -502,7 +500,7 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
       .populate('businessId')
       .populate("courier")
 
-    console.log(agent_packages)
+
 
     return res
       .status(200)
@@ -557,6 +555,30 @@ router.get("/errand-packages/:state", [authMiddleware, authorized], async (req, 
     return res
       .status(200)
       .json(errand_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/errand-search/:state", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let agent_packages
+    let { id } = req.query
+    console.log(req.query)
+    agent_packages = await Erand_package.find({ state: req.params.state, agent: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('agent', 'business_name')
+      .populate('businessId', 'name')
+      .populate('courier', 'name')
+    return res
+      .status(200)
+      .json(agent_packages);
+
   } catch (error) {
     console.log(error);
     return res
@@ -763,8 +785,8 @@ router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) =
   try {
     let v = await Mpesa_stk(req.body.phone_number, 1, 1, req.body.type)
     if (req.body.type === "doorstep") {
-      let update = await Erand_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
-      console.log(update)
+      await Erand_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
+
     } else if (req.body.type == "rent") {
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.body.package_id, }, { hasBalance: false }, { new: true, useFindAndModify: false })
     } else {
