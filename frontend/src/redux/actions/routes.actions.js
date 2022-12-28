@@ -1,6 +1,24 @@
 
 import axios, { setAuthToken } from "./axiosService";
 
+export const get_signatures = () => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_ROUTES_SUCCESSFUL" });
+        const { data } = await axios.get(`/api/collectors`);
+        let payload = [];
+        console.log(data)
+        payload = data
+        dispatch({ type: "FETCH_ROUTES_SUCCESSFUL", payload });
+
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RIDERS_FAIL" });
+        ;
+    }
+};
 export const get_routes = () => async (dispatch) => {
 
     try {

@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_routes, Post } from '../../redux/actions/routes.actions'
-import { get_zones } from '../../redux/actions/agents.actions'
-import { get_riders } from '../../redux/actions/riders.actions'
+import { get_signatures, Post } from '../../redux/actions/routes.actions'
+
 import Search_filter_component from '../common/Search_filter_component'
-import { DownloadFile } from '../common/helperFunctions'
 import Layout from '../../views/Layouts'
 import { Sellers_columns } from './data'
 
-import Add from './modals/add.modal'
 function Users(props) {
   let initialState = {
     name: '', zone: "", rider: '',
@@ -36,24 +33,8 @@ function Users(props) {
     );
     setFilterData(filtered)
   }
-  const changeInput = (e) => {
-    const { name, value } = e.target !== undefined ? e.target : e;
-    setItem((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }
-  const filter_BY_date = async (e) => {
 
-    await props.get_routes({ date: new Date(e) })
 
-  }
-  const submit = async () => {
-    await props.Post(item)
-    await props.get_routes()
-    setItem(initialState)
-    setShowModal(false)
-  }
   const subHeaderComponentMemo = React.useMemo(() => {
 
     return (
@@ -72,7 +53,7 @@ function Users(props) {
   }, [searchValue, date, showModal]);
   const fetch = async () => {
 
-    let routes = await props.get_routes()
+    let routes = await props.get_signatures()
 
     setData(routes)
 
@@ -111,13 +92,10 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-    admins: state.userDetails.admins,
-    // lastId: state.userDetails.lastId,
-    loading: state.userDetails.loading,
-    riders: state.ridersDetails.riders,
+
 
   };
 };
 
-export default connect(mapStateToProps, { get_routes, Post, get_zones, get_riders })(Users)
+export default connect(mapStateToProps, { get_signatures, Post, })(Users)
 

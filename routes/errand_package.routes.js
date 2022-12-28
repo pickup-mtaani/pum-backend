@@ -384,6 +384,7 @@ router.get("/errand-packages", [authMiddleware, authorized], async (req, res) =>
     if (req.query.period) {
       period = req.query.period
     }
+    let errand_packages
 
     const blended = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
       .populate('createdBy', 'f_name l_name name phone_number,')
@@ -456,53 +457,6 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
     return res.status(400).json({ success: false, message: 'operation failed ', error });
   }
 });
-// router.get("/errand-packages", async (req, res) => {
-//   try {
-//     let limit
-
-//     if (req.query.limit) {
-//       limit = req.query.limit
-//     }
-
-//     else {
-//       limit = 100
-//     }
-
-//     let packages
-//     if (req.query.state === "all") {
-
-//       packages = await Erand_package.find({
-//       })
-//         .populate(
-//           "customerPhoneNumber packageName package_value package_value packageName customerName"
-//         ).populate("assignedTo", "name phone_number").populate("businessId", "name")
-//         .sort({ createdAt: -1 })
-//         .limit(limit);
-//     } else {
-
-//       packages = await Erand_package.find({
-//         state: req.query.state
-//       })
-//         .populate(
-//           "customerPhoneNumber packageName package_value package_value packageName customerName"
-//         ).populate("assignedTo", "name phone_number").populate("businessId", "name")
-//         .sort({ createdAt: -1 })
-//         .limit(limit);
-//     }
-
-//     return res
-//       .status(200)
-//       .json({
-//         message: "Fetched Sucessfully",
-//         packages,
-//       });
-//   } catch (error) {
-//     console.log(error);
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "operation failed ", error });
-//   }
-// });
 
 router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
@@ -532,7 +486,7 @@ router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async
   }
 });
 
-router.get("/erand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
+router.get("/erand-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Erand_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 })
       .limit(100)

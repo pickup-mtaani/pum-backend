@@ -278,7 +278,7 @@ router.get("/door-step-package-count", [authMiddleware, authorized], async (req,
 
     let agent = await AgentUser.findOne({ user: req.user._id })
     let { id } = req.query
-    console.log("DOOstep agent", id)
+
     let dropped = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "dropped" })
     let assigneWarehouse = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "assigned-warehouse" })
     let warehouseTransit = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "warehouse-transit" })
