@@ -461,12 +461,10 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
 router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agents = []
-
+    console.log(req.query)
     let { state } = req.query
-    // console.log(req.query)
-    let packages = await Erand_package.find({ assignedTo: req.user._id, state: state })
-    // console.log("first", packages)
 
+    let packages = await Erand_package.find({ assignedTo: req.user._id, state: state })
     let agents_count = {}
 
     for (let i = 0; i < packages.length; i++) {
@@ -527,7 +525,7 @@ router.get("/web-errand-packages", [authMiddleware, authorized], async (req, res
 // singlr business packages 
 router.get("/errand-rider-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log("Params", req.params)
+
     const agent_packages = await Erand_package.find({ assignedTo: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)

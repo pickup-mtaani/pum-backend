@@ -41,7 +41,8 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     let auth = await User.findById(req.user._id)
     let narration = await Track_door_step.findOne({ package: req.params.id })
     let sender = await AgentDetails.findById(package?.agent)
-    let rider = await User.findOne({ _id: sender.rider })
+
+    let rider = await User.findById(sender?.rider)
     const { state } = req.params
     let p
     let expr = ""
