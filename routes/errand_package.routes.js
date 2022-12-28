@@ -273,14 +273,15 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
     if (req.params.state === "rejected") {
-      let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
-      await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
-      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
-        rejected: {
-          reason: req.body.rejectReason,
-          rejectedAt: moment()
-        }
-      })
+      console.log(req.body)
+      // let rejected = await new Rejected({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
+      // await Erand_package.findOneAndUpdate({ _id: req.params.id }, { reject_Id: rejected._id }, { new: true, useFindAndModify: false })
+      // await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+      //   rejected: {
+      //     reason: req.body.rejectReason,
+      //     rejectedAt: moment()
+      //   }
+      // })
 
     }
     // if (req.params.state === "collected") {
@@ -461,7 +462,7 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
 router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agents = []
-    console.log(req.query)
+
     let { state } = req.query
 
     let packages = await Erand_package.find({ assignedTo: req.user._id, state: state })
@@ -484,18 +485,29 @@ router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async
   }
 });
 
-router.get("/erand-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
+router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Erand_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 })
+    console.log("firs********t")
+    const agent_packages = await Erand_package.find({
+      agent: req.query.agent,
+      $or: [
+        { payment_status: "paid" },
+        { payment_status: "to-be-paid" }
+      ],
+      state: req.params.state,
+      businessId: req.params.id
+    }).sort({ createdAt: -1 })
       .limit(100)
       .populate('createdBy', 'f_name l_name name phone_number')
       .populate('businessId')
       .populate("courier")
 
-      ;
+    console.log(agent_packages)
+
     return res
       .status(200)
       .json(agent_packages);
+
   } catch (error) {
     console.log(error);
     return res
