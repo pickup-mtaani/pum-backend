@@ -457,6 +457,32 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
   }
 });
 
+router.get("/errand-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let { state } = req.query
+    // console.log()
+    let packages = await Erand_package.find({ assignedTo: req.user._id, state: state })
+
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+
+      agents_count[packages[i].agent.toString()] = agents_count[packages[i].agent.toString()] ? [...agents_count[packages[i].agent.toString()], packages[i]._id] : [packages[i]._id]
+
+    }
+
+    return res.status(200)
+      .json(agents_count);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 router.get("/errands-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     let agents = []
