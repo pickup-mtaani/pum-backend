@@ -513,6 +513,36 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    const agent_packages = await Erand_package.find({
+      // agent: req.query.agent,
+      $or: [
+        { payment_status: "paid" },
+        { payment_status: "to-be-paid" }
+      ],
+      state: req.params.state,
+      agent: req.params.id
+    }).sort({ createdAt: -1 })
+      .limit(100)
+      .populate('createdBy', 'f_name l_name name phone_number')
+      .populate('businessId')
+      .populate("courier")
+
+
+
+    return res
+      .status(200)
+      .json(agent_packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/web-errand-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Erand_package.find().sort({ createdAt: 1 })
