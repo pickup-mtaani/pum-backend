@@ -84,5 +84,4 @@ const BizSchema = new Schema({
 
 
 
-const Biz = mongoose.model('business', BizSchema);
-module.exports = Biz
+module.exports = mongoose.model('business', BizSchema);

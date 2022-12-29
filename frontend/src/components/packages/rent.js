@@ -35,31 +35,35 @@ function Rent(props) {
         {
             sortable: true,
             name: 'Business Name',
+            wrap: true,
             selector: row => row.businessId?.name
         },
 
         {
             sortable: true,
             name: 'Reciept',
+            wrap: true,
             selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Stored At ',
+            wrap: true,
             selector: row => moment(row.createdAt).format('YYYY-MM-DD'),
         },
-        {
-            sortable: true,
-            name: 'Packages',
-            selector: row => (<>
-                {row.packages.map((pack, i) => (
-                    <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-                        <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-                    </div>
-                ))}
+        // {
+        //     sortable: true,
+        //     name: 'Packages',
 
-            </>)
-        },
+        //     selector: row => (<>
+        //         {row.packages.map((pack, i) => (
+        //             <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
+        //                 <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
+        //             </div>
+        //         ))}
+
+        //     </>)
+        // },
 
 
     ]

@@ -46,7 +46,6 @@ function Users(props) {
     {
       sortable: true,
       name: ' Name',
-      minWidth: '250px',
       selector: row => (<Link
         to={{
           pathname: `/track/${row?.user?.name.replace(/\s/g, '')}`,
@@ -62,55 +61,34 @@ function Users(props) {
     {
       sortable: true,
       name: 'Phone number',
-      minWidth: '250px',
+      wrap: true,
       selector: row => row.user?.phone_number
     },
-    {
-      sortable: true,
-      name: 'ID',
-      minWidth: '250px',
-      selector: row => row.id_number
-    },
+
     {
       sortable: true,
       name: 'Bikes Reg No',
-      minWidth: '250px',
+      wrap: true,
       selector: row => row.bike_reg_plate
     },
-    {
-      sortable: true,
-      name: 'Rate',
-      minWidth: '225px',
-      selector: row => row.delivery_rate ? row.delivery_rate : 200
-    },
-    {
-      sortable: true,
-      name: 'track rider',
-      minWidth: '225px',
-      selector: row => row.agent?.name
-    },
-    {
-      sortable: true,
-      name: 'Agent',
-      minWidth: '225px',
-      selector: row => row.agent?.name
-    },
-    {
-      sortable: true,
-      name: 'Assign agent ',
-      minWidth: '250px',
-      selector: row => (
-        <>
-          <select name="current_custodian" onChange={(e) => assignagentRider(e, row._id)} className="my-2">
-            <option>Select an agent </option>
-            {props.agents.map((loc, i) => (
-              <option value={loc?.user?._id}>{loc.user?.name}</option>
-            ))}
-            {/* agent_location */}
-          </select>
-        </>
-      )
-    }
+
+
+
+    // {
+    //   sortable: true,
+    //   name: 'Assign agent ',
+    //   selector: row => (
+    //     <>
+    //       <select name="current_custodian" onChange={(e) => assignagentRider(e, row._id)} className="my-2">
+    //         <option>Select an agent </option>
+    //         {props.agents.map((loc, i) => (
+    //           <option value={loc?.user?._id}>{loc.user?.name}</option>
+    //         ))}
+    //         {/* agent_location */}
+    //       </select>
+    //     </>
+    //   )
+    // }
     // {
     //   sortable: true,
     //   name: 'My packages',

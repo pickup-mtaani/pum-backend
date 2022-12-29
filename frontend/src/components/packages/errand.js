@@ -104,25 +104,26 @@ function Errand(props) {
         {
             sortable: true,
             name: 'Package',
-
+            wrap: true,
             selector: row => row.packageName
         },
         {
             sortable: true,
             name: 'Reciept',
-
+            wrap: true,
             selector: row => row.package_value
         },
         {
             sortable: true,
             name: 'Package value',
-
+            wrap: true,
             selector: row => row.receipt_no
         },
 
         {
             sortable: true,
             name: 'payment_status ',
+            wrap: true,
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'
                 // errand//toogle-payment/:id
                 onClick={async () => { props.togglePayment(row._id, "errand"); await fetch() }}>Pay Now</div> : "Paid"}</>),
@@ -130,22 +131,25 @@ function Errand(props) {
         {
             sortable: true,
             name: 'Business Name',
+            wrap: true,
             selector: row => row.businessId?.name
         },
         {
             sortable: true,
             name: 'Courier',
+            wrap: true,
             selector: row => row.courier?.name
         },
         {
             sortable: true,
             name: 'Sent At ',
+            wrap: true,
             selector: row => moment(row.createdAt).format('YYYY-MM-DD '),
         },
         {
             sortable: true,
             name: 'Assigned to ',
-
+            wrap: true,
             selector: row => row?.assignedTo?.name,
         },
 

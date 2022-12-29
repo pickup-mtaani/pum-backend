@@ -194,7 +194,7 @@ router.get('/businesses', [authMiddleware, authorized], async (req, res) => {
                     path: 'agent',
 
                 }
-            }).populate("shelf_location", 'business_name'
+            }).populate("shelf_location", 'business_name location_id'
             )
 
         return res.status(200).json({ message: 'fetched successfully', bussiness });

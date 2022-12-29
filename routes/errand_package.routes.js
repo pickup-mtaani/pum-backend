@@ -65,8 +65,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     let newRider = await User.findOne({ _id: package.assignedTo })
     const { state } = req.params
     await Erand_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
-
-    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`).socket
+    let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     let notefications = []
     let expr = ""
     if (seller) {
@@ -151,7 +150,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     if (req.params.state === "picked-from-sender") {
       const package = await Erand_package.findById(req.params.id).populate("agent");
 
-      let new_description = [...narration.descriptions, {
+      let new_description = [...narration?.descriptions, {
         time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
       }]
 
@@ -184,7 +183,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     }
     if (req.params.state === "on-transit") {
 
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg collected by rider ${rider.name} waiting to be dropped at sorting, Phildelphia Hse` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg collected by rider ${rider.name} waiting to be dropped at sorting, Phildelphia Hse` }]
 
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         accepted:
@@ -217,7 +216,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       }
     }
     if (req.params.state === "dropped") {
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg dropped by rider ${rider.name} at sorting, Phildelphia Hse` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg dropped by rider ${rider.name} at sorting, Phildelphia Hse` }]
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des
       })
@@ -226,7 +225,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     if (req.params.state === "assigned-warehouse") {
       let newrider = await User.findOne({ _id: req.query.assignedTo })
 
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name} heading to ${package.customerName}` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name} heading to ${package.customerName}` }]
 
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         reAssigned:
@@ -249,7 +248,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     }
     if (req.params.state === "recieved-warehouse") {
 
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
 
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         warehouse:
@@ -263,7 +262,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     }
     if (req.params.state === "warehouse-transit") {
       let courier = await Courier.findOne({ _id: package.courier })
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  accepted by ${newRider.name}  waiting drop off ${courier.name} for delivery to ,${package.customerName} ` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg  accepted by ${newRider.name}  waiting drop off ${courier.name} for delivery to ,${package.customerName} ` }]
       await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
@@ -284,7 +283,7 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
     }
     // if (req.params.state === "collected") {
     //   let collector = await new Collected(req.body).save()
-    //   let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
+    //   let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
     //   let v = await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
     //     collected: {
     //       collectedby: collector._id,
@@ -432,7 +431,7 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
       req.body.dispatchedBy = req.user._id
       let courier = await Courier.findOne({ _id: package.courier })
       await Erand_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  delivered to ${courier.name}  waiting to be delivered to ${package.customerName} ` }]
+      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg  delivered to ${courier.name}  waiting to be delivered to ${package.customerName} ` }]
 
       let v = await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des

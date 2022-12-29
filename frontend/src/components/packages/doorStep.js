@@ -35,27 +35,32 @@ function Doorstep(props) {
         {
             sortable: true,
             name: 'Business Name',
+            wrap: true,
             selector: row => row.businessId?.name
         },
 
         {
             sortable: true,
             name: 'Reciept',
+            wrap: true,
             selector: row => row.receipt_no
         },
         {
             sortable: true,
             name: 'Stored At ',
+            wrap: true,
             selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             sortable: true,
+            wrap: true,
             name: 'payment_status ',
             selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'>Pay Now</div> : "Paid"}</>),
         },
         {
             sortable: true,
             name: 'Packages',
+            wrap: true,
             selector: row => (<>
                 {row.packages.map((pack, i) => (
                     <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
