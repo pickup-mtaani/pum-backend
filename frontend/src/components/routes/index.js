@@ -6,7 +6,7 @@ import { get_signatures, Post } from '../../redux/actions/routes.actions'
 
 import Search_filter_component from '../common/Search_filter_component'
 import Layout from '../../views/Layouts'
-import { Sellers_columns } from './data'
+import { agent_columns, rent_columns, doorstep_columns } from './data'
 
 function Users(props) {
   let initialState = {
@@ -16,14 +16,14 @@ function Users(props) {
   const [searchValue, setSearchValue] = useState("")
   const [routes, setData] = useState([])
   const [date, setDate] = useState("")
-  const [zones, setZones] = useState([])
+  const [tab, setTab] = useState("sent")
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
   const [RowsPerPage, setRowsPerPage] = useState(10)
   const [totalRows, setTotalRows] = useState(0);
   const [data, setFilterData] = React.useState([]);
   const [showModal, setShowModal] = useState(false);
   const [item, setItem] = useState(initialState);
-  const filteredItems = routes.filter(
+  const filteredItems = routes?.filter(
     item => item.collector_name.toLowerCase().includes(filterText.toLowerCase()),
   );
   const onChangeFilter = (e) => {
@@ -51,24 +51,42 @@ function Users(props) {
       </>
     );
   }, [searchValue, date, showModal]);
-  const fetch = async () => {
+  const fetch = async (type) => {
 
-    let routes = await props.get_signatures()
+    let routes = await props.get_signatures(type)
 
     setData(routes)
 
   }
   useEffect(() => {
-    fetch()
+    fetch("agent")
 
   }, [])
 
   return (
     <Layout>
+
+      <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
+        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+          onClick={async () => { await fetch("agent"); setTab('sent'); }} style={{ backgroundColor: tab === "sent" && "gray" }} >
+          Agents Packages Collectors {tab === "sent" && routes.length}
+        </div>
+
+        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+          onClick={async () => { await fetch("doorstep"); setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
+          Doorstep Packages collectors {tab === "collected" && routes.length}
+        </div>
+        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+          onClick={async () => { await fetch("rent"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
+          Rent Shelf Packages Collection {tab === "shelf" && routes.length}
+        </div>
+
+      </div>
+
       <div className=" mx-2">
         <DataTable
           // title=""
-          columns={Sellers_columns}
+          columns={tab === "sent" ? agent_columns : tab === "collected" ? doorstep_columns : rent_columns}
           data={routes}
           pagination
           paginationServer

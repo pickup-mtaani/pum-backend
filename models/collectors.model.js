@@ -28,11 +28,24 @@ const collectorSchema = new Schema({
         type: String,
         // required: true
     },
+    type: {
+        type: String,
+        // required: true
+    },
 
-    package: {
+    package1: {
         type: Schema.Types.ObjectId,
         ref: 'agent_agent_packages'
     },
+    package2: {
+        type: Schema.Types.ObjectId,
+        ref: 'rent_a_shelf_packages'
+    },
+    package3: {
+        type: Schema.Types.ObjectId,
+        ref: 'doorStep_delivery_packages'
+    },
+
     dispatchedBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'

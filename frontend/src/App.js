@@ -32,7 +32,7 @@ import AssignErrandRiderPage from "./components/warehouse/errand/give";
 
 
 import WHAgent from "./components/warehouse/agent";
-import Routes from "./components/routes";
+import Collections from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
 
 import Riderpage from "./components/warehouse/riderpage";
@@ -53,7 +53,7 @@ const App = () => {
     { path: "/seller/:id", element: <UserDetails /> },
     { path: "/agent-agent-packages", element: <AgentPackages /> },
     { path: "/seller/:bussiness_id/products", element: <Products /> },
-    { path: "/collections", element: <Routes /> },
+    { path: "/collections", element: <Collections /> },
     { path: "/packages", element: <Packages /> },
     { path: "/riders", element: <Riders /> },
     { path: "/mpesa-payments", element: <Payments /> },

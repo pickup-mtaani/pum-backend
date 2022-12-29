@@ -33,17 +33,17 @@ function Agents(props) {
     <Layout>
       <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('sent'); }} style={{ backgroundColor: tab === "sent" && "gray" }} >
-          Agents Packages {tab === "sent" && data1.count}
+          Agents Packages {tab === "sent" && data1.length}
         </div>
 
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
-          Erand Packages {tab === "collected" && data1.count}
+          Erand Packages {tab === "collected" && data1.length}
         </div>
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-          Door Packages {tab === "shelf" && data1.count}
+          Door Packages {tab === "shelf" && data1.length}
         </div>
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('pending-agent') }} style={{ backgroundColor: tab === "pending-agent" && "gray" }} >
-          Rent A Shelf Packages {tab === "sent" && data1.count}
+          Rent A Shelf Packages {tab === "sent" && data1.length}
         </div>
       </div>
       {tab === "sent" && <div className=" mx-2 my-10">

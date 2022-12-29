@@ -88,7 +88,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let notefications = []
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
-    await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+    // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let expr = ""
     if (seller) {
       switch (state) {
@@ -342,9 +342,12 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await SendMessage(textbody)
     }
     if (req.params.state === "collected") {
+
       try {
         req.body.package = req.params.id
         req.body.dispatchedBy = req.user._id
+        req.body.type = "agent"
+
         let collector = await new Collected(req.body).save()
         // servedById
         await Sent_package.findOneAndUpdate({ package: req.params.id }, { servedById: collector._id }, { new: true, useFindAndModify: false })

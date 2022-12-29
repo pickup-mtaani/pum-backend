@@ -1,12 +1,12 @@
 
 import axios, { setAuthToken } from "./axiosService";
 
-export const get_signatures = () => async (dispatch) => {
+export const get_signatures = (type) => async (dispatch) => {
 
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_ROUTES_SUCCESSFUL" });
-        const { data } = await axios.get(`/api/collectors`);
+        const { data } = await axios.get(`/api/collectors?type=${type}`);
         let payload = [];
         console.log(data)
         payload = data

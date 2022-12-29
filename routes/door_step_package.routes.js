@@ -249,6 +249,10 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
     }
     if (req.params.state === "collected") {
+      req.body.package3 = req.params.id
+      req.body.dispatchedBy = req.user._id
+      req.body.type = "doorstep"
+
       let collector = await new Collected(req.body).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
       let v = await Track_door_step.findOneAndUpdate({ package: req.params.id }, {

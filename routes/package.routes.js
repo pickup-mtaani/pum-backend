@@ -621,8 +621,10 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
 
     }
     if (req.params.state === "collected" && package.booked !== true) {
-      req.body.package = req.params.id
+      req.body.package2 = req.params.id
       req.body.dispatchedBy = req.user._id
+      req.body.type = "rent"
+      console.log(req.body)
       let collector = await new Collected(req.body).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was given out to ${collector.collector_name} of phone No 0${collector.collector_phone_number.substring(1, 4)}xxx xxxx by  ${auth?.name}  ` }]
       await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, collectedby: collector._id, collectedAt: Date.now() }, { new: true, useFindAndModify: false })
@@ -1270,8 +1272,19 @@ router.get("/package/:id", async (req, res) => {
 });
 router.get("/collectors", async (req, res) => {
   try {
+    const { type } = req.query
+    let users
+    if (type === "rent") {
+      users = await Collected.find({ type: "rent" }).populate('package2', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
+    }
+    if (type === "doorstep") {
+      users = await Collected.find({ type: "doorstep" }).populate('package3', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
+    }
+    if (type === "agent") {
+      users = await Collected.find({ type: "agent" }).populate('package', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
+    }
 
-    const users = await Collected.find().populate('package').populate('dispatchedBy').sort({ createdAt: -1 })
+
 
     return res
       .status(200)
