@@ -6,7 +6,7 @@ import { io } from 'socket.io-client'
 import { get_riders, fetchpackages } from '../redux/actions/riders.actions'
 import Layout from '../views/Layouts'
 import GoogleMap from './googlemaps/map'
-const socket = io("http://stagingapi.pickupmtaani.com/");
+const socket = io("https://stagingapi.pickupmtaani.com/");
 
 function Map(props) {
     const location = useLocation()
