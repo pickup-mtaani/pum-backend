@@ -1,20 +1,18 @@
 import React from 'react'
 
-function Add_admin(props) {
+function Add_Zone_Price(props) {
     const { toggle, show } = props
     return (
-
         <>
-
             {
                 show ? (
                     <>
 
                         <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none min-width:screen">
-                            <div className="relative w-1/3 rounded-sm my-6 mx-auto max-w-3xl  ">
+                            <div className="relative w-1/2 rounded-sm my-6 mx-auto max-w-3xl  ">
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-xl font=bold uppercase">ADD EMPLOYEE</h3>
+                                        <h3 className="text-xl font=bold uppercase">ADD Zone Price</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={props.toggle}
@@ -29,37 +27,35 @@ function Add_admin(props) {
                                             <div className="flex  gap-x-10">
                                                 <div className="w-24">Name</div>
                                                 <input type="text"
-                                                    value={props.item.name}
-                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" Name" name="name" />
+                                                    value={props?.item?.name}
+                                                    disabled={props?.item._id === null ? false : true}
+                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md"
+                                                    onChange={props.changeInput}
+                                                    placeholder=" Name"
+                                                    name="name"
+                                                />
                                             </div>
                                             <div className="flex  gap-x-10">
-                                                <div className="w-24">Phone</div>
-                                                <input type="text" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" phone number"
-                                                    value={props.item.phone_number}
-                                                    name="phone_number" />
+                                                <div className="w-24">Price</div>
+                                                <input type="number"
+                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md"
+                                                    onChange={props.changeInput}
+                                                    placeholder="price"
+                                                    value={props?.item?.price}
+                                                    name="price"
+                                                />
                                             </div>
                                             <div className="flex  gap-x-10">
-                                                <div className="w-24">Email</div>
-                                                <input type="email"
-                                                    value={props.item.email}
-                                                    autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder=" email" name="email" />
+                                                <div className="w-24">Description</div>
+                                                <textarea
+                                                    value={props?.item?.description}
+                                                    autoComplete="off"
+                                                    className=" px-2 border border-slate-200 w-full py-2 rounded-md"
+                                                    onChange={props.changeInput}
+                                                    placeholder=" email"
+                                                    name="description"
+                                                />
                                             </div>
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Role</div>
-                                                <select className=" px-2 border border-slate-200 w-full py-2 rounded-md" name="role" onChange={props.changeInput}>
-                                                    <option value="">select role</option>
-                                                    <option value="agent">Agent</option>
-                                                    <option value="rider">Rider</option>
-                                                    <option value="seller">Seller</option>
-
-                                                </select>
-                                            </div>
-
-                                            <div className="flex  gap-x-10">
-                                                <div className="w-24">Password</div>
-                                                <input type="password" autoComplete="off" className=" px-2 border border-slate-200 w-full py-2 rounded-md" onChange={props.changeInput} placeholder="password" name="password" />
-                                            </div>
-
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
@@ -73,9 +69,9 @@ function Add_admin(props) {
                                         <button
                                             className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                                             type="button"
-                                            onClick={props.item.id === "" ? props.submit : console.log('first')}
+                                            onClick={props?.item?._id === null ? props.submit : props.update}
                                         >
-                                            {props.item.id === "" ? "Submit" : "Update"}
+                                            {props?.item?._id === null ? "Submit" : "Update"}
                                         </button>
                                     </div>
 
@@ -88,4 +84,4 @@ function Add_admin(props) {
     );
 };
 
-export default Add_admin
+export default Add_Zone_Price

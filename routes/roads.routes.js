@@ -39,7 +39,7 @@ router.get('/roads', async (req, res) => {
 
 });
 
-
+// Create Zone Pricing
 router.post('/zone_price', async (req, res) => {
     try {
         const Exists = await ZonePrice.findOne({ name: req.body.name });
@@ -58,7 +58,7 @@ router.post('/zone_price', async (req, res) => {
     }
 
 });
-
+// Crete Zone Pricing
 router.get('/zone_price', async (req, res) => {
     try {
         const zones = await ZonePrice.find({ deleted_at: null });
@@ -139,9 +139,48 @@ router.get('/doorstep-destinations', async (req, res) => {
 
         const Exists = await Doorstep.find().populate('road', 'name');
 
+
+        let steps = await Doorstep.find({ deleted_at: null }).populate('road', 'name');
+        let road_count = {}
+
+
+        for (let i = 0; i < steps.length; i++) {
+
+            // road_count[steps[i].road._id.toString()] === road_count[steps[i].road._id.toString()] ? [...road_count[steps[i].road.name], { name: steps[i].name, price: steps[i].price }] : [{ name: steps[i].name, price: steps[i].price }]
+            road_count[steps[i].road.toString()] = road_count[steps[i].road.toString()] ? [...road_count[steps[i].road.name], { road: steps[i].road.name, name: steps[i].name }] : [steps[i].road.name]
+
+        }
+        console.log(road_count)
         return res.status(200).json(Exists);
     } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
 
+    }
+
+});
+
+router.put('/doorstep-destinations/:id', async (req, res) => {
+    try {
+        const updateOBj = await Doorstep.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, message: `Role Updated Successfully`, updateOBj });
+
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
+router.put('/doorstep-destinations/soft_delete/:id', async (req, res) => {
+    try {
+        const updateOBj = await Doorstep.findOneAndUpdate({ _id: req.params.id }, { deleted_at: moment() }, { new: true, useFindAndModify: false })
+        return res.status(200).json({ success: true, message: `Role Updated Successfully`, updateOBj });
+
+
+    } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: 'operation failed ', error });
 
     }

@@ -74,18 +74,6 @@ function Doorstepsestinations(props) {
       minWidth: '400px',
       selector: row => (
         <div className='flex gap-x-2'>
-          <div className='bg-grey-200 shadow-2'>Edit</div>
-          <div className='bg-red-200'>Delete</div>
-          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => {
-            setEdit(true); setAgent(row._id); setAgentObj({
-              business_name: row.business_name, opening_hours: row.opening_hours, closing_hours: row.closing_hours, prefix: row.prefix, isOpen: row.isOpen,
-              isSuperAgent: row.isSuperAgent, images: [], working_hours: row.working_hours, location_id: row.location_id._id, locationName: row.location_id?.name,
-              rider: row.rider, zone: row.zone, mpesa_number: row.mpesa_number, agent_description: row.agent_description, ridername: row.rider?.user?.name
-            })
-          }}>Edit Agent</div> */}
-          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { props.activate_agents(row._id); fetch() }}>Activate contact person</div> */}
-          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={() => { toggleManage(row); setAgent(row._id); fetch(); console.log(JSON.stringify(row)) }}>Manage Attendants</div> */}
-          {/* <div className='px-2 bg-slate-300 my-1 rounded-md py-2' onClick={async () => { await props.delete_agents(row._id); await fetch() }}>Delete Agent</div> */}
         </div>
       )
     },
@@ -132,8 +120,7 @@ function Doorstepsestinations(props) {
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
-
-
+        <div className='px-2 bg-primary-500 my-1 rounded-md py-1 mx-2' onClick={() => setShow(true)}>Add New Door step Pricing </div>
       </>
     );
   }, [searchValue]);

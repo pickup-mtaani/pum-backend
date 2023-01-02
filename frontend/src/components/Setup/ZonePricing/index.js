@@ -106,7 +106,7 @@ function ZonePricing(props) {
           onChangeFilter={onChangeFilter}
           searchValue={searchValue}
           download={() => DownloadFile(() =>
-            props.FetchAdmins({ limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
+            fetch({ limit: -1, download: true, cursor: props.lastElement, q: searchValue, enabled: true, }),
             `${totalRows > 0 ? totalRows : "all"}_users`
           )}
         />
@@ -117,7 +117,8 @@ function ZonePricing(props) {
   }, [searchValue]);
 
   const fetch = async () => {
-    await props.get_zone_prices()
+    let r = await props.get_zone_prices()
+    return r
 
   }
   useEffect(() => {
