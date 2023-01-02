@@ -317,6 +317,22 @@ router.get('/rider-path/:id', [authMiddleware, authorized], async (req, res) => 
   }
 
 });
+router.get('/riders-path/:id', [authMiddleware, authorized], async (req, res) => {
+  try {
+    const riders = await Path.find({ rider: req.params.id }).limit(1).sort({ createdAt: -1 })
+    let obj = {
+      lat: riders[0].lat,
+      lng: riders[0].lng
+    }
+    return res.status(200).json(obj);
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+  }
+
+});
 router.get("/riders", async (req, res) => {
   try {
     // const riders = await User.find({ role: 'rider' })

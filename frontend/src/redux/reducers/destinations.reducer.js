@@ -1,5 +1,6 @@
 const initialState = {
     destinations: [],
+    zone_pricing: [],
     errors: [],
     error: "",
     payments: [],
@@ -20,6 +21,23 @@ export default function store(state = initialState, action) {
                 destinations: action.payload,
             };
         case "FETCH_DESTINATIONS_FAIL":
+            return {
+                ...state,
+                loading: true,
+                error: action.payload,
+            };
+        case "FETCH_ZONE_PRICING":
+            return {
+                ...state,
+                loading: true,
+            };
+        case "FETCH_ZONE_PRICING_SUCCESSFUL":
+            return {
+                ...state,
+                loading: false,
+                zone_pricing: action.payload,
+            };
+        case "FETCH_ZONE_PRICING_FAIL":
             return {
                 ...state,
                 loading: true,

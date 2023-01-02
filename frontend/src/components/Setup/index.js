@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Layout from '../../views/Layouts'
 
 import Doorstepsestinations from './Doorstepsestinations'
+import ZonePricing from './ZonePricing'
 
 function Setup(props) {
 
@@ -19,11 +20,11 @@ function Setup(props) {
                     Doorstep Pricing
                 </div>
 
-                <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
-                    Agent-zones pricing
-                </div>
+                {/* <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
+                  
+                </div> */}
                 <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-                    Door Packages
+                    Agent-zones pricing
                 </div>
                 <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center' onClick={async () => { setTab('pending-agent') }} style={{ backgroundColor: tab === "pending-agent" && "gray" }} >
                     Rent A Shelf Packages
@@ -34,7 +35,7 @@ function Setup(props) {
             </div>}
 
             {tab === "shelf" && <div className=" mx-2 my-10">
-                <Doorstepsestinations />
+                <ZonePricing />
             </div>}
             {tab === "pending-agent" && <div className=" mx-2 my-10">
                 <Doorstepsestinations />

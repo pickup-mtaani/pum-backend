@@ -3,7 +3,7 @@ var Path = require("./../models/riderroute.model");
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://localhost:3000", "https://65a3-217-21-116-210.eu.ngrok.io/api/", "https://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
+      origin: ["http://localhost:3000", "https://2ff9-217-21-116-210.eu.ngrok.io/api/", "https://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
     },
   });
   // global.io = io;
@@ -68,7 +68,7 @@ module.exports = (http) => {
     };
 
     const riderChangedLocation = async ({ rider_id, coordinates }) => {
-      console.log("change location:", rider_id, coordinates);
+      // console.log("change location:", rider_id, coordinates);
       socket.broadcast.emit(`rider-${rider_id}`, { coordinates });
       // socket.to(rider_id).emit("position-changed", { coordinates });
 
