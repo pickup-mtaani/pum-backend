@@ -58,9 +58,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
         let business = await Bussiness.findById(packages[i].businessId)
-        if (agent_id?.hasShelf) {
-          packages[i].state = "recieved-warehouse"
-        }
 
         let newPackageCount = 1
         if (agent_id?.package_count) {
@@ -148,9 +145,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
-        if (agent_id?.hasShelf) {
-          packages[i].state = "recieved-warehouse"
-        }
+
         let newPackageCount = 1
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
@@ -338,10 +333,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
-
-        // if (agent?.hasShelf) {
-        //   packages[i].state = "recieved-warehouse"
-        // }
         let newPackageCount = 1
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)

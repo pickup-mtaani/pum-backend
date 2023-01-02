@@ -45,6 +45,9 @@ import Bussiness from "./components/bussiness";
 import RentShelf from "./components/rentshelf";
 import RentShelfAgents from "./components/rentshelf/business";
 import RentShelfAgent from "./components/rentshelf/details";
+
+
+import Setup from './components/Setup'
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -85,6 +88,8 @@ const App = () => {
     { path: "/wahehouse/errand/pick-packages-from/:rider", element: <PickErrandFromRiderPage /> },
     { path: "/wahehouse/errand/give-package-to-rider", element: <GiveErrandtoRiderPage /> },
     { path: "/wahehouse/errand/assign-rider", element: <AssignErrandRiderPage /> },
+
+    { path: "/setup", element: <Setup /> },
 
     { path: "/switch-board", element: <SwitchBoard /> },
     { path: "/track/:riders", element: <AssignRider /> },

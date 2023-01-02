@@ -3,20 +3,37 @@ import { useLocation } from 'react-router-dom'
 import { useLoadScript } from '@react-google-maps/api'
 import { connect } from 'react-redux'
 import { io } from 'socket.io-client'
-import { get_riders, fetchpackages } from '../redux/actions/riders.actions'
+import { rider_route, fetchpackages } from '../redux/actions/riders.actions'
 import Layout from '../views/Layouts'
 import GoogleMap from './googlemaps/map'
-const socket = io("https://stagingapi.pickupmtaani.com/");
-
+// const socket = io("https://stagingapi.pickupmtaani.com/");
+const socket = io(process.env.REACT_APP_BASE_URL);
 function Map(props) {
     const location = useLocation()
+    // const [dest, setDest] = useState({ lat: 0, lng: 0 })
     const [dest, setDest] = useState({ lat: -1.2850204, lng: 36.8259191 })
-    const [pickUp, setPickUp] = useState({ lat: -1.2878412, lng: 36.8278173 })
+    const [loading, setLoading] = useState(true)
+    const [pickUp, setPickUp] = useState({})
     const [directions, setDirections] = useState();
 
+    const fetch = async () => {
+        let v = await props.rider_route(location.state.id)
+        if (v.length > 0) {
+            setDest({ lat: parseFloat(v[0].lat), lng: parseFloat(v[0].lng) })
+            setPickUp({ lat: parseFloat(v[9].lat), lng: parseFloat(v[9].lng) })
+
+            setLoading(false)
+        }
+
+
+    }
+    // useEffect(() => {
+    //     fetch()
+    // }, [])
     useEffect(() => {
+
         socket.on('connection');
-        console.log(location.state.id)
+        // console.log(location.state.id)
         // socket.join('rider id')
         socket.emit('track_rider', { rider_id: location.state.id, user_id: "1322" });
         // socket.on('position-change', data => {
@@ -53,8 +70,8 @@ function Map(props) {
     }, [socket])
 
     useEffect(() => {
-        const { lat, lng } = dest
-        if (!lat || !lng) return
+        fetch()
+        if (!dest.lat || !dest.lng) return
         fetchDirections(dest)
     }, [dest])
 
@@ -80,10 +97,11 @@ function Map(props) {
     };
 
     if (!isLoaded) return <div>Loading...</div>;
-
+    console.log(dest)
     return (
         <Layout>
-            <GoogleMap dest={dest} directions={directions} pickUp={pickUp} setDirections={setDirections} />
+            {loading ? <div>Loading</div> :
+                <GoogleMap dest={dest} directions={directions} pickUp={pickUp} setDirections={setDirections} />}
         </Layout>
     )
 }
@@ -94,9 +112,9 @@ Map.propTypes = {}
 const mapStateToProps = (state) => {
     return {
         riders: state.ridersDetails.riders,
-        loading: state.ridersDetails.loading,
+
     };
 };
 
-export default connect(mapStateToProps, { get_riders, fetchpackages })(Map)
+export default connect(mapStateToProps, { rider_route, fetchpackages })(Map)
 

@@ -61,8 +61,8 @@ router.post('/doorstep-destinations', async (req, res) => {
 router.get('/doorstep-destinations', async (req, res) => {
 
     try {
-        console.log(req.body)
-        const Exists = await Doorstep.find();
+
+        const Exists = await Doorstep.find().populate('road', 'name');
 
         return res.status(200).json(Exists);
     } catch (error) {

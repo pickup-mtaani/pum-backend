@@ -563,30 +563,11 @@ router.put('/activate-deactivate/:id', async (req, res) => {
 });
 router.put('/update_agent/:id', upload.array('images'), async (req, res, next) => {
     try {
-        console.log("Params", req.body)
 
-
-        // const { errors, isValid } = hairstyleValidation(req.body);
-
-        // if (!isValid) {
-
-        //     return res.status(400).json(errors);
-
-        // }
-        // if (req.files.length === 0) {
-        //     console.log("no image", JSON.stringify(req.body))
-        //     return
-        // }
-        // else {
-        //     console.log("image", JSON.stringify(req.body))
-        //     return
-        // }
-
+        req.body.prefix = `PMT-${req.body.prefix.toUpperCase()}-`
         if (req?.files?.length > 0) {
-
             const reqFiles = [];
             const url = req.protocol + '://' + req.get('host')
-
             for (var i = 0; i < req.files.length; i++) {
                 reqFiles.push(url + '/uploads/agents_gallery/' + req.files[i].filename);
 
@@ -599,7 +580,6 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
             }
             req.body.images = reqFiles
             req.body.loc = JSON.parse(req.body.loc)
-
             const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
             return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 
@@ -608,7 +588,6 @@ router.put('/update_agent/:id', upload.array('images'), async (req, res, next) =
             // delete req.body.images
             const { images, ...other_details } = req.body
             req.body.loc = JSON.parse(other_details.loc)
-
             const Update = await Agent.findOneAndUpdate({ _id: req.params.id }, other_details, { new: true, useFindAndModify: false })
             return res.status(201).json({ success: true, message: 'Agent  Updated successfully ', Update });
 

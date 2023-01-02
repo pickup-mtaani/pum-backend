@@ -18,6 +18,23 @@ export const get_riders = () => async (dispatch) => {
     }
 };
 
+export const rider_route = (id) => async (dispatch) => {
+
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_RIDERS" });
+        const { data } = await axios.get(`/api/rider-path/${id}`);
+        let payload = [];
+        payload = data;
+        dispatch({ type: "FETCH_RIDERS_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: "FETCH_RIDERS_FAIL" });
+        ;
+    }
+};
+
 export const get_agents = (id, state) => async (dispatch) => {
 
     try {

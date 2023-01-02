@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { get_rent_shelf_tracks, get_agent_tracks, get_door_step_tracks } from './../../../redux/actions/switchboard.actions'
 import Layout from '../../../views/Layouts'
 import { io } from 'socket.io-client'
-const socket = io("https://stagingapi.pickupmtaani.com/");
+const socket = io(process.env.REACT_APP_BASE_URL);
 function Index(props) {
     const [view, setView] = useState('agent')
     useEffect(() => {

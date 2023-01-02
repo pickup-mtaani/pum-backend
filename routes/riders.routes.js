@@ -10,6 +10,7 @@ var Agent = require('models/agentAddmin.model')
 var User = require('models/user.model')
 var Package = require('models/package.modal')
 var RiderRoutes = require('models/rider_routes.model')
+
 var Sent_package = require("models/package.modal.js");
 var Conversation = require('models/conversation.model')
 const { MakeActivationCode } = require('../helpers/randomNo.helper');
@@ -292,6 +293,20 @@ router.get('/agents/:id', [authMiddleware, authorized], async (req, res) => {
   try {
 
     const riders = await RiderRoutes.find({ rider: req.params.id }).populate('agent')
+
+    return res.status(200).json(riders);
+
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+  }
+
+});
+router.get('/rider-path/:id', [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    const riders = await Path.find({ rider: req.params.id }).limit(10).sort({ createdAt: -1 })
 
     return res.status(200).json(riders);
 

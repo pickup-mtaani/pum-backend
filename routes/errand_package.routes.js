@@ -144,12 +144,11 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
           console.log(`Sorry, we are out of ${expr}.`);
       }
     }
-
-
-
     if (req.params.state === "picked-from-sender") {
       const package = await Erand_package.findById(req.params.id).populate("agent");
-
+      if (sender?.hasShelf) {
+        await Erand_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
+      }
       let new_description = [...narration?.descriptions, {
         time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
       }]
@@ -384,23 +383,23 @@ router.get("/errand-packages", [authMiddleware, authorized], async (req, res) =>
     }
     let errand_packages
 
-    const blended = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(100)
+    const blended = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "on-transit" }, { state: "complete" }, { state: "delivered" }, { state: "assigned" }] }).sort({ createdAt: -1 }).limit(1000)
       .populate('createdBy', 'f_name l_name name phone_number,')
       .populate('businessId').populate("agent").populate("courier")
-    const agent = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(100)
+    const agent = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(1000)
       .populate('createdBy', 'f_name l_name name phone_number,')
       .populate('businessId').populate("agent").populate("courier")
 
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(1000)
         .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId').populate("agent").populate("courier")
       return res
         .status(200)
         .json({ errand_packages, blended, agent });
     } else {
 
-      errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(100)
+      errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, assignedTo: req.user._id }).sort({ createdAt: -1 }).limit(1000)
         .populate('createdBy', 'f_name l_name name phone_number,').populate('businessId').populate("agent").populate("courier")
       return res
         .status(200)
@@ -520,7 +519,7 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
       state: req.params.state,
       businessId: req.params.id
     }).sort({ createdAt: -1 })
-      .limit(100)
+      .limit(1000)
       .populate('createdBy', 'f_name l_name name phone_number')
       .populate('businessId')
       .populate("courier")
@@ -550,7 +549,7 @@ router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], as
       state: req.params.state,
       agent: req.params.id
     }).sort({ createdAt: -1 })
-      .limit(100)
+      .limit(1000)
       .populate('createdBy', 'f_name l_name name phone_number')
       .populate('businessId')
       .populate("courier")
@@ -571,7 +570,7 @@ router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], as
 router.get("/web-errand-packages", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Erand_package.find().sort({ createdAt: 1 })
-      .limit(100)
+      .limit(1000)
       .populate('createdBy', 'f_name l_name name phone_number')
       .populate('businessId', "name")
       .populate("assignedTo", 'name')
@@ -591,7 +590,7 @@ router.get("/web-errand-packages", [authMiddleware, authorized], async (req, res
 router.get("/errand-rider-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    const agent_packages = await Erand_package.find({ assignedTo: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Erand_package.find({ assignedTo: req.user._id, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
@@ -606,7 +605,7 @@ router.get("/errand-packages/:state", [authMiddleware, authorized], async (req, 
   try {
     const agent = await AgentDetails.findOne({ user: req.user._id });
 
-    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
+    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
     return res
       .status(200)
       .json(errand_packages);
@@ -625,7 +624,7 @@ router.get("/errand-search/:state", [authMiddleware, authorized], async (req, re
     let agent_packages
     let { id } = req.query
     console.log(req.query)
-    agent_packages = await Erand_package.find({ state: req.params.state, agent: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+    agent_packages = await Erand_package.find({ state: req.params.state, agent: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(1000)
       .populate('createdBy', 'f_name l_name name')
       .populate('agent', 'business_name')
       .populate('businessId', 'name')
@@ -662,7 +661,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         })
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.dropped = await Erand_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -674,7 +673,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.transit = await Erand_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -686,7 +685,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.warehouse = await Erand_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -698,7 +697,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
 
       packages.delivered = await Erand_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
@@ -711,7 +710,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.collected = await Erand_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -723,7 +722,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
 
 
 
@@ -740,7 +739,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.dropped = await Erand_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -752,7 +751,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.transit = await Erand_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -764,7 +763,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.warehouse = await Erand_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -776,7 +775,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
 
       packages.delivered = await Erand_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
@@ -789,7 +788,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
       packages.collected = await Erand_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id })
         .populate(
           "customerPhoneNumber packageName package_value package_value packageName customerName"
@@ -801,7 +800,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
           }
         }).populate("courier")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(1000);
 
     }
 
@@ -824,7 +823,7 @@ router.get("/user-erand-packages/:id", [authMiddleware, authorized], async (req,
 router.get("/rented-errand-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
+    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
     return res
       .status(200)
       .json(errand_packages);
@@ -860,7 +859,7 @@ router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) =
 });
 router.get("/wh-errand-packages/", [authMiddleware, authorized], async (req, res) => {
   try {
-    const errand_packages = await Erand_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
+    const errand_packages = await Erand_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
     return res
       .status(200)
       .json(errand_packages);
@@ -873,7 +872,7 @@ router.get("/wh-errand-packages/", [authMiddleware, authorized], async (req, res
 });
 router.get("/wh-errands-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const errand_packages = await Erand_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
+    const errand_packages = await Erand_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
     return res
       .status(200)
       .json(errand_packages);
@@ -891,14 +890,14 @@ router.get("/errand/track/packages", [authMiddleware, authorized], async (req, r
     let packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_Erand.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      packages = await Track_Erand.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(1000)
         .populate('package')
       // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
     } else {
-      packages = await Track_Erand.find().sort({ createdAt: -1 }).limit(100)
+      packages = await Track_Erand.find().sort({ createdAt: -1 }).limit(1000)
         .populate({
           path: 'package',
           populate: {
@@ -932,14 +931,14 @@ router.get("/errand/track/packages/:id", [authMiddleware, authorized], async (re
     let packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_Erand.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      packages = await Track_Erand.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(1000)
         .populate('package')
       // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
     } else {
-      packages = await Track_Erand.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
+      packages = await Track_Erand.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(1000)
 
         .populate('package')
         // .populate("collectedby")

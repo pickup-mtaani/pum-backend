@@ -125,7 +125,9 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     }
     if (req.params.state === "picked-from-sender") {
       const package = await Door_step_Sent_package.findById(req.params.id).populate("agent");
-
+      if (sender?.hasShelf) {
+        await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
+      }
       let new_description = [...narration.descriptions, {
         time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
       }]

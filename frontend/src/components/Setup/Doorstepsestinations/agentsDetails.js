@@ -3,16 +3,20 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
 import { get_riders, assignRider } from '../../redux/actions/riders.actions'
-import { geterrands, togglePayment } from '../../redux/actions/package.actions'
+import { getagentPackage } from '../../redux/actions/package.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import { DownloadFile } from '../common/helperFunctions'
 import moment from 'moment'
-function Errand(props) {
+import Layout from '../../views/Layouts'
+import { useLocation } from 'react-router-dom'
+function AgentsDetails(props) {
 
+    // const his
+    const location = useLocation()
     const [filterText, setFilterText] = React.useState('');
     const [searchValue, setSearchValue] = useState("")
     const [date, setDate] = useState("")
-    const [data1, setData] = useState([])
+    const [data1, setData] = useState("")
     const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false)
     const [RowsPerPage, setRowsPerPage] = useState(5)
     const [limit, setLimit] = useState(5)
@@ -22,50 +26,13 @@ function Errand(props) {
     const [showModal, setShowModal] = useState(false);
     const [item, setItem] = useState([]);
     const agentState = [
-        "all", "request", "delivered", "declined", "on-transit", "fail"
+        "all", "request", "delivered", "cancelled", "on-transit", "assigned", "dropped", "picked", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit"
     ]
     const onChangeFilter = (e) => {
         setFilterText(e)
 
     }
 
-    const rent_shelf_columns = [
-        {
-            sortable: true,
-            name: 'Business Name',
-            selector: row => row.businessId?.name
-        },
-
-        {
-            sortable: true,
-            name: 'Reciept',
-            selector: row => row.receipt_no
-        },
-        {
-            sortable: true,
-            name: 'Stored At ',
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-            sortable: true,
-            name: 'payment_status ',
-            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'>Pay Now</div> : "Paid"}</>),
-        },
-        {
-            sortable: true,
-            name: 'Packages',
-            selector: row => (<>
-                {row.packages.map((pack, i) => (
-                    <div key={i} className='py-2' onClick={() => { setShowModal(true); setItem(row.packages) }}>
-                        <span style={{ fontWeight: 'bold', paddingLeft: 2, fontStyle: 'italic' }}>{row.packages.length} item(s)</span>
-                    </div>
-                ))}
-
-            </>)
-        },
-
-
-    ]
 
     const conditionalRowStyles = [
         {
@@ -94,70 +61,90 @@ function Errand(props) {
     const changeInput = async (e) => {
         const { value } = e.target;
         setstate(value)
-        let result = await props.geterrands({ limit: limit, state: value })
+        let result = await props.getagentPackage(location?.state?.agent)
+        await props.get_riders()
 
-        console.log(result)
         setData(result);
     };
+    const delivery_columns = [
 
-    const columns = [
+
         {
             sortable: true,
-            name: 'Package',
-            wrap: true,
+            name: 'Name',
+            minWidth: '250px',
+            defaultExpanded: true,
             selector: row => row.packageName
         },
         {
             sortable: true,
-            name: 'Reciept',
-            wrap: true,
+            name: 'Value',
+            minWidth: '250px',
             selector: row => row.package_value
         },
         {
             sortable: true,
-            name: 'Package value',
-            wrap: true,
+            name: 'Reciept',
+            minWidth: '250px',
             selector: row => row.receipt_no
+        },
+        {
+            sortable: true,
+            name: 'Customer',
+            minWidth: '250px',
+            selector: row => row.customerName
+        },
+        {
+            sortable: true,
+            name: 'Customer Phone',
+            minWidth: '250px',
+            selector: row => row.customerPhoneNumber
+        },
+        {
+            sortable: true,
+            name: 'Delivery Fee',
+            minWidth: '250px',
+            selector: row => row.delivery_fee
+        },
+        {
+            sortable: true,
+            name: 'Payment Status',
+            minWidth: '250px',
+            selector: row => row.payment_status
         },
 
         {
             sortable: true,
-            name: 'payment_status ',
-            wrap: true,
-            selector: row => (<>{row.payment_status === "Not Paid" ? <div className='p-2 border border-gray-700 bg-primary-500'
-                // errand//toogle-payment/:id
-                onClick={async () => { props.togglePayment(row._id, "errand"); await fetch() }}>Pay Now</div> : "Paid"}</>),
+            name: 'Total Fee Paid',
+            minWidth: '250px',
+            selector: row => row.total_fee
         },
-        {
-            sortable: true,
-            name: 'Business Name',
-            wrap: true,
-            selector: row => row.businessId?.name
-        },
-        {
-            sortable: true,
-            name: 'Courier',
-            wrap: true,
-            selector: row => row.courier?.name
-        },
+
         {
             sortable: true,
             name: 'Sent At ',
-            wrap: true,
-            selector: row => moment(row.createdAt).format('YYYY-MM-DD '),
+            minWidth: '250px',
+            selector: row => moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             sortable: true,
-            name: 'Assigned to ',
-            wrap: true,
-            selector: row => row?.assignedTo?.name,
+            name: 'Assign Rider',
+            minWidth: '150px',
+            selector: row => <>
+                {row.state !== "assigned" ? <div className='px-2 py-10 '>
+                    <button style={{ backgroundColor: row.state !== "assigned" ? "green" : "red", padding: 5 }} onClick={() => { setShowModal(true); setItem(row) }}>{row.state !== "assigned" ? "Assign" : 'Already Assigned'} </button>
+
+                </div> : `${row?.assignedTo?.name}(${row?.assignedTo?.phone_number})`}
+            </>
         },
 
 
     ]
+
+
     const handlePerRowsChange = async (newPerPage) => {
         setLimit(newPerPage)
-        let result = await props.geterrands({ limit: newPerPage, state: state })
+        let result = await props.getagentPackage({ limit: newPerPage, state: state })
         await props.get_riders()
 
         setData(result);
@@ -189,52 +176,49 @@ function Errand(props) {
             </>
         );
     }, [searchValue, date, showModal]);
+
     const fetch = async () => {
-        let result = await props.geterrands()
-
-        setData(result.data);
-
+        let result = await props.getagentPackage(location?.state?.id)
+        setData(result);
     }
     useEffect(() => {
         fetch()
     }, [])
 
     return (
+        <Layout>
+            <div className=" mx-2">
+                <DataTable
+                    title={`${location?.state?.agent}  Packages`}
+                    columns={delivery_columns}
+                    data={props?.packages}
+                    pagination
+                    paginationServer
+                    progressPending={props.loading}
+                    conditionalRowStyles={conditionalRowStyles}
+                    paginationResetDefaultPage={resetPaginationToggle}
+                    subHeader
+                    subHeaderComponent={subHeaderComponentMemo}
+                    persistTableHead
+                    expandableRowExpanded={row => row.defaultExpanded}
+                    // onChangePage={handlePageChange}
+                    paginationTotalRows={totalRows}
+                    onChangeRowsPerPage={handlePerRowsChange}
+                />
 
-
-        <div className=" mx-2 my-10">
-            <DataTable
-                title="Errand Deliveries"
-                columns={columns}
-                data={data1}
-            // pagination
-            // paginationServer
-            // progressPending={props.loading}
-            // paginationResetDefaultPage={resetPaginationToggle}
-            // subHeader
-            // subHeaderComponent={subHeaderComponentMemo}
-            // persistTableHead
-            // onChangePage={handlePageChange}
-            // paginationTotalRows={totalRows}
-            // onChangeRowsPerPage={handlePerRowsChange}
-            />
-        </div>
-
+            </div>
+        </Layout>
     )
 }
-
-Errand.propTypes = {}
 
 
 const mapStateToProps = (state) => {
     return {
-        riders: state.ridersDetails.riders,
-
-        loading: state.PackageDetails.doorloading,
-        to_door_packages: state.PackageDetails.to_door_packages,
+        packages: state.agentsData.packs,
+        loading: state.agentsData.loading,
 
     };
 };
 
-export default connect(mapStateToProps, { geterrands, get_riders, assignRider, togglePayment })(Errand)
+export default connect(mapStateToProps, { getagentPackage, get_riders, assignRider })(AgentsDetails)
 
