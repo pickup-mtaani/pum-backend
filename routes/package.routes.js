@@ -7,6 +7,7 @@ var RiderRoutes = require("models/rider_routes.model");
 var Collected = require("models/collectors.model");
 var Customer = require("models/customer.model");
 var Unavailable = require("models/unavailable.model");
+var ZonePrice = require('models/zone_pricing.model')
 // var AgentLocation = require('models/agents.model')
 var Zone = require('models/zones.model');
 var rentshelfNarations = require('models/rent_shelf_narations.model');
@@ -460,33 +461,41 @@ router.post("/package/delivery-charge", async (req, res) => {
     if (
       (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone B")
     ) {
-      price = 120;
+
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneAB" });
+      price = zones.price;
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
     else if (
       (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone A")
     ) {
-      price = 100;
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneAA" });
+      price = zones.price;
       return res.status(200).json({ message: "price set successfully ", price });
 
     }
     else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone A")) {
-      price = 120;
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneBA" });
+      price = zones.price;
       return res.status(200).json({ message: "price set successfully ", price });
 
     } else if ((senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone B")
     ) {
-      price = 210
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneBB" });
+      price = zones.price;
       return res.status(200).json({ message: "price set successfully ", price });
 
     } else if ((senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone C")
     ) {
-      price = 240
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneAC" });
+      price = zones.price;
+
       return res.status(200).json({ message: "price set successfully ", price });
     }
     else if (senderZone?.zone.name === "Zone B" && recieverZone?.zone.name === "Zone C") {
-      price = 290;
+      const zones = await ZonePrice.findOne({ deleted_at: null, name: "ZoneBC" });
+      price = zones.price;
       return res.status(200).json({ message: "price set successfully ", price });
     }
     else {

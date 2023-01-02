@@ -71,6 +71,19 @@ router.get('/zone_price', async (req, res) => {
     }
 
 });
+router.get('/interzone_charges', async (req, res) => {
+    try {
+        let { name } = req.query
+        const zones = await ZonePrice.findOne({ deleted_at: null, name: name });
+        return res.status(200).json(zones.price);
+
+    } catch (error) {
+
+        return res.status(400).json({ success: false, message: 'operation failed ', error });
+
+    }
+
+});
 router.put('/zone_price/:id', async (req, res) => {
     try {
         const updateOBj = await ZonePrice.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
