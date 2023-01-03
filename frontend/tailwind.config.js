@@ -10,10 +10,10 @@ module.exports = {
           '500': '#fdd835',
 
         },
-        // 'primary': {
-        //   
+        'primaryGreen': {
 
-        // }
+          '500': '#00E676'
+        }
       }
       // #ffc107
     },

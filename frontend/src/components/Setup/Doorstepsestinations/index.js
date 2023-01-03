@@ -17,21 +17,9 @@ function Doorstepsestinations(props) {
     name: '', email: "", phone_number: '', password: '', id: ""
   }
 
-  let agentObj = {
-    business_name: '', opening_hours: "", closing_hours: '', prefix: '', isOpen: "",
-    isSuperAgent: '', images: "", closing_hours: '', working_hours: '', location_id: "",
-    rider: '', zone: "", mpesa_number: '', loc: '', location_id: "", agent_description: ''
-  }
-  const [rider, setRider] = useState('')
-  const [agent, setAgent] = useState('')
-  const [agentobj, setAgentObj] = useState(agentObj)
-  const [datar, setData] = useState('')
   const [edit, setEdit] = useState(false)
-  const [employees, setEmployees] = useState([])
-  const [item, setItem] = useState(initialState);
-  const assigRider = () => {
 
-  }
+  const [item, setItem] = useState(initialState);
 
 
   const columns = [
@@ -88,7 +76,6 @@ function Doorstepsestinations(props) {
 
   const submit = async () => {
 
-    await props.add_employee(agent, item)
     await fetch()
     setItem(initialState)
 
@@ -154,7 +141,7 @@ function Doorstepsestinations(props) {
         paginationTotalRows={totalRows}
       // onChangeRowsPerPage={handlePerRowsChange}
       />
-      <Edit
+      {/* <Edit
         show={edit}
         changeInput={(e) => changeInput(e)}
         item={agentobj}
@@ -162,7 +149,7 @@ function Doorstepsestinations(props) {
         locations={props.locations}
         submit={() => submit()}
         toggle={() => { setEdit(false); setItem(initialState) }}
-      />
+      /> */}
     </div>
 
   )

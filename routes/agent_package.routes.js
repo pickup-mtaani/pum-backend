@@ -1334,6 +1334,20 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
         })
         .populate({
           path: 'package', populate: {
+            path: 'createdBy',
+          }
+        })
+        .populate({
+          path: 'package',
+          populate: {
+            path: 'senderAgentID',
+            populate: {
+              path: 'location_id'
+            }
+          }
+        })
+        .populate({
+          path: 'package', populate: {
             path: 'assignedTo'
           }
         })
@@ -1347,9 +1361,6 @@ router.get("/agent/track/packages", [authMiddleware, authorized], async (req, re
             path: 'assignedTo'
           },
 
-          populate: {
-            path: 'senderAgentID'
-          }
         })
       return res.status(200)
         .json(packages);

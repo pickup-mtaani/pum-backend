@@ -147,7 +147,7 @@ router.get('/doorstep-destinations', async (req, res) => {
         for (let i = 0; i < steps.length; i++) {
 
             // road_count[steps[i].road._id.toString()] === road_count[steps[i].road._id.toString()] ? [...road_count[steps[i].road.name], { name: steps[i].name, price: steps[i].price }] : [{ name: steps[i].name, price: steps[i].price }]
-            road_count[steps[i].road.toString()] = road_count[steps[i].road.toString()] ? [...road_count[steps[i].road.name], { road: steps[i].road.name, name: steps[i].name }] : [steps[i].road.name]
+            road_count[steps[i].road.toString()] = road_count[steps[i].road.toString()] ? [...road_count[steps[i].road.toString()], { road: steps[i].road.name, name: steps[i].name }] : [steps[i].road.name]
 
         }
         console.log(road_count)

@@ -1249,7 +1249,15 @@ router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id).populate('receieverAgentID').populate('senderAgentID')
     const rent = await Rent_a_shelf_deliveries.findById(req.params.id)
-    let package = await Door_step_Sent_package.findById(req.params.id).populate('agent')
+    let package = await Door_step_Sent_package.findById(req.params.id).populate('agent').populate({
+      path: 'package',
+      populate: {
+        path: 'agent',
+        populate: {
+          path: 'location_id'
+        }
+      }
+    })
     if (agent) {
       package = agent
     } else if (rent) {

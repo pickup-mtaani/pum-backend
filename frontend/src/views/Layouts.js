@@ -102,7 +102,7 @@ function Layout(props) {
     })
     return (
         <div className="w-screen  flex bg-slate-100">
-            <div className="w-1/6 h-screen flex flex-col bg-slate-100">
+            <div className="w-1/7 h-screen flex flex-col bg-slate-100">
                 <div className="w-full  bg-slate-100 my-5 p-10 h-10 flex justify-center items-center  shadow-sm">
                     <img src={Logo} alt="" height={10} width={150} />
                 </div>
