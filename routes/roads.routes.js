@@ -144,13 +144,13 @@ router.get('/doorstep-destinations', async (req, res) => {
         let road_count = {}
 
 
-        for (let i = 0; i < steps.length; i++) {
+        // for (let i = 0; i < steps.length; i++) {
 
-            // road_count[steps[i].road._id.toString()] === road_count[steps[i].road._id.toString()] ? [...road_count[steps[i].road.name], { name: steps[i].name, price: steps[i].price }] : [{ name: steps[i].name, price: steps[i].price }]
-            road_count[steps[i].road.toString()] = road_count[steps[i].road.toString()] ? [...road_count[steps[i].road.toString()], { road: steps[i].road.name, name: steps[i].name }] : [steps[i].road.name]
+        //     // road_count[steps[i].road._id.toString()] === road_count[steps[i].road._id.toString()] ? [...road_count[steps[i].road.name], { name: steps[i].name, price: steps[i].price }] : [{ name: steps[i].name, price: steps[i].price }]
+        //     // road_count[steps[i].road.toString()] = road_count[steps[i].road.toString()] ? [...road_count[steps[i].road.toString()], { road: steps[i].road.name, name: steps[i].name }] : [steps[i].road.name]
 
-        }
-        console.log(road_count)
+        // }
+        // console.log(road_count)
         return res.status(200).json(Exists);
     } catch (error) {
         console.log(error)
