@@ -3,7 +3,7 @@ import Agent from './agent.switchboard'
 import Rent from './rent.switchboard'
 import Door from './door.switchboard'
 import { connect } from 'react-redux'
-import { get_rent_shelf_tracks, get_agent_tracks, get_door_step_tracks } from './../../../redux/actions/switchboard.actions'
+import { get_rent_shelf_tracks, get_agent_tracks, update_agent_state_change, update_agent_package_details, get_door_step_tracks } from './../../../redux/actions/switchboard.actions'
 import Layout from '../../../views/Layouts'
 import { get_agents, } from '../../../redux/actions/agents.actions'
 
@@ -64,7 +64,14 @@ function Index(props) {
             </div>
 
             <h3 style={{ textAlign: 'center', textTransform: 'uppercase', textDecoration: 'underline' }}>{view}'s SwitchBoard</h3>
-            {view === "agent" ? <Agent data={props.agentTracks} agent={agent_id} /> : view === "rent" ? <Rent data={props.rentTracks} agent={agent_id} /> : <Door data={props.doorTacks} agent={agent_id} />}
+            {view === "agent" ? <Agent
+                data={props.agentTracks}
+                update={props.update_agent_package_details}
+                agent={agent_id}
+                fetch={() => fetch()}
+                agents={props.agents}
+                changeState={props.update_agent_state_change}
+            /> : view === "rent" ? <Rent data={props.rentTracks} agent={agent_id} /> : <Door data={props.doorTacks} agent={agent_id} />}
 
         </Layout>
     )
@@ -84,5 +91,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_rent_shelf_tracks, get_agents, get_door_step_tracks, get_agent_tracks })(Index)
+export default connect(mapStateToProps, { get_rent_shelf_tracks, update_agent_state_change, update_agent_package_details, get_agents, get_door_step_tracks, get_agent_tracks })(Index)
 

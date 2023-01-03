@@ -16,6 +16,33 @@ export const get_agent_tracks = (id) => async (dispatch) => {
     }
 };
 
+export const update_agent_package_details = (id, data) => async (dispatch) => {
+    try {
+        console.log(data)
+        await setAuthToken(axios);
+
+        const response = await axios.put(`/api/agent/package-update/${id}`, data);
+
+        return;
+    } catch (error) {
+        console.log(error)
+
+    }
+};
+export const update_agent_state_change = (id, state) => async (dispatch) => {
+    try {
+
+        await setAuthToken(axios);
+
+        const response = await axios.put(`/api/agent/package/${id}/${state}`);
+
+        return;
+    } catch (error) {
+        console.log(error)
+
+    }
+};
+
 export const get_rent_shelf_tracks = (id) => async (dispatch) => {
     try {
         await setAuthToken(axios);

@@ -60,6 +60,7 @@ router.post('/product', upload.array('images'), [authMiddleware, authorized], as
             body.shelf_location = business.shelf_location
             body.createdBy = req.user._id
             body.images = reqFiles
+
             if (body.type === "shelf") {
                 req.body.pending_stock = body.qty
                 req.body.qty = 0
@@ -116,10 +117,10 @@ router.get('/products', [authMiddleware, authorized], async (req, res) => {
 
 router.get('/products/:id', [authMiddleware, authorized], async (req, res) => {
     try {
-        const { page, limit } = req.query
+        const { page, limit, type } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null, business: req.params.id }).skip(skip)
+        const products = await Product.find({ deleted_at: null, business: req.params.id, type: type }).skip(skip)
             .limit(PAGE_SIZE);
         return res.status(200).json({ message: 'Successfull pulled ', products });
 
@@ -163,10 +164,10 @@ router.get('/all_products/:id', [authMiddleware, authorized], async (req, res) =
 router.get('/agent-products', [authMiddleware, authorized], async (req, res) => {
     try {
 
-        const { page, limit } = req.query
+        const { page, limit, type } = req.query
         const PAGE_SIZE = limit;
         const skip = (page - 1) * PAGE_SIZE;
-        const products = await Product.find({ deleted_at: null }).populate('business').skip(skip)
+        const products = await Product.find({ deleted_at: null, type: type }).populate('business').skip(skip)
             .limit(PAGE_SIZE);
 
         return res.status(200).json({ message: 'Successfull pulled ', products });

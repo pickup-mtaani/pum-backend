@@ -69,6 +69,16 @@ router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res
   }
 })
 
+
+router.put("/agent/package-update/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    await Sent_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+  } catch (error) {
+    console.log(error)
+  }
+
+})
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -78,6 +88,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
     let sender = await AgentDetails.findById(package?.senderAgentID)
+
     // let sender = await AgentDetails.findOne({ user: auth?._id })
     let reciever = await AgentDetails.findById(package.receieverAgentID)
 
