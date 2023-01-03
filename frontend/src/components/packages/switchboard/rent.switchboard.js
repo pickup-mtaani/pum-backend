@@ -54,21 +54,21 @@ function Agent(props) {
         <div >
             <table>
                 <thead>
-                    <tr className='gap-x-2 p-y-10' style={{ backgroundColor: 'green' }}>
+                    <tr className='gap-x-2 p-y-10' style={{ backgroundColor: '#00E676' }}>
 
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Reciever Details
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Package Details
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Created
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Dropped
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Collected
                         </th>
                     </tr>
@@ -76,33 +76,33 @@ function Agent(props) {
                 <tbody>
                     {props?.data?.map((rent, i) => (<tr className='gap-x-2 p-y-10'>
 
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             <div>Name:{rent?.package?.customerName}</div>
                             <div>No: {rent?.package?.customerPhoneNumber}</div>
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
-                            <div>Name:{rent?.package?.packageName}</div>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
+                            {/* <div>Name:{rent?.package?.packageName}</div> */}
                             <div>Reciept:{rent?.package?.receipt_no}</div>
                             <div>Value: {rent?.package?.package_value}</div>
-                            <div>Color: {rent?.package?.color}</div>
+                            {/* <div>Color: {rent?.package?.color}</div>
                             <div>Business:{rent?.package?.businessId?.name}</div>
                             <div>Payment: {rent?.package?.payment_status}</div>
                             <div>Sent From: {rent?.package?.senderAgentID?.business_name}</div>
-                            <div>Sent To: {rent?.package?.receieverAgentID?.business_name}</div>
+                            <div>Sent To: {rent?.package?.receieverAgentID?.business_name}</div> */}
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             {rent?.created &&
                                 moment(rent?.created).format("yyyy-MM-dd HH:mm:ss")}
 
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? '#00E676' : null, }}>
                             {rent?.droppedAt && <div >
                                 <div>Dropped at: {moment(rent?.droppedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
                             </div>}
                         </td>
 
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.collectedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.collectedAt ? '#00E676' : null, }}>
                             {rent?.collectedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Collected: {moment(rent?.collectedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Collected By:{rent?.collectedby?.collector_name}</div>

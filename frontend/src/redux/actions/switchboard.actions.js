@@ -29,6 +29,20 @@ export const update_agent_package_details = (id, data) => async (dispatch) => {
 
     }
 };
+export const search_agent_package_details = (searchKey, view) => async (dispatch) => {
+    try {
+        await setAuthToken(axios);
+        dispatch({ type: "FETCH_AGENT" });
+        const { data } = await axios.get(`/api/${view}/switchboard-search?searchKey=${searchKey}`);
+        let payload = [];
+        payload = data;
+        dispatch({ type: "FETCH_AGENT_SUCCESSFUL", payload });
+        return payload;
+    } catch (error) {
+        dispatch({ type: "FETCH_AGENT_FAIL" });
+        ;
+    }
+};
 export const update_agent_state_change = (id, state) => async (dispatch) => {
     try {
 

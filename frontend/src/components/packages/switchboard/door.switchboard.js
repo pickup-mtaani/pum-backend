@@ -54,54 +54,54 @@ function Agent(props) {
         <div >
             <table>
                 <thead>
-                    <tr className='gap-x-2 p-y-10' style={{ backgroundColor: 'green' }}>
-                        <th className='border text-20 text-bold p-5'>
+                    <tr className='gap-x-2 p-y-10' style={{ backgroundColor: '#00E676' }}>
+                        <th className='border text-sm text-bold p-5'>
                             Sender Details
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Reciever Details
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Package Details
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Created
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Agent Rider
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Rider Picked
                         </th>
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Dropped warehouse
                         </th>
 
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Warehouse  Rider
                         </th>
 
 
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Rider Dropped at Destination agent
                         </th>
 
 
-                        <th className='border text-20 text-bold p-5'>
+                        <th className='border text-sm text-bold p-5'>
                             Collected
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {props?.data?.map((rent, i) => (<tr className='gap-x-2 p-y-10'>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             Sender Details
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             <div>Name:{rent?.package?.customerName}</div>
                             <div>No: {rent?.package?.customerPhoneNumber}</div>
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             <div>Name:{rent?.package?.packageName}</div>
                             <div>Reciept:{rent?.package?.receipt_no}</div>
                             <div>Value: {rent?.package?.package_value}</div>
@@ -111,40 +111,40 @@ function Agent(props) {
                             <div>Sent From: {rent?.package?.senderAgentID?.business_name}</div>
                             <div>Sent To: {rent?.package?.receieverAgentID?.business_name}</div>
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: 'green' }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             {rent?.created &&
                                 moment(rent?.created).format("yyyy-mm-ddd HH:mm:ss")}
 
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? '#00E676' : null, }}>
                             {rent?.droppedAt && <div >
                                 <div>Dropped at: {moment(rent?.droppedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
                             </div>}
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.assignedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.assignedAt ? '#00E676' : null, }}>
                             {rent?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dispatched: {moment(rent?.assignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
-                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider:{rent?.package?.assignedTo?.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>
                             </div>}
                         </td>
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.droppedAt ? '#00E676' : null, }}>
                             {rent?.warehouseAt && <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.warehouseAt).format("yyyy-MM-dd HH:mm:ss")}
                             </div>}
                         </td>
 
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.reassignedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.reassignedAt ? '#00E676' : null, }}>
                             {rent?.reassignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Re Assigned at: {moment(rent?.reassignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
-                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider:{rent?.package?.assignedTo?.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo?.phone_number}</div>
                             </div>}
                         </td>
 
 
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.droppedToagentAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.droppedToagentAt ? '#00E676' : null, }}>
                             {rent?.droppedToagentAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Delivered at: {moment(rent?.droppedToagentAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Delivered to:{rent?.package?.receieverAgentID?.business_name}</div>
@@ -152,7 +152,7 @@ function Agent(props) {
                         </td>
 
 
-                        <td className='border text-20 text-bold p-5' style={{ backgroundColor: rent?.collectedAt ? 'green' : null, }}>
+                        <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.collectedAt ? '#00E676' : null, }}>
                             {rent?.collectedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Collected: {moment(rent?.collectedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Collected By:{rent?.collectedby?.collector_name}</div>
@@ -201,12 +201,12 @@ function Agent(props) {
                 </div>
                 {props?.data?.map((rent, i) => (
                     <div style={{ display: 'flex', borderBottom: 'gray 1px solid', color: '#f5f5f5' }} key={i}>
-                        <div style={{ backgroundColor: 'green', width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: '#00E676', width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div className='flex justify-center items-center align-center p-5'>
                                 {rent?.package?.receipt_no}
                             </div>
                         </div>
-                        <div style={{ backgroundColor: 'green', minWidth: '10%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: '#00E676', minWidth: '10%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }} className="gap-y-2 px-4 py-2">
                                 <div>Name:{rent?.package?.customerName}</div>
                                 <div>No: {rent?.package?.customerPhoneNumber}</div>
@@ -214,7 +214,7 @@ function Agent(props) {
 
                         </div>
 
-                        <div style={{ backgroundColor: 'green', width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: '#00E676', width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }} className="gap-y-2 px-4 py-2">
                                 <div>Name:{rent?.package?.packageName}</div>
                                 <div>Color: {rent?.package?.color}</div>
@@ -224,41 +224,41 @@ function Agent(props) {
                                 <div>Payment: {rent?.package?.payment_status}</div>
                             </div>
                         </div>
-                        <div style={{ backgroundColor: rent?.created ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.created ? '#00E676' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
 
                             <div className='flex justify-center items-center align-center p-5'>
                                 {moment(rent?.created).format("yyyy-MM-dd HH:mm:ss")}
                             </div>
 
                         </div>
-                        <div style={{ backgroundColor: rent?.droppedAt ? 'green' : null, width: '50%', display: 'flex', flexDirection: 'column', borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.droppedAt ? '#00E676' : null, width: '50%', display: 'flex', flexDirection: 'column', borderRight: 'gray 1px solid', }}>
                             {rent?.droppedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dropped at: {moment(rent?.droppedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Delivered to:{rent?.package?.agent?.business_name}</div>
                             </div>}
                         </div>
-                        <div style={{ backgroundColor: rent?.assignedAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.assignedAt ? '#00E676' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             {rent?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Dispatched at: {moment(rent?.assignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
-                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider:{rent?.package?.assignedTo?.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo.phone_number}</div>
                             </div>}
                         </div>
-                        <div style={{ backgroundColor: rent?.warehouseAt ? 'green' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.warehouseAt ? '#00E676' : null, width: '30%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             {rent?.warehouseAt && <div style={{ display: rent?.droppedAt ? 'flex' : "none", justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
                                 {moment(rent?.warehouseAt).format("yyyy-MM-dd HH:mm:ss")}
                             </div>}
 
                         </div>
-                        <div style={{ backgroundColor: rent?.reassignedAt ? 'green' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.reassignedAt ? '#00E676' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             {rent?.reassignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Re Assigned at: {moment(rent?.reassignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
-                                <div>Rider:{rent?.package?.assignedTo.name}</div>
+                                <div>Rider:{rent?.package?.assignedTo?.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo?.phone_number}</div>
                             </div>}
                         </div>
                         
-                        <div style={{ backgroundColor: rent?.collectedAt ? 'green' : null, display: rent?.collectedAt ? 'flex' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
+                        <div style={{ backgroundColor: rent?.collectedAt ? '#00E676' : null, display: rent?.collectedAt ? 'flex' : null, width: '50%', display: 'flex', flexDirection: 'column', marginRight: 1, borderRight: 'gray 1px solid', }}>
                             {rent?.collectedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Collected: {moment(rent?.collectedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Collected By:{rent?.collectedby?.collector_name}</div>

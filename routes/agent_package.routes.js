@@ -311,15 +311,15 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
       let newrider = await User.findById(req.query.rider)
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name} heading to ${reciever.business_name}` }]
-      await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+      let v = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         reAssigned:
         {
-          reAssignedTo: req.params.rider,
+          reAssignedTo: req.query.rider,
           reAssignedAt: Date.now(),
           reAssignedBy: req.user._id,
         }, descriptions: new_des
       }, { new: true, useFindAndModify: false })
-
+      console.log(v.reAssigned)
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
       // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
@@ -334,7 +334,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "dropped-to-agent") {
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg delivered by ${recRider.name} at destination agent, ${reciever.business_name}` }]
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-        droppedToagentAt:
+        droppedToagent:
         {
           droppedToagentBy: package?.assignedTo,
           recievedAt: moment(),
@@ -388,6 +388,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       .json({ success: false, message: "operation failed ", error });
   }
 });
+
 router.get("/agents-packages/:state", [authMiddleware, authorized], async (req, res) => {
 
   try {
@@ -636,6 +637,58 @@ router.get("/agent-agent-package-expired", [authMiddleware, authorized], async (
       return res.status(200)
         .json(agent_packages);
     }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/agent/switchboard-search", [authMiddleware, authorized], async (req, res) => {
+  try {
+    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+    let agent_packages = await Track_agent_packages.find({ reciept: searchKey }).sort({ createdAt: -1 }).limit(100).populate({
+      path: 'package', populate: {
+        path: 'receieverAgentID'
+      }
+    })
+      .populate({
+        path: 'package', populate: {
+          path: 'createdBy',
+        }
+      })
+      .populate({
+        path: 'package',
+        populate: {
+          path: 'senderAgentID',
+          populate: {
+            path: 'location_id'
+          }
+        }
+      })
+      .populate({
+        path: 'package', populate: {
+          path: 'assignedTo'
+        }
+      })
+      // .populate("collectedBy")
+      .populate({
+        path: 'package',
+        populate: {
+          path: 'businessId',
+        },
+        populate: {
+          path: 'assignedTo'
+        },
+
+      })
+    return res.status(200)
+      .json(agent_packages);
+
+    return res.status(200)
+      .json(agent_packages);
+
   } catch (error) {
     console.log(error);
     return res

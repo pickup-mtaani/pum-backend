@@ -3,7 +3,7 @@ import Agent from './agent.switchboard'
 import Rent from './rent.switchboard'
 import Door from './door.switchboard'
 import { connect } from 'react-redux'
-import { get_rent_shelf_tracks, get_agent_tracks, update_agent_state_change, update_agent_package_details, get_door_step_tracks } from './../../../redux/actions/switchboard.actions'
+import { get_rent_shelf_tracks, search_agent_package_details, get_agent_tracks, update_agent_state_change, update_agent_package_details, get_door_step_tracks } from './../../../redux/actions/switchboard.actions'
 import Layout from '../../../views/Layouts'
 import { get_agents, } from '../../../redux/actions/agents.actions'
 
@@ -36,7 +36,7 @@ function Index(props) {
 
             <div className='bg-slate-200 w-full text-center text-bold text-2xl uppercase'>
                 <h1>SwicthBoard {moment().format('YY - MM - DD')}</h1>
-            </div><div className='bg-slate-200 w-full mt-3'>
+            </div><div className='bg-slate-200 w-full mt-3 flex gap-x-2'>
                 <div className='w-1/3'>
                     <select className='h-8 w-full' onChange={(e) => setAgent(e.target.value)}>
                         <option value=''>all</option>
@@ -44,6 +44,11 @@ function Index(props) {
                             <option key={i} value={agent._id} >{agent.business_name}</option>
                         ))}
                     </select>
+                </div>
+                <div className='w-1/3'>
+                    <input type="text" className='h-8 w-full pl-2'
+                        placeholder='Search'
+                        onChange={(e) => { props.search_agent_package_details(e.target.value, view) }} />
                 </div>
             </div>
             <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
@@ -91,5 +96,5 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { get_rent_shelf_tracks, update_agent_state_change, update_agent_package_details, get_agents, get_door_step_tracks, get_agent_tracks })(Index)
+export default connect(mapStateToProps, { get_rent_shelf_tracks, search_agent_package_details, update_agent_state_change, update_agent_package_details, get_agents, get_door_step_tracks, get_agent_tracks })(Index)
 
