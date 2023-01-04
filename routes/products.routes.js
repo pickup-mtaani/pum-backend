@@ -179,18 +179,11 @@ router.get('/agent-products', [authMiddleware, authorized], async (req, res) => 
 router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         let body = req.body
-        if (body.type === "shelf") {
-            req.body.pending_stock = body.qty
-            req.body.qty = 0
-            const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-            await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
-            return res.status(200).json({ message: 'Saved', prod });
-        } else {
-            const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
-            await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
-            return res.status(200).json({ message: 'Edited', prod });
-        }
-
+        req.body.pending_stock = body.qty
+        req.body.qty = 0
+        const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
+        return res.status(200).json({ message: 'Saved', prod });
 
     } catch (error) {
         console.log("Error", error)

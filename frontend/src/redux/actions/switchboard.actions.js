@@ -36,7 +36,15 @@ export const search_agent_package_details = (searchKey, view) => async (dispatch
         const { data } = await axios.get(`/api/${view}/switchboard-search?searchKey=${searchKey}`);
         let payload = [];
         payload = data;
-        dispatch({ type: "FETCH_AGENT_SUCCESSFUL", payload });
+        if (view === "agent") {
+            dispatch({ type: "FETCH_AGENT_SUCCESSFUL", payload });
+        }
+        else if (view === "door") {
+            dispatch({ type: "FETCH_DOOR_STEP_SUCCESSFUL", payload });
+        }
+        // if (view === "rent") {
+        //     dispatch({ type: "FETCH_RENT_SHELF_SUCCESSFUL", payload });
+        // }
         return payload;
     } catch (error) {
         dispatch({ type: "FETCH_AGENT_FAIL" });
