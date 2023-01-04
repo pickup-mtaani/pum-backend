@@ -371,10 +371,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].isProduct = true;
           packages[i].package_value = products_price;
         }
-        if (packages[i].pipe === "agent") {
-          packages[i].state = "pending-agent"
-          let G = await Rent_a_shelf_deliveries.findById(packages[i].p_id)
-          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "agent" }, { new: true, useFindAndModify: false })
+        if (packages[i].pipe === "shelf-agent") {
+          packages[i].state = "pending-shelf-agent"
+          await Rent_a_shelf_deliveries.findById(packages[i].p_id)
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "pending-shelf-agent" }, { new: true, useFindAndModify: false })
         }
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
@@ -1275,6 +1275,21 @@ router.get("/booked-for-ealy-collection", [authMiddleware, authorized], async (r
   } catch (error) {
   }
 });
+// router.post("/payment-sent", async (req, res) => {
+//   try {
+//     let v = await Mpesa_stk("0713130013", 1, "ii")
+//     console.log(v)
+//     // const booked = await Rent_a_shelf_deliveries.find({ $or: [{ state: "early_collection" }], })
+//     //   .sort({ createdAt: -1 })
+//     //   .limit(100)
+//     //   .populate('businessId')
+//     return res
+//       .status(200)
+//       .json(v);
+//   } catch (error) {
+//     console.log("first", error)
+//   }
+// });
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id).populate('receieverAgentID').populate('senderAgentID')

@@ -80,6 +80,7 @@ router.put("/agent/package-update/:id", [authMiddleware, authorized], async (req
 
 })
 router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
+  console.log(req.params)
 
   try {
     const { type, } = req.query
@@ -99,7 +100,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let notefications = []
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
-    // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
+    await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let expr = ""
     if (seller) {
       switch (state) {
@@ -291,7 +292,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       }, { new: true, useFindAndModify: false })
     }
     if (req.params.state === "recieved-warehouse") {
-
+      console.log("first-test", req.params)
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider going to destination location, ${reciever.business_name} ` }]
 
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
@@ -720,34 +721,50 @@ router.get("/agent-search/:state", [authMiddleware, authorized], async (req, res
   }
 });
 
-router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, res) => {
+// router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, res) => {
+//   try {
+//     let { state } = req.query
+
+//     let agent_packages
+//     agent_packages = await Sent_package.find({ payment_status: "paid", state: state })
+// .sort({ createdAt: -1 }).limit(100)
+//       .populate('createdBy', 'f_name l_name name')
+//       .populate('receieverAgentID', 'business_name')
+//       .populate('senderAgentID', 'business_name')
+//       .populate('businessId')
+
+//     return res
+//       .status(200)
+//       .json(agent_packages);
+
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "operation failed ", error });
+//   }
+// });
+
+
+router.get("/shelf-request-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    let agent = await AgentUser.findOne({ user: req.user._id })
-    var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-    let agent_packages
 
-    if (req.query.searchKey) {
-      agent_packages = await Rent_a_shelf_deliveries.find({ payment_status: "paid", state: "pending-agent", $or: [{ packageName: searchKey }, { receipt_no: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate('createdBy', 'f_name l_name name')
-        .populate('receieverAgentID', 'business_name')
-        .populate('senderAgentID', 'business_name')
-        .populate('businessId')
+    let { state, id } = req.query
 
+    let packages = await Sent_package.find({ payment_status: "paid", state: state, senderAgentID: id })
 
-      return res
-        .status(200)
-        .json(agent_packages);
-    } else {
-      agent_packages = await Sent_package.find({ payment_status: "paid", state: "pending-agent" }).sort({ createdAt: -1 }).limit(100)
-        .populate('createdBy', 'f_name l_name name')
-        .populate('receieverAgentID', 'business_name')
-        .populate('senderAgentID', 'business_name')
-        .populate('businessId')
+    let agents_count = {}
 
-      return res
-        .status(200)
-        .json(agent_packages);
+    for (let i = 0; i < packages.length; i++) {
+      let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
+
+      agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
+        [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
     }
+
+    return res.status(200)
+      .json(agents_count);
+
   } catch (error) {
     console.log(error);
     return res
@@ -755,6 +772,31 @@ router.get("/rented-agents-packages", [authMiddleware, authorized], async (req, 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/shelf-request-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let { state, id } = req.query
+
+    let packages = await Sent_package.find({ payment_status: "paid", state: state, businessId: req.params.id, senderAgentID: id })
+      .sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
+
+
+    return res.status(200)
+      .json(packages);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+
 router.get("/agent-package-track/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
