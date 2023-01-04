@@ -647,6 +647,36 @@ router.put("/rent-shelf/package/:id/:state", [authMiddleware, authorized], async
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { booked: true, booked: booked, descriptions: new_des }, { new: true, useFindAndModify: false })
       return res.status(200).json({ message: "Sucessfully" });
     }
+    if (req.params.state === "pending-agent") {
+      console.log("Agent is pending")
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} is transfared to Pickup agent` }]
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
+        // booked: {
+        //   bookedBy: req.user._id,
+        //   bookedAt: moment(),
+        //   bookedFor: req.body.time
+        // },
+        descriptions: new_des,
+      }, { new: true, useFindAndModify: false })
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { descriptions: new_des }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ message: "Sucessfully" });
+    }
+    if (req.params.state === "pending-doorstep") {
+      console.log("DoorStep is pending")
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} is transfared to Pickup agent` }]
+
+      await Track_rent_a_shelf.findOneAndUpdate({ package: req.params.id }, {
+        // booked: {
+        //   bookedBy: req.user._id,
+        //   bookedAt: moment(),
+        //   bookedFor: req.body.time
+        // },
+        descriptions: new_des,
+      }, { new: true, useFindAndModify: false })
+      await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { descriptions: new_des }, { new: true, useFindAndModify: false })
+      return res.status(200).json({ message: "Sucessfully" });
+    }
     return res.status(200).json({ message: "Sucessfully" });
   } catch (error) {
     console.log(error);

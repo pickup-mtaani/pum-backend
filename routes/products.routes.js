@@ -179,10 +179,9 @@ router.get('/agent-products', [authMiddleware, authorized], async (req, res) => 
 router.put('/product/:id', [authMiddleware, authorized], async (req, res) => {
     try {
         let body = req.body
-
         const prod = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
+
         let v = await Stock.findOneAndUpdate({ product: req.params.id }, req.body, { new: true, useFindAndModify: false })
-        console.log("PRODUCT", v)
         return res.status(200).json({ message: 'Saved', prod });
 
     } catch (error) {
