@@ -217,10 +217,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         else {
           await Customer.findOneAndUpdate({ seller: req.user._id, }, { erands_package_count: parseInt(customer.erands_package_count + 1), total_package_count: parseInt(customer.total_package_count + 1) }, { new: true, useFindAndModify: false })
         }
-        // if (packages[i].pipe === "erand") {
-        //   packages[i].state = "pending-erand"
-        //   await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "erand" }, { new: true, useFindAndModify: false })
-        // }
+
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Erand_package(packages[i]).save();

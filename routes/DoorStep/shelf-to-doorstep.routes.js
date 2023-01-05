@@ -18,17 +18,15 @@ router.get("/doorstep-shelf-request-packages", [authMiddleware, authorized], asy
         let agents_count = {}
         for (let i = 0; i < packages.length; i++) {
             let package = await Door_step_Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
-
+            console.log(packages[i])
             agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
-                [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+                [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : [packages[i]._id]
         }
         return res.status(200)
             .json(agents_count);
 
-
-
-
     } catch (error) {
+        console.log("***********************Error***************")
         console.log(error);
         return res
             .status(400)
