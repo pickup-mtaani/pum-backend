@@ -84,6 +84,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     const { type, } = req.query
     let auth = await User.findById(req.user._id)
     let package = await Sent_package.findById(req.params.id).populate('senderAgentID')
+    console.log("first", package)
     let sender = await AgentDetails.findById(package?.senderAgentID)
 
     // let sender = await AgentDetails.findOne({ user: auth?._id })

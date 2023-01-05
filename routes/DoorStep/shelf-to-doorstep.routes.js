@@ -13,6 +13,7 @@ router.get("/doorstep-shelf-request-packages", [authMiddleware, authorized], asy
     try {
 
         let { state, id, type } = req.query
+        // console.log
         let packages = await Door_step_Sent_package.find({ payment_status: "paid", state: state, agent: id })
         let agents_count = {}
         for (let i = 0; i < packages.length; i++) {
