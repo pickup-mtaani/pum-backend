@@ -64,6 +64,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
+        if (packages[i].pipe === "shelf-doorstep") {
+          packages[i].state = "pending-shelf-doorstep"
+          await Rent_a_shelf_deliveries.findById(packages[i].p_id)
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "pending-shelf-agent" }, { new: true, useFindAndModify: false })
+        }
+        if (packages[i].pipe === "stock-doorstep") {
+          packages[i].state = "pending-stock-doorstep"
+        }
         if (packages[i]?.product) {
 
           const product = await Product.findById(packages[i].product);
@@ -150,6 +158,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let newPackageCount = 1
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
+        }
+        if (packages[i].pipe === "shelf-errand") {
+          packages[i].state = "pending-shelf-errand"
+          await Rent_a_shelf_deliveries.findById(packages[i].p_id)
+          await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "pending-shelf-agent" }, { new: true, useFindAndModify: false })
+        }
+        if (packages[i].pipe === "stock-errand") {
+          packages[i].state = "pending-stock-errand"
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id })
         if (packages[i].other) {
@@ -331,6 +347,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json({ message: "Package successfully Saved", newPackage });
     } else {
       const { packages } = req.body
+
       for (let i = 0; i < packages.length; i++) {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
@@ -338,7 +355,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
         }
-        let route = await RiderRoutes.findOne({ agent: agent._id })
+
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;
@@ -349,7 +366,6 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdBy = req.user._id
         packages[i].receipt_no = `${agent.prefix ? agent.prefix : "PMT-"}${newPackageCount}`;
 
-        // packages[i].assignedTo = route.rider
 
         if (packages[i].products?.length !== 0) {
           const item = packages[i].products
@@ -376,6 +392,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           await Rent_a_shelf_deliveries.findById(packages[i].p_id)
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: packages[i].p_id }, { state: "pending-shelf-agent" }, { new: true, useFindAndModify: false })
         }
+
+        if (packages[i].pipe === "stock-agent") {
+          packages[i].state = "pending-stock-agent"
+        }
+
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
 
@@ -1275,21 +1296,7 @@ router.get("/booked-for-ealy-collection", [authMiddleware, authorized], async (r
   } catch (error) {
   }
 });
-// router.post("/payment-sent", async (req, res) => {
-//   try {
-//     let v = await Mpesa_stk("0713130013", 1, "ii")
-//     console.log(v)
-//     // const booked = await Rent_a_shelf_deliveries.find({ $or: [{ state: "early_collection" }], })
-//     //   .sort({ createdAt: -1 })
-//     //   .limit(100)
-//     //   .populate('businessId')
-//     return res
-//       .status(200)
-//       .json(v);
-//   } catch (error) {
-//     console.log("first", error)
-//   }
-// });
+
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id).populate('receieverAgentID').populate('senderAgentID')

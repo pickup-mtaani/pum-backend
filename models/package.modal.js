@@ -99,8 +99,10 @@ const PackageSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["request", "delivered", "booked", "pending-shelf-doorstep", "pending-shelf-agent", "early_collection", "collected",
-        "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse",
+      enum: ["request", "delivered", "booked", 'pending-stock-agent', 'pending-stock-doorstep',
+        'pending-stock-errand', "pending-shelf-doorstep", "pending-shelf-agent", "pending-shelf-errand",
+        "early_collection", "collected", "dropped-to-agent", 'collected',
+        "cancelled", "rejected", "on-transit", "assigned", "recieved-warehouse",
         "picked", "picked-from-sender", "unavailable", "dropped", "assigned-warehouse", "warehouse-transit"],
       default: "request"
     },
