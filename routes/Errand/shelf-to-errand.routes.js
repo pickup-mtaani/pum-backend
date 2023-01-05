@@ -32,7 +32,7 @@ router.get("/errand-shelf-request-packages", [authMiddleware, authorized], async
             .json({ success: false, message: "operation failed ", error });
     }
 });
-router.get("/doorstep-shelf-request-packages/:id", [authMiddleware, authorized], async (req, res) => {
+router.get("/errand-shelf-request-packages/:id", [authMiddleware, authorized], async (req, res) => {
     try {
         let { state, id } = req.query
         let packages = await Erand_package.find({ payment_status: "paid", state: state, businessId: req.params.id, agent: id })

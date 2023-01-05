@@ -742,55 +742,55 @@ router.get("/agent-search/:state", [authMiddleware, authorized], async (req, res
 // });
 
 
-// router.get("/shelf-request-packagesk", [authMiddleware, authorized], async (req, res) => {
-//   try {
+router.get("/shelf-request-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
 
-//     let { state, id } = req.query
+    let { state, id } = req.query
 
-//     let packages = await Sent_package.find({ payment_status: "paid", state: state, senderAgentID: id })
+    let packages = await Sent_package.find({ payment_status: "paid", state: state, senderAgentID: id })
 
-//     let agents_count = {}
+    let agents_count = {}
 
-//     for (let i = 0; i < packages.length; i++) {
-//       let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
+    for (let i = 0; i < packages.length; i++) {
+      let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
 
-//       agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
-//         [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
-//     }
+      agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
+        [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+    }
 
-//     return res.status(200)
-//       .json(agents_count);
+    return res.status(200)
+      .json(agents_count);
 
-//   } catch (error) {
-//     console.log(error);
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "operation failed ", error });
-//   }
-// });
-// router.get("/shelf-request-packages/:id", [authMiddleware, authorized], async (req, res) => {
-//   try {
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/shelf-request-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
 
-//     let { state, id } = req.query
+    let { state, id } = req.query
 
-//     let packages = await Sent_package.find({ payment_status: "paid", state: state, businessId: req.params.id, senderAgentID: id })
-//       .sort({ createdAt: -1 }).limit(100)
-//       .populate('createdBy', 'f_name l_name name')
-//       .populate('receieverAgentID', 'business_name')
-//       .populate('senderAgentID', 'business_name')
-//       .populate('businessId')
+    let packages = await Sent_package.find({ payment_status: "paid", state: state, businessId: req.params.id, senderAgentID: id })
+      .sort({ createdAt: -1 }).limit(100)
+      .populate('createdBy', 'f_name l_name name')
+      .populate('receieverAgentID', 'business_name')
+      .populate('senderAgentID', 'business_name')
+      .populate('businessId')
 
 
-//     return res.status(200)
-//       .json(packages);
+    return res.status(200)
+      .json(packages);
 
-//   } catch (error) {
-//     console.log(error);
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "operation failed ", error });
-//   }
-// });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 
 
