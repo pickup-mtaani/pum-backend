@@ -2,12 +2,9 @@ const express = require("express");
 var AgentDetails = require("models/agentAddmin.model");
 var UnavailableDoorStep = require("models/unavailable_doorstep.model");
 var Commision = require("models/commission.model");
-var RiderRoutes = require("models/rider_routes.model");
 var DoorstepNarations = require('models/door_step_narations.model');
 var Declined = require("models/declined.model");
 var moment = require("moment");
-var Product = require("models/products.model.js");
-var Bussiness = require("models/business.model")
 var Reject = require("models/Rejected_parcels.model");
 var User = require('models/user.model')
 var AgentUser = require('models/agent_user.model');
@@ -26,12 +23,12 @@ var {
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { SendMessage } = require("../helpers/sms.helper");
 const Mpesa_stk = require("../helpers/stk_push.helper");
-
+const router = express.Router();
 
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
-const router = express.Router();
+
 
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
@@ -216,16 +213,9 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
         }, descriptions: new_des
       }, { new: true, useFindAndModify: false })
 
-      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, {
-
-        assignedTo: req.query.assignedTo,
-
-
-      }, { new: true, useFindAndModify: false })
 
     }
     if (req.params.state === "recieved-warehouse") {
-      let rider = await User.findOne({ _id: sender.rider })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
 
       await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
@@ -257,13 +247,6 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
       let collector = await new Collected(req.body).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
-      let v = await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
-        collected: {
-          collectedby: collector._id,
-          collectedAt: moment(),
-          dispatchedBy: req.user._id
-        }, descriptions: new_des
-      }, { new: true, useFindAndModify: false })
     }
 
     if (req.params.state === "unavailable") {
@@ -283,7 +266,6 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 router.get("/door-step-package-count", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    let agent = await AgentUser.findOne({ user: req.user._id })
     let { id } = req.query
 
     let dropped = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], agent: id, state: "dropped" })
@@ -376,7 +358,6 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
 });
 router.get("/doorstep-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    let agents = []
 
     let { state } = req.query
     let packages = await Door_step_Sent_package.find({ assignedTo: req.user._id, state: state })
@@ -464,7 +445,6 @@ router.get("/doorstep-agent-search/:state", [authMiddleware, authorized], async 
 });
 router.get("/rented-door-step-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent = await AgentDetails.findOne({ user: req.user._id });
 
     const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: "pending-doorstep" }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate('agent');
     return res
@@ -482,7 +462,6 @@ router.post("/pay-on-delivery", [authMiddleware, authorized], async (req, res) =
   try {
     let v = await Mpesa_stk(req.body.phone_number, 1, 1, req.body.type)
     if (req.body.type === "doorstep") {
-      let update = await Door_step_Sent_package.findOneAndUpdate({ _id: req.body.package_id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
 
     } else if (req.body.type == "rent") {
       await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.body.package_id, }, { hasBalance: false }, { new: true, useFindAndModify: false })
@@ -517,151 +496,5 @@ router.get("/agents_routes", [authMiddleware, authorized], async (req, res) => {
       .json({ success: false, message: "operation failed ", error });
   }
 });
-
-
-
-
-router.get("/wh-door-step-packages/", [authMiddleware, authorized], async (req, res) => {
-  try {
-    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
-    return res
-      .status(200)
-      .json(agent_packages);
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
-router.get("/wh-door-step-packages/:id", [authMiddleware, authorized], async (req, res) => {
-  try {
-    const agent_packages = await Door_step_Sent_package.find({ state: req.query.state, assignedTo: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
-    return res
-      .status(200)
-      .json(agent_packages);
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
-// track Doorstep packages
-
-router.get("/door-step/track/packages", [authMiddleware, authorized], async (req, res) => {
-  try {
-    let packages
-    if (req.query.searchKey) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_door_step.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate('package')
-      // .populate("collectedby")
-      // .populate("droppedTo")
-      return res.status(200)
-        .json(packages);
-    } else {
-      packages = await Track_door_step.find().sort({ createdAt: -1 }).limit(100)
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'agent',
-          }
-        })
-        // .populate("collectedby")
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'businessId',
-          },
-
-          populate: {
-            path: 'assignedTo'
-          },
-        })
-      return res.status(200)
-        .json(packages);
-    }
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
-router.get("/door/switchboard-search", [authMiddleware, authorized], async (req, res) => {
-  try {
-    console.log(req.query)
-    let packages
-    if (req.query.searchKey) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_door_step.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'agent',
-          }
-        })
-        // .populate("collectedby")
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'businessId',
-          },
-
-          populate: {
-            path: 'assignedTo'
-          },
-        })
-      return res.status(200)
-        .json(packages);
-    }
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
-router.get("/door-step/track/packages/:id", [authMiddleware, authorized], async (req, res) => {
-  try {
-    let packages
-    if (req.query.searchKey) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_door_step.findOne({ package: req.params.id, $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
-        .populate('package')
-      // .populate("collectedby")
-      // .populate("droppedTo")
-      return res.status(200)
-        .json(packages);
-    } else {
-      packages = await Track_door_step.findOne({ package: req.params.id }).sort({ createdAt: -1 }).limit(100)
-
-        .populate('package')
-        // .populate("collectedby")
-        .populate({
-          path: 'package',
-          populate: {
-            path: 'businessId',
-          },
-          populate: {
-            path: 'agent',
-          },
-          populate: {
-            path: 'assignedTo'
-          },
-        })
-      return res.status(200)
-        .json(packages);
-    }
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
-
-
 
 module.exports = router;

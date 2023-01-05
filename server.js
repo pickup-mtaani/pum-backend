@@ -23,7 +23,17 @@ const productsRoutes = require('routes/products.routes')
 const stocksRoutes = require('routes/stocks.routes')
 const salesRoutes = require('routes/sales.routes')
 const adminRoutes = require('routes/admin.routes')
+
 const DoorstepRoutes = require('routes/door_step_package.routes')
+const ShelfToDoorstepRoutes = require('routes/DoorStep/shelf-to-doorstep.routes')
+const DoorstepWareHouseRoutes = require('routes/DoorStep/doorstep_warehouse.routes')
+const TrackDoorstep = require('routes/DoorStep/doorstep_track_package')
+
+// const DoorstepRoutes = require('routes/door_step_package.routes')
+const ShelfToErrandRoutes = require('routes/Errand/shelf-to-errand.routes')
+// const DoorstepWareHouseRoutes = require('routes/DoorStep/doorstep_warehouse.routes')
+// const TrackDoorstep = require('routes/DoorStep/doorstep_track_package')
+
 const AgentToAgentRoutes = require('routes/agent_package.routes')
 const zoneRoutes = require('routes/zones.routes')
 const convRoutes = require('routes/conversation.routes')
@@ -75,6 +85,12 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/', zoneRoutes)
 app.use('/api/', DoorstepRoutes)
 app.use('/api/', AgentToAgentRoutes)
+
+app.use('/api/', ShelfToDoorstepRoutes)
+app.use('/api/', TrackDoorstep)
+app.use('/api/', DoorstepWareHouseRoutes)
+
+app.use('/api/', ShelfToErrandRoutes)
 
 
 // global error handler
