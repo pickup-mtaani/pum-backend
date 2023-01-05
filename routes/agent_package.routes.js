@@ -753,9 +753,12 @@ router.get("/shelf-request-packages", [authMiddleware, authorized], async (req, 
 
     for (let i = 0; i < packages.length; i++) {
       let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
-
-      agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
-        [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+      agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
+        { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package.businessId.name }
+        : { packages: [packages[i]._id], name: package.businessId.name }
+      //   agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
+      //     [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+      // 
     }
 
     return res.status(200)
@@ -916,8 +919,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
   try {
 
     const { period, state, id } = req.query
-    console.log(req.query)
-    console.log("63574a93a2f50e9fc6806963")
+
 
     let packages
     if (state === "rejected") {

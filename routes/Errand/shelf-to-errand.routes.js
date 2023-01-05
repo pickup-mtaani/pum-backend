@@ -17,11 +17,13 @@ router.get("/errand-shelf-request-packages", [authMiddleware, authorized], async
 
         for (let i = 0; i < packages.length; i++) {
             let package = await Erand_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
-
-            agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
-                [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+            agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
+                { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package.businessId.name }
+                : { packages: [packages[i]._id], name: package.businessId.name }
+            // agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
+            //     [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
         }
-
+        // ni same kabsa  hii inawork? yap  but iko  package moja  najua maybe zikiwa zaidi rudi kwa hio ingine??????
         return res.status(200)
             .json(agents_count);
 
