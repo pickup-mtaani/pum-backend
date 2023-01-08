@@ -132,10 +132,12 @@ router.get('/mpesa-payments', async (req, res, next) => {
 //   console.log("Get-Back:", "req.body")
 //   return
 // })
-router.post('/mpesa-callback', async (req, res, next) => {
+router.post('/CallbackUrl', async (req, res, next) => {
+  console.log(req.body);
 
-  console.log("Call-Back:", req.body)
-  return
+  // console.log("Call-Back:", req.body)
+  return res.status(200).json({ success: true, message: `Request Body: ${JSON.stringify(req.body)}` });
+  // return
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(

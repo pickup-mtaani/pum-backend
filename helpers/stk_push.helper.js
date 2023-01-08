@@ -1,5 +1,6 @@
 var fetch = require('node-fetch')
 var axios = require('axios')
+var moment = require('moment');
 const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
@@ -151,10 +152,17 @@ var { Headers } = fetch
 //     // console.log("token"+token);
 // };
 const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
-    let consumer_key = "BIXdwG4MfjHyokYWYEAVI41G7D0YJQ50",
-        consumer_secret = "XDRoAOxnM5NcgEBw";
+    let consumer_key = process.env.MPESA_CONSUMER_KEY,
+        consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
+        passkey = process.env.MPESA_CONSUMER_PASSKEY,
+        short_code = parseInt(process.env.MPESA_SHORT_CODE),
+        timestamp = moment().format('YYYYMMDDHHmmss');
     var s = `${No}`;
+    console.log("PHONe", s)
+    console.log(`Timestamp: ${timestamp}`);
 
+    console.log(`Passwords: ${new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64')}`);
+    // return
     while (s.charAt(0) === "0") {
         s = s.substring(1);
     }
@@ -162,49 +170,62 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
     let new_amount = parseInt(amount);
     let phone = `${code}${s}`;
 
-    const Authorization = `Basic ${new Buffer.from(
+    const Authorization = `Bearer ${new Buffer.from(
         `${consumer_key}:${consumer_secret}`,
         "utf-8"
     ).toString("base64")}`;
 
-    const response = await axios.get(
-        "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-        {
-            headers: {
-                Authorization,
-            },
-        }
-    );
+    console.log('Generating Token')
 
+    const response = await axios.get(
+        `${process.env.MPESA_BASE_URL}/oauth/v1/generate?grant_type=client_credentials`, {
+        "headers": {
+            "Authorization": `Basic ${new Buffer.from(`${consumer_key}:${consumer_secret}`).toString("base64")}`
+        }
+    }
+    );
+    console.log(response.data.access_token);
+    console.log(phone);
     let token = response.data.access_token;
+    // return
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", `Bearer ${token}`);
     const fetch_response = await fetch(
-        "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+        `${process.env.MPESA_BASE_URL}/mpesa/stkpush/v1/processrequest`,
         {
             method: "POST",
             headers,
             body: JSON.stringify({
-                BusinessShortCode: 174379,
-                Password:
-                    "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODE2MjIwNDQ3",
-                Timestamp: "20220816220447",
+                BusinessShortCode: short_code,
+                Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
+                Timestamp: `${timestamp}`,
                 TransactionType: "CustomerPayBillOnline",
-                // "Amount": new_amount,
                 Amount: 1,
                 PartyA: phone,
-                PartyB: 174379,
+                PartyB: short_code,
                 PhoneNumber: phone,
-                CallBackURL: "https://168a-197-248-89-7.eu.ngrok.io/api/mpesa-callback",
+                CallBackURL: `${process.env.MPESA_CALLbACK}`,
                 AccountReference: "Pick-up-delivery",
                 TransactionDesc: "Payment delivery of  *",
             }),
         }
     );
-
     const data = await fetch_response.json();
-
+    console.log(data)
+    console.log(JSON.stringify({
+        BusinessShortCode: short_code,
+        Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
+        Timestamp: `${timestamp}`,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: 1,
+        PartyA: phone,
+        PartyB: short_code,
+        PhoneNumber: phone,
+        CallBackURL: `${process.env.MPESA_CALLbACK}`,
+        AccountReference: "Pick-up-delivery",
+        TransactionDesc: "Payment delivery of  *",
+    }));
     const body = {
         MerchantRequestID: data.MerchantRequestID,
         CheckoutRequestID: data.CheckoutRequestID,
@@ -216,11 +237,11 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
         // user: user,
         log: ''
     }
-    // let T = await new mpesa_logsModel(body).save()
-    // console.log(T)
-    //   mpesaCode = ret.MerchantRequestID;
+    await new mpesa_logsModel(body).save()
 
-    //   console.log("MPESA CODE", ret);
+    // mpesaCode = ret.MerchantRequestID;
+
+    // console.log("MPESA CODE", ret);
     return data;
     // console.log("token"+token);
 };

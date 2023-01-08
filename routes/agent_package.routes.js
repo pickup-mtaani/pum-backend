@@ -7,13 +7,10 @@ var Agent = require('models/agentAddmin.model')
 var User = require('models/user.model')
 var Sent_package = require("models/package.modal.js");
 var AgentDetails = require("models/agentAddmin.model");
-var Rider = require("models/rider.model");
-var AgentUser = require('models/agent_user.model');
 var Reject = require("models/Rejected_parcels.model");
 var Track_agent_packages = require('models/agent_package_track.model');
 var Notification = require("models/notification.model");
 var RiderRoutes = require('models/rider_routes.model')
-var mongoose = require('mongoose')
 var {
   authMiddleware,
   authorized,
@@ -25,6 +22,7 @@ var Commision = require("models/commission.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
 const { populate } = require("../models/mpesa_logs.model");
 const { request } = require("express");
+const Mpesa_stk = require("../helpers/stk_push.helper");
 const router = express.Router();
 function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -52,13 +50,9 @@ router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res
       let reciever = await Agent.findById(package.senderAgentID)
       // console.log(`Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  `)
       // await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent")
-      let paid = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
       let narration = await Track_agent_packages.findOne({ package: req.params.id })
       let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]
-      let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-        descriptions: new_description
-      }, { new: true, useFindAndModify: false })
     }
     return res
       .status(200)
@@ -70,7 +64,7 @@ router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res
 })
 
 
-router.put("/agent/package-update/:id", [authMiddleware, authorized], async (req, res) => {
+router.put("/agent/package-update/:id", [authMiddleware, authorized], async (req) => {
   try {
 
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
@@ -221,15 +215,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
             time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
           }]
 
-          let t = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-            dropped: {
-              droppedBy: package?.assignedTo,
-              droppedTo: package?.senderAgentID?._id,
-              recievedBy: req.user._id,
-              droppedAt: moment(),
-            },
-            descriptions: new_description
-          }, { new: true, useFindAndModify: false })
 
           const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
           await SendMessage(textbody)
@@ -250,8 +235,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
       // assigned  to rider name for delivery to agent
-      let assignrNarations = await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package assigned rider` }).save()
-      let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender?.rider }, { new: true, useFindAndModify: false })
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         assigned:
@@ -452,7 +435,6 @@ router.get("/agents-wh-droped-package", [authMiddleware, authorized], async (req
 
 router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-    let agents = []
 
     let { state } = req.query
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
@@ -757,7 +739,8 @@ router.get("/shelf-request-packages", [authMiddleware, authorized], async (req, 
         { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package.businessId.name }
         : { packages: [packages[i]._id], name: package.businessId.name }
       //   agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
-      //     [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+      //     [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] 
+      // : { packages: [packages[i]._id], name: package.businessId.name }
       // 
     }
 
@@ -918,7 +901,7 @@ router.get("/rider-packages/:state", [authMiddleware, authorized], async (req, r
 router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    const { period, state, id } = req.query
+    const { state, id } = req.query
 
 
     let packages
@@ -1000,6 +983,11 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.post("/Mpesa-till", [authMiddleware, authorized], async (req, res) => {
+  const result = await Mpesa_stk("0716017221", 1)
+  return res.status(200).json({ success: true, message: `Result: ${JSON.stringify(result)}` });
+
+})
 router.get("/agent-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const { state } = req.query
@@ -1060,7 +1048,6 @@ router.get("/receiever-agent-packages/:id", [authMiddleware, authorized], async 
 });
 router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-    const pack = await Rent_a_shelf_deliveries.findById(req.params.id)
     await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: req.params.id }, { pipe: "doorStep" }, { new: true, useFindAndModify: false })
     const { body } = req.body;
     let agent_id = await AgentDetails.findOne({ _id: packages[i].agent })
@@ -1089,12 +1076,6 @@ router.post("/rent-shelf-to-agent/:id", [authMiddleware, authorized], async (req
       await Customer.findOneAndUpdate({ seller: req.user._id, }, { door_step_package_count: parseInt(customer.door_step_package_count + 1) }, { new: true, useFindAndModify: false })
     }
     newpackage = await new Door_step_Sent_package(body).save();
-    let V = await new Track_door_step({
-      package: newpackage._id, created: {
-        createdAt: moment(),
-        createdBy: req.user._id
-      }, state: "request", descriptions: `Package created`, reciept: newpackage.receipt_no
-    }).save()
     await AgentDetails.findOneAndUpdate({ _id: body.agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
     if (req.body.payment_option === "vendor") {
       await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
@@ -1123,7 +1104,6 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
     let packages
 
     if (period === 0 || period === undefined || period === null) {
-      let packages = await Sent_package.find({ payment_status: "paid", state: state, });
       let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "dropped" })
       let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "assigned-warehouse" })
       let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: "warehouse-transit" })
@@ -1146,7 +1126,6 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
 
     else if (period === 0 || period === undefined || period === null && req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      let packages = await Sent_package.find({ payment_status: "paid", senderAgentID: id, state: state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
       let dropped = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "dropped" })
       let assigneWarehouse = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "assigned-warehouse" })
       let warehouseTransit = await Sent_package.find({ payment_status: "paid", senderAgentID: id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }], state: "warehouse-transit" })

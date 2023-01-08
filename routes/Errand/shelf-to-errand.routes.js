@@ -12,7 +12,7 @@ router.get("/errand-shelf-request-packages", [authMiddleware, authorized], async
         let { state, id } = req.query
 
         let packages = await Erand_package.find({ payment_status: "paid", state: state, agent: id })
-
+        console.log(packages)
         let agents_count = {}
 
         for (let i = 0; i < packages.length; i++) {
