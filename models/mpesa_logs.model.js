@@ -20,7 +20,7 @@ const MpesaLogsSchema = new Schema({
     },
     package: {
         type: Schema.Types.ObjectId,
-        ref: 'agent_agent_packages'
+        ref: 'agent_agent_sent_packages'
     },
     CheckoutRequestID: {
 
