@@ -984,7 +984,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
   }
 });
 router.post("/Mpesa-till", [authMiddleware, authorized], async (req, res) => {
-  const result = await Mpesa_stk("0716017221", 1)
+  const result = await Mpesa_stk("0713130013", 1)
   return res.status(200).json({ success: true, message: `Result: ${JSON.stringify(result)}` });
 
 })

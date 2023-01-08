@@ -133,11 +133,7 @@ router.get('/mpesa-payments', async (req, res, next) => {
 //   return
 // })
 router.post('/CallbackUrl', async (req, res, next) => {
-  console.log(req.body);
 
-  // console.log("Call-Back:", req.body)
-  return res.status(200).json({ success: true, message: `Request Body: ${JSON.stringify(req.body)}` });
-  // return
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(
@@ -150,7 +146,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     }, { new: true, useFindAndModify: false })
 
     const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
-
+    console.log(loggedMpesa)
 
     if (LogedMpesa.type === "doorstep") {
 
