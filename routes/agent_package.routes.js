@@ -46,13 +46,14 @@ router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res
   try {
     if (req.body.type === "agent") {
       let package = await Sent_package.findById(req.params.id)
-      let seller = await User.findById(package.createdBy)
-      let reciever = await Agent.findById(package.senderAgentID)
+      // let seller = await User.findById(package.createdBy)
+      // let reciever = await Agent.findById(package.senderAgentID)
+
       // console.log(`Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  `)
-      // await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent")
-      await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-      let narration = await Track_agent_packages.findOne({ package: req.params.id })
-      let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]
+      await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent")
+      // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
+      // let narration = await Track_agent_packages.findOne({ package: req.params.id })
+      // let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]
     }
     return res
       .status(200)
@@ -984,7 +985,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
   }
 });
 router.post("/Mpesa-till", [authMiddleware, authorized], async (req, res) => {
-  const result = await Mpesa_stk("0713130013", 1)
+  const result = await Mpesa_stk("0716017221", 1)
   return res.status(200).json({ success: true, message: `Result: ${JSON.stringify(result)}` });
 
 })
