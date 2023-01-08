@@ -134,6 +134,7 @@ router.get('/mpesa-payments', async (req, res, next) => {
 // })
 router.post('/CallbackUrl', async (req, res, next) => {
 
+
   try {
 
     const Update = await MpesaLogs.findOneAndUpdate(
@@ -146,7 +147,10 @@ router.post('/CallbackUrl', async (req, res, next) => {
     }, { new: true, useFindAndModify: false })
 
     const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
-    console.log(LogedMpesa)
+    console.log("****************************************************************")
+    console.log("Mpesa Body", LogedMpesa)
+    console.log("****************************************************************")
+    console.log("Update Request", Update)
 
     if (LogedMpesa.type === "doorstep") {
 
