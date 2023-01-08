@@ -148,10 +148,13 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
     const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
     // console.log("****************************************************************")
-    // console.log("Mpesa Body", LogedMpesa)
+    console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type)
     // console.log("****************************************************************")
     // console.log("Update Request", Update)
-
+    let V = await AgentPackage.findOne(
+      {
+        _id: LogedMpesa.package
+      })
     if (LogedMpesa.type === "doorstep") {
 
       const UpdatePackage = await Doorstep_pack.findOneAndUpdate(
