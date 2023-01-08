@@ -146,7 +146,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     }, { new: true, useFindAndModify: false })
 
     const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
-    // console.log(LogedMpesa)
+    console.log(LogedMpesa)
 
     if (LogedMpesa.type === "doorstep") {
 
@@ -165,6 +165,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
         }, {
         payment_status: req.body.Body?.stkCallback?.ResultDesc,
       }, { new: true, useFindAndModify: false })
+
     }
     else if (LogedMpesa.type === "errand") {
 
