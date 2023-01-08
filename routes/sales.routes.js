@@ -4,6 +4,7 @@ var Stock = require('models/stocks.model')
 var User = require('models/user.model')
 var Location = require('models/thrifter_location.model')
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
+var Sent_package = require("models/package.modal.js");
 var Doorstep_pack = require("models/doorStep_delivery.model");
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
@@ -151,7 +152,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type)
     // console.log("****************************************************************")
     // console.log("Update Request", Update)
-    let V = await AgentPackage.findOne(
+    let V = await Sent_package.findOne(
       {
         _id: LogedMpesa.package
       })
@@ -168,7 +169,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     }
     else if (LogedMpesa.type === "agent") {
 
-      const UpdatePackage = await AgentPackage.findOneAndUpdate(
+      const UpdatePackage = await Sent_package.findOneAndUpdate(
         {
           _id: LogedMpesa.package
         }, {
