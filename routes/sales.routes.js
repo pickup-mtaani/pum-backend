@@ -155,6 +155,8 @@ router.post('/CallbackUrl', async (req, res, next) => {
       {
         _id: LogedMpesa.package
       })
+    console.log("***************************Village *************************************")
+    console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type, V)
     if (LogedMpesa.type === "doorstep") {
 
       const UpdatePackage = await Doorstep_pack.findOneAndUpdate(
@@ -173,7 +175,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
         payment_status: req.body.Body?.stkCallback?.ResultDesc,
       }, { new: true, useFindAndModify: false })
 
-      console.log("****************************************************************")
+      console.log("*************************Update Package***************************************")
       console.log("Update Request", UpdatePackage)
 
     }
