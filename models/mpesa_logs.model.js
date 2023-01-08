@@ -19,7 +19,8 @@ const MpesaLogsSchema = new Schema({
         type: String
     },
     package: {
-        type: String
+        type: Schema.Types.ObjectId,
+        ref: 'agent_agent_packages'
     },
     CheckoutRequestID: {
 

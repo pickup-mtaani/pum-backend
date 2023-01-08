@@ -50,7 +50,7 @@ router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res
       // let reciever = await Agent.findById(package.senderAgentID)
 
       // console.log(`Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  `)
-      await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent")
+      await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.params.id)
       // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
       // let narration = await Track_agent_packages.findOne({ package: req.params.id })
       // let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]

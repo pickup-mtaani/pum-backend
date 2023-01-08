@@ -151,7 +151,7 @@ var { Headers } = fetch
 //     return data;
 //     // console.log("token"+token);
 // };
-const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
+const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     let consumer_key = process.env.MPESA_CONSUMER_KEY,
         consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
         passkey = process.env.MPESA_CONSUMER_PASSKEY,
@@ -233,6 +233,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery) => {
         amount: amount,
         ResponseCode: data.ResponseCode,
         type: typeofDelivery,
+        package: id,
 
         // user: user,
         log: ''
