@@ -47,13 +47,13 @@ router.post('/CallbackUrl', async (req, res, next) => {
     // console.log("****************************************************************")
     // console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type)
     // console.log("****************************************************************")
-    console.log("Update Request", JSON.stringify(req.body))
+    // console.log("Update Request", JSON.stringify(req.body))
     let V = await Sent_package.findOne(
       {
         _id: LogedMpesa.package
       })
     console.log("***************************Village *************************************")
-    console.log("PAID", req.body.Body?.stkCallback?.ResultDesc)
+    // console.log("PAID", req.body.Body?.stkCallback?.ResultDesc)
     // console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type, V)
     let reason
     if (req.body.Body?.stkCallback?.ResultDesc === "The initiator information is invalid") {
@@ -83,6 +83,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }
       else if (LogedMpesa.type === "agent") {
         let narration = await Track_agent_packages.findOne({ package: req.params.id })
+        console.log(narration)
         const UpdatePackage = await Sent_package.findOneAndUpdate(
           {
             _id: LogedMpesa.package
@@ -136,6 +137,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }
       else if (LogedMpesa.type === "agent") {
         let narration = await Track_agent_packages.findOne({ package: req.params.id })
+        console.log(narration)
         const UpdatePackage = await Sent_package.findOneAndUpdate(
           {
             _id: LogedMpesa.package
