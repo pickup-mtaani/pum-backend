@@ -21,7 +21,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     const code = "254";
     let new_amount = parseInt(amount);
     let phone = `${code}${s}`;
-
+    console.log(new_amount)
     const Authorization = `Bearer ${new Buffer.from(
         `${consumer_key}:${consumer_secret}`,
         "utf-8"
@@ -48,13 +48,13 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
             method: "POST",
             headers,
             body: JSON.stringify({
-                BusinessShortCode: 5684653,
+                BusinessShortCode: short_code,
                 Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
                 Timestamp: `${timestamp}`,
                 TransactionType: "CustomerPayBillOnline",
-                Amount: 1,
+                Amount: new_amount,
                 PartyA: phone,
-                PartyB: 5684653,
+                PartyB: short_code,
                 PhoneNumber: phone,
                 CallBackURL: `${process.env.MPESA_CALLbACK}`,
                 AccountReference: "Pick-up-delivery",
@@ -69,7 +69,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
         Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
         Timestamp: `${timestamp}`,
         TransactionType: "CustomerPayBillOnline",
-        Amount: 1,
+        Amount: new_amount,
         PartyA: phone,
         PartyB: short_code,
         PhoneNumber: phone,
