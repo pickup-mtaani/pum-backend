@@ -28,43 +28,6 @@ function getRandomNumberBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req, res) => {
-
-  try {
-    let paid = await Sent_package.findOneAndUpdate({ _id: req.params.id }, { payment_status: "paid" }, { new: true, useFindAndModify: false })
-    return res
-      .status(200)
-      .json(paid);
-
-  } catch (err) {
-    console.log(err)
-  }
-})
-
-router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res) => {
-
-  try {
-    if (req.body.type === "agent") {
-      let package = await Sent_package.findById(req.params.id)
-      // let seller = await User.findById(package.createdBy)
-      // let reciever = await Agent.findById(package.senderAgentID)
-
-      // console.log(`Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  `)
-      await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.params.id)
-      // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
-      // let narration = await Track_agent_packages.findOne({ package: req.params.id })
-      // let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} paid by ${seller.name}  awaiting drop off at ${reciever.business_name}  ` }]
-    }
-    return res
-      .status(200)
-      .json("paid");
-
-  } catch (err) {
-    console.log(err)
-  }
-})
-
-
 router.put("/agent/package-update/:id", [authMiddleware, authorized], async (req) => {
   try {
 
