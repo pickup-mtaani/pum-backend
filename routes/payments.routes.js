@@ -66,7 +66,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
     if (req.body.Body?.stkCallback?.ResultCode === 0) {
       if (LogedMpesa.type === "doorstep") {
-        let narration = await Track_door_step.findOne({ package: req.params.id })
+        let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
         const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
           {
             _id: LogedMpesa.doorstep_package
@@ -74,15 +74,15 @@ router.post('/CallbackUrl', async (req, res, next) => {
           payment_status: 'paid',
         }, { new: true, useFindAndModify: false })
         let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting deop off to sorting area`
+          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
         }]
-        await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
           descriptions: new_description
         }, { new: true, useFindAndModify: false })
 
       }
       else if (LogedMpesa.type === "agent") {
-        let narration = await Track_agent_packages.findOne({ package: req.params.id })
+        let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
         console.log(narration)
         const UpdatePackage = await Sent_package.findOneAndUpdate(
           {
@@ -91,16 +91,16 @@ router.post('/CallbackUrl', async (req, res, next) => {
           payment_status: 'paid',
         }, { new: true, useFindAndModify: false })
         let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting deop off to sorting area`
+          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
         }]
-        let Track = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
           descriptions: new_description
         }, { new: true, useFindAndModify: false })
         console.log("Track", Track)
 
       }
       else if (LogedMpesa.type === "errand") {
-        let narration = await Track_Erand.findOne({ package: req.params.id })
+        let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
         const UpdatePackage = await Erand_package.findOneAndUpdate(
           {
             _id: LogedMpesa.errand_package
@@ -108,10 +108,10 @@ router.post('/CallbackUrl', async (req, res, next) => {
           payment_status: 'paid',
         }, { new: true, useFindAndModify: false })
         let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting deop off to sorting area`
+          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
         }]
 
-        await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
 
           descriptions: new_description
 
@@ -120,7 +120,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     }
     else {
       if (LogedMpesa.type === "doorstep") {
-        let narration = await Track_door_step.findOne({ package: req.params.id })
+        let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
         const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
           {
             _id: LogedMpesa.doorstep_package
@@ -130,13 +130,13 @@ router.post('/CallbackUrl', async (req, res, next) => {
         let new_description = [...narration?.descriptions, {
           time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
         }]
-        await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
           descriptions: new_description
         }, { new: true, useFindAndModify: false })
 
       }
       else if (LogedMpesa.type === "agent") {
-        let narration = await Track_agent_packages.findOne({ package: req.params.id })
+        let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
         console.log(narration)
         const UpdatePackage = await Sent_package.findOneAndUpdate(
           {
@@ -147,14 +147,14 @@ router.post('/CallbackUrl', async (req, res, next) => {
         let new_description = [...narration?.descriptions, {
           time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
         }]
-        let Track = await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+        let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
           descriptions: new_description
         }, { new: true, useFindAndModify: false })
         console.log("Track", Track)
 
       }
       else if (LogedMpesa.type === "errand") {
-        let narration = await Track_Erand.findOne({ package: req.params.id })
+        let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
         const UpdatePackage = await Erand_package.findOneAndUpdate(
           {
             _id: LogedMpesa.errand_package
@@ -165,7 +165,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
         }]
 
-        await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
 
           descriptions: new_description
 
