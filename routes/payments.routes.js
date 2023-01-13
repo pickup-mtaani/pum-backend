@@ -32,147 +32,146 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
 
   try {
+    const Logs = await MpesaLogs.find({
+      MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
+    })
 
-    const Update = await MpesaLogs.findOneAndUpdate(
-      {
-        MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
-      }, {
-      log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
-      ResponseCode: req.body.Body?.stkCallback?.ResultCode,
-      MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
-    }, { new: true, useFindAndModify: false })
+    Logs.forEach(async (element) => {
+      const Update = await MpesaLogs.findOneAndUpdate(
+        {
+          MerchantRequestID: element?.MerchantRequestID
+        }, {
+        log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
+        ResponseCode: req.body.Body?.stkCallback?.ResultCode,
+        MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
+      }, { new: true, useFindAndModify: false })
 
-    const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
-    const paymentUser = await User.findById(LogedMpesa.user)
-    // console.log("****************************************************************")
-    // console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type)
-    // console.log("****************************************************************")
-    // console.log("Update Request", JSON.stringify(req.body))
-    let V = await Sent_package.findOne(
-      {
-        _id: LogedMpesa.package
-      })
-    console.log("***************************Village *************************************")
-    // console.log("PAID", req.body.Body?.stkCallback?.ResultDesc)
-    // console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type, V)
+      const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
+      const paymentUser = await User.findById(LogedMpesa.user)
 
+      let V = await Sent_package.findOne(
+        {
+          _id: LogedMpesa.package
+        })
 
-    if (req.body.Body?.stkCallback?.ResultCode === 0) {
-      if (LogedMpesa.type === "doorstep") {
-        let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
-        const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.doorstep_package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
-        }]
-        await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
-          descriptions: new_description
-        }, { new: true, useFindAndModify: false })
+      if (req.body.Body?.stkCallback?.ResultCode === 0) {
+        if (LogedMpesa.type === "doorstep") {
+          let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
+          const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.doorstep_package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
+          }]
+          await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
 
+        }
+        else if (LogedMpesa.type === "agent") {
+          let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
+          console.log(narration)
+          const UpdatePackage = await Sent_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
+          }]
+          let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
+          console.log("Track", Track)
+
+        }
+        else if (LogedMpesa.type === "errand") {
+          let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
+          const UpdatePackage = await Erand_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.errand_package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
+          }]
+
+          await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
+
+            descriptions: new_description
+
+          }, { new: true, useFindAndModify: false })
+        }
       }
-      else if (LogedMpesa.type === "agent") {
-        let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-        console.log(narration)
-        const UpdatePackage = await Sent_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
-        }]
-        let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
-          descriptions: new_description
-        }, { new: true, useFindAndModify: false })
-        console.log("Track", Track)
+      else {
+        let reason = "delayed response"
+        if (req.body.Body?.stkCallback?.ResultDesc === "The initiator information is invalid") {
+          reason = "wrong pin entered"
+        } else if (req.body.Body?.stkCallback?.ResultDesc === "DS timeout user cannot be reached") {
+          reason = "canceled transaction by subscriber"
+        } else if (req.body.Body?.stkCallback?.ResultDesc === "The request is not permitted according to product assignment.") {
+          reason = "insufficient funds to complete the transaction"
+        }
+        if (LogedMpesa.type === "doorstep") {
+          let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
+          const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.doorstep_package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
+          }]
+          await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
 
+        }
+        else if (LogedMpesa.type === "agent") {
+          let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
+          console.log(narration)
+          const UpdatePackage = await Sent_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
+          }]
+          let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
+          console.log("Track", Track)
+
+        }
+        else if (LogedMpesa.type === "errand") {
+          let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
+          const UpdatePackage = await Erand_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.errand_package
+            }, {
+            payment_status: 'paid',
+          }, { new: true, useFindAndModify: false })
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}`
+          }]
+
+          await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
+
+            descriptions: new_description
+
+          }, { new: true, useFindAndModify: false })
+        }
       }
-      else if (LogedMpesa.type === "errand") {
-        let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
-        const UpdatePackage = await Erand_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.errand_package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
-        }]
+    })
 
-        await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
-
-          descriptions: new_description
-
-        }, { new: true, useFindAndModify: false })
-      }
-    }
-    else {
-      let reason = "delayed response"
-      if (req.body.Body?.stkCallback?.ResultDesc === "The initiator information is invalid") {
-        reason = "wrong pin entered"
-      } else if (req.body.Body?.stkCallback?.ResultDesc === "DS timeout user cannot be reached") {
-        reason = "canceled transaction by subscriber"
-      } else if (req.body.Body?.stkCallback?.ResultDesc === "The request is not permitted according to product assignment.") {
-        reason = "insufficient funds to complete the transaction"
-      }
-      if (LogedMpesa.type === "doorstep") {
-        let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
-        const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.doorstep_package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
-        }]
-        await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
-          descriptions: new_description
-        }, { new: true, useFindAndModify: false })
-
-      }
-      else if (LogedMpesa.type === "agent") {
-        let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-        console.log(narration)
-        const UpdatePackage = await Sent_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
-        }]
-        let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
-          descriptions: new_description
-        }, { new: true, useFindAndModify: false })
-        console.log("Track", Track)
-
-      }
-      else if (LogedMpesa.type === "errand") {
-        let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
-        const UpdatePackage = await Erand_package.findOneAndUpdate(
-          {
-            _id: LogedMpesa.errand_package
-          }, {
-          payment_status: 'paid',
-        }, { new: true, useFindAndModify: false })
-        let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}`
-        }]
-
-        await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
-
-          descriptions: new_description
-
-        }, { new: true, useFindAndModify: false })
-      }
-    }
 
     return res.status(200).json({ success: true, message: `payments made successfully`, body: req.body });
   } catch (error) {

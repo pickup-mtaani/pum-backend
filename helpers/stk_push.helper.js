@@ -51,10 +51,10 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
                 BusinessShortCode: short_code,
                 Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
                 Timestamp: `${timestamp}`,
-                TransactionType: "CustomerBuyGoodsOnline",
+                TransactionType: "CustomerPayBillOnline",
                 Amount: new_amount,
                 PartyA: phone,
-                PartyB: 8012474,
+                PartyB: short_code,
                 PhoneNumber: phone,
                 CallBackURL: `${process.env.MPESA_CALLbACK}`,
                 AccountReference: "Pick-up-delivery",
@@ -63,48 +63,38 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
         }
     );
     const data = await fetch_response.json();
-    console.log(data)
-    console.log(JSON.stringify({
-        BusinessShortCode: short_code,
-        Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
-        Timestamp: `${timestamp}`,
-        TransactionType: "CustomerPayBillOnline",
-        Amount: new_amount,
-        PartyA: phone,
-        PartyB: short_code,
-        PhoneNumber: phone,
-        CallBackURL: `${process.env.MPESA_CALLbACK}`,
-        AccountReference: "Pick-up-delivery",
-        TransactionDesc: "Payment delivery of  *",
-    }));
+
+
     let package_id
-    for (let i = 0; i < id.length; i++) {
-        const body = {
-            MerchantRequestID: data.MerchantRequestID,
-            CheckoutRequestID: data.CheckoutRequestID,
-            phone_number: phone,
-            amount: amount,
-            ResponseCode: data.ResponseCode,
-            type: typeofDelivery,
-            package: id,
-            user: user,
-            log: ''
-        }
+    const body = {
+        MerchantRequestID: data.MerchantRequestID,
+        CheckoutRequestID: data.CheckoutRequestID,
+        phone_number: phone,
+        amount: amount,
+        ResponseCode: data.ResponseCode,
+        type: typeofDelivery,
+        package: id,
+        user: user,
+        log: ''
+    }
+
+    id.forEach(async (element) => {
         if (typeofDelivery === "errand") {
-            body.errand_package = id[i]
+            body.errand_package = element
             body.package = null
         }
         if (typeofDelivery === "doorstep") {
-            body.doorstep_package = id[i]
-        } else {
-            body.package = id[i]
+            body.doorstep_package = element
+        } if (typeofDelivery === "agent") {
+            body.package = element
+            console.log(body)
         }
 
         await new mpesa_logsModel(body).save()
 
         return data;
+    });
 
-    }
 
 };
 module.exports = Mpesa_stk
