@@ -400,7 +400,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         packages[i].instant_bal = packages[i].delivery_fee
-        if (packages[i] === "collection") {
+        packages[i].payment_option = packages[i].payment_option
+        if (packages[i].payment_option === "collection") {
           packages[i].on_delivery_balance = packages[i].package_value
         }
         let savedPackage = await new Sent_package(packages[i]).save();

@@ -65,6 +65,10 @@ const PackageSchema = new Schema(
     package_value: {
       type: Number,
     },
+    payment_option: {
+      type: String,
+      enum: ['customer', 'vendor', 'collection', 'booked'],
+    },
     instant_bal: {
       type: Number,
     },
