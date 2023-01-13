@@ -35,7 +35,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     const Logs = await MpesaLogs.find({
       MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
     })
-    console.log("LOGS", Logs)
+
     Logs.forEach(async (element) => {
       console.log("RElemenr", element)
       const Update = await MpesaLogs.findOneAndUpdate(
@@ -63,6 +63,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.doorstep_package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
@@ -80,6 +81,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
@@ -97,6 +99,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.errand_package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
@@ -125,6 +128,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.doorstep_package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
@@ -142,6 +146,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
@@ -159,6 +164,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: LogedMpesa.errand_package
             }, {
             payment_status: 'paid',
+            instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}`
