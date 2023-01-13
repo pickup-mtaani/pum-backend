@@ -28,7 +28,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     // console.log(`Timestamp: ${timestamp}`);
     // console.log(`Passwords: ${new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64')}`);
     // return
-    let Num = validatePhone(`${No}`)
+    let phone = validatePhone(`${No}`)
     let new_amount = parseInt(amount);
 
     const Authorization = `Bearer ${new Buffer.from(
@@ -62,7 +62,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
                 Timestamp: `${timestamp}`,
                 TransactionType: "CustomerPayBillOnline",
                 Amount: new_amount,
-                PartyA: Num,
+                PartyA: phone,
                 PartyB: short_code,
                 PhoneNumber: phone,
                 CallBackURL: `${process.env.MPESA_CALLbACK}`,
