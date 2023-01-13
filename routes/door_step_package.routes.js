@@ -202,7 +202,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     if (req.params.state === "assigned-warehouse") {
       let newrider = await User.findOne({ _id: req.query.assignedTo })
 
-      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name} heading to ${package.customerName}` }]
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name}  to deliver to  ${package.customerName}` }]
 
       await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
         reAssigned:
@@ -216,6 +216,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
     }
     if (req.params.state === "recieved-warehouse") {
+
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
 
       await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
@@ -225,6 +226,15 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
 
           warehouseAt: moment()
         }, descriptions: new_des
+      }, { new: true, useFindAndModify: false })
+      //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
+    }
+    if (req.params.state === "warehouse-transit") {
+      // package
+      let newrider = await User.findOne({ _id: package.assignedTo })
+      let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  collected by rider  ${newrider.name} heading to ${package.customerName} ` }]
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        descriptions: new_des
       }, { new: true, useFindAndModify: false })
       //await new DoorstepNarations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
@@ -244,9 +254,11 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       req.body.package3 = req.params.id
       req.body.dispatchedBy = req.user._id
       req.body.type = "doorstep"
-
       let collector = await new Collected(req.body).save()
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
+      await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+        descriptions: new_des
+      }, { new: true, useFindAndModify: false })
     }
 
     if (req.params.state === "unavailable") {

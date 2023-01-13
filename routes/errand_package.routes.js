@@ -280,19 +280,6 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       })
 
     }
-    // if (req.params.state === "collected") {
-    //   let collector = await new Collected(req.body).save()
-    //   let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg given out to ${req.body.collector_name} of ID no ${req.body.collector_national_id} phone No 0${req.body.collector_phone_number.substring(1, 4)}xxx xxxx   ` }]
-    //   let v = await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
-    //     collected: {
-    //       collectedby: collector._id,
-    //       collectedAt: moment(),
-    //       dispatchedBy: req.user._id
-    //     }, descriptions: new_des
-    //   }, { new: true, useFindAndModify: false })
-    // }
-
-
     if (req.params.state === "unavailable") {
       await new UnavailableDoorStep({ package: req.params.id, reason: req.body.reason }).save()
     }
