@@ -65,6 +65,12 @@ const PackageSchema = new Schema(
     package_value: {
       type: Number,
     },
+    instant_bal: {
+      type: Number,
+    },
+    on_delivery_balance: {
+      type: Number,
+    },
     total_fee: {
       type: Number,
 

@@ -399,9 +399,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
-
+        packages[i].instant_bal = packages[i].delivery_fee
+        if (packages[i] === "collection") {
+          packages[i].on_delivery_balance = packages[i].package_value
+        }
         let savedPackage = await new Sent_package(packages[i]).save();
         savedPackages.push(savedPackage._id)
+        console.log("New Package", packages[i])
         if (agent.hasShelf) {
           await new Track_agent_packages({
             package: savedPackage._id,
@@ -433,14 +437,14 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         // await new Narations({ package: newpackage._id, state: "request", descriptions: `Package created` }).save()
 
 
-        if (req.body.payment_option === "collection") {
-          // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
-          await Sent_package.findOneAndUpdate({ _id: savedPackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
-        }
+        // if (req.body.payment_option === "collection") {
+        //   // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+        //   await Sent_package.findOneAndUpdate({ _id: savedPackage._id }, { hasBalance: true }, { new: true, useFindAndModify: false })
+        // }
       }
-      if (req.body.payment_option === "vendor") {
-        // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
-      }
+      // if (req.body.payment_option === "vendor") {
+      //   // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "agent", packages)
+      // }
 
 
       return res
