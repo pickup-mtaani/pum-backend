@@ -88,7 +88,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     }
 
     id.forEach(async (element) => {
-        if (typeofDelivery === "errand") {
+        if (typeofDelivery === "courier") {
             body.errand_package = element
             body.package = null
         }
