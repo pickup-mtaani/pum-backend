@@ -158,11 +158,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
           let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area` }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-            warehouse:
-            {
-              warehouseAt: moment(),
+            // warehouse:
+            // {
+            //   warehouseAt: moment(),
 
-            },
+            // },
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
 
@@ -178,6 +178,14 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           let new_description = [...narration.descriptions, {
             time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
           }]
+          await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+            // warehouse:
+            // {
+            //   warehouseAt: moment(),
+
+            // },
+            descriptions: new_description
+          }, { new: true, useFindAndModify: false })
 
 
           const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.senderAgentID?.business_name} and will be shipped to in 24hrs ` }
