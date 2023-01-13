@@ -193,7 +193,7 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
 router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
   try {
     // console.log(req.body.id)
-    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.body.id)
+    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.body.packages)
     return res
       .status(200)
       .json("paid");
