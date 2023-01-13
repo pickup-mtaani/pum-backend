@@ -52,8 +52,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
         {
           _id: LogedMpesa.package
         })
-
+      console.log("REsponseCode", req.body.Body?.stkCallback?.ResultCode)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
+        console.log("Type", LogedMpesa.type)
         if (LogedMpesa.type === "doorstep") {
           let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
           const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
@@ -66,6 +67,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name}  awaiting drop off to sorting area`
           }]
+          console.log("Updated Pack", UpdatePackage)
           await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
