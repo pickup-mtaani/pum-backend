@@ -92,7 +92,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           console.log("Track", Track)
 
         }
-        else if (LogedMpesa.type === "errand") {
+        else if (LogedMpesa.type === "courier") {
           let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
           const UpdatePackage = await Erand_package.findOneAndUpdate(
             {
