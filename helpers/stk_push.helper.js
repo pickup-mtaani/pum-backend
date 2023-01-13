@@ -4,6 +4,19 @@ var moment = require('moment');
 const mpesa_logsModel = require('../models/mpesa_logs.model')
 var { Headers } = fetch
 
+const validatePhone = phone => {
+    let raw_phone_number = phone?.trim();
+    let valid_phone_number = '';
+    if (phone.startsWith('+254')) {
+        valid_phone_number = raw_phone_number.replace('+254', '254');
+    } else if (phone.startsWith('0')) {
+        valid_phone_number = raw_phone_number.replace('0', '254');
+    } else {
+        valid_phone_number = raw_phone_number;
+    }
+
+    return valid_phone_number.replace(' ', '');
+};
 const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     let consumer_key = process.env.MPESA_CONSUMER_KEY,
         consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
@@ -15,13 +28,9 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
     // console.log(`Timestamp: ${timestamp}`);
     // console.log(`Passwords: ${new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64')}`);
     // return
-    while (s.charAt(0) === "0") {
-        s = s.substring(1);
-    }
-    const code = "254";
+    let Num = validatePhone(`${No}`)
     let new_amount = parseInt(amount);
-    let phone = `${code}${s}`;
-    console.log(new_amount)
+
     const Authorization = `Bearer ${new Buffer.from(
         `${consumer_key}:${consumer_secret}`,
         "utf-8"
@@ -53,7 +62,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
                 Timestamp: `${timestamp}`,
                 TransactionType: "CustomerPayBillOnline",
                 Amount: new_amount,
-                PartyA: phone,
+                PartyA: Num,
                 PartyB: short_code,
                 PhoneNumber: phone,
                 CallBackURL: `${process.env.MPESA_CALLbACK}`,
