@@ -127,6 +127,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
+        packages[i].instant_bal = packages[i].delivery_fee
+        packages[i].payment_option = packages[i].payment_option
+        if (packages[i].payment_option === "collection") {
+          packages[i].on_delivery_balance = packages[i].package_value
+        }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         savedPackages.push(newpackage._id)
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
@@ -221,6 +226,11 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
+        packages[i].instant_bal = packages[i].delivery_fee
+        packages[i].payment_option = packages[i].payment_option
+        if (packages[i].payment_option === "collection") {
+          packages[i].on_delivery_balance = packages[i].package_value
+        }
         newpackage = await new Erand_package(packages[i]).save();
         savedPackages.push(newpackage._id)
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()

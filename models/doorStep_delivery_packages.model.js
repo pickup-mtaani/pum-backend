@@ -53,7 +53,16 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-
+    payment_option: {
+      type: String,
+      enum: ['customer', 'vendor', 'collection', 'booked'],
+    },
+    instant_bal: {
+      type: Number,
+    },
+    on_delivery_balance: {
+      type: Number,
+    },
     payment_option: {
       type: String,
       enum: ['customer', 'vendor', 'collection'],

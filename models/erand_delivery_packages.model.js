@@ -67,7 +67,13 @@ const erandSchema = new Schema(
     },
     payment_option: {
       type: String,
-      enum: ['customer', 'vendor', 'collection'],
+      enum: ['customer', 'vendor', 'collection', 'booked'],
+    },
+    instant_bal: {
+      type: Number,
+    },
+    on_delivery_balance: {
+      type: Number,
     },
     origin: {
       lat: {
