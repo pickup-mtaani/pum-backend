@@ -55,14 +55,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     console.log("***************************Village *************************************")
     // console.log("PAID", req.body.Body?.stkCallback?.ResultDesc)
     // console.log("Mpesa Body", LogedMpesa.package, LogedMpesa.type, V)
-    let reason
-    if (req.body.Body?.stkCallback?.ResultDesc === "The initiator information is invalid") {
-      reason = "wrong pin entered"
-    } else if (req.body.Body?.stkCallback?.ResultDesc === "DS timeout user cannot be reached") {
-      reason = "canceled transaction by subscriber"
-    } else if (req.body.Body?.stkCallback?.ResultDesc === "The request is not permitted according to product assignment.") {
-      reason = "insufficient funds to complete the transaction"
-    }
+
 
     if (req.body.Body?.stkCallback?.ResultCode === 0) {
       if (LogedMpesa.type === "doorstep") {
@@ -119,6 +112,14 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }
     }
     else {
+      let reason = "delayed response"
+      if (req.body.Body?.stkCallback?.ResultDesc === "The initiator information is invalid") {
+        reason = "wrong pin entered"
+      } else if (req.body.Body?.stkCallback?.ResultDesc === "DS timeout user cannot be reached") {
+        reason = "canceled transaction by subscriber"
+      } else if (req.body.Body?.stkCallback?.ResultDesc === "The request is not permitted according to product assignment.") {
+        reason = "insufficient funds to complete the transaction"
+      }
       if (LogedMpesa.type === "doorstep") {
         let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
         const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
@@ -162,7 +163,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           payment_status: 'paid',
         }, { new: true, useFindAndModify: false })
         let new_description = [...narration?.descriptions, {
-          time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}}`
+          time: Date.now(), desc: `Pkg was not paid for by ${paymentUser?.name}  due to ${reason}`
         }]
 
         await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
@@ -189,9 +190,10 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
     console.log(err)
   }
 })
-router.put("/package-payment/:id", [authMiddleware, authorized], async (req, res) => {
+router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
   try {
-    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.params.id)
+    // console.log(req.body.id)
+    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, "agent", req.body.id)
     return res
       .status(200)
       .json("paid");

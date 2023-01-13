@@ -128,6 +128,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Door_step_Sent_package(packages[i]).save();
+        savedPackages.push(newpackage._id)
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 2, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
         await new Track_door_step({
           package: newpackage._id, created: {
@@ -148,7 +149,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "Package successfully Saved", });
+        .json(savedPackages);
     } else if (body.delivery_type === "errand") {
       const { packages } = req.body;
       for (let i = 0; i < packages.length; i++) {
@@ -221,6 +222,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
         newpackage = await new Erand_package(packages[i]).save();
+        savedPackages.push(newpackage._id)
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 4, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
         await new Track_Erand({
           package: newpackage._id, created: {
@@ -238,13 +240,13 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       //   await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "erand")
       // }
       // else {
-      await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
+      // await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
 
       // }
 
       return res
         .status(200)
-        .json({ message: "Package successfully Saved", });
+        .json(savedPackages);
     } else if (body.delivery_type === "shelf") {
 
       let packagesArr = [];
@@ -301,6 +303,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
+        savedPackages.push(savedPackage._id)
         await AgentDetails.findOneAndUpdate({ _id: details.agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
 
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
@@ -320,7 +323,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         })
 
         await v.save()
-        console.log(v)
+
         if (req.body.payment_option === "collection") {
           await Rent_a_shelf_deliveries.findOneAndUpdate({ _id: savedPackage._id, }, { hasBalance: true }, { new: true, useFindAndModify: false })
         }

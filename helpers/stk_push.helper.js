@@ -51,10 +51,10 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
                 BusinessShortCode: short_code,
                 Password: new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64'),
                 Timestamp: `${timestamp}`,
-                TransactionType: "CustomerPayBillOnline",
+                TransactionType: "CustomerBuyGoodsOnline",
                 Amount: new_amount,
                 PartyA: phone,
-                PartyB: short_code,
+                PartyB: 8012474,
                 PhoneNumber: phone,
                 CallBackURL: `${process.env.MPESA_CALLbACK}`,
                 AccountReference: "Pick-up-delivery",
@@ -78,29 +78,33 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
         TransactionDesc: "Payment delivery of  *",
     }));
     let package_id
+    for (let i = 0; i < id.length; i++) {
+        const body = {
+            MerchantRequestID: data.MerchantRequestID,
+            CheckoutRequestID: data.CheckoutRequestID,
+            phone_number: phone,
+            amount: amount,
+            ResponseCode: data.ResponseCode,
+            type: typeofDelivery,
+            package: id,
+            user: user,
+            log: ''
+        }
+        if (typeofDelivery === "errand") {
+            body.errand_package = id[i]
+            body.package = null
+        }
+        if (typeofDelivery === "doorstep") {
+            body.doorstep_package = id[i]
+        } else {
+            body.package = id[i]
+        }
 
-    const body = {
-        MerchantRequestID: data.MerchantRequestID,
-        CheckoutRequestID: data.CheckoutRequestID,
-        phone_number: phone,
-        amount: amount,
-        ResponseCode: data.ResponseCode,
-        type: typeofDelivery,
-        package: id,
-        user: user,
-        log: ''
-    }
-    if (typeofDelivery === "errand") {
-        body.errand_package = id
-        body.package = null
-    }
-    if (typeofDelivery === "doorstep") {
-        body.doorstep_package = id
-    }
+        await new mpesa_logsModel(body).save()
 
-    await new mpesa_logsModel(body).save()
+        return data;
 
-    return data;
+    }
 
 };
 module.exports = Mpesa_stk
