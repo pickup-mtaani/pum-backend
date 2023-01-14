@@ -749,13 +749,13 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
 router.get("/rent-shelf-search/:state", [authMiddleware, authorized], async (req, res) => {
   let { id } = req.query
   console.log(req.query)
-  let agent = await AgentUser({ user: req.user._id })
+  let agent = await AgentUser({ user: req?.user._id })
   try {
     let agent_packages
 
     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
 
-    agent_packages = await Rent_a_shelf_deliveries.find({ $or: [{ location: id }, { location: agent.agent }], state: req.params.state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+    agent_packages = await Rent_a_shelf_deliveries.find({ $or: [{ location: id }], state: req.params.state, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] }).sort({ createdAt: -1 }).limit(100)
       .populate('location')
       .populate('businessId')
       .populate('createdBy')

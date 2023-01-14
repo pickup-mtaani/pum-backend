@@ -180,6 +180,7 @@ router.post('/social-login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const body = req.body
+        console.log("BIDY", body)
         req.body.phone_number = await Format_phone_number(req.body.phone_number) //format the phone number
         const user = await User.findOne({ email: req.body.email });
         const phone = await User.findOne({ phone_number: req.body.phone_number });
@@ -206,6 +207,9 @@ router.post('/register', async (req, res) => {
         }
         const textbody = { address: `${body.phone_number}`, Body: `Hi ${body.email}\nYour Activation Code for Pickup mtaani is  ${body.verification_code} ` }
         if (req.body.role === "rider" || req.body.role === "seller") {
+            // req.body.activated = false;
+
+            console.log("Seller", req.body)
             await SendMessage(textbody)
         }
         const mailOptions = {
