@@ -746,7 +746,7 @@ router.get("/rent-shelf/:state", [authMiddleware, authorized], async (req, res) 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/rent-shelf-search/:state", async (req, res) => {
+router.get("/rent-shelf-search/:state", [authMiddleware, authorized], async (req, res) => {
   let { id } = req.query
   console.log(req.query)
   let agent = await AgentUser({ user: req.user._id })
