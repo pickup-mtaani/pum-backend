@@ -1356,7 +1356,7 @@ router.get("/collectors", async (req, res) => {
       users = await Collected.find({ type: "doorstep" }).populate('package3', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
     }
     if (type === "agent") {
-      users = await Collected.find({ type: "agent" }).populate('package', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
+      users = await Collected.find({ type: "agent" }).populate('package1', 'packageName receipt_no').populate('dispatchedBy', 'name').sort({ createdAt: -1 })
     }
 
 

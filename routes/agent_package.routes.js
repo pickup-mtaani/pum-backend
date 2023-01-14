@@ -179,11 +179,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
             time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
           }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-            // warehouse:
-            // {
-            //   warehouseAt: moment(),
+            dropped:
+            {
+              droppedAt: moment(),
 
-            // },
+            },
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
 
@@ -310,7 +310,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "collected") {
 
       try {
-        req.body.package = req.params.id
+        req.body.package1 = req.params.id
         req.body.dispatchedBy = req.user._id
         req.body.type = "agent"
 
@@ -1177,7 +1177,8 @@ router.get("/web/all-agent-packages/packages", [authMiddleware, authorized], asy
       .populate('receieverAgentID', 'business_name')
       .populate('senderAgentID', 'business_name')
       .populate('assignedTo', 'name')
-      .populate('businessId').sort({ createdAt: -1 });
+      .populate('businessId').sort({ createdAt: 1 });
+    console.log(packages[0])
     return res
       .status(200)
       .json(packages);
@@ -1370,19 +1371,19 @@ router.get("/commisions", [authMiddleware, authorized], async (req, res) => {
   }
 });
 // track agent_packages
-router.get("/agent/track/packages", [authMiddleware, authorized], async (req, res) => {
+router.get("/agent/track/packages", async (req, res) => {
   try {
     let packages
     if (req.query.searchKey) {
       var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Track_agent_packages.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: -1 }).limit(100)
+      packages = await Track_agent_packages.find({ $or: [{ reciept: searchKey }] }).sort({ createdAt: 1 }).limit(100)
         .populate('package')
       // .populate("collectedby")
       // .populate("droppedTo")
       return res.status(200)
         .json(packages);
     } else {
-      packages = await Track_agent_packages.find().sort({ createdAt: -1 }).limit(100)
+      packages = await Track_agent_packages.find().sort({ createdAt: -1 })
         .populate({
           path: 'package', populate: {
             path: 'receieverAgentID'

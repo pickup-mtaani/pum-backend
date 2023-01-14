@@ -8,6 +8,7 @@ export const get_riders = () => async (dispatch) => {
         dispatch({ type: "FETCH_RIDERS" });
         const { data } = await axios.get(`/api/riders`);
         let payload = [];
+        console.log(data.riders)
         payload = data.riders;
         dispatch({ type: "FETCH_RIDERS_SUCCESSFUL", payload });
         return payload;

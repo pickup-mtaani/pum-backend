@@ -69,16 +69,16 @@ function Users(props) {
       <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
         <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("agent"); setTab('sent'); }} style={{ backgroundColor: tab === "sent" && "gray" }} >
-          Agents Packages Collectors {tab === "sent" && routes.length}
+          Agents Packages Collectors {tab === "sent"}
         </div>
 
         <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("doorstep"); setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
-          Doorstep Packages collectors {tab === "collected" && routes.length}
+          Doorstep Packages collectors {tab === "collected"}
         </div>
         <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("rent"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-          Rent Shelf Packages Collection {tab === "shelf" && routes.length}
+          Rent Shelf Packages Collection {tab === "shelf"}
         </div>
 
       </div>

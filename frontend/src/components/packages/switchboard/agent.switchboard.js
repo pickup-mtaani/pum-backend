@@ -1,6 +1,6 @@
 import moment from 'moment';
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import { get_riders } from '../../../redux/actions/riders.actions'
 import { connect } from 'react-redux'
 import Details_modal from './detailsModal';
 function Agent(props) {
@@ -30,6 +30,29 @@ function Agent(props) {
             </div>
         )
     }
+    const openchangeRider = (item) => {
+        setTitle(`Edit ${item.packageName}\'s Assigned Rider`)
+        setShowModal(true)
+        setComponent(
+            <div className="w-full flex flex-col gap-y-2 ">
+                <div className="flex  gap-x-10">
+                    <select className=" px-2 border border-slate-200 w-full py-2 rounded-md"
+                        onChange={async (e) => {
+                            await props.update(item._id, { assignedTo: e.target.value });
+                            await fetch(); setShowModal(false)
+                        }}
+
+                    >
+                        <option value={item.senderAgentID._id}>{item.assignedTo.name}</option>
+                        {props?.riders?.map((agent, i) => (
+                            <option key={i} value={agent?.user?._id} >{agent?.user?.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+            </div>
+        )
+    }
     const editReciever = (item) => {
         setTitle("Update Customer Details  ")
         setShowModal(true)
@@ -52,7 +75,11 @@ function Agent(props) {
             </div>
         )
     }
+    useEffect(() => {
+        props.get_riders({ limit: 10 })
+    }, [])
 
+    console.log(props.riders)
     return (
 
         <div >
@@ -126,7 +153,6 @@ function Agent(props) {
                         <td className='border text-sm text-bold p-5' style={{ backgroundColor: '#00E676' }}>
                             {rent?.created &&
                                 moment(rent?.created?.createdAt).format("yyyy-MM-dd HH:mm:ss")}
-
                         </td>
                         <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent?.dropped?.droppedAt ? '#00E676' : null, }}>
                             {rent?.dropped?.droppedAt && <div >
@@ -134,12 +160,16 @@ function Agent(props) {
                                 <div>Delivered to:{rent?.package?.senderAgentID?.business_name}</div>
                             </div>}
                         </td>
-
                         <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent.assigned?.assignedAt ? '#00E676' : null, }}>
                             {rent?.assigned?.assignedAt && <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Assigned At: {moment(rent?.assignedAt).format("yyyy-MM-dd HH:mm:ss")}</div>
                                 <div>Rider:{rent?.package?.assignedTo?.name}</div>
                                 <div>Rider Phone :{rent?.package?.assignedTo?.phone_number}</div>
+                                <div className='bg-primary-500 p-1 text-center rounded-sm shadow-5'
+                                    onClick={() => openchangeRider(rent.package)}>Edit</div>
+                                {/* <div className='bg-primary-500 p-1 text-center rounded-sm shadow-5' onClick={() => openchangeagent(rent.package)}>Edit</div> */}
+
+
                             </div>}
                         </td>
                         <td className='border text-sm text-bold p-5' style={{ backgroundColor: rent.accepted?.acceptedAt ? '#00E676' : null, }}>
@@ -205,6 +235,7 @@ function Agent(props) {
 
 const mapStateToProps = (state) => {
     return {
+
         riders: state.ridersDetails.riders,
         packages: state.PackageDetails.packages,
         loading: state.PackageDetails.agentloading,
@@ -212,7 +243,7 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, {})(Agent)
+export default connect(mapStateToProps, { get_riders })(Agent)
 
 {/* <div style={{ display: 'flex', borderBottom: 'gray 1px solid' }}>
 <div style={header}>

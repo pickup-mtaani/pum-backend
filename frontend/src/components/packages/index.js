@@ -9,7 +9,6 @@ import Agent from './aent'
 import DoorStep from './doorStep'
 import Rent from './rent'
 
-import { ShelfagentPackages, ShelfagentXPackages, ShelfstatePackages } from '../../redux/actions/agents.actions'
 import Errand from './errand'
 
 function Agents(props) {
@@ -74,5 +73,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { ShelfagentPackages, ShelfagentXPackages, ShelfstatePackages })(Agents)
+export default connect(mapStateToProps, {})(Agents)
 
