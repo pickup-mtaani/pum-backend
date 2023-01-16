@@ -470,10 +470,13 @@ router.get("/errand-agents-rider-packages", [authMiddleware, authorized], async 
     let agents_count = {}
 
     for (let i = 0; i < packages.length; i++) {
-
-      agents_count[packages[i].agent.toString()] = agents_count[packages[i].agent.toString()] ? [...agents_count[packages[i].agent.toString()], packages[i]._id] : [packages[i]._id]
+      let package = await Erand_package.findOne({ _id: [packages[i]._id] }).populate('agent')
+      agents_count[packages[i].agent.toString()] = agents_count[packages[i].agent.toString()] ?
+        { packages: [...agents_count[packages[i]?.agent?.toString()]?.packages, packages[i]._id], name: package.agent.business_name } :
+        { packages: [packages[i]._id], name: package.agent.business_name }
 
     }
+
 
     return res.status(200)
       .json(agents_count);
