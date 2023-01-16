@@ -298,6 +298,7 @@ router.get("/errand-rider-package-count", [authMiddleware, authorized], async (r
     let assigned = await Erand_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
     let warehouseTransit = await Erand_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
     let assignedWarehouse = await Erand_package.find({ payment_status: "paid", state: "assigned-warehouse", assignedTo: req.user._id })
+
     return res
       .status(200)
       .json({ OnTransit: OnTransit.length, assigned: assigned.length, warehouseTransit: warehouseTransit.length, assignedWarehouse: assignedWarehouse.length });
@@ -609,7 +610,7 @@ router.get("/errand-packages/:state", [authMiddleware, authorized], async (req, 
   try {
     const agent = await AgentDetails.findOne({ user: req.user._id });
 
-    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
+    const errand_packages = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }] }).sort({ createdAt: -1 }).limit(1000).populate('createdBy', 'f_name l_name name phone_number').populate('businessId').populate("courier").populate("agent");
     return res
       .status(200)
       .json(errand_packages);
