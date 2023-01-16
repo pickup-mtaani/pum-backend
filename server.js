@@ -2,10 +2,12 @@ require('rootpath')();
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const morgan = require('morgan')
 const bodyParser = require('body-parser');
 var path = require('path');
 // const errorHandler = require('_middleware/error-handler');
 var dotenv = require('dotenv');
+app.use(morgan('tiny'))
 var mongoose = require('mongoose')
 const UserRoutes = require('routes/user.routes')
 const RolesRoutes = require('routes/role.routes')
