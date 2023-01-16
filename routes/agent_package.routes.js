@@ -158,11 +158,11 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
           await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
           let new_description = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no}  dropped at Phildelphia sorting area` }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
-            // warehouse:
-            // {
-            //   warehouseAt: moment(),
+            warehouse:
+            {
+              warehouseAt: moment(),
 
-            // },
+            },
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
 
@@ -407,17 +407,12 @@ router.get("/agents-wh-droped-package", [authMiddleware, authorized], async (req
 
 router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
-
     let { state } = req.query
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
     let agents_count = {}
-
     for (let i = 0; i < packages.length; i++) {
-
       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
-
     }
-
     return res.status(200)
       .json(agents_count);
 
@@ -515,17 +510,11 @@ router.get("/agents-wh-recieved-warehouse-package", [authMiddleware, authorized]
 });
 // count packages assigned by a rider
 router.get("/agents-rider-package-count", [authMiddleware, authorized], async (req, res) => {
-
   try {
-
-
     let OnTransit = await Sent_package.find({ payment_status: "paid", state: "on-transit", assignedTo: req.user._id })
-
     let assigned = await Sent_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
     let warehouseTransit = await Sent_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
     let assignedWarehouse = await Sent_package.find({ payment_status: "paid", state: "assigned-warehouse", assignedTo: req.user._id })
-
-
     return res
       .status(200)
       .json({ OnTransit: OnTransit.length, assigned: assigned.length, warehouseTransit: warehouseTransit.length, assignedWarehouse: assignedWarehouse.length });

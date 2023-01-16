@@ -292,6 +292,23 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/errand-rider-package-count", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let OnTransit = await Erand_package.find({ payment_status: "paid", state: "on-transit", assignedTo: req.user._id })
+    let assigned = await Erand_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
+    let warehouseTransit = await Erand_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
+    let assignedWarehouse = await Erand_package.find({ payment_status: "paid", state: "assigned-warehouse", assignedTo: req.user._id })
+    return res
+      .status(200)
+      .json({ OnTransit: OnTransit.length, assigned: assigned.length, warehouseTransit: warehouseTransit.length, assignedWarehouse: assignedWarehouse.length });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/errand-package-count", [authMiddleware, authorized], async (req, res) => {
   try {
 

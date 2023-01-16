@@ -368,6 +368,25 @@ router.get("/door-step-packages", [authMiddleware, authorized], async (req, res)
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/doorstep-rider-package-count", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let OnTransit = await Door_step_Sent_package.find({ payment_status: "paid", state: "on-transit", assignedTo: req.user._id })
+    let assigned = await Door_step_Sent_package.find({ payment_status: "paid", state: "assigned", assignedTo: req.user._id })
+    let warehouseTransit = await Door_step_Sent_package.find({ payment_status: "paid", state: "warehouse-transit", assignedTo: req.user._id })
+    let assignedWarehouse = await Door_step_Sent_package.find({ payment_status: "paid", state: "assigned-warehouse", assignedTo: req.user._id })
+
+    return res
+      .status(200)
+      .json({ OnTransit: OnTransit.length, assigned: assigned.length, warehouseTransit: warehouseTransit.length, assignedWarehouse: assignedWarehouse.length });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 router.get("/doorstep-agents-rider-packages", [authMiddleware, authorized], async (req, res) => {
   try {
 
@@ -391,9 +410,7 @@ router.get("/doorstep-agents-rider-packages", [authMiddleware, authorized], asyn
 });
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent = await AgentDetails.findOne({ user: req.user._id });
-
-    const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: agent?._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
