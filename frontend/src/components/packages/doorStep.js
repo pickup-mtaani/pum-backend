@@ -116,6 +116,12 @@ function Doorstep(props) {
         },
         {
             sortable: true,
+            name: 'Reciept',
+            wrap: true,
+            selector: row => row.receipt_no
+        },
+        {
+            sortable: true,
             name: 'Package value',
 
             selector: row => row.package_value
@@ -164,7 +170,6 @@ function Doorstep(props) {
             <>
                 <Search_filter_component
                     onChangeFilter={onChangeFilter}
-
                     searchValue={searchValue}
                     date={date}
                     showModal={showModal}
