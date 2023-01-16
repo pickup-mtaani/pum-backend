@@ -492,8 +492,13 @@ router.post("/package/delivery-charge", async (req, res) => {
     const receiver = await AgentDetails.findOne({ _id: receieverAgentID })
     let recieverZone = await AgentLocation.findOne({ _id: sender?.location_id }).populate('zone')
     let senderZone = await AgentLocation.findOne({ _id: receiver?.location_id }).populate('zone')
-    console.log("sender", senderZone?.zone?.name)
-    console.log("reciever", recieverZone?.zone?.name)
+    // console.log("sender", senderZone?.zone?.name)
+    // console.log("reciever", recieverZone?.zone?.name)
+    if (senderAgentID === receieverAgentID) {
+      price = 100;
+      return res.status(200).json({ message: "price set successfully ", price });
+
+    }
     if (
       (senderZone?.zone.name === "Zone A" && recieverZone?.zone.name === "Zone B")
     ) {
