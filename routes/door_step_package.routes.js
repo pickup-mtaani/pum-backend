@@ -410,10 +410,37 @@ router.get("/doorstep-agents-rider-packages", [authMiddleware, authorized], asyn
 });
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, $or: [{ assignedTo: req.user._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Door_step_Sent_package.find({ $or: [], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/door-step-agent-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let { state, id } = req.query
+
+    let packages = await Door_step_Sent_package.find({ payment_status: "paid", state: state, agent: id })
+
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+      let package = await Door_step_Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
+      agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
+        { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package.businessId.name }
+        : { packages: [packages[i]._id], name: package.businessId.name }
+      // agents_count[packages[i].businessId.toString()] = agents_count[packages[i].businessId.toString()] ?
+      //     [...agents_count[packages[i].businessId.toString()], { packages: [packages[i]._id], name: package.businessId.name }] : { packages: [packages[i]._id], name: package.businessId.name }
+    }
+    // ni same kabsa  hii inawork? yap  but iko  package moja  najua maybe zikiwa zaidi rudi kwa hio ingine??????
+    return res.status(200)
+      .json(agents_count);
+
   } catch (error) {
     console.log(error);
     return res

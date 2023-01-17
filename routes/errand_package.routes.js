@@ -17,8 +17,10 @@ var Conversation = require('models/conversation.model')
 var Sent_package = require("models/package.modal.js");
 var Courrier = require("models/courier.model");
 const Message = require("models/messages.model");
+const _ = require('lodash');
 var Erand_package = require("models/erand_delivery_packages.model");
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
+var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var multer = require('multer');
 const fs = require('fs');
 var path = require('path');
@@ -474,6 +476,48 @@ router.get("/errand-agents-rider-packages", [authMiddleware, authorized], async 
       agents_count[packages[i].agent.toString()] = agents_count[packages[i].agent.toString()] ?
         { packages: [...agents_count[packages[i]?.agent?.toString()]?.packages, packages[i]._id], name: package.agent.business_name } :
         { packages: [packages[i]._id], name: package.agent.business_name }
+
+    }
+
+
+    return res.status(200)
+      .json(agents_count);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+router.get("/errand-route-package-analytics", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let { state } = req.query
+    // console.log()
+    let packages = await Erand_package.find({ createdBy: req.user._id })
+    let Dpackages = await Door_step_Sent_package.find({ createdBy: req.user._id })
+    let newDpackages = []
+
+    function isEmpty(obj) {
+      console.log(Object.keys(obj))
+      return Object.keys(obj).length === 0;
+    }
+    for (let i = 0; i < Dpackages.length; i++) {
+      let j = isEmpty(Dpackages[i].destination)
+      if (typeof Dpackages[i].destination === 'object' && Dpackages[i].destination !== null && _.isEmpty({})) {
+        newDpackages.push({ destination: Dpackages[i].destination.name, _id: Dpackages[i]._id })
+      }
+    }
+    const v = packages.concat(newDpackages)
+    return res.json(newDpackages)
+    let agents_count = {}
+
+    for (let i = 0; i < v.length; i++) {
+
+      agents_count[packages[i]?.destination.toLowerCase()] = agents_count[packages[i]?.destination.toLowerCase()] ?
+        { packages: [...agents_count[packages[i]?.destination?.toLowerCase()]?.packages, packages[i]?._id], name: agents_count[packages[i]?.destination] } :
+        { packages: [packages[i]?._id], name: agents_count[packages[i]?.destination] }
 
     }
 
