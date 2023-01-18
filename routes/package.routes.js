@@ -131,6 +131,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].payment_option = packages[i].payment_option
         if (packages[i].payment_option === "collection") {
           packages[i].on_delivery_balance = packages[i].package_value
+        } else if (packages[i].payment_option === "customer") {
+          packages[i].customer = packages[i].delivery_fee
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         savedPackages.push(newpackage._id)
