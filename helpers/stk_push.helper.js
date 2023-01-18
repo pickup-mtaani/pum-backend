@@ -79,7 +79,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
         ResponseCode: data.ResponseCode,
         type: typeofDelivery,
         package: id,
-        payLater: paylater,
+        payLater: paylater ? true : false,
         user: user,
         log: ''
     }
