@@ -57,7 +57,6 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         if (LogedMpesa.type === "doorstep") {
 
-          console.log("Paylater State", LogedMpesa.payLater)
           if (LogedMpesa.payLater) {
             const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
               {
@@ -85,9 +84,18 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         else if (LogedMpesa.type === "agent") {
+          if (LogedMpesa.payLater) {
+            await Sent_package.findOneAndUpdate(
+              {
+                _id: LogedMpesa.package
+              }, {
+              payment_status: 'paid',
+              on_delivery_balance: 0,
+            }, { new: true, useFindAndModify: false })
+          }
           let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-          console.log(narration)
-          const UpdatePackage = await Sent_package.findOneAndUpdate(
+
+          await Sent_package.findOneAndUpdate(
             {
               _id: LogedMpesa.package
             }, {
@@ -104,6 +112,15 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         else if (LogedMpesa.type === "courier") {
+          if (LogedMpesa.payLater) {
+            await Erand_package.findOneAndUpdate(
+              {
+                _id: LogedMpesa.errand_package
+              }, {
+              payment_status: 'paid',
+              on_delivery_balance: 0,
+            }, { new: true, useFindAndModify: false })
+          }
           let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
           const UpdatePackage = await Erand_package.findOneAndUpdate(
             {
