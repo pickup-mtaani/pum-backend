@@ -592,20 +592,37 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
 router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
 
-    const agent_packages = await Erand_package.find({
-      // agent: req.query.agent,
-      $or: [
-        { payment_status: "paid" },
-        { payment_status: "to-be-paid" }
-      ],
-      state: req.params.state,
-      agent: req.params.id
-    }).sort({ createdAt: -1 })
-      .limit(1000)
-      .populate('createdBy', 'f_name l_name name phone_number')
-      .populate('businessId')
-      .populate("courier")
+    if (req.params.id) {
+      const agent_packages = await Erand_package.find({
+        // agent: req.query.agent,
+        $or: [
+          { payment_status: "paid" },
+          { payment_status: "to-be-paid" }
+        ],
+        state: req.params.state,
+        agent: req.params.id
+      }).sort({ createdAt: -1 })
+        .limit(1000)
+        .populate('createdBy', 'f_name l_name name phone_number')
+        .populate('businessId')
+        .populate("courier")
 
+    } else {
+      const agent_packages = await Erand_package.find({
+        // agent: req.query.agent,
+        $or: [
+          { payment_status: "paid" },
+          { payment_status: "to-be-paid" }
+        ],
+        state: req.params.state,
+
+      }).sort({ createdAt: -1 })
+        .limit(1000)
+        .populate('createdBy', 'f_name l_name name phone_number')
+        .populate('businessId')
+        .populate("courier")
+
+    }
 
 
     return res
