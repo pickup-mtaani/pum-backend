@@ -39,7 +39,10 @@ const doorstepSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-
+    fromLocation: {
+      type: String,
+      // required: true,
+    },
     total_payment: {
       type: Number,
 
@@ -106,6 +109,9 @@ const doorstepSchema = new Schema(
     toLocation: {
       type: String,
 
+    },
+    fromLocation: {
+      type: String,
     },
     businessId: {
       type: Schema.Types.ObjectId,

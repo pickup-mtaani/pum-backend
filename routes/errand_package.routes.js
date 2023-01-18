@@ -495,22 +495,44 @@ router.get("/errand-route-package-analytics", [authMiddleware, authorized], asyn
 
     let { state } = req.query
     // console.log()
-    let packages = await Erand_package.find({ createdBy: req.user._id })
+    let v = await Erand_package.find({ createdBy: req.user._id })
+    console.log(v[0])
     let Dpackages = await Door_step_Sent_package.find({ createdBy: req.user._id })
     let newDpackages = []
 
-    function isEmpty(obj) {
-      console.log(Object.keys(obj))
-      return Object.keys(obj).length === 0;
-    }
     for (let i = 0; i < Dpackages.length; i++) {
-      let j = isEmpty(Dpackages[i].destination)
-      if (typeof Dpackages[i].destination === 'object' && Dpackages[i].destination !== null && _.isEmpty({})) {
-        newDpackages.push({ destination: Dpackages[i].destination.name, _id: Dpackages[i]._id })
-      }
+      // destination: Dpackages[i].toLocation, _id: Dpackages[i]._id
+      newDpackages.push({
+
+        origin: { lat: null, lng: null, name: '' },
+        _id: Dpackages[i]._id,
+        customerName: 'Micheal jear',
+        customerPhoneNumber: '0720141534',
+        destination: Dpackages[i].toLocation,
+        packageName: 'Red jacck',
+        state: 'collected',
+        package_value: 400,
+        // assignedTo: new ObjectId("635765206c56126587d3655a"),
+        // courier: new ObjectId("638581ee8aebd80131cf5ce4"),
+        total_payment: 0,
+        // createdBy: new ObjectId("635a36a9e0ea8922e14de548"),
+        isProduct: true,
+        payment_phone_number: '0720141534',
+        type: 'courier',
+        // businessId: new ObjectId("635a3784e0ea8922e14de63e"),
+        payment_status: 'paid',
+        receipt_no: 'PMT-DAL-5037',
+        hasBalance: false,
+        // agent: new ObjectId("63574aa7a2f50e9fc68069da"),
+
+        __v: 0,
+        ticket: 'http://stagingapi.pickupmtaani.com/uploads/errand_dispaches2ce27264-31f0-4b21-9b3e-ca1ff1f7947d-6e7d22c3-65f5-4b18-9c99-94196a744f7a.jpg'
+
+      })
+
     }
-    const v = packages.concat(newDpackages)
-    return res.json(newDpackages)
+    const packages = v.concat(newDpackages)
+
     let agents_count = {}
 
     for (let i = 0; i < v.length; i++) {
