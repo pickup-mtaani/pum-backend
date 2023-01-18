@@ -83,7 +83,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
         user: user,
         log: ''
     }
-
+    console.log("Mpesa Logs Body", body)
     id.forEach(async (element) => {
 
 
