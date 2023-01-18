@@ -84,7 +84,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         else if (LogedMpesa.type === "agent") {
-          console.log("first", LogedMpesa.payLater);
+          console.log("LOGs", LogedMpesa);
           if (LogedMpesa.payLater) {
             await Sent_package.findOneAndUpdate(
               {

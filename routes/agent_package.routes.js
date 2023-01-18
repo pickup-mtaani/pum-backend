@@ -904,7 +904,7 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
         })
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
-      console.log(packages)
+
       return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
     }
     if (state === "delivered") {
