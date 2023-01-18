@@ -35,6 +35,11 @@ const MpesaLogsSchema = new Schema({
         type: String
 
     },
+    payLater: {
+
+        type: String
+
+    },
     phone_number: {
         type: String
     },

@@ -17,17 +17,13 @@ const validatePhone = phone => {
 
     return valid_phone_number.replace(' ', '');
 };
-const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
+const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
     let consumer_key = process.env.MPESA_CONSUMER_KEY,
         consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
         passkey = process.env.MPESA_CONSUMER_PASSKEY,
         short_code = parseInt(process.env.MPESA_SHORT_CODE),
         timestamp = moment().format('YYYYMMDDHHmmss');
-    var s = `${No}`;
-    // console.log("PHONe", s)
-    // console.log(`Timestamp: ${timestamp}`);
-    // console.log(`Passwords: ${new Buffer.from(`${short_code}${passkey}${timestamp}`).toString('base64')}`);
-    // return
+
     let phone = validatePhone(`${No}`)
     let new_amount = parseInt(amount);
 
@@ -83,11 +79,14 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id) => {
         ResponseCode: data.ResponseCode,
         type: typeofDelivery,
         package: id,
+        payLater: paylater,
         user: user,
         log: ''
     }
 
     id.forEach(async (element) => {
+
+
         if (typeofDelivery === "courier") {
             body.errand_package = element
             body.package = null
