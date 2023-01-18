@@ -490,7 +490,7 @@ router.get("/errand-agents-rider-packages", [authMiddleware, authorized], async 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/errand-route-package-analytics", [authMiddleware, authorized], async (req, res) => {
+router.get("/seller-route-package-analytics", [authMiddleware, authorized], async (req, res) => {
   try {
     let v = await Erand_package.find({ createdBy: req.user._id })
     let Dpackages = await Door_step_Sent_package.find({ createdBy: req.user._id })
