@@ -133,6 +133,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i].on_delivery_balance = packages[i].package_value
         } else if (packages[i].payment_option === "customer") {
           packages[i].on_delivery_balance = packages[i].delivery_fee
+          packages[i].payment_status = "to-be-paid"
         }
         newpackage = await new Door_step_Sent_package(packages[i]).save();
         savedPackages.push(newpackage._id)
@@ -146,13 +147,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }).save()
         await AgentDetails.findOneAndUpdate({ _id: packages[i].agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
       }
-      // if (req.body.payment_option === "vendor") {
-      //   // await Mpesa_stk(req.body.payment_phone_number, req.body.total_payment_amount, req.user._id, "doorstep")
-      // }
-      // else {
-      //   await Door_step_Sent_package.findOneAndUpdate({ _id: newpackage._id }, { payment_status: "to-be-paid" }, { new: true, useFindAndModify: false })
 
-      // }
 
       return res
         .status(200)
