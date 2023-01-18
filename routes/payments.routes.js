@@ -84,6 +84,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         else if (LogedMpesa.type === "agent") {
+          console.log("first", LogedMpesa.payLater);
           if (LogedMpesa.payLater) {
             await Sent_package.findOneAndUpdate(
               {
@@ -160,7 +161,7 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
 })
 router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log("Payment Body", req.body)
+
     await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
     return res
       .status(200)
