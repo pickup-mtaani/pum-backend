@@ -636,7 +636,7 @@ router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], as
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.get("/errand-packages-rider/:state/:id", [authMiddleware, authorized], async (req, res) => {
+router.get("/errand-packages-rider/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     const agent_packages = await Erand_package.find({
       // agent: req.query.agent,
