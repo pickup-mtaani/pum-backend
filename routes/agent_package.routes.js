@@ -1327,9 +1327,7 @@ router.get("/reciever-agent-packages-package-count", async (req, res) => {
       payment_status: "paid", receieverAgentID: id,
       state: state
     })
-
-
-
+    let agents_count = {}
     for (let i = 0; i < packages.length; i++) {
       let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
       agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
