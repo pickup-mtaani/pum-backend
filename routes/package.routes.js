@@ -1038,7 +1038,7 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
 
   try {
     const { state } = req.query
-    let agent_packages = Sent_package.find({ state: state, createdBy: req.user._id, businessId: req.params.id })
+    let agent_packages = await Sent_package.find({ state: state, createdBy: req.user._id, businessId: req.params.id })
       .sort({ createdAt: -1 })
       .populate("senderAgentID")
       .populate("receieverAgentID")
@@ -1051,7 +1051,7 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
     console.log(error);
     return res
       .status(400)
-      .json({ success: false, message: "operationhj failed ", error });
+      .json({ success: false, message: "operation failed ", error });
   }
 });
 router.get("/my-order-doorstep-packages/:id", [authMiddleware, authorized], async (req, res) => {
