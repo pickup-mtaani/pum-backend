@@ -83,8 +83,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
           }, { new: true, useFindAndModify: false })
 
         }
+
         else if (LogedMpesa.type === "agent") {
-          console.log("LOGs", LogedMpesa);
+
           if (LogedMpesa.payLater) {
             await Sent_package.findOneAndUpdate(
               {
@@ -109,7 +110,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
-          console.log("Track", Track)
+
 
         }
         else if (LogedMpesa.type === "courier") {

@@ -1242,56 +1242,14 @@ router.get("/agent-packages-web-recieved-warehouse", async (req, res) => {
 router.get("/reciever-agent-packages", [authMiddleware, authorized], async (req, res) => {
 
   try {
-
-
-    const { period, state, id } = req.query
-
-    let packages
-    if (period === 0 || period === undefined || period === null) {
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state })
-        .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID")
-        .populate("receieverAgentID")
-        .populate("businessId", "name")
-        .sort({ createdAt: -1 });
-      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-
-    } else if (req.query.searchKey) {
-
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-        .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID")
-        .populate("receieverAgentID")
-        .populate("businessId", "name")
-        .sort({ createdAt: -1 });
-      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-
-    }
-    else if (state && req.query.searchKey) {
-
-      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
-        .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID",)
-        .populate("receieverAgentID")
-        .populate("businessId", "name")
-        .sort({ createdAt: -1 });
-      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-    }
-    else {
-
-      packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() } })
-        .populate("createdBy", "l_name f_name phone_number")
-        .populate("senderAgentID",)
-        .populate("receieverAgentID")
-        .populate("businessId", "name")
-        .sort({ createdAt: -1 });
-      return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
-    }
-
+    const { state, id, business } = req.query
+    let packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, businessId: business })
+      .populate("createdBy", "l_name f_name phone_number")
+      .populate("senderAgentID",)
+      .populate("receieverAgentID")
+      .populate("businessId", "name")
+      .sort({ createdAt: -1 });
+    return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
   } catch (error) {
 
     console.log(error)
