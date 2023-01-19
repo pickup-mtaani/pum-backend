@@ -1105,6 +1105,261 @@ router.get("/my-order-rent-shelf-packages/:id", [authMiddleware, authorized], as
       .json({ success: false, message: "operationhj failed ", error });
   }
 });
+router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
+
+  try {
+    let agent_packages = {}
+    let doorstep_packages = {}
+    let shelves = {}
+    console.log("Bud", req.params)
+    // "request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "", "warehouse-transit"
+    if (req.query.searchKey) {
+      var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+      agent_packages.created = await Sent_package.findOne({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        .populate("agent")
+        .limit(100);
+      agent_packages.dropped = await Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        .populate("agent")
+        .limit(100);
+      agent_packages.transit = await Sent_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        .populate("agent")
+        .limit(100);
+      agent_packages.warehouse = await Sent_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        .populate("agent")
+        .limit(100);
+
+      agent_packages.delivered = await Sent_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+      agent_packages.collected = await Sent_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+
+      doorstep_packages.created = await Door_step_Sent_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.dropped = await Door_step_Sent_package.findOne({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.transit = await Door_step_Sent_package.findOne({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.warehouse = await Door_step_Sent_package.findOne({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      doorstep_packages.delivered = await Door_step_Sent_package.findOne({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.collected = await Door_step_Sent_package.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        // .populate("agent")
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      // doorstep_packages = await Door_step_Sent_package.find({
+      //   createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey },{ customerPhoneNumber: searchKey }]
+      // })
+      //   .populate(
+      //     "customerPhoneNumber packageName package_value package_value packageName customerName"
+      //   )
+      // .populate("agent")
+      //   .sort({ createdAt: -1 })
+      //   .limit(100);
+      // shelves = await Rent_a_shelf_deliveries.find({ businessId: req.params.id, createdBy: req.user._id, $or: [{ packageName: searchKey }, { receipt_no: searchKey },{ customerPhoneNumber: searchKey }] }).populate(
+      // );
+      shelves.created = await Rent_a_shelf_deliveries.findOne({ state: "request", createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      shelves.dropped = await Rent_a_shelf_deliveries.findOne({ $or: [{ state: "picked-from-seller" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      shelves.collected = await Rent_a_shelf_deliveries.findOne({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, $or: [{ packageName: searchKey }, { receipt_no: searchKey }, { customerPhoneNumber: searchKey }] })
+        .sort({ createdAt: -1 })
+        .limit(100);
+    } else {
+      agent_packages.created = await Sent_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+      agent_packages.dropped = await Sent_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+      agent_packages.transit = await Sent_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+      agent_packages.warehouse = await Sent_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+
+      agent_packages.delivered = await Sent_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+      agent_packages.collected = await Sent_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate("senderAgentID")
+        .populate("receieverAgentID")
+        // .populate("agent")
+        .limit(100);
+
+      doorstep_packages.created = await Door_step_Sent_package.find({ state: "request", createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.dropped = await Door_step_Sent_package.find({ state: "picked-from-sender", createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.transit = await Door_step_Sent_package.find({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.warehouse = await Door_step_Sent_package.find({ $or: [{ state: "recieved-warehouse" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      doorstep_packages.delivered = await Door_step_Sent_package.find({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      doorstep_packages.collected = await Door_step_Sent_package.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id })
+        .populate(
+          "customerPhoneNumber packageName package_value package_value packageName customerName"
+        )
+        .populate({
+          path: 'agent',
+          populate: {
+            path: 'location_id',
+          }
+        })
+        .sort({ createdAt: -1 })
+        .limit(100);
+      shelves.created = await Rent_a_shelf_deliveries.find({ state: "request", createdBy: req.user._id, businessId: req.params.id, })
+        .sort({ createdAt: -1 })
+        .populate('location')
+        .limit(100);
+      shelves.dropped = await Rent_a_shelf_deliveries.find({ $or: [{ state: "agent" }, { state: "doorstep" }, { state: "picked-from-seller" }, { state: "early_collection" }], createdBy: req.user._id, businessId: req.params.id, })
+        .sort({ createdAt: -1 })
+        .populate('location')
+        .limit(100);
+
+      shelves.collected = await Rent_a_shelf_deliveries.find({ $or: [{ state: "collected" }], createdBy: req.user._id, businessId: req.params.id, })
+        .sort({ createdAt: -1 })
+        .populate('location')
+        .limit(100);
+    }
+
+    return res
+      .status(200)
+      .json({
+        message: "Fetched Sucessfully",
+        agent_packages,
+        doorstep_packages,
+        shelves,
+      });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operationhj failed ", error });
+  }
+});
 router.get("/customers", [authMiddleware, authorized], async (req, res) => {
 
   try {
