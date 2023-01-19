@@ -4,3 +4,39 @@
 {"_id":{"$oid":"6350d1293579bf7f266a34c9"},"f_name":"William","name":"William Shakespeare ","phone_number":"+254720141534","verification_code":null,"deleted_at":null,"activated":true,"gender":"Not Specified","role":"agent","hashPassword":"$2a$10$3e.zy3TUYrO0FJt68PopO.j.5YQZx1PGpHdZRvRonhaH6gfUtib3y","email":"katchibo2@gmail.com","createdAt":{"$date":{"$numberLong":"1666240809080"}},"updatedAt":{"$date":{"$numberLong":"1666427868051"}},"__v":{"$numberInt":"0"}},
 {"_id":{"$oid":"63510f652fe298b3879a1953"},"l_name":"Okiya","f_name":"Kennedy","verification_code":{"$numberInt":"22256"},"deleted_at":null,"activated":true,"gender":"Not Specified","role":"seller","hashPassword":"$2a$10$6th6mjVLsH5I7zxaa.i1qenGJxn3JmNEflVSwGX1Yllaj2YNQMTWm","email":"kenokiya@gmail.com","createdAt":{"$date":{"$numberLong":"1666256741607"}},"updatedAt":{"$date":{"$numberLong":"1666256741607"}},"__v":{"$numberInt":"0"}},
 {"_id":{"$oid":"6350e21b1654ad88e879e42f"},"f_name":"Brian","name":"Brian waweru","phone_number":"+254790923387","verification_code":null,"deleted_at":null,"activated":true,"gender":"Not Specified","role":"rider","hashPassword":"$2a$10$jVT2Jf4WxdEAT1MhTA6cJuVDn/ZVnh0GhI5Oe4BAU6hwopq3FpvPK","email":"gotrackit0@gmail.com","createdAt":{"$date":{"$numberLong":"1666245147484"}},"updatedAt":{"$date":{"$numberLong":"1666433726943"}},"__v":{"$numberInt":"0"},"rider":{"$oid":"6350e21b1654ad88e879e431"}},
+
+
+// if (period === 0 || period === undefined || period === null) {
+//     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+
+//     packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state })
+//       .populate("createdBy", "l_name f_name phone_number")
+//       .populate("senderAgentID")
+//       .populate("receieverAgentID")
+//       .populate("businessId", "name")
+//       .sort({ createdAt: -1 });
+//     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+
+//   } else if (req.query.searchKey) {
+
+//     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+//     packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+//       .populate("createdBy", "l_name f_name phone_number")
+//       .populate("senderAgentID")
+//       .populate("receieverAgentID")
+//       .populate("businessId", "name")
+//       .sort({ createdAt: -1 });
+//     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+
+//   }
+//   else if (state && req.query.searchKey) {
+
+//     var searchKey = new RegExp(`${req.query.searchKey}`, 'i')
+//     packages = await Sent_package.find({ payment_status: "paid", receieverAgentID: id, state: state, updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ packageName: searchKey }, { receipt_no: searchKey }] })
+//       .populate("createdBy", "l_name f_name phone_number")
+//       .populate("senderAgentID",)
+//       .populate("receieverAgentID")
+//       .populate("businessId", "name")
+//       .sort({ createdAt: -1 });
+//     return res.status(200).json({ message: "Fetched Sucessfully", packages, "count": packages.length });
+//   }
