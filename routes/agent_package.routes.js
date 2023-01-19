@@ -1322,7 +1322,7 @@ router.get("/single-business-agent-packages", [authMiddleware, authorized], asyn
 });
 router.get("/reciever-agent-packages-package-count", async (req, res) => {
   try {
-    const { business, state, id } = req.query
+    const { state, id } = req.query
     let packages = await Sent_package.find({
       payment_status: "paid", receieverAgentID: id,
       state: state
