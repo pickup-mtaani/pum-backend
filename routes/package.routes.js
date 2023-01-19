@@ -358,6 +358,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
       for (let i = 0; i < packages.length; i++) {
         let business = await Bussiness.findById(packages[i].businessId)
         let agent = await AgentDetails.findOne({ _id: packages[i].senderAgentID })
+        let agent2 = await AgentDetails.findOne({ _id: packages[i].receieverAgentID })
         let newPackageCount = 1
         if (agent.package_count) {
           newPackageCount = parseInt(agent?.package_count + 1)
@@ -413,8 +414,8 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
         let savedPackage = await new Sent_package(packages[i]).save();
         savedPackages.push(savedPackage._id)
-        console.log("New Package", packages[i])
-        if (agent.hasShelf) {
+
+        if (agent.hasShelf && agent2.hasShelf) {
           await new Track_agent_packages({
             package: savedPackage._id,
             created: moment(),
@@ -1042,7 +1043,6 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
       .sort({ createdAt: -1 })
       .populate("senderAgentID")
       .populate("receieverAgentID")
-      .populate("agent")
       .limit(100);
     return res
       .status(200)
