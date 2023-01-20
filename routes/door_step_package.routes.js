@@ -410,7 +410,7 @@ router.get("/doorstep-agents-rider-packages", [authMiddleware, authorized], asyn
 });
 router.get("/door-step-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-    const agent_packages = await Door_step_Sent_package.find({ $or: [], state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
+    const agent_packages = await Door_step_Sent_package.find({ state: req.params.state, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }] }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
       .json(agent_packages);
@@ -425,7 +425,7 @@ router.get("/door-step-agent-packages", [authMiddleware, authorized], async (req
   try {
     let { state, id } = req.query
 
-    let packages = await Door_step_Sent_package.find({ payment_status: "paid", state: state, agent: id })
+    let packages = await Door_step_Sent_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: state, agent: id })
 
     let agents_count = {}
 
@@ -448,6 +448,7 @@ router.get("/door-step-agent-packages", [authMiddleware, authorized], async (req
 });
 router.get("/door-step-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
+    console.log("req.query")
     const agent_packages = await Door_step_Sent_package.find({ agent: req.query.agent, $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], state: req.params.state, businessId: req.params.id }).sort({ createdAt: -1 }).limit(100).populate('createdBy', 'f_name l_name name phone_number').populate('businessId');
     return res
       .status(200)
