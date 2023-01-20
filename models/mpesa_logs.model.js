@@ -34,6 +34,10 @@ const MpesaLogsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'agent_agent_sent_packages'
     },
+    sale: {
+        type: Schema.Types.ObjectId,
+        ref: 'agent_agent_sent_packages'
+    },
     CheckoutRequestID: {
 
         type: String

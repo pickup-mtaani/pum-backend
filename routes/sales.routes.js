@@ -110,19 +110,5 @@ router.get('/todays-sales', [authMiddleware, authorized], async (req, res) => {
   }
 
 });
-router.post("/sales-pay/:id", [authMiddleware, authorized], async (req, res) => {
-  try {
-    let v = await Mpesa_stk(req.body.phone_number, 1)
-    await Sale.findOneAndUpdate({ _id: req.params.id }, { payment_status: true }, { new: true, useFindAndModify: false })
-    return res
-      .status(200)
-      .json({});
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(400)
-      .json({ success: false, message: "operation failed ", error });
-  }
-});
 
 module.exports = router;

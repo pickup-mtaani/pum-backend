@@ -17,7 +17,7 @@ const validatePhone = phone => {
 
     return valid_phone_number.replace(' ', '');
 };
-const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
+const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId) => {
     let consumer_key = process.env.MPESA_CONSUMER_KEY,
         consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
         passkey = process.env.MPESA_CONSUMER_PASSKEY,
@@ -84,6 +84,9 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
         log: ''
     }
 
+    if (typeofDelivery === "sale") {
+        body.sale = saleId
+    }
     id.forEach(async (element) => {
 
 
@@ -91,6 +94,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater) => {
             body.errand_package = element
             body.package = null
         }
+
         if (typeofDelivery === "doorstep") {
             body.doorstep_package = element
         } if (typeofDelivery === "agent") {

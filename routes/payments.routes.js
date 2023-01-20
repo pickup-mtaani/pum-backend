@@ -2,6 +2,7 @@ const express = require('express');
 var Sale = require('models/sales.model')
 var Stock = require('models/stocks.model')
 var User = require('models/user.model')
+var Sale = require('models/sales.model')
 var Location = require('models/thrifter_location.model')
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
@@ -171,6 +172,17 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
           }, { new: true, useFindAndModify: false })
         }
+        else if (LogedMpesa.type === "sale") {
+          if (LogedMpesa.payLater) {
+            await Sale.findOneAndUpdate(
+              {
+                _id: LogedMpesa.sale
+              }, {
+              payment_status: true
+            }, { new: true, useFindAndModify: false })
+          }
+
+        }
       }
 
     })
@@ -202,6 +214,24 @@ router.put("/package-payment/", [authMiddleware, authorized], async (req, res) =
     console.log(err)
   }
 })
+
+router.post("/sales-pay/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    // let v = await Mpesa_stk(req.body.phone_number, 1)
+    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery, req.query.param)
+
+    // await Sale.findOneAndUpdate({ _id: req.params.id }, { payment_status: true }, { new: true, useFindAndModify: false })
+    return res
+      .status(200)
+      .json({});
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 
 
 
