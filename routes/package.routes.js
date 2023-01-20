@@ -307,6 +307,9 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         packages[i].receipt_no = `PMT-RTF-${parseInt(agent_id?.package_count + 1)}`;
         packages[i].createdAt = moment().format('YYYY-MM-DD');
         packages[i].time = moment().format('hh:mm');
+        if (packages[i].payment_option === "collection") {
+          packages[i].on_delivery_balance = packages[i].package_value
+        }
         const savedPackage = await new Rent_a_shelf_deliveries(
           packages[i]
         ).save();
@@ -1388,7 +1391,7 @@ router.get("/booked-for-ealy-collection", [authMiddleware, authorized], async (r
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id).populate('receieverAgentID').populate('senderAgentID')
-    const rent = await Rent_a_shelf_deliveries.findById(req.params.id).populate('location')
+    const rent = await Rent_a_shelf_deliveries.findById(req.params.id).populate('location', "business_name")
     let package = await Door_step_Sent_package.findById(req.params.id).populate('agent').populate({
       path: 'package',
       populate: {
