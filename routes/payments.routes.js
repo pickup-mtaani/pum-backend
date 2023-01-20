@@ -49,7 +49,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
       const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
       const paymentUser = await User.findById(LogedMpesa.user)
-
+      console.log("LOG", LogedMpesa)
       let V = await Sent_package.findOne(
         {
           _id: LogedMpesa.package
