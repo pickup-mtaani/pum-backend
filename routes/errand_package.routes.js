@@ -419,6 +419,54 @@ router.get("/errand-packages", [authMiddleware, authorized], async (req, res) =>
       .json({ success: false, message: "operation failed ", error });
   }
 });
+router.get("/errand-agent-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let errand_packages
+    const agent = await Erand_package.find({ $or: [{ payment_status: "paid" }, { payment_status: "to-be-paid" }], updatedAt: { $gte: moment().subtract(period, 'days').toDate() }, $or: [{ assignedTo: req.user._id }, { agent: req.user._id }], $or: [{ state: "request" }, { state: "picked-from-sender" }] }).sort({ createdAt: -1 }).limit(1000)
+      .populate('createdBy', 'f_name l_name name phone_number,')
+      .populate('businessId').populate("agent").populate("courier")
+
+    return res
+      .status(200)
+      .json({ errand_packages, blended, agent });
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/errand-bussiness-packages", [authMiddleware, authorized], async (req, res) => {
+  try {
+
+    let { state, id } = req.query
+    // console.log()
+    let packages = await Erand_package.find({ agent: id, state: state })
+
+    let agents_count = {}
+
+    for (let i = 0; i < packages.length; i++) {
+      let package = await Erand_package.findOne({ _id: [packages[i]._id] }).populate('businessId', "name")
+      // console.log(package)
+
+      agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
+        { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package?.businessId?.name }
+        : { packages: [packages[i]._id], name: package?.businessId?.name }
+
+    }
+    return res.status(200)
+      .json(agents_count);
+
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
 
 router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('ticket'), async (req, res) => {
   try {
