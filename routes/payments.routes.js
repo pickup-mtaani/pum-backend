@@ -3,6 +3,7 @@ var Sale = require('models/sales.model')
 var Stock = require('models/stocks.model')
 var User = require('models/user.model')
 var Location = require('models/thrifter_location.model')
+var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
 var Sent_package = require("models/package.modal.js");
 var Doorstep_pack = require("models/doorStep_delivery.model");
