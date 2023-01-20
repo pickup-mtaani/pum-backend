@@ -1388,7 +1388,7 @@ router.get("/booked-for-ealy-collection", [authMiddleware, authorized], async (r
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id).populate('receieverAgentID').populate('senderAgentID')
-    const rent = await Rent_a_shelf_deliveries.findById(req.params.id)
+    const rent = await Rent_a_shelf_deliveries.findById(req.params.id).populate('location')
     let package = await Door_step_Sent_package.findById(req.params.id).populate('agent').populate({
       path: 'package',
       populate: {

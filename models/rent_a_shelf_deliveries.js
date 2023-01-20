@@ -35,6 +35,9 @@ const doorstepSchema = new Schema(
       type: Boolean,
       default: false
     },
+    on_delivery_balance: {
+      type: Number,
+    },
     pipe: {
       type: String,
 

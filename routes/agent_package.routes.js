@@ -136,13 +136,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       try {
         let agent = await AgentDetails.findOne({ _id: package.senderAgentID })
         let agent2 = await AgentDetails.findOne({ _id: package.receieverAgentID })
-        if (agent?.hasShelf && agent2.hasShelf) {
-          return
-          // await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
-        }
-        if (agent?.hasShelf) {
-          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
-        }
 
         let rider = await User.findOne({ _id: sender.rider })
         if (package.senderAgentID._id.toString() === package.receieverAgentID.toString()) {
