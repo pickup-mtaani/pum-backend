@@ -51,7 +51,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }, { new: true, useFindAndModify: false })
 
       const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
-      console.log("LOG", LogedMpesa)
+      // console.log("LOG", LogedMpesa)
 
 
       let package
@@ -62,31 +62,43 @@ router.post('/CallbackUrl', async (req, res, next) => {
           package = await Door_step_Sent_package.findOne(
             {
               _id: LogedMpesa.doorstep_package
-            })
-          if (LogedMpesa.payLater) {
-            const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
+            }).populate("agent")
+          if (package.state === "request") {
+            await Door_step_Sent_package.findOneAndUpdate(
+              {
+                _id: LogedMpesa.doorstep_package
+              }, {
+              payment_status: 'paid',
+              instant_bal: 0,
+            }, { new: true, useFindAndModify: false })
+            let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
+
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.agent?.business_name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+            }]
+
+            await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+          } else {
+            await Door_step_Sent_package.findOneAndUpdate(
               {
                 _id: LogedMpesa.doorstep_package
               }, {
               payment_status: 'paid',
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
-          }
-          let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
-          const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
-            {
-              _id: LogedMpesa.doorstep_package
-            }, {
-            payment_status: 'paid',
-            instant_bal: 0,
-          }, { new: true, useFindAndModify: false })
-          let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
-          }]
+            let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
 
-          await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
-            descriptions: new_description
-          }, { new: true, useFindAndModify: false })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+            }]
+
+            await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+          }
+
 
         }
 
@@ -94,8 +106,27 @@ router.post('/CallbackUrl', async (req, res, next) => {
           package = await Sent_package.findOne(
             {
               _id: LogedMpesa.package
-            })
-          if (LogedMpesa.payLater) {
+            }).populate('senderAgentID')
+          if (package.state === "request") {
+
+            let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
+            await Sent_package.findOneAndUpdate(
+              {
+                _id: LogedMpesa.package
+              }, {
+              payment_status: 'paid',
+              instant_bal: 0,
+            }, { new: true, useFindAndModify: false })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.senderAgentID?.business_name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+
+          }
+          else {
+            let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
             await Sent_package.findOneAndUpdate(
               {
                 _id: LogedMpesa.package
@@ -103,49 +134,41 @@ router.post('/CallbackUrl', async (req, res, next) => {
               payment_status: 'paid',
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+
           }
-          let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-          await Sent_package.findOneAndUpdate(
-            {
-              _id: LogedMpesa.package
-            }, {
-            payment_status: 'paid',
-            instant_bal: 0,
-          }, { new: true, useFindAndModify: false })
-          let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-          }]
-          let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
-            descriptions: new_description
-          }, { new: true, useFindAndModify: false })
 
 
         }
         else if (LogedMpesa.type === "courier") {
-          if (LogedMpesa.payLater) {
-            package = await Erand_package.findOne(
-              {
-                _id: LogedMpesa.errand_package
-              })
-            let v = await Erand_package.findOneAndUpdate(
-              {
-                _id: LogedMpesa.errand_package
-              }, {
-              payment_status: 'paid',
-              on_delivery_balance: 0,
-            }, { new: true, useFindAndModify: false })
-          }
+          package = await Erand_package.findOne(
+            {
+              _id: LogedMpesa.errand_package
+            }).populate('agent')
+
+          let v = await Erand_package.findOneAndUpdate(
+            {
+              _id: LogedMpesa.errand_package
+            }, {
+            payment_status: 'paid',
+            on_delivery_balance: 0,
+          }, { new: true, useFindAndModify: false })
           let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
-          const UpdatePackage = await Erand_package.findOneAndUpdate(
+          await Erand_package.findOneAndUpdate(
             {
               _id: LogedMpesa.errand_package
             }, {
             payment_status: 'paid',
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
-          console.log("UPDATED", UpdatePackage)
+
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+            time: Date.now(), desc: `Pkg paid for by ${package?.agent?.business_name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
 
           await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
@@ -153,7 +176,10 @@ router.post('/CallbackUrl', async (req, res, next) => {
             descriptions: new_description
 
           }, { new: true, useFindAndModify: false })
+
+
         }
+
         else if (LogedMpesa.type === "rent") {
           if (LogedMpesa.payLater) {
             await Rent_a_shelf_deliveries.findOneAndUpdate(
@@ -165,13 +191,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             }, { new: true, useFindAndModify: false })
           }
           let narration = await Track_rent_a_shelf.findOne({ package: LogedMpesa.rent_package })
-          const UpdatePackage = await Rent_a_shelf_deliveries.findOneAndUpdate(
-            {
-              _id: LogedMpesa.rent_package
-            }, {
-            payment_status: 'paid',
-            instant_bal: 0,
-          }, { new: true, useFindAndModify: false })
+
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
