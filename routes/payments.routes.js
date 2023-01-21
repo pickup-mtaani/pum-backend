@@ -54,15 +54,15 @@ router.post('/CallbackUrl', async (req, res, next) => {
       const paymentUser = await User.findById(LogedMpesa.user)
 
 
-      let package = await Sent_package.findOne(
-        {
-          _id: LogedMpesa.package
-        })
+      let package
 
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
 
         if (LogedMpesa.type === "doorstep") {
-
+          package = await Door_step_Sent_package.findOne(
+            {
+              _id: LogedMpesa.doorstep_package
+            })
           if (LogedMpesa.payLater) {
             const UpdatePackage = await Door_step_Sent_package.findOneAndUpdate(
               {
@@ -91,7 +91,10 @@ router.post('/CallbackUrl', async (req, res, next) => {
         }
 
         else if (LogedMpesa.type === "agent") {
-
+          package = await Sent_package.findOne(
+            {
+              _id: LogedMpesa.package
+            })
           if (LogedMpesa.payLater) {
             await Sent_package.findOneAndUpdate(
               {
@@ -120,7 +123,11 @@ router.post('/CallbackUrl', async (req, res, next) => {
         }
         else if (LogedMpesa.type === "courier") {
           if (LogedMpesa.payLater) {
-            await Erand_package.findOneAndUpdate(
+            package = await Erand_package.findOne(
+              {
+                _id: LogedMpesa.errand_package
+              })
+            let v = await Erand_package.findOneAndUpdate(
               {
                 _id: LogedMpesa.errand_package
               }, {
@@ -136,6 +143,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             payment_status: 'paid',
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
+          console.log("UPDATED", UpdatePackage)
           let new_description = [...narration?.descriptions, {
             time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
