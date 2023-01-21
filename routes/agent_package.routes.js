@@ -408,6 +408,7 @@ router.get("/agents-rider-packages", [authMiddleware, authorized], async (req, r
   try {
     let { state } = req.query
     let packages = await Sent_package.find({ assignedTo: req.user._id, type: "agent", state: state })
+
     let agents_count = {}
     for (let i = 0; i < packages.length; i++) {
       agents_count[packages[i].senderAgentID.toString()] = agents_count[packages[i].senderAgentID.toString()] ? [...agents_count[packages[i].senderAgentID.toString()], packages[i]._id] : [packages[i]._id]
@@ -943,16 +944,11 @@ router.get("/agent-packages", [authMiddleware, authorized], async (req, res) => 
       .json({ success: false, message: "operation failed ", error });
   }
 });
-router.post("/Mpesa-till", [authMiddleware, authorized], async (req, res) => {
-  const result = await Mpesa_stk("0716017221", 1)
-  return res.status(200).json({ success: true, message: `Result: ${JSON.stringify(result)}` });
 
-})
 router.get("/agent-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     const { state } = req.query
-    console.log(state)
-    console.log(req.params.id)
+
     let packages = await Sent_package.find({ senderAgentID: req.params.id, state: state, })
       .populate("createdBy", "l_name f_name phone_number")
       .populate({
@@ -1062,7 +1058,7 @@ router.get("/agent-packages-count", [authMiddleware, authorized], async (req, re
 
     const { period, state, id } = req.query
     let packages
-    packages = await Sent_package.find({ agent: id, state: state, })
+    // packages = await Sent_package.find({ agent: id, state: state, })
     let dropped = await Sent_package.find({ agent: id, state: "dropped" })
     let assigneWarehouse = await Sent_package.find({ agent: id, $or: [{ payment_status: "paid" }, { payment_status: "paid" }], state: "assigned-warehouse" })
     let warehouseTransit = await Sent_package.find({ agent: id, $or: [{ payment_status: "paid" }, { payment_status: "paid" }], state: "warehouse-transit" })

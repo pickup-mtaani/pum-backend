@@ -613,9 +613,9 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
 });
 router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-
+let agent_packages
     if (req.params.id) {
-      const agent_packages = await Erand_package.find({
+       agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
           { payment_status: "paid" },
@@ -630,7 +630,7 @@ router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], as
         .populate("courier")
 
     } else {
-      const agent_packages = await Erand_package.find({
+       agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
           { payment_status: "paid" },
