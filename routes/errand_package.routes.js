@@ -654,25 +654,23 @@ router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], as
         .populate('createdBy', 'f_name l_name name phone_number')
         .populate('businessId')
         .populate("courier")
-
-    } else {
-      agent_packages = await Erand_package.find({
-        // agent: req.query.agent,
-        $or: [
-          { payment_status: "paid" },
-          { payment_status: "to-be-paid" }
-        ],
-        state: req.params.state,
-
-      }).sort({ createdAt: -1 })
-        .limit(1000)
-        .populate('createdBy', 'f_name l_name name phone_number')
-        .populate('businessId')
-        .populate("courier")
+      return res
+        .status(200)
+        .json(agent_packages);
 
     }
+    agent_packages = await Erand_package.find({
+      $or: [
+        { payment_status: "paid" },
+        { payment_status: "to-be-paid" }
+      ],
+      state: req.params.state,
 
-
+    }).sort({ createdAt: -1 })
+      .limit(1000)
+      .populate('createdBy', 'f_name l_name name phone_number')
+      .populate('businessId')
+      .populate("courier")
     return res
       .status(200)
       .json(agent_packages);
