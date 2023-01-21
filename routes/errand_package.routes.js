@@ -640,7 +640,7 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
 router.get("/errand-agent-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent_packages
-    if (req.query.id !== undefined) {
+    if (req.query?.id) {
       agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
@@ -648,7 +648,7 @@ router.get("/errand-agent-packages/:state", [authMiddleware, authorized], async 
           { payment_status: "to-be-paid" }
         ],
         state: req.params.state,
-        agent: req.query.id
+        agent: req.query?.id
       }).sort({ createdAt: -1 })
         .limit(1000)
         .populate('createdBy', 'f_name l_name name phone_number')

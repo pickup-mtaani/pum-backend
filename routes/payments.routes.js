@@ -29,8 +29,14 @@ const { SendMessage } = require('../helpers/sms.helper');
 var MpesaLogs = require("../models/mpesa_logs.model");
 const Mpesa_stk = require('../helpers/stk_push.helper');
 router.get('/mpesa-payments', async (req, res, next) => {
-  const mpeslog = await MpesaLogs.find().populate('user')
-  return res.status(200).json({ success: true, message: `payments feched`, mpeslog });
+  try {
+    const mpeslog = await MpesaLogs.find().populate('user')
+    console.log("first", mpeslog)
+    return res.status(200).json(mpeslog);
+  } catch (error) {
+    console.log(error)
+  }
+
 })
 
 router.post('/CallbackUrl', async (req, res, next) => {

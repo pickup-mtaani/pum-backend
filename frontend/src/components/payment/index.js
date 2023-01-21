@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 import DataTable from 'react-data-table-component'
 import { connect } from 'react-redux'
-import { get_signatures, Post } from '../../redux/actions/routes.actions'
 
+import { get_payments } from '../../redux/actions/riders.actions'
 import Search_filter_component from '../common/Search_filter_component'
 import Layout from '../../views/Layouts'
 import { columns } from './data'
@@ -53,7 +53,7 @@ function Users(props) {
   }, [searchValue, date, showModal]);
   const fetch = async (type) => {
 
-    let routes = await props.get_signatures(type)
+    let routes = await props.get_payments(type)
 
     setData(routes)
 
@@ -115,5 +115,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { get_signatures, Post, })(Users)
+export default connect(mapStateToProps, { get_payments, })(Users)
 
