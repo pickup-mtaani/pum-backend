@@ -156,7 +156,18 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
           assignedAt: moment()
         }, descriptions: new_description
       })
-
+      if (sender?.hasShelf) {
+        await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
+        let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
+        await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
+          assigned: {
+            assignedTo: package.assignedTo,
+            // assignedAt: package?.senderAgentID?._id,
+            assignedBy: req.user._id,
+            assignedAt: moment()
+          }, descriptions: new_des
+        })
+      }
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
       await SendMessage(textbody)
       let payments = getRandomNumberBetween(100, 200)
@@ -208,8 +219,8 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     if (req.params.state === "assigned-warehouse") {
       let newrider = await User.findOne({ _id: req.query.assignedTo })
 
-      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
-      console.log("TEst ", v)
+      await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
+
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name}  to deliver to  ${package.customerName}` }]
 
       await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
