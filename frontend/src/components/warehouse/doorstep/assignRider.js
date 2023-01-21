@@ -61,6 +61,12 @@ function Riderpage(props) {
         },
         {
             sortable: true,
+            name: 'To',
+            minWidth: '250px',
+            selector: row => row.createdAt
+        },
+        {
+            sortable: true,
             name: 'Action',
             minWidth: '150px',
             selector: row => (<>

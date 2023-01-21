@@ -202,6 +202,8 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
     if (req.params.state === "assigned-warehouse") {
       let newrider = await User.findOne({ _id: req.query.assignedTo })
 
+      let v = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state, assignedTo: req.query.assignedTo }, { new: true, useFindAndModify: false })
+      console.log("TEst ", v)
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  assigned  by philadelphia sorting to ${newrider.name}  to deliver to  ${package.customerName}` }]
 
       await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
