@@ -648,7 +648,8 @@ router.get("/errand-agent-packages/:state", [authMiddleware, authorized], async 
           { payment_status: "to-be-paid" }
         ],
         state: req.params.state,
-        agent: req.query?.id
+        agent: req.query?.id,
+        assignedTo: req.user._id
       }).sort({ createdAt: -1 })
         .limit(1000)
         .populate('createdBy', 'f_name l_name name phone_number')
@@ -665,6 +666,7 @@ router.get("/errand-agent-packages/:state", [authMiddleware, authorized], async 
         { payment_status: "to-be-paid" }
       ],
       state: req.params.state,
+      assignedTo: req.user._id
 
     }).sort({ createdAt: -1 })
       .limit(1000)
