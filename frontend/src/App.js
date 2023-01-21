@@ -11,7 +11,7 @@ import Products from "./components/Seller/products";
 import Packages from "./components/packages"
 import AgentPackages from "./components/packages/aent"
 import Riders from "./components/Riders";
-import Payments from "./components/payments";
+import Payments from "./components/payment";
 import Tracks from "./components/tracks ";
 import WareHouse from "./components/warehouse";
 import Assign_Agent_package_riderWareHouse from "./components/warehouse/agent/assignRider";

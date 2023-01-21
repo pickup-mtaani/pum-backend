@@ -148,15 +148,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
           package = await Erand_package.findOne(
             {
               _id: LogedMpesa.errand_package
-            }).populate('agent')
+            }).populate('createdBy')
 
-          let v = await Erand_package.findOneAndUpdate(
-            {
-              _id: LogedMpesa.errand_package
-            }, {
-            payment_status: 'paid',
-            on_delivery_balance: 0,
-          }, { new: true, useFindAndModify: false })
+
           let narration = await Track_Erand.findOne({ package: LogedMpesa.errand_package })
           await Erand_package.findOneAndUpdate(
             {
@@ -167,7 +161,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           }, { new: true, useFindAndModify: false })
 
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${package?.agent?.business_name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+            time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
 
           await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
