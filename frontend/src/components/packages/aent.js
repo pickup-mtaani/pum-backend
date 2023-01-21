@@ -83,6 +83,12 @@ function Agent(props) {
         },
         {
             sortable: true,
+            name: 'Reciept',
+            wrap: true,
+            selector: row => row.state
+        },
+        {
+            sortable: true,
             name: 'Name',
             defaultExpanded: true,
             wrap: true,
