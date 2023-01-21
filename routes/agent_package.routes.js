@@ -139,7 +139,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
         let rider = await User.findOne({ _id: sender.rider })
         if (package.senderAgentID._id.toString() === package.receieverAgentID.toString()) {
-          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "delivered", rider: package.assignedTo }, { new: true, useFindAndModify: false })
+          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "delivered" }, { new: true, useFindAndModify: false })
           let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Drop off confirmed by ${auth.name} at Philadelphia 4th floor awaiting to be assigned to ${rider?.name} ` }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
             descriptions: new_des
@@ -1257,8 +1257,8 @@ router.get("/reciever-agent-packages-package-count", async (req, res) => {
     for (let i = 0; i < packages.length; i++) {
       let package = await Sent_package.findOne({ _id: [packages[i]._id] }).populate('businessId')
       agents_count[packages[i]?.businessId?.toString()] = agents_count[packages[i]?.businessId?.toString()] ?
-        { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package.businessId.name }
-        : { packages: [packages[i]._id], name: package.businessId.name }
+        { packages: [...agents_count[packages[i]?.businessId?.toString()]?.packages, packages[i]._id], name: package?.businessId?.name }
+        : { packages: [packages[i]._id], name: package?.businessId?.name }
     }
 
 
