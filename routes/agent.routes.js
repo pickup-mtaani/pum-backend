@@ -318,16 +318,9 @@ router.post('/agents/uploads', [authMiddleware, authorized], async (req, res) =>
                         else {
                             let agent = await new Agent(obj).save()
                         }
-
                     }
-
-
                 }
-
-
-
             }
-
         }
 
 

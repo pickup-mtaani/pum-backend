@@ -3,6 +3,7 @@ var Sale = require('models/sales.model')
 var Stock = require('models/stocks.model')
 var User = require('models/user.model')
 var Sale = require('models/sales.model')
+const mpesa_logsModel = require('models/mpesa_logs.model')
 var Location = require('models/thrifter_location.model')
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
@@ -51,7 +52,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
       const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
       const paymentUser = await User.findById(LogedMpesa.user)
-      console.log("LOG", LogedMpesa)
+
       let V = await Sent_package.findOne(
         {
           _id: LogedMpesa.package
@@ -202,15 +203,50 @@ router.put("/agent/toogle-payment/:id", [authMiddleware, authorized], async (req
     console.log(err)
   }
 })
-router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
-  try {
 
-    await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
+async function subscribe(result) {
+  console.log("Subscribe")
+
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  response = await mpesa_logsModel.findOne({ MerchantRequestID: result.MerchantRequestID })
+  console.log("REs", response)
+  if (response.log === "") {
+    // / An error - let's show it
+    // showMessage(response.statusText);
+    // Reconnect in one second
+
+    console.log("Not yet")
+    await subscribe(result);
+    // await subscribe();
+
+  } else {
+    console.log("paid")
+    result = {
+      message: "Mpesa transaction complete"
+    }
     return res
       .status(200)
-      .json("paid");
+      .json("response");
+  }
+
+  // await subscribe(result);
+
+}
+router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let result = await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
+    // let success = await mpesa_logsModel.findOne({ MerchantRequestID: result.MerchantRequestID })
+    // console.log(result.MerchantRequestID)
+    // await new Promise(resolve => setTimeout(resolve, 500));
+
+    // await subscribe(result)
+    return res
+      .status(200)
+      .json("response");
+
 
   } catch (err) {
+
     console.log(err)
   }
 })

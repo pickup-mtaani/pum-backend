@@ -100,18 +100,18 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
             body.doorstep_package = element
         } if (typeofDelivery === "agent") {
             body.package = element
-            console.log(body)
+
         }
         if (typeofDelivery === "rent") {
             body.rent_package = element
-            console.log(body)
+
         }
 
         await new mpesa_logsModel(body).save()
 
-        return data;
-    });
 
+    });
+    return body;
 
 };
 module.exports = Mpesa_stk

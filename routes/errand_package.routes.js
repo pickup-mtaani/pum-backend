@@ -454,12 +454,10 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
     const url = req.protocol + '://' + req.get('host');
     let package = await Erand_package.findById(req.params.id)
     let narration = await Track_Erand.findOne({ package: req.params.id })
-
     if (req.file) {
 
       const body = req.body
       // body.createdBy = req.body.user_id
-      console.log(JSON.stringify(body))
       body.state = "collected",
         body.ticket = url + '/uploads/errand_dispaches' + req.file.filename
 
@@ -467,7 +465,6 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
       req.body.package = req.params.id
       req.body.dispatchedBy = req.user._id
       let courier = await Courier.findOne({ _id: package.courier })
-      console.log("Body", body)
       await Erand_package.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
       let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Pkg  delivered to ${courier.name}  waiting to be delivered to ${package.customerName} ` }]
 
@@ -483,14 +480,12 @@ router.put('/dispatch-errand/:id', [authMiddleware, authorized], upload.single('
 
 
     } else {
-      console.log("reciept requires")
       return res.status(400).json("Reciept Image is Required");
     }
 
 
 
   } catch (error) {
-    console.log("reciept", error)
     console.log(error)
     return res.status(400).json({ success: false, message: 'operation failed ', error });
   }

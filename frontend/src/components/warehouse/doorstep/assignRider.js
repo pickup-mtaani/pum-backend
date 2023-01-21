@@ -61,7 +61,7 @@ function Riderpage(props) {
         },
         {
             sortable: true,
-            name: 'To',
+            name: 'Created on',
             minWidth: '250px',
             selector: row => row.createdAt
         },
