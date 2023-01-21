@@ -111,7 +111,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
 
 
     });
-    return body;
+    return data;
 
 };
 module.exports = Mpesa_stk
