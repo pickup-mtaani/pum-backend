@@ -640,7 +640,7 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
 router.get("/errand-agent-packages/:state", [authMiddleware, authorized], async (req, res) => {
   try {
     let agent_packages
-    if (req.query?.id) {
+    if (req.query?.id !== "") {
       agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
