@@ -73,7 +73,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             }, { new: true, useFindAndModify: false })
             let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
             let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.agcreatedByent?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
 
             await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
