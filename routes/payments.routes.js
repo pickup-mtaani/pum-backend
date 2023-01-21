@@ -62,7 +62,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           package = await Door_step_Sent_package.findOne(
             {
               _id: LogedMpesa.doorstep_package
-            }).populate("agent")
+            }).populate("createdBy")
           if (package.state === "request") {
             await Door_step_Sent_package.findOneAndUpdate(
               {
@@ -72,9 +72,8 @@ router.post('/CallbackUrl', async (req, res, next) => {
               instant_bal: 0,
             }, { new: true, useFindAndModify: false })
             let narration = await Track_door_step.findOne({ package: LogedMpesa.doorstep_package })
-
             let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.agent?.business_name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+              time: Date.now(), desc: `Pkg paid for by ${package?.agcreatedByent?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
 
             await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
@@ -106,7 +105,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
           package = await Sent_package.findOne(
             {
               _id: LogedMpesa.package
-            }).populate('senderAgentID')
+            }).populate('createdBy')
           if (package.state === "request") {
 
             let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
@@ -118,7 +117,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               instant_bal: 0,
             }, { new: true, useFindAndModify: false })
             let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.senderAgentID?.business_name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
             }]
             let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
               descriptions: new_description
