@@ -53,7 +53,7 @@ function Users(props) {
   }, [searchValue, date, showModal]);
   const fetch = async (type) => {
 
-    let routes = await props.get_payments(type)
+    let routes = await props.get_payments()
 
     setData(routes)
 
