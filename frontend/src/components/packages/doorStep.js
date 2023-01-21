@@ -135,6 +135,11 @@ function Doorstep(props) {
         {
             sortable: true,
             name: 'Business Name',
+            selector: row => row.state
+        },
+        {
+            sortable: true,
+            name: 'Business Name',
             selector: row => row.businessId?.name
         },
         {

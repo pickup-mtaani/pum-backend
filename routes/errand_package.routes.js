@@ -170,6 +170,32 @@ router.put("/errand/package/:id/:state", [authMiddleware, authorized], async (re
       let payments = getRandomNumberBetween(100, 200)
       await new Commision({ agent: req.user._id, Erand_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
     }
+
+    if (req.params.state === "assigned") {
+      p = await Erand_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
+      let rider = await User.findOne({ _id: sender.rider })
+      let new_description = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
+      await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+        assigned: {
+          assignedTo: package.assignedTo,
+          // assignedAt: package?.senderAgentID?._id,
+          assignedBy: req.user._id,
+          assignedAt: moment()
+        }, descriptions: new_description
+      })
+      if (sender?.hasShelf) {
+        await Erand_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
+        let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
+        await Track_Erand.findOneAndUpdate({ package: req.params.id }, {
+          descriptions: new_des
+        })
+      }
+      const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
+      await SendMessage(textbody)
+      let payments = getRandomNumberBetween(100, 200)
+      await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
+
+    }
     if (req.params.state === "assigned") {
       p = await Erand_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
       let new_description = [...narration?.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} assigned  to ${rider?.name} for delivery to Philadelphia house  ` }]
@@ -613,9 +639,9 @@ router.get("/errand-packages/:state/:id", [authMiddleware, authorized], async (r
 });
 router.get("/errand-agent-packages/:state/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-let agent_packages
+    let agent_packages
     if (req.params.id) {
-       agent_packages = await Erand_package.find({
+      agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
           { payment_status: "paid" },
@@ -630,7 +656,7 @@ let agent_packages
         .populate("courier")
 
     } else {
-       agent_packages = await Erand_package.find({
+      agent_packages = await Erand_package.find({
         // agent: req.query.agent,
         $or: [
           { payment_status: "paid" },

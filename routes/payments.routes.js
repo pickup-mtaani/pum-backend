@@ -53,7 +53,8 @@ router.post('/CallbackUrl', async (req, res, next) => {
       const LogedMpesa = await MpesaLogs.findOne({ MerchantRequestID: Update?.MerchantRequestID })
       const paymentUser = await User.findById(LogedMpesa.user)
 
-      let V = await Sent_package.findOne(
+
+      let package = await Sent_package.findOne(
         {
           _id: LogedMpesa.package
         })
@@ -80,9 +81,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
           }]
-          console.log("Updated Pack", UpdatePackage)
+
           await Track_door_step.findOneAndUpdate({ package: LogedMpesa.doorstep_package }, {
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
@@ -109,7 +110,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
           }]
           let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
             descriptions: new_description
@@ -136,7 +137,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
 
           await Track_Erand.findOneAndUpdate({ package: LogedMpesa.errand_package }, {
@@ -164,7 +165,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             instant_bal: 0,
           }, { new: true, useFindAndModify: false })
           let new_description = [...narration?.descriptions, {
-            time: Date.now(), desc: `Pkg paid for by ${paymentUser?.name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
           }]
 
           await Track_rent_a_shelf.findOneAndUpdate({ package: LogedMpesa.rent_package }, {

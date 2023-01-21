@@ -32,7 +32,7 @@ function getRandomNumberBetween(min, max) {
 
 router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async (req, res) => {
   try {
-    const package = await Door_step_Sent_package.findById(req.params.id);
+    const package = await Door_step_Sent_package.findById(req.params.id).populate('agent');
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     let notefications = []
     let auth = await User.findById(req.user._id)
@@ -121,29 +121,7 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
       await new Declined({ package: req.params.id, reason: req.body.reason }).save()
     }
     // if (req.params.state === "picked-from-sender") {
-    //   const package = await Door_step_Sent_package.findById(req.params.id).populate("agent");
-    //   if (sender?.hasShelf) {
-    //     await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
-    //   }
-    //   let new_description = [...narration.descriptions, {
-    //     time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
-    //   }]
 
-    //   await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
-    //     dropped: {
-    //       droppedBy: package.assignedTo,
-    //       droppedTo: package?.senderAgentID?._id,
-    //       recievedBy: req.user._id,
-    //       droppedAt: moment()
-    //     },
-    //     descriptions: new_description
-
-    //   }, { new: true, useFindAndModify: false })
-    //   const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
-    //   await SendMessage(textbody)
-    //   let payments = getRandomNumberBetween(100, 200)
-    //   await new Commision({ agent: req.user._id, doorstep_package: req.params.id, commision: 0.1 * parseInt(payments) }).save()
-    // }
     if (req.params.state === "assigned") {
       p = await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
       let rider = await User.findOne({ _id: sender.rider })
@@ -160,12 +138,8 @@ router.put("/door-step/package/:id/:state", [authMiddleware, authorized], async 
         await Door_step_Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "recieved-warehouse" }, { new: true, useFindAndModify: false })
         let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider for delivery to ${package.customerName} ` }]
         await Track_door_step.findOneAndUpdate({ package: req.params.id }, {
-          assigned: {
-            assignedTo: package.assignedTo,
-            // assignedAt: package?.senderAgentID?._id,
-            assignedBy: req.user._id,
-            assignedAt: moment()
-          }, descriptions: new_des
+
+          descriptions: new_des
         })
       }
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  dropped at ${package?.agent?.business_name} and will be shipped to you in 24hrs ` }
