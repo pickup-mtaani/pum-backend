@@ -138,7 +138,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         let agent2 = await AgentDetails.findOne({ _id: package.receieverAgentID })
 
         let rider = await User.findOne({ _id: sender.rider })
-        if (package.senderAgentID.toString() === package.receieverAgentID.toString()) {
+        if (package.senderAgentID._id.toString() === package.receieverAgentID.toString()) {
           await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "delivered", rider: package.assignedTo }, { new: true, useFindAndModify: false })
           let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Drop off confirmed by ${auth.name} at Philadelphia 4th floor awaiting to be assigned to ${rider?.name} ` }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
