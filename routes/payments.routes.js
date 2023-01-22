@@ -8,7 +8,7 @@ var Location = require('models/thrifter_location.model')
 var Rent_a_shelf_deliveries = require("models/rent_a_shelf_deliveries");
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
 var Sent_package = require("models/package.modal.js");
-var Doorstep_pack = require("models/doorStep_delivery.model");
+
 var Track_door_step = require('models/door_step_package_track.model');
 var Track_agent_packages = require('models/agent_package_track.model');
 var Track_rent_a_shelf = require('models/rent_shelf_package_track.model');
@@ -109,7 +109,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
               _id: Logs[i].doorstep_package
             }).populate('createdBy')
           if (package.state === "request") {
-            await Door_step_Sent_package.findOneAndUpdate(
+            let v = await Door_step_Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].doorstep_package
               }, {
@@ -120,18 +120,19 @@ router.post('/CallbackUrl', async (req, res, next) => {
             let new_description = [...narration?.descriptions, {
               time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
-
+            console.log("Autonimpous", v)
             await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
               descriptions: new_description
             }, { new: true, useFindAndModify: false })
           } else {
-            await Door_step_Sent_package.findOneAndUpdate(
+            let v = await Door_step_Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].doorstep_package
               }, {
               payment_status: 'paid',
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
+            console.log("Voluminoys", v)
             let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
 
             let new_description = [...narration?.descriptions, {
@@ -324,7 +325,7 @@ async function subscribe(result) {
 }
 router.put("/package-payment/", [authMiddleware, authorized], async (req, res) => {
   try {
-    console.log("BODY", req.body)
+
     let result = await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
     // let success = await mpesa_logsModel.findOne({ MerchantRequestID: result.MerchantRequestID })
     // console.log(result.MerchantRequestID)

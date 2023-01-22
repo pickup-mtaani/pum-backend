@@ -5,7 +5,7 @@ var User = require('models/user.model')
 var Location = require('models/thrifter_location.model')
 var AgentPackage = require("models/agent_agent_delivery.modal.js");
 var Sent_package = require("models/package.modal.js");
-var Doorstep_pack = require("models/doorStep_delivery.model");
+
 var { authMiddleware, authorized } = require('middlewere/authorization.middlewere');
 const router = express.Router();
 var fetch = require('node-fetch')

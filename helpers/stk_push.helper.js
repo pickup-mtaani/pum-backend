@@ -79,7 +79,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
         amount: amount,
         ResponseCode: data.ResponseCode,
         type: typeofDelivery,
-        package: id,
+        package: id[1],
         payLater: paylater ? true : false,
         user: user,
         log: ''
@@ -95,7 +95,6 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
             body.errand_package = element
             body.package = null
         }
-
         if (typeofDelivery === "doorstep") {
             body.doorstep_package = element
         } if (typeofDelivery === "agent") {
@@ -103,7 +102,6 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
         }
         if (typeofDelivery === "rent") {
             body.rent_package = element
-
         }
         let b = await new mpesa_logsModel(body).save()
 
