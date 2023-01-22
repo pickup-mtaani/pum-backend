@@ -56,8 +56,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
+      console.log("first", Update)
     }
-    console.log("first", Update)
+
     // Logs.forEach(async (element) => {
 
     //   const Update = await MpesaLogs.findOneAndUpdate(
