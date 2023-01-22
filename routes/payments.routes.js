@@ -56,7 +56,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
-      console.log("first", Update)
+      // console.log("first", Update)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
 
         if (Logs[i].type === "agent") {
@@ -104,10 +104,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         if (Logs[i].type === "doorstep") {
-          let dpackage = await Door_step_Sent_package.findOne(
-            {
-              _id: Logs[i].doorstep_package
-            }).populate('createdBy')
+          let dpackage = await Door_step_Sent_package.findById(
+            Logs[i].doorstep_package
+          ).populate('createdBy')
           console.log("Package", dpackage)
           if (dpackage.state === "request") {
             let v = await Door_step_Sent_package.findOneAndUpdate(
