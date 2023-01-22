@@ -104,11 +104,11 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         if (Logs[i].type === "doorstep") {
-          package = await Door_step_Sent_package.findOne(
+          let dpackage = await Door_step_Sent_package.findOne(
             {
               _id: Logs[i].doorstep_package
             }).populate('createdBy')
-          if (package.state === "request") {
+          if (dpackage.state === "request") {
             let v = await Door_step_Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].doorstep_package
