@@ -67,7 +67,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
           if (package.state === "request") {
 
-            // let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
+            let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
             let u = await Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].package
@@ -75,17 +75,17 @@ router.post('/CallbackUrl', async (req, res, next) => {
               payment_status: 'paid',
               instant_bal: 0,
             }, { new: true, useFindAndModify: false })
-            console.log("YUY on request", u, package.state)
-            // let new_description = [...narration?.descriptions, {
-            //   time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-            // }]
-            // let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
-            //   descriptions: new_description
-            // }, { new: true, useFindAndModify: false })
+
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
 
           }
           else {
-            // let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
+            let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
             let v = await Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].package
@@ -94,14 +94,55 @@ router.post('/CallbackUrl', async (req, res, next) => {
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
             console.log("V on request", v, package.state)
-            // let new_description = [...narration?.descriptions, {
-            //   time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-            // }]
-            // let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
-            //   descriptions: new_description
-            // }, { new: true, useFindAndModify: false })
-
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
           }
+
+        }
+        if (Logs[i].type === "doorstep") {
+          package = await Door_step_Sent_package.findOne(
+            {
+              _id: Logs[i].doorstep_package
+            }).populate('createdBy')
+          if (package.state === "request") {
+            await Door_step_Sent_package.findOneAndUpdate(
+              {
+                _id: Logs[i].doorstep_package
+              }, {
+              payment_status: 'paid',
+              instant_bal: 0,
+            }, { new: true, useFindAndModify: false })
+            let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+            }]
+
+            await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+          } else {
+            await Door_step_Sent_package.findOneAndUpdate(
+              {
+                _id: Logs[i].doorstep_package
+              }, {
+              payment_status: 'paid',
+              on_delivery_balance: 0,
+            }, { new: true, useFindAndModify: false })
+            let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
+
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+            }]
+
+            await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+          }
+
 
 
         }
