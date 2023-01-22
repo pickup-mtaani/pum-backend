@@ -45,7 +45,6 @@ router.post('/CallbackUrl', async (req, res, next) => {
     const Logs = await MpesaLogs.find({
       MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
     })
-
     for (let i = 0; i < Logs.length; i++) {
       console.log(Logs[i].type)
       const Update = await MpesaLogs.findOneAndUpdate(
@@ -56,9 +55,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
-      // console.log("first", Update)
+      console.log("first", Update)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
-
+        console.log("IF", Logs[i].doorstep_package)
         if (Logs[i].type === "agent") {
           package = await Sent_package.findOne(
             {
@@ -104,9 +103,10 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         }
         if (Logs[i].type === "doorstep") {
-          let dpackage = await Door_step_Sent_package.findById(
-            Logs[i].doorstep_package
-          ).populate('createdBy')
+          let dpackage = await Door_step_Sent_package.findOne(
+            {
+              _id: Logs[i].doorstep_package
+            }).populate('createdBy')
           console.log("Package", dpackage)
           if (dpackage.state === "request") {
             let v = await Door_step_Sent_package.findOneAndUpdate(
