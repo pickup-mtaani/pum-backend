@@ -55,9 +55,9 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
-      console.log("first", Update)
+
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
-        console.log("IF", Logs[i].doorstep_package)
+
         if (Logs[i].type === "agent") {
           package = await Sent_package.findOne(
             {
@@ -102,12 +102,12 @@ router.post('/CallbackUrl', async (req, res, next) => {
           }
 
         }
-        if (Logs[i].type === "doorstep") {
+        else if (Logs[i].type === "doorstep") {
           let dpackage = await Door_step_Sent_package.findOne(
             {
               _id: Logs[i].doorstep_package
             }).populate('createdBy')
-          console.log("Package", dpackage)
+
           if (dpackage.state === "request") {
             let v = await Door_step_Sent_package.findOneAndUpdate(
               {
@@ -120,7 +120,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             let new_description = [...narration?.descriptions, {
               time: Date.now(), desc: `Pkg paid for by ${dpackage?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
-            console.log("Autonimpous", v)
+
             await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
               descriptions: new_description
             }, { new: true, useFindAndModify: false })
@@ -132,7 +132,6 @@ router.post('/CallbackUrl', async (req, res, next) => {
               payment_status: 'paid',
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
-            console.log("Voluminoys", v)
             let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
 
             let new_description = [...narration?.descriptions, {
@@ -145,6 +144,67 @@ router.post('/CallbackUrl', async (req, res, next) => {
           }
 
 
+
+        }
+        else if (Logs[i].type === "courier") {
+          let Courierpackage = await Erand_package.findOne(
+            {
+              _id: Logs[i].errand_package
+            }).populate('createdBy')
+
+
+          let narration = await Track_Erand.findOne({ Courierpackage: Logs[i].errand_package })
+          await Erand_package.findOneAndUpdate(
+            {
+              _id: Logs[i].errand_package
+            }, {
+            payment_status: 'paid',
+            instant_bal: 0,
+          }, { new: true, useFindAndModify: false })
+
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg paid for by ${Courierpackage?.createdBy?.name} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+          }]
+
+          await Track_Erand.findOneAndUpdate({ package: Logs[i].errand_package }, {
+
+            descriptions: new_description
+
+          }, { new: true, useFindAndModify: false })
+
+
+        }
+        else if (Logs[i].type === "rent") {
+          if (Logs[i].payLater) {
+            await Rent_a_shelf_deliveries.findOneAndUpdate(
+              {
+                _id: Logs[i].rent_package
+              }, {
+              payment_status: 'paid',
+              on_delivery_balance: 0,
+            }, { new: true, useFindAndModify: false })
+          }
+          let narration = await Track_rent_a_shelf.findOne({ package: Logs[i].rent_package })
+
+          let new_description = [...narration?.descriptions, {
+            time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD hh:mm')} awaiting drop off to sorting area`
+          }]
+
+          await Track_rent_a_shelf.findOneAndUpdate({ package: Logs[i].rent_package }, {
+
+            descriptions: new_description
+
+          }, { new: true, useFindAndModify: false })
+        }
+        else if (Logs[i].type === "sale") {
+          if (Logs[i].payLater) {
+            await Sale.findOneAndUpdate(
+              {
+                _id: Logs[i].sale
+              }, {
+              payment_status: true
+            }, { new: true, useFindAndModify: false })
+          }
 
         }
       }
