@@ -56,7 +56,52 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
-      console.log("first", Update)
+      // console.log("first", Update)
+      if (req.body.Body?.stkCallback?.ResultCode === 0) {
+        if (Logs[i].MerchantRequestID.type === "agent") {
+          package = await Sent_package.findOne(
+            {
+              _id: Logs[i].MerchantRequestID.package
+            }).populate('createdBy')
+          if (package.state === "request") {
+
+            let narration = await Track_agent_packages.findOne({ package: Logs[i].MerchantRequestID.package })
+            await Sent_package.findOneAndUpdate(
+              {
+                _id: Logs[i].MerchantRequestID.package
+              }, {
+              payment_status: 'paid',
+              instant_bal: 0,
+            }, { new: true, useFindAndModify: false })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].MerchantRequestID.package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+
+          }
+          else {
+            let narration = await Track_agent_packages.findOne({ package: Logs[i].MerchantRequestID.package })
+            await Sent_package.findOneAndUpdate(
+              {
+                _id: Logs[i].MerchantRequestID.package
+              }, {
+              payment_status: 'paid',
+              on_delivery_balance: 0,
+            }, { new: true, useFindAndModify: false })
+            let new_description = [...narration?.descriptions, {
+              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            }]
+            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].MerchantRequestID.package }, {
+              descriptions: new_description
+            }, { new: true, useFindAndModify: false })
+
+          }
+
+
+        }
+      }
     }
 
     // Logs.forEach(async (element) => {
@@ -121,49 +166,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
     //     }
 
-    //     else if (LogedMpesa.type === "agent") {
-    //       package = await Sent_package.findOne(
-    //         {
-    //           _id: LogedMpesa.package
-    //         }).populate('createdBy')
-    //       if (package.state === "request") {
-
-    //         let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-    //         await Sent_package.findOneAndUpdate(
-    //           {
-    //             _id: LogedMpesa.package
-    //           }, {
-    //           payment_status: 'paid',
-    //           instant_bal: 0,
-    //         }, { new: true, useFindAndModify: false })
-    //         let new_description = [...narration?.descriptions, {
-    //           time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-    //         }]
-    //         let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
-    //           descriptions: new_description
-    //         }, { new: true, useFindAndModify: false })
-
-    //       }
-    //       else {
-    //         let narration = await Track_agent_packages.findOne({ package: LogedMpesa.package })
-    //         await Sent_package.findOneAndUpdate(
-    //           {
-    //             _id: LogedMpesa.package
-    //           }, {
-    //           payment_status: 'paid',
-    //           on_delivery_balance: 0,
-    //         }, { new: true, useFindAndModify: false })
-    //         let new_description = [...narration?.descriptions, {
-    //           time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-    //         }]
-    //         let Track = await Track_agent_packages.findOneAndUpdate({ package: LogedMpesa.package }, {
-    //           descriptions: new_description
-    //         }, { new: true, useFindAndModify: false })
-
-    //       }
-
-
-    //     }
+    //    
     //     else if (LogedMpesa.type === "courier") {
     //       package = await Erand_package.findOne(
     //         {
