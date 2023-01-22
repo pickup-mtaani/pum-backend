@@ -111,7 +111,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
 
         else if (LogedMpesa.type === "agent") {
 
-
+          console.log("Pkf".Packages.length)
           Packages?.forEach(async (element) => {
             console.log("Elemrnt")
             package = await Sent_package.findOne(
