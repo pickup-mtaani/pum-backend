@@ -108,6 +108,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             {
               _id: Logs[i].doorstep_package
             }).populate('createdBy')
+          console.log("Package", dpackage)
           if (dpackage.state === "request") {
             let v = await Door_step_Sent_package.findOneAndUpdate(
               {
@@ -118,7 +119,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             }, { new: true, useFindAndModify: false })
             let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
             let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+              time: Date.now(), desc: `Pkg paid for by ${dpackage?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
             console.log("Autonimpous", v)
             await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
@@ -136,7 +137,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
             let narration = await Track_door_step.findOne({ package: Logs[i].doorstep_package })
 
             let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
+              time: Date.now(), desc: `Pkg paid for by ${dpackage?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off `
             }]
 
             await Track_door_step.findOneAndUpdate({ package: Logs[i].doorstep_package }, {
