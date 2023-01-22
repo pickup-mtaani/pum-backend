@@ -50,13 +50,14 @@ router.post('/CallbackUrl', async (req, res, next) => {
       console.log(Logs[i].MerchantRequestID)
       const Update = await MpesaLogs.findOneAndUpdate(
         {
-          MerchantRequestID: Logs[i]?.MerchantRequestID
+          MerchantRequestID: Logs[i].MerchantRequestID
         }, {
         log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc,
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
     }
+    console.log("first", Update)
     // Logs.forEach(async (element) => {
 
     //   const Update = await MpesaLogs.findOneAndUpdate(
