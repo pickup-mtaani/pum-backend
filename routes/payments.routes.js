@@ -58,6 +58,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }, { new: true, useFindAndModify: false })
       // console.log("first", Update)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
+        console.log("first", Logs[i])
         if (Logs[i].type === "agent") {
           package = await Sent_package.findOne(
             {
