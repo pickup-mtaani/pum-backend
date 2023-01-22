@@ -58,45 +58,48 @@ router.post('/CallbackUrl', async (req, res, next) => {
       }, { new: true, useFindAndModify: false })
       // console.log("first", Update)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
-        console.log("first", Logs[i])
+
         if (Logs[i].type === "agent") {
           package = await Sent_package.findOne(
             {
               _id: Logs[i].package
             }).populate('createdBy')
+
           if (package.state === "request") {
 
-            let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
-            await Sent_package.findOneAndUpdate(
+            // let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
+            let u = await Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].package
               }, {
               payment_status: 'paid',
               instant_bal: 0,
             }, { new: true, useFindAndModify: false })
-            let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-            }]
-            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
-              descriptions: new_description
-            }, { new: true, useFindAndModify: false })
+            console.log("YUY on request", u, package.state)
+            // let new_description = [...narration?.descriptions, {
+            //   time: Date.now(), desc: `Pkg paid for by ${package?.createdBy?.name} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            // }]
+            // let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
+            //   descriptions: new_description
+            // }, { new: true, useFindAndModify: false })
 
           }
           else {
-            let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
-            await Sent_package.findOneAndUpdate(
+            // let narration = await Track_agent_packages.findOne({ package: Logs[i].package })
+            let v = await Sent_package.findOneAndUpdate(
               {
                 _id: Logs[i].package
               }, {
               payment_status: 'paid',
               on_delivery_balance: 0,
             }, { new: true, useFindAndModify: false })
-            let new_description = [...narration?.descriptions, {
-              time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
-            }]
-            let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
-              descriptions: new_description
-            }, { new: true, useFindAndModify: false })
+            console.log("V on request", v, package.state)
+            // let new_description = [...narration?.descriptions, {
+            //   time: Date.now(), desc: `Pkg paid for by ${package?.customerName} at  ${moment().format('YYYY-MM-DD')} awaiting drop off to sorting area`
+            // }]
+            // let Track = await Track_agent_packages.findOneAndUpdate({ package: Logs[i].package }, {
+            //   descriptions: new_description
+            // }, { new: true, useFindAndModify: false })
 
           }
 
