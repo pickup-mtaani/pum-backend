@@ -115,12 +115,12 @@ router.post('/CallbackUrl', async (req, res, next) => {
             })
 
           Packages.forEach(async (element) => {
+            console.log("Elemrnt", element.receipt_no)
             package = await Sent_package.findOne(
               {
                 _id: element._id
               }).populate('createdBy')
             if (package.state === "request") {
-
               let narration = await Track_agent_packages.findOne({ package: element._id })
               await Sent_package.findOneAndUpdate(
                 {
