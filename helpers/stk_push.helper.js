@@ -105,8 +105,8 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
             body.rent_package = element
 
         }
+        let b = await new mpesa_logsModel(body).save()
 
-        await new mpesa_logsModel(body).save()
 
 
     });
