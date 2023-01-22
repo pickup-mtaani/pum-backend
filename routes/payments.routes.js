@@ -47,7 +47,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
     })
 
     for (let i = 0; i < Logs.length; i++) {
-      console.log(Logs[i].MerchantRequestID)
+      console.log(Logs[i].type)
       const Update = await MpesaLogs.findOneAndUpdate(
         {
           MerchantRequestID: Logs[i].MerchantRequestID
@@ -56,7 +56,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
         ResponseCode: req.body.Body?.stkCallback?.ResultCode,
         MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value
       }, { new: true, useFindAndModify: false })
-      // console.log("first", Update)
+      console.log("first", Update)
       if (req.body.Body?.stkCallback?.ResultCode === 0) {
 
         if (Logs[i].type === "agent") {
