@@ -68,12 +68,12 @@ export const assignAgent = (id, agent) => async (dispatch) => {
     }
 };
 
-export const get_payments = () => async (dispatch) => {
+export const get_payments = (type) => async (dispatch) => {
 
     try {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_PAYMENTS" });
-        const { data } = await axios.get(`/api/mpesa-payments`);
+        const { data } = await axios.get(`/api/mpesa-payments?type=${type}`);
         let payload = [];
         payload = data.mpeslog;
         dispatch({ type: "FETCH_PAYMENTS_SUCCESSFUL", payload });

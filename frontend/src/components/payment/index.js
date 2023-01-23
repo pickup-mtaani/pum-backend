@@ -53,7 +53,7 @@ function Users(props) {
   }, [searchValue, date, showModal]);
   const fetch = async (type) => {
 
-    let routes = await props.get_payments()
+    let routes = await props.get_payments(type)
 
     setData(routes)
 
@@ -67,18 +67,26 @@ function Users(props) {
     <Layout>
 
       <div className='w-full p-2 flex flex-wrap border-b border-slate-400 gap-x-1'>
-        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+        <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("agent"); setTab('sent'); }} style={{ backgroundColor: tab === "sent" && "gray" }} >
-          Agents Packages Collectors {tab === "sent"}
+          Agents  {tab === "sent"}
         </div>
 
-        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+        <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("doorstep"); setTab('collected') }} style={{ backgroundColor: tab === "collected" && "gray" }} >
-          Doorstep Packages collectors {tab === "collected"}
+          Doorstep  {tab === "collected"}
         </div>
-        <div className='md:w-1/4 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+        <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
           onClick={async () => { await fetch("rent"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-          Rent Shelf Packages Collection {tab === "shelf"}
+          Rent  {tab === "shelf"}
+        </div>
+        <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+          onClick={async () => { await fetch("courier"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
+          errand {tab === "shelf"}
+        </div>
+        <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
+          onClick={async () => { await fetch("sale"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
+          Sales {tab === "shelf"}
         </div>
 
       </div>
