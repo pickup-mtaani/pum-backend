@@ -402,13 +402,10 @@ router.put("/package-payment/", [authMiddleware, authorized], async (req, res) =
 
     let result = await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
     let success = await subscribe(result)
-    console.log(success)
-    if (success === !undefined) {
-      return res
-        .status(200)
-        .json(result);
-    }
-
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    return res
+      .status(200)
+      .json(result);
   } catch (err) {
 
     console.log(err)
