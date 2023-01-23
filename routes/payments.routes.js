@@ -30,10 +30,34 @@ var MpesaLogs = require("../models/mpesa_logs.model");
 const Mpesa_stk = require('../helpers/stk_push.helper');
 router.get('/mpesa-payments', async (req, res, next) => {
   try {
-    const mpeslog = await MpesaLogs.find().populate('user', 'name').sort({ createdAt: -1 })
+    const { type } = req.query
+    console.log(req.query)
+    let Logs = await MpesaLogs.find({ type: "doorstep" }).populate('user', 'name').populate('doorstep_package', 'reciept-no').sort({ createdAt: -1 })
       .limit(100)
-    console.log("first", mpeslog)
-    return res.status(200).json(mpeslog);
+      console.log(Logs)
+    if (type === "doorstep") {
+      Logs = await MpesaLogs.find({ type: "doorstep" }).populate('user', 'name').populate('doorstep_package', 'reciept-no').sort({ createdAt: -1 })
+        .limit(100)
+    }
+    else if (type === "agent") {
+      Logs = await MpesaLogs.find({ type: "agent" }).populate('user', 'name').populate('package', 'reciept-no').sort({ createdAt: -1 })
+        .limit(100)
+      console.log("first", Logs)
+    }
+    else if (type === "courier") {
+      Logs = await MpesaLogs.find({ type: "courier" }).populate('user', 'name').populate('errand_package', 'reciept-no').sort({ createdAt: -1 })
+        .limit(100)
+    }
+    else if (type === "rent") {
+      Logs = await MpesaLogs.find({ type: "rent" }).populate('user', 'name').populate('rent_package', 'reciept-no').sort({ createdAt: -1 })
+        .limit(100)
+    }
+    else {
+      Logs = await MpesaLogs.find({ type: "sale" }).populate('user', 'name').populate('sale', 'reciept-no').sort({ createdAt: -1 })
+        .limit(100)
+    }
+
+    return res.status(200).json(Logs);
   } catch (error) {
     console.log(error)
   }
@@ -46,7 +70,7 @@ router.post('/CallbackUrl', async (req, res, next) => {
       MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID
     })
     for (let i = 0; i < Logs.length; i++) {
-      console.log(Logs[i].type)
+
       const Update = await MpesaLogs.findOneAndUpdate(
         {
           MerchantRequestID: Logs[i].MerchantRequestID
@@ -359,27 +383,25 @@ async function subscribe(result) {
   console.log("Subscribe")
 
   await new Promise(resolve => setTimeout(resolve, 2000));
-  response = await mpesa_logsModel.findOne({ MerchantRequestID: result.MerchantRequestID })
-  console.log("REs", response)
-  if (response.log === "") {
-    // / An error - let's show it
-    // showMessage(response.statusText);
-    // Reconnect in one second
+  let response = await mpesa_logsModel.find({ MerchantRequestID: result.MerchantRequestID })
+  response.forEach(async (element) => {
+    if (response.log === "") {
+      // / An error - let's show it
+      // showMessage(response.statusText);
+      // Reconnect in one second
 
-    console.log("Not yet")
-    await subscribe(result);
-    // await subscribe();
+      console.log("Not yet")
+      await subscribe(result);
+      // await subscribe();
 
-  } else {
-    console.log("paid")
-    result = {
-      message: "Mpesa transaction complete"
+    } else {
+      console.log("paid")
+      result = {
+        message: "Mpesa transaction complete"
+      }
+      return "Transaction Complete "
     }
-    return res
-      .status(200)
-      .json("response");
-  }
-
+  })
   // await subscribe(result);
 
 }
@@ -387,11 +409,8 @@ router.put("/package-payment/", [authMiddleware, authorized], async (req, res) =
   try {
 
     let result = await Mpesa_stk(req.body.payment_phone_number, req.body.payment_amount, req.user._id, req.body.type, req.body.packages, req.body.pay_on_delivery)
-    // let success = await mpesa_logsModel.findOne({ MerchantRequestID: result.MerchantRequestID })
-    // console.log(result.MerchantRequestID)
-    // await new Promise(resolve => setTimeout(resolve, 500));
 
-    // await subscribe(result)
+    await subscribe(result)
     return res
       .status(200)
       .json("response");

@@ -87,10 +87,10 @@ function Users(props) {
         <DataTable
           // title=""
           columns={columns}
-          data={routes}
+          data={props.payments}
           pagination
           paginationServer
-          progressPending={props.loading}
+          // progressPending={props.loading}
           paginationResetDefaultPage={resetPaginationToggle}
           subHeader
           subHeaderComponent={subHeaderComponentMemo}
@@ -110,7 +110,8 @@ Users.propTypes = {}
 
 const mapStateToProps = (state) => {
   return {
-
+    payments: state.ridersDetails.payments,
+    loading: state.ridersDetails.loading,
 
   };
 };
