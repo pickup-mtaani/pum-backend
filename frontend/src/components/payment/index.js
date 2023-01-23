@@ -24,12 +24,12 @@ function Users(props) {
   const [showModal, setShowModal] = useState(false);
   const [item, setItem] = useState(initialState);
   const filteredItems = routes?.filter(
-    item => item.collector_name.toLowerCase().includes(filterText.toLowerCase()),
+    item => item.collector_name?.toLowerCase().includes(filterText.toLowerCase()),
   );
   const onChangeFilter = (e) => {
     setFilterText(e)
     const filtered = filteredItems.filter(
-      item => item.collector_name && item.collector_name.toLowerCase().includes(filterText.toLowerCase()),
+      item => item.collector_name && item.collector_name?.toLowerCase().includes(filterText.toLowerCase()),
     );
     setFilterData(filtered)
   }
@@ -81,12 +81,12 @@ function Users(props) {
           Rent  {tab === "shelf"}
         </div>
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
-          onClick={async () => { await fetch("courier"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-          errand {tab === "shelf"}
+          onClick={async () => { await fetch("courier"); setTab('errand') }} style={{ backgroundColor: tab === "errand" && "gray" }} >
+          errand {tab === "errand"}
         </div>
         <div className='md:w-1/6 w-full flex flex-wrap p-2 shadow-md p-2 text-center bg-primary-500 justify-center items-center'
-          onClick={async () => { await fetch("sale"); setTab('shelf') }} style={{ backgroundColor: tab === "shelf" && "gray" }} >
-          Sales {tab === "shelf"}
+          onClick={async () => { await fetch("sale"); setTab('sales') }} style={{ backgroundColor: tab === "sales" && "gray" }} >
+          Sales {tab === "sales"}
         </div>
 
       </div>
