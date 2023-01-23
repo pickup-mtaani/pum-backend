@@ -74,8 +74,9 @@ export const get_payments = (type) => async (dispatch) => {
         await setAuthToken(axios);
         dispatch({ type: "FETCH_PAYMENTS" });
         const { data } = await axios.get(`/api/mpesa-payments?type=${type}`);
+        alert(JSON.stringify(data))
         let payload = [];
-        payload = data.mpeslog;
+        payload = data;
         dispatch({ type: "FETCH_PAYMENTS_SUCCESSFUL", payload });
         return payload;
     } catch (error) {

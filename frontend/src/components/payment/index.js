@@ -62,7 +62,7 @@ function Users(props) {
     fetch("agent")
 
   }, [])
-
+  console.log(props?.payments[0])
   return (
     <Layout>
 
