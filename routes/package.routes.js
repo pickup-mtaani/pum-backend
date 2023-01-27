@@ -63,7 +63,10 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         let newPackageCount = 1
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
+          console.log("COUNT: ", agent_id?.package_count)
         }
+        console.log("COUNT 2: ", newPackageCount)
+
         if (packages[i].pipe === "shelf-doorstep") {
           packages[i].state = "pending-shelf-doorstep"
           await Rent_a_shelf_deliveries.findById(packages[i].p_id)
@@ -256,23 +259,25 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         .json(savedPackages);
     } else if (body.delivery_type === "shelf") {
 
+      // console.log("262: SHELF DELIVERY")
+
       let packagesArr = [];
       const { packages, ...rest } = req.body;
       for (let i = 0; i < packages.length; i++) {
 
         let business = await Bussiness.findById(packages[i].businessId)
-        console.log("Bix", business)
+        // console.log("Bix", business)
+
         let details = await BizDetails.findById(business.details)
-        let agent_id = await AgentDetails.findOne({ _id: details.agent })
-        // console.log("Paack", agent_id)
+        let agent_id = await AgentDetails.findOne({ _id: business.shelf_location })
+       
         let newPackageCount = 1
         if (agent_id?.package_count) {
           newPackageCount = parseInt(agent_id?.package_count + 1)
         }
-        packages[0]
-        // if (packages[i].state === "early_collection") {
-        //   await new Track_rent_a_shelf({ package: savedPackage._id, created: moment(), state: "early_collection", descriptions: ``, reciept: savedPackage.receipt_no }).save()
-        // }
+       
+        // console.log("262: SHELF DELIVERY - new package count: ",agent_id)
+
         if (packages[i].product) {
           const product = await Product.findById(packages[i].product);
           packages[i].packageName = product.product_name;

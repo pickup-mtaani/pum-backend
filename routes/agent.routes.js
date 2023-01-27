@@ -471,6 +471,8 @@ router.get('/agents-grouped', async (req, res) => {
                 // }
             ]
         )
+
+
         return res.status(200).json(t);
 
     } catch (error) {

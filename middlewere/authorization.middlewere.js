@@ -28,7 +28,10 @@ const authMiddleware = (req, res, next) => {
 
     jsonwebtoken.verify(token, 'Bradley', async (err, data) => {
 
-        if(err) return res.status(403).json({ success: false, message: 'Not Authorised !' });
+        if (err) {
+            console.log(error)
+            return res.status(403).json({ success: false, message: 'Not Authorised !' });
+        }
 
         req.user = data;
 
