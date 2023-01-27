@@ -319,7 +319,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           packages[i]
         ).save();
         savedPackages.push(savedPackage._id)
-        await AgentDetails.findOneAndUpdate({ _id: details.agent }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
+        await AgentDetails.findOneAndUpdate({ _id: business.shelf_location }, { package_count: newPackageCount }, { new: true, useFindAndModify: false })
 
         await new Notification({ dispachedTo: packages[i].createdBy, receipt_no: `${packages[i].receipt_no}`, p_type: 3, s_type: 1, descriptions: ` Package #${packages[i].receipt_no}  created` }).save()
 
