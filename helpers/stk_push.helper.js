@@ -95,7 +95,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
             body.errand_package = element
             body.package = null
         }
-        if (typeofDelivery === "doorstep") {``
+        if (typeofDelivery === "doorstep") {
             body.doorstep_package = element
         } if (typeofDelivery === "agent") {
             body.package = element
@@ -103,7 +103,7 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
         if (typeofDelivery === "rent") {
             body.rent_package = element
         }
-        let b = await new mpesa_logsModel(body).save()
+        await new mpesa_logsModel(body).save()
 
 
 

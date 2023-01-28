@@ -242,7 +242,7 @@ router.post("/CallbackUrl", async (req, res, next) => {
               { new: true, useFindAndModify: false }
             );
           }
-        } else if (Logs[i].type === "courier") {
+        } else if (Logs[i].type === "courier"||Logs[i].type === "courier") {
           let Courierpackage = await Erand_package.findOne({
             _id: Logs[i].errand_package,
           }).populate("createdBy");
@@ -391,7 +391,7 @@ router.put(
         req.body.pay_on_delivery
       );
      await subscribe(result);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return res.status(200).json(result);
     } catch (err) {
       console.log(err);
