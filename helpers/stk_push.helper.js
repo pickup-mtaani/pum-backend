@@ -91,11 +91,11 @@ const Mpesa_stk = async (No, amount, user, typeofDelivery, id, paylater, saleId)
     id.forEach(async (element) => {
 
 
-        if (typeofDelivery === "courier") {
+        if (typeofDelivery === "courier" || typeofDelivery === "errand") {
             body.errand_package = element
             body.package = null
         }
-        if (typeofDelivery === "doorstep") {
+        if (typeofDelivery === "doorstep") {``
             body.doorstep_package = element
         } if (typeofDelivery === "agent") {
             body.package = element

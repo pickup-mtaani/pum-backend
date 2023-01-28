@@ -51,73 +51,72 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     let recRider = await User.findOne({ _id: package.assignedTo })
 
     let narration = await Track_agent_packages.findOne({ package: req.params.id })
-    let notifications = []
+    let notefications = []
     let seller = global.sellers?.find((sel) => sel.seller === `${package.createdBy}`)?.socket
     const { state } = req.params
     await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: req.params.state }, { new: true, useFindAndModify: false })
     let expr = ""
-
     if (seller) {
       switch (state) {
         case "request":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 1, descriptions: ` Package #${package.receipt_no}  created` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "picked-from-sender":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 2, descriptions: ` Package #${package.receipt_no}  picked from sender` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "recieved-warehouse":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 6, descriptions: ` Package #${package.receipt_no} recieved at the warehouse` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "assigned-warehouse":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 7, descriptions: ` Package #${package.receipt_no}  assigned to a new rider` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "collected":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 11, descriptions: ` Package #${package.receipt_no}  collected` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "warehouse-transit":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 8, descriptions: ` Package #${package.receipt_no}  dispatched from warehouse` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "dropped-to-agent":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 9, descriptions: ` Package #${package.receipt_no}  dropped to the recieving agent` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "declined":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 11, descriptions: ` Package #${package.receipt_no}  rejected` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "droped":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 5, descriptions: ` Package #${package.receipt_no}  dropped to the the warehouse` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "on-transit":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 4, descriptions: ` Package #${package.receipt_no} on trans-it` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "assigned":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 3, descriptions: ` Package #${package.receipt_no}  been assigned to a rider` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         case "delivered":
           await new Notification({ dispachedTo: package.createdBy, receipt_no: `${package.receipt_no}`, p_type: 1, s_type: 10, descriptions: ` Package #${package.receipt_no}  been assigned to a rider from the warehouse` }).save()
-          notifications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
-          global.io.to(seller).emit("change-state", { notifications: notifications });
+          notefications = await Notification.find({ dispachedTo: package.createdBy }).sort({ createdAt: -1 }).limit(9)
+          global.io.to(seller).emit("change-state", { notifications: notefications });
           break;
         default:
           console.log(`Sorry, we are out of ${expr}.`);
@@ -127,19 +126,21 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
     if (req.params.state === "unavailable") {
       await new Unavailable({ package: req.params.id, reason: req.body.reason }).save()
     }
-   else if (req.params.state === "rejected") {
+    if (req.params.state === "rejected") {
       let reject = await new Reject({ package: req.params.id, reject_reason: req.body.rejectReason }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { rejectedId: reject._id }, { new: true, useFindAndModify: false })
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg ${package.receipt_no} was rejected by ${auth?.name} because ${req.body.rejectReason} ` }]
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, { descriptions: new_des, rejectedAt: Date.now() }, { new: true, useFindAndModify: false })
     }
-   else if (req.params.state === "assigned") {
+    if (req.params.state === "assigned") {
       try {
-
         let agent = await AgentDetails.findOne({ _id: package.senderAgentID })
+        let agent2 = await AgentDetails.findOne({ _id: package.receieverAgentID })
 
         let rider = await User.findOne({ _id: sender.rider })
 
+        console.log("142: AGENT'S RIDER: ", rider)
+      
         if (package.senderAgentID._id.toString() === package.receieverAgentID.toString()) {
           await Sent_package.findOneAndUpdate({ _id: req.params.id }, { state: "delivered" }, { new: true, useFindAndModify: false })
           let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Drop off confirmed by ${auth.name} at Philadelphia 4th floor awaiting to be assigned to ${rider?.name} ` }]
@@ -161,7 +162,6 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
             warehouse:
             {
               warehouseAt: moment(),
-
             },
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
@@ -174,14 +174,16 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
         } else {
           await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to agent ${package.senderAgentID.business_name})` }).save()
+
+          await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: rider?._id }, { new: true, useFindAndModify: false });
+
           let new_description = [...narration.descriptions, {
-            time: Date.now(), desc: `Drop off confirmed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
+            time: Date.now(), desc: `Drop off confimed  by ${auth?.name} at  ${sender.business_name} waiting for rider to collect`
           }]
           await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
             dropped:
             {
               droppedAt: moment(),
-
             },
             descriptions: new_description
           }, { new: true, useFindAndModify: false })
@@ -198,7 +200,28 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
         console.log(error)
       }
     }
-   else if (req.params.state === "on-transit") {
+    // if (req.params.state === "assigned") {
+
+    //   let rider = await User.findOne({ _id: sender.rider })
+
+    //   await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender.rider }, { new: true, useFindAndModify: false })
+
+    //   await new Rider_Package({ package: req.params.id, rider: package.assignedTo }).save()
+    //   // assigned  to rider name for delivery to agent
+    //   await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: sender?.rider }, { new: true, useFindAndModify: false })
+    //   await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
+    //     assigned:
+    //     {
+    //       assignedTo: sender?.rider,
+    //       assignedAt: Date.now(),
+    //       assignedBy: req.user._id,
+    //     },
+    //     // descriptions: new_des
+    //   }, { new: true, useFindAndModify: false })
+
+    //   // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider?.no_of_packages + 1) }, { new: true, useFindAndModify: false })
+    // }
+    if (req.params.state === "on-transit") {
       // package dropped at agent and confirmed by name
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg collected by rider ${rider.name} waiting to be dropped at sorting, Phildelphia Hse` }]
 
@@ -214,13 +237,13 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
-   else if (req.params.state === "dropped") {
+    if (req.params.state === "dropped") {
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg dropped by rider ${rider.name} at sorting, Phildelphia Hse` }]
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des
       }, { new: true, useFindAndModify: false })
     }
-   else if (req.params.state === "recieved-warehouse") {
+    if (req.params.state === "recieved-warehouse") {
 
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  recieved at sorting  philadelphia and awaiting to  be assigned to rider going to receieverAgentID location, ${reciever.business_name} ` }]
 
@@ -235,7 +258,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
-   else if (req.params.state === "assigned-warehouse") {
+    if (req.params.state === "assigned-warehouse") {
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package package assigned rider` }).save()
       await new Rider_Package({ package: req.params.id, rider: req.query.rider }).save()
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
@@ -253,7 +276,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       await Sent_package.findOneAndUpdate({ _id: req.params.id }, { assignedTo: req.query.rider }, { new: true, useFindAndModify: false })
       // await Rider.findOneAndUpdate({ user: package.assignedTo }, { no_of_packages: parseInt(rider.no_of_packages + 1) }, { new: true, useFindAndModify: false })
     }
-   else if (req.params.state === "warehouse-transit") {
+    if (req.params.state === "warehouse-transit") {
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg  accepted by ${recRider.name}  waiting drop off to destination location, ${reciever.business_name} ` }]
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         descriptions: new_des
@@ -261,7 +284,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       await new Narations({ package: req.params.id, state: req.params.state, descriptions: `Package dropped to warehouse` }).save()
     }
-   else if (req.params.state === "dropped-to-agent") {
+    if (req.params.state === "dropped-to-agent") {
       let new_des = [...narration.descriptions, { time: Date.now(), desc: `Pkg delivered by ${recRider.name} at destination agent, ${reciever.business_name}` }]
       await Track_agent_packages.findOneAndUpdate({ package: req.params.id }, {
         droppedToagent:
@@ -275,7 +298,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
 
       // await new Narations({ package: req.params.id, state: req.params.state, descriptions: `package delivered to agent name(${package.receieverAgentID.business_name})` }).save()
     }
-   else if (req.params.state === "delivered") {
+    if (req.params.state === "delivered") {
       // packge deliverd to agent  by rider
       let new_des = [...narration?.descriptions, { time: Date.now(), desc: `Agent ${auth.name}  confirms arrival of package at the destination agent, ${reciever.business_name}` }]
 
@@ -285,7 +308,7 @@ router.put("/agent/package/:id/:state", [authMiddleware, authorized], async (req
       const textbody = { address: Format_phone_number(`${package.customerPhoneNumber}`), Body: `Hi ${package.customerName}\nYour Package with reciept No ${package.receipt_no} has been  delivered at ${package?.senderAgentID?.business_name} and will be shipped to you in 2hrs ` }
       await SendMessage(textbody)
     }
-   else if (req.params.state === "collected") {
+    if (req.params.state === "collected") {
 
       try {
         req.body.package1 = req.params.id

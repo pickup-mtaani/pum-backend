@@ -361,7 +361,7 @@ router.put(
 async function subscribe(result) {
   console.log("Subscribe");
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   let response = await mpesa_logsModel.find({
     MerchantRequestID: result.MerchantRequestID,
   });
@@ -390,8 +390,8 @@ router.put(
         req.body.packages,
         req.body.pay_on_delivery
       );
-      let success = await subscribe(result);
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+     await subscribe(result);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       return res.status(200).json(result);
     } catch (err) {
       console.log(err);

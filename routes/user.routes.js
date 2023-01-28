@@ -137,7 +137,6 @@ router.post("/login", async (req, res) => {
         if (!agent) {
           user = userOBJ;
         } else {
-          console.log("114: AGENT LOGIN: ", agent1, "+++++++", agent2);
           // let location = await AgentLocation.findById(agent.location_id)
           user.token = token;
           // user.agent = agent1._id
