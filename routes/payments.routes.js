@@ -391,7 +391,7 @@ router.put(
         req.body.pay_on_delivery
       );
      await subscribe(result);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return res.status(200).json(result);
     } catch (err) {
       console.log(err);
