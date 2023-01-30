@@ -837,8 +837,8 @@ router.put(
     try {
       let package = await Sent_package.findById(req.params.id).populate(
         "senderAgentID"
-      );
-      let agent = await AgentDetails.findOne({ _id: package.receieverAgentID });
+      ).populate("receieverAgentID")
+      let agent = await AgentDetails.findOne({ _id: package.receieverAgentID._id });
 
       console.log("UPDATE");
       let narration = await Track_agent_packages.findOne({
@@ -855,13 +855,13 @@ router.put(
         await new Narations({
           package: req.params.id,
           state: req.params.state,
-          descriptions: `Package dropped to agent ${package.senderAgentID.business_name})`,
+          descriptions: `Package delivered to agent ${package.receieverAgentID.business_name})`,
         }).save();
         let new_description = [
           ...narration.descriptions,
           {
             time: Date.now(),
-            desc: `Pkg ${package.receipt_no}  dropped to ${package.senderAgentID.business_name}`,
+            desc: `Pkg ${package.receipt_no} delivered to ${package.receieverAgentID.business_name}`,
           },
         ];
         await Track_agent_packages.findOneAndUpdate(
