@@ -835,10 +835,10 @@ router.put(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      let agent = await AgentDetails.findOne({ _id: package.req.params.id });
       let package = await Sent_package.findById(req.params.id).populate(
         "senderAgentID"
       );
+      let agent = await AgentDetails.findOne({ _id: package.receieverAgentID });
 
       console.log("UPDATE");
       let narration = await Track_agent_packages.findOne({
