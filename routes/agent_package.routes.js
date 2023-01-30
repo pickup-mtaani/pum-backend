@@ -839,6 +839,8 @@ router.put(
       let package = await Sent_package.findById(req.params.id).populate(
         "senderAgentID"
       );
+
+      console.log("UPDATE");
       let narration = await Track_agent_packages.findOne({
         package: req.params.id,
       });
@@ -1023,14 +1025,12 @@ router.get(
         state: "assigned-warehouse",
         assignedTo: req.user._id,
       });
-      return res
-        .status(200)
-        .json({
-          OnTransit: OnTransit.length,
-          assigned: assigned.length,
-          warehouseTransit: warehouseTransit.length,
-          assignedWarehouse: assignedWarehouse.length,
-        });
+      return res.status(200).json({
+        OnTransit: OnTransit.length,
+        assigned: assigned.length,
+        warehouseTransit: warehouseTransit.length,
+        assignedWarehouse: assignedWarehouse.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1506,13 +1506,11 @@ router.get(
           })
           .populate("businessId", "name loc")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       }
       if (state === "request") {
         packages = await Sent_package.find({
@@ -1537,13 +1535,11 @@ router.get(
           .populate("businessId", "name loc")
           .sort({ createdAt: -1 });
         console.log(packages);
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       }
       if (state === "delivered") {
         packages = await Sent_package.find({
@@ -1567,13 +1563,11 @@ router.get(
           })
           .populate("businessId", "name loc")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       } else {
         packages = await Sent_package.find({ senderAgentID: id, state: state })
           .populate("createdBy", "l_name f_name phone_number")
@@ -1583,13 +1577,11 @@ router.get(
           .sort({ createdAt: -1 });
       }
 
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully",
-          packages,
-          count: packages.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully",
+        packages,
+        count: packages.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1626,13 +1618,11 @@ router.get(
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
 
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully",
-          packages,
-          count: packages.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully",
+        packages,
+        count: packages.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1667,13 +1657,11 @@ router.get(
         .populate("businessId", "name loc")
         .sort({ createdAt: -1 });
 
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully",
-          packages,
-          count: packages.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully",
+        packages,
+        count: packages.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1844,26 +1832,24 @@ router.get(
         $or: [{ payment_status: "paid" }, { payment_status: "paid" }],
         state: "picked-from-sender",
       });
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully after",
-          pickedfromSender: pickedfromSender.length,
-          cancelled: cancelled.length,
-          droppedToagent: droppedToagent.length,
-          assigned: assigned.length,
-          recievedWarehouse: recievedWarehouse.length,
-          dropped: dropped.length,
-          assigneWarehouse: assigneWarehouse.length,
-          warehouseTransit: warehouseTransit.length,
-          unavailable: unavailable.length,
-          picked: picked.length,
-          request: request.length,
-          delivered: delivered.length,
-          collected: collected.length,
-          rejected: rejected.length,
-          onTransit: onTransit.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully after",
+        pickedfromSender: pickedfromSender.length,
+        cancelled: cancelled.length,
+        droppedToagent: droppedToagent.length,
+        assigned: assigned.length,
+        recievedWarehouse: recievedWarehouse.length,
+        dropped: dropped.length,
+        assigneWarehouse: assigneWarehouse.length,
+        warehouseTransit: warehouseTransit.length,
+        unavailable: unavailable.length,
+        picked: picked.length,
+        request: request.length,
+        delivered: delivered.length,
+        collected: collected.length,
+        rejected: rejected.length,
+        onTransit: onTransit.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1938,13 +1924,11 @@ router.get("/agent-packages-web", async (req, res) => {
         .populate("businessId", "name");
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "Fetched Sucessfully",
-        packages,
-        count: packages.length,
-      });
+    return res.status(200).json({
+      message: "Fetched Sucessfully",
+      packages,
+      count: packages.length,
+    });
   } catch (error) {
     return res
       .status(400)
@@ -1960,13 +1944,11 @@ router.get("/agent-packages-web-recieved-warehouse", async (req, res) => {
 
       .populate("senderAgentID")
       .populate("businessId", "name");
-    return res
-      .status(200)
-      .json({
-        message: "Fetched Sucessfully",
-        packages,
-        count: packages.length,
-      });
+    return res.status(200).json({
+      message: "Fetched Sucessfully",
+      packages,
+      count: packages.length,
+    });
   } catch (error) {
     return res
       .status(400)
@@ -1994,13 +1976,11 @@ router.get(
           .populate("receieverAgentID")
           .populate("businessId", "name")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       } else if (req.query.searchKey) {
         var searchKey = new RegExp(`${req.query.searchKey}`, "i");
         packages = await Sent_package.find({
@@ -2015,13 +1995,11 @@ router.get(
           .populate("receieverAgentID")
           .populate("businessId", "name")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       } else if (state && req.query.searchKey) {
         var searchKey = new RegExp(`${req.query.searchKey}`, "i");
         packages = await Sent_package.find({
@@ -2036,13 +2014,11 @@ router.get(
           .populate("receieverAgentID")
           .populate("businessId", "name")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       } else {
         packages = await Sent_package.find({
           payment_status: "paid",
@@ -2054,13 +2030,11 @@ router.get(
           .populate("receieverAgentID")
           .populate("businessId", "name")
           .sort({ createdAt: -1 });
-        return res
-          .status(200)
-          .json({
-            message: "Fetched Sucessfully",
-            packages,
-            count: packages.length,
-          });
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          packages,
+          count: packages.length,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -2088,13 +2062,11 @@ router.get(
         .populate("receieverAgentID")
         .populate("businessId", "name")
         .sort({ createdAt: -1 });
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully",
-          packages,
-          count: packages.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully",
+        packages,
+        count: packages.length,
+      });
     } catch (error) {
       console.log(error);
       return res
