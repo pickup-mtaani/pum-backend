@@ -1047,11 +1047,15 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
 
   try {
     const { state } = req.query
+
+    console.log(state)
+
     let agent_packages = await Sent_package.find({ state: {$in: state}, createdBy: req.user._id, businessId: req.params.id })
+      .select("customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID")
       .sort({ createdAt: -1 })
       .populate({path:"senderAgentID", select :[
         'business_name'
-        ]} )
+        ]})
       .populate({path:"receieverAgentID",select :[
         'business_name'
         ]})
@@ -1070,14 +1074,14 @@ router.get("/my-order-doorstep-packages/:id", [authMiddleware, authorized], asyn
   try {
     const { state } = req.query
 
-    let doorstep_packages = await Door_step_Sent_package.find({ state: state, businessId: req.params.id })
-      .populate(
-        "customerPhoneNumber packageName package_value package_value packageName customerName"
-      )
+    let doorstep_packages = await Door_step_Sent_package.find({ state: {$in: state}, businessId: req.params.id })
+      .select("destination customerName customerPhoneNumber state package_value fromLocation payment_option on_delivery_balance payment_phone_number type toLocation payment_status receipt_no agent")
       .populate({
         path: 'agent',
+        select:("business_name location_id"),
         populate: {
           path: 'location_id',
+          select:("name zone")
         }
       })
       .sort({ createdAt: -1 })
@@ -1095,16 +1099,52 @@ router.get("/my-order-doorstep-packages/:id", [authMiddleware, authorized], asyn
       .json({ success: false, message: "operationhj failed ", error });
   }
 });
-router.get("/my-order-rent-shelf-packages/:id", [authMiddleware, authorized], async (req, res) => {
 
+router.get("/my-order-errand-packages/:id", [authMiddleware, authorized], async (req, res) => {
   try {
-
-
     const { state } = req.query
-    let shelves = await Rent_a_shelf_deliveries.find({ state: state, createdBy: req.user._id, businessId: req.params.id, })
+
+    let errand_packages = await Erand_package.find({ state: {$in: state}, businessId: req.params.id })
+      .select("customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no")
+      .populate({
+        path: 'agent',
+        select:("business_name location_id"),
+        populate: {
+          path: 'location_id',
+          select:("name zone")
+        }
+      })
+       .populate({
+        path: 'courier',
+        select:("name"),
+      })
       .sort({ createdAt: -1 })
-      .populate('location')
-      .limit(100)
+      .limit(20);
+
+    return res
+      .status(200)
+      .json(
+        errand_packages
+      );
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operationhj failed ", error });
+  }
+});
+
+router.get("/my-order-rent-shelf-packages/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const { state } = req.query
+    let shelves = await Rent_a_shelf_deliveries.find({ state: {$in: state}, createdBy: req.user._id, businessId: req.params.id, })
+    .select("customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no")
+      .sort({ createdAt: -1 })
+      .populate({
+        path:'location',
+        select:('business_name agent_description')
+      })
+      .limit(20)
     return res
       .status(200)
       .json(

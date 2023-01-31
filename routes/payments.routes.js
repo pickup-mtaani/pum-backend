@@ -31,6 +31,7 @@ var { Headers } = fetch;
 const { SendMessage } = require("../helpers/sms.helper");
 var MpesaLogs = require("../models/mpesa_logs.model");
 const Mpesa_stk = require("../helpers/stk_push.helper");
+const handleTransactionQuery = require("../helpers/TransactionQuery");
 router.get("/mpesa-payments", async (req, res, next) => {
   try {
     const { type } = req.query;
@@ -425,5 +426,43 @@ router.post(
     }
   }
 );
+
+router.post("/transaction_query", async (_req, res) => {
+  try {
+    
+    const response = await handleTransactionQuery()
+
+    res.json(response).status(200)
+
+  } catch (error) {
+    console.log("MAIN URL ERROR: ",error)
+  }
+})
+
+router.post("/transaction_query_callback", async (req, res) => {
+  try {
+    
+    console.log("TRANSACTION QUERY RESPONSE:", req.body);
+
+    res.json(req.body).status(200)
+
+  } catch (error) {
+    console.log("CALL BACK ERROR: ",error)
+  }
+})
+
+router.post("/transaction_timeout_callback", async (req, res) => {
+  try {
+    
+    console.log("TRANSACTION QUERY TIMEOUT:", req.body);
+
+    res.json(req.body).status(200)
+
+  } catch (error) {
+    console.log("ERROR: ",error?.message)
+  }
+})
+// CHECK TRANSACTION STATUS
+
 
 module.exports = router;
