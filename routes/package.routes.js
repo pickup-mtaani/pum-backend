@@ -1047,11 +1047,15 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
 
   try {
     const { state } = req.query
-    let agent_packages = await Sent_package.find({ state: state, createdBy: req.user._id, businessId: req.params.id })
+    let agent_packages = await Sent_package.find({ state: {$in: state}, createdBy: req.user._id, businessId: req.params.id })
       .sort({ createdAt: -1 })
-      .populate("senderAgentID")
-      .populate("receieverAgentID")
-      .limit(100);
+      .populate({path:"senderAgentID", select :[
+        'business_name'
+        ]} )
+      .populate({path:"receieverAgentID",select :[
+        'business_name'
+        ]})
+      .limit(20);
     return res
       .status(200)
       .json(agent_packages);
@@ -1110,7 +1114,7 @@ router.get("/my-order-rent-shelf-packages/:id", [authMiddleware, authorized], as
     console.log(error);
     return res
       .status(400)
-      .json({ success: false, message: "operationhj failed ", error });
+      .json({ success: false, message: "operation failed ", error });
   }
 });
 router.get("/user-packages/:id", [authMiddleware, authorized], async (req, res) => {
