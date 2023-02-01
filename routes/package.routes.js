@@ -76,7 +76,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           );
         }
         if (packages[i].pipe === "stock-doorstep") {
-          packages[i].state = "request";
+          packages[i].state = "pending-stock-doorstep";
         }
         if (packages[i]?.product) {
           const product = await Product.findById(packages[i].product);
@@ -222,7 +222,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           );
         }
         if (packages[i].pipe === "stock-errand") {
-          packages[i].state = "request";
+          packages[i].state = "pending-stock-errand";
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id });
         if (packages[i].other) {
@@ -574,7 +574,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         if (packages[i].pipe === "stock-agent") {
-          packages[i].state = "request";
+          packages[i].state = "pending-stock-agent";
         }
 
         packages[i].createdAt = moment().format("YYYY-MM-DD");
@@ -1091,7 +1091,6 @@ router.put(
         return res.status(200).json({ message: "Sucessfully" });
       }
       if (req.params.state === "pending-agent") {
-        console.log("Agent is pending");
         let new_des = [
           ...narration.descriptions,
           {
