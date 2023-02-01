@@ -76,7 +76,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           );
         }
         if (packages[i].pipe === "stock-doorstep") {
-          packages[i].state = "pending-stock-doorstep";
+          packages[i].state = "request";
         }
         if (packages[i]?.product) {
           const product = await Product.findById(packages[i].product);
@@ -222,7 +222,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
           );
         }
         if (packages[i].pipe === "stock-errand") {
-          packages[i].state = "pending-stock-errand";
+          packages[i].state = "request";
         }
         let route = await RiderRoutes.findOne({ agent: agent_id._id });
         if (packages[i].other) {
@@ -574,7 +574,7 @@ router.post("/package", [authMiddleware, authorized], async (req, res) => {
         }
 
         if (packages[i].pipe === "stock-agent") {
-          packages[i].state = "pending-stock-agent";
+          packages[i].state = "request";
         }
 
         packages[i].createdAt = moment().format("YYYY-MM-DD");
@@ -1384,26 +1384,24 @@ router.get(
           $gt: 0,
         },
       });
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully after",
-          earlyOrderRequest: earlyOrderRequest.length,
-          doorSteporderRequest: doorSteporderRequest.length,
-          agentOrderRequest: agentOrderRequest.length,
-          incomingStock: incomingStock.length,
-          pickedfromSender: pickedfromSender.length,
-          cancelled: cancelled.length,
-          droppedToagent: droppedToagent.length,
-          assigned: assigned.length,
-          dropped: dropped.length,
-          unavailable: unavailable.length,
-          picked: picked.length,
-          request: request.length,
-          collected: collected.length,
-          rejected: rejected.length,
-          onTransit: onTransit.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully after",
+        earlyOrderRequest: earlyOrderRequest.length,
+        doorSteporderRequest: doorSteporderRequest.length,
+        agentOrderRequest: agentOrderRequest.length,
+        incomingStock: incomingStock.length,
+        pickedfromSender: pickedfromSender.length,
+        cancelled: cancelled.length,
+        droppedToagent: droppedToagent.length,
+        assigned: assigned.length,
+        dropped: dropped.length,
+        unavailable: unavailable.length,
+        picked: picked.length,
+        request: request.length,
+        collected: collected.length,
+        rejected: rejected.length,
+        onTransit: onTransit.length,
+      });
     } catch (error) {
       console.log(error);
       return res
@@ -1488,26 +1486,24 @@ router.get(
           $gt: 0,
         },
       });
-      return res
-        .status(200)
-        .json({
-          message: "Fetched Sucessfully after",
-          earlyOrderRequest: earlyOrderRequest.length,
-          doorSteporderRequest: doorSteporderRequest.length,
-          agentOrderRequest: agentOrderRequest.length,
-          incomingStock: incomingStock.length,
-          pickedfromSender: pickedfromSender.length,
-          cancelled: cancelled.length,
-          droppedToagent: droppedToagent.length,
-          assigned: assigned.length,
-          dropped: dropped.length,
-          unavailable: unavailable.length,
-          picked: picked.length,
-          request: request.length,
-          collected: collected.length,
-          rejected: rejected.length,
-          onTransit: onTransit.length,
-        });
+      return res.status(200).json({
+        message: "Fetched Sucessfully after",
+        earlyOrderRequest: earlyOrderRequest.length,
+        doorSteporderRequest: doorSteporderRequest.length,
+        agentOrderRequest: agentOrderRequest.length,
+        incomingStock: incomingStock.length,
+        pickedfromSender: pickedfromSender.length,
+        cancelled: cancelled.length,
+        droppedToagent: droppedToagent.length,
+        assigned: assigned.length,
+        dropped: dropped.length,
+        unavailable: unavailable.length,
+        picked: picked.length,
+        request: request.length,
+        collected: collected.length,
+        rejected: rejected.length,
+        onTransit: onTransit.length,
+      });
     } catch (error) {
       console.log(error);
       return res
