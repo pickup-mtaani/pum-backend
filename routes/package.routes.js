@@ -1786,7 +1786,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no"
+          "customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no color"
         )
         .sort({ updatedAt: -1 })
         .populate({
