@@ -160,7 +160,7 @@ router.get(
         shelf_location: req.query.id,
         deleted_at: null,
         pending_stock_confirmed: false,
-        type: { $ne: "in_store" },
+        // type: { $ne: "in_store" },
       })
         .populate("business")
         .skip(skip)
