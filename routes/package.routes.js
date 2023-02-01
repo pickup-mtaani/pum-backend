@@ -1690,7 +1690,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID"
+          "customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID color"
         )
         .sort({ updatedAt: -1 })
         .populate({ path: "senderAgentID", select: ["business_name"] })
@@ -1752,7 +1752,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no"
+          "customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no color"
         )
         .populate({
           path: "agent",
