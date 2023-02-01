@@ -1052,7 +1052,6 @@ router.get("/my-order-agent-to-agent-packages/:id", [authMiddleware, authorized]
 
     let agent_packages = await Sent_package.find({ state: {$in: state}, createdBy: req.user._id, businessId: req.params.id })
       .select("customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID")
-      .sort({ createdAt: -1 })
       .populate({path:"senderAgentID", select :[
         'business_name'
         ]})
@@ -1084,7 +1083,6 @@ router.get("/my-order-doorstep-packages/:id", [authMiddleware, authorized], asyn
           select:("name zone")
         }
       })
-      .sort({ createdAt: -1 })
       .limit(100);
 
     return res
@@ -1118,7 +1116,6 @@ router.get("/my-order-errand-packages/:id", [authMiddleware, authorized], async 
         path: 'courier',
         select:("name"),
       })
-      .sort({ createdAt: -1 })
       .limit(20);
 
     return res
@@ -1139,7 +1136,6 @@ router.get("/my-order-rent-shelf-packages/:id", [authMiddleware, authorized], as
     const { state } = req.query
     let shelves = await Rent_a_shelf_deliveries.find({ state: {$in: state}, createdBy: req.user._id, businessId: req.params.id, })
     .select("customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no")
-      .sort({ createdAt: -1 })
       .populate({
         path:'location',
         select:('business_name agent_description')
