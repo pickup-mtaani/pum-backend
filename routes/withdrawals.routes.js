@@ -26,6 +26,7 @@ router.get(
           business: b_id,
           withdrawn: "false",
           payLater: "true",
+          ResponseCode: 0,
         });
         const totalPayment = _.sum(_.map(receieved_payments, "amount"));
 

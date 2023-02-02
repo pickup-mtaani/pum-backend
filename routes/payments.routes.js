@@ -243,7 +243,7 @@ router.post("/CallbackUrl", async (req, res, next) => {
               { new: true, useFindAndModify: false }
             );
           }
-        } else if (Logs[i].type === "courier"||Logs[i].type === "courier") {
+        } else if (Logs[i].type === "courier" || Logs[i].type === "courier") {
           let Courierpackage = await Erand_package.findOne({
             _id: Logs[i].errand_package,
           }).populate("createdBy");
@@ -330,6 +330,12 @@ router.post("/CallbackUrl", async (req, res, next) => {
             );
           }
         }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: req.body.Body?.stkCallback?.ResultDesc,
+          body: {},
+        });
       }
     }
 
@@ -393,7 +399,7 @@ router.put(
         req.body?.pay_on_delivery,
         req.body?.business
       );
-     await subscribe(result);
+      await subscribe(result);
       await new Promise((resolve) => setTimeout(resolve, 500));
       return res.status(200).json(result);
     } catch (err) {
@@ -432,40 +438,33 @@ router.post(
 
 router.post("/transaction_query", async (_req, res) => {
   try {
-    
-    const response = await handleTransactionQuery()
+    const response = await handleTransactionQuery();
 
-    res.json(response).status(200)
-
+    res.json(response).status(200);
   } catch (error) {
-    console.log("MAIN URL ERROR: ",error)
+    console.log("MAIN URL ERROR: ", error);
   }
-})
+});
 
 router.post("/transaction_query_callback", async (req, res) => {
   try {
-    
     console.log("TRANSACTION QUERY RESPONSE:", req.body);
 
-    res.json(req.body).status(200)
-
+    res.json(req.body).status(200);
   } catch (error) {
-    console.log("CALL BACK ERROR: ",error)
+    console.log("CALL BACK ERROR: ", error);
   }
-})
+});
 
 router.post("/transaction_timeout_callback", async (req, res) => {
   try {
-    
     console.log("TRANSACTION QUERY TIMEOUT:", req.body);
 
-    res.json(req.body).status(200)
-
+    res.json(req.body).status(200);
   } catch (error) {
-    console.log("ERROR: ",error?.message)
+    console.log("ERROR: ", error?.message);
   }
-})
+});
 // CHECK TRANSACTION STATUS
-
 
 module.exports = router;
