@@ -1,0 +1,39 @@
+MONGODB_URL=mongodb+srv://pickup-mtaani:gotrackit2023@cluster0.oh0wyad.mongodb.net/pum?retryWrites=true&w=majority
+MONGODB_URLt=mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+ACCESS_TOKEN_SECRET=Bradley
+JWT_KEY="Bradley"
+PAYPAL_CLIENT_ID =AVBWuhLNKskR6Tre13vxxYr5URqOtEFIyuxpv2MZzEIKe0SKzqjEM0urTUvOeDn6VMckl2VhyNnVIjkh
+GOOGLE_APPLICATION_CREDENTIALS="./learnnia-3475a-firebase-adminsdk-b3d2b-6a23ee27f1.json"
+
+# MPESA_CONSUMER_KEY="FHvPyX8P8jJjXGqQJATzUvE1cDS3E4El"
+# MPESA_CONSUMER_SECRETE="1GpfPi1UKAlMh2tI"
+# MPESA_CONSUMER_PASSKEY="bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+# MPESA_CALLbACK="https://stagingapi.pickupmtaani.com/api/CallbackUrl"
+# MPESA_BASE_URL="https://sandbox.safaricom.co.ke"
+# MPESA_SHORT_CODE=174379
+
+MPESA_CONSUMER_KEY="L1zfGxew3UGUVPMQtdgjvo6c2HIePw3e"
+MPESA_CONSUMER_SECRETE="aGlpm5fRRpfDyKWj"
+MPESA_CONSUMER_PASSKEY="2096398196b7fa94927cf4fa3525dc26a672d4b3a979c24ad4936bb2ed0c5e09"
+MPESA_CALLbACK="https://stagingapi.pickupmtaani.com/api/CallbackUrl"
+MPESA_BASE_URL="https://api.safaricom.co.ke"
+MPESA_SHORT_CODE=6132852
+
+# CHECK TRANSACTION STATUS:  RAS5CZ66TR
+MPESA_TRANSACTION_CONSUMER_KEY="R8OcMIFsPjja9augGBJvS1kJ7VpGUTDG"
+MPESA_TRANSACTION_CONSUMER_SECRET="VW3JX1sOB4xwe13A"
+MPESA_TRANSACTION_STATUS_URL="https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query"
+MPESA_TRANSACTION_SHORT_CODE=600978
+MPESA_TRANSACTION_COMMAND_ID="TransactionStatusQuery"
+MPESA_TRANSACTION_IDENTIFIER_TYPE=2
+MPESA_TRANSACTION_SECURITY_CREDENTIALS="lIKf4EsrEYBhFIZltxVHJ1zF01cFXOgAfn1jZB6kIUWehsMis3keY/hSRkKRulYRgnvkPXYosklXHp2pGc7j/iZI2wOU05d8ZKoKnp69iitQiKr2cbqbnOq9tpTSx5Wxe54cubmb4g91FJbMbMbF/UQOQ9CaAL7YEDsDXqjcc5taGG8oTC0W78SxuHjIDbLsEPqfYgxvFy4jj5MDuxlEG/spA1mwrLvUYCAQveN1HMInbYD71cIysba6MQkc/wSlr6Ed68SCkHQHGH6dnBk2p305FhKP9ubm6qZMv3R/GL0gamRQraUMnQpzbOecTR2Q6mh05vLr28uBsDmwMRLq1w=="
+
+# B2C CONFIGS:  RAS5CZ66TR
+MPESA_URL="https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query"
+MPESA_B2C_CODE=600584
+MPESA_B2C_COMMAND_ID="BusinessPayment"
+MPESA_B2C_SECURITY_CREDENTIALS="YfKSSRGNc9IRCD2KTs3485JE93qTcL+WL5Qw1gqVrCQrK7Kqob+D06G0tDvu3w7vAo01GQBLtRKt8HI38yLlgvr8DdiV9WCWKE/ZascACDy9oAFvh27ksecBmXSm2cRWa8tOKToxxeYCtcfqZSjsO6nPdLOOC1//rhbmShrh/1Xa0s7ayvKshH04MqRqktcixovmiJW+AkHCfB1ClPF7QIR+Q10O9dWXKtC1jq/fV9yj1sFPOmOM/mMSgTedcrXCrI7t/E4nyb1TevdJl+YLqEJqibhDk4RdRau+2tLOlczhbsS+7QSCMI59ewlLcmT9aQenhqKjfXDpfh44ScRFBg==",
+BASE_URL=""
+
+
+PORT=4000
