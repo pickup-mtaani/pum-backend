@@ -1,20 +1,8 @@
 var mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-const withdrawalSchema = new Schema(
+const withdrawalRequestSchema = new Schema(
   {
-    ConversationID: {
-      type: String,
-    },
-    OriginatorConversationID: {
-      type: String,
-    },
-    ResponseCode: {
-      type: String,
-    },
-    ResponseDesc: {
-      type: String,
-    },
     business: {
       type: Schema.Types.ObjectId,
       ref: "business",
@@ -26,17 +14,24 @@ const withdrawalSchema = new Schema(
     amount: {
       type: Number,
     },
+    phone: {
+      type: String,
+    },
     packages: [
       {
         type: String,
       },
     ],
-    logs: {
-      type: String,
+    withdrawalID: {
+      type: Schema.Types.ObjectId,
+      ref: "withdrawal",
     },
   },
   { timestamps: true }
 );
 
-const Withdrawal = mongoose.model("withdrawal", withdrawalSchema);
+const Withdrawal = mongoose.model(
+  "withdrawal_request",
+  withdrawalRequestSchema
+);
 module.exports = Withdrawal;
