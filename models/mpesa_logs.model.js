@@ -67,6 +67,14 @@ const MpesaLogsSchema = new Schema({
     ResultDesc: {
         type: String
     },
+    business: {
+        type: Schema.Types.ObjectId,
+        ref: "business",
+    },
+    withdrawn: {
+        type: String,
+        default:"false"
+    },
     createdAt: {
         type: Date,
         default: Date.now

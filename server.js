@@ -30,7 +30,7 @@ const DoorstepRoutes = require('routes/door_step_package.routes')
 const ShelfToDoorstepRoutes = require('routes/DoorStep/shelf-to-doorstep.routes')
 const DoorstepWareHouseRoutes = require('routes/DoorStep/doorstep_warehouse.routes')
 const TrackDoorstep = require('routes/DoorStep/doorstep_track_package')
-
+const Withdrawals = require('./routes/withdrawals.routes')
 
 const MPesaRoute = require('routes/payments.routes')
 
@@ -100,6 +100,7 @@ app.use('/api/', DoorstepWareHouseRoutes)
 app.use('/api/', ShelfToErrandRoutes)
 
 app.use('/api/', MPesaRoute)
+app.use('/api/withdrawals/', Withdrawals)
 
 // global error handler
 // app.use(errorHandler);

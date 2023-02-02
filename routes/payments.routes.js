@@ -54,7 +54,7 @@ router.get("/mpesa-payments", async (req, res, next) => {
         .populate("package", "receipt_no")
         .sort({ createdAt: -1 })
         .limit(100);
-      console.log("first", Logs);
+      // console.log("first", Logs);
     } else if (type === "courier") {
       Logs = await MpesaLogs.find({ type: "courier" })
         .populate("user", "name")
@@ -360,7 +360,7 @@ router.put(
 );
 
 async function subscribe(result) {
-  console.log("Subscribe");
+  // console.log("Subscribe");
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
   let response = await mpesa_logsModel.find({
@@ -368,28 +368,30 @@ async function subscribe(result) {
   });
 
   if (response[0].log === "") {
-    console.log("Not yet");
+    // console.log("Not yet");
     await subscribe(result);
   } else {
-    console.log("paid");
+    // console.log("paid");
 
     return true;
   }
 
   // await subscribe(result);
 }
+// make doorstep/agent/errand package payment on (signout/delivery)
 router.put(
   "/package-payment/",
   [authMiddleware, authorized],
   async (req, res) => {
     try {
       let result = await Mpesa_stk(
-        req.body.payment_phone_number,
-        req.body.payment_amount,
+        req.body?.payment_phone_number,
+        req.body?.payment_amount,
         req.user._id,
-        req.body.type,
-        req.body.packages,
-        req.body.pay_on_delivery
+        req.body?.type,
+        req.body?.packages,
+        req.body?.pay_on_delivery,
+        req.body?.business
       );
      await subscribe(result);
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -413,7 +415,8 @@ router.post(
         req.body.type,
         req.body.packages,
         req.body.pay_on_delivery,
-        req.query.param
+        req.query.param,
+        req.body?.business
       );
 
       // await Sale.findOneAndUpdate({ _id: req.params.id }, { payment_status: true }, { new: true, useFindAndModify: false })
