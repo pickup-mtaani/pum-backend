@@ -24,8 +24,8 @@ const Mpesa_stk = async (
   typeofDelivery,
   id,
   paylater,
-  saleId,
   business,
+  saleId
 ) => {
   let consumer_key = process.env.MPESA_CONSUMER_KEY,
     consumer_secret = process.env.MPESA_CONSUMER_SECRETE,
@@ -94,8 +94,8 @@ const Mpesa_stk = async (
     package: id[1],
     payLater: paylater ? true : false,
     user: user,
-    business:business,
-    withdrawn:"false",
+    business: business,
+    withdrawn: "false",
     log: "",
   };
 
@@ -103,16 +103,15 @@ const Mpesa_stk = async (
     body.sale = saleId;
   }
   id.forEach(async (element) => {
-   
     if (typeofDelivery === "courier" || typeofDelivery === "errand") {
-        body.errand_package = element
-        body.package = null
-    }else if (typeofDelivery === "doorstep") {
-        body.doorstep_package = element
-    }else if (typeofDelivery === "agent") {
-        body.package = element
-    }else if (typeofDelivery === "rent") {
-        body.rent_package = element
+      body.errand_package = element;
+      body.package = null;
+    } else if (typeofDelivery === "doorstep") {
+      body.doorstep_package = element;
+    } else if (typeofDelivery === "agent") {
+      body.package = element;
+    } else if (typeofDelivery === "rent") {
+      body.rent_package = element;
     }
     await new mpesa_logsModel(body).save();
   });
