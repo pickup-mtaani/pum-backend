@@ -58,7 +58,8 @@ const MpesaLogsSchema = new Schema({
     type: String,
   },
   business: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "business",
   },
   withdrawn: {
     type: String,
