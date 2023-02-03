@@ -34,6 +34,10 @@ const withdrawalSchema = new Schema(
     logs: {
       type: String,
     },
+    status: {
+      type: String,
+      enum: ["pending", "rejected", "approved"],
+    },
   },
   { timestamps: true }
 );
