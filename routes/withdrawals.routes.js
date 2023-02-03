@@ -27,7 +27,14 @@ router.get(
           withdrawn: "false",
           payLater: "true",
           ResponseCode: 0,
-        });
+        })
+          ?.select("package amount type")
+          ?.populate({
+            path: "package",
+            select:
+              "customerName type receipt_no updatedAt on_delivery_balance",
+          });
+
         const totalPayment = _.sum(_.map(receieved_payments, "amount"));
 
         res.status(200).json({
