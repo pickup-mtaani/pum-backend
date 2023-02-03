@@ -236,7 +236,7 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
     let result = await new WithdrawalRequestModel({
       amount: req?.body?.amount,
       phone: req.body?.phone_number,
-      user: req.body?.user,
+      user: req.user?._id,
       packages: req.body?.packages,
       business: req.body?.business,
     }).save();
