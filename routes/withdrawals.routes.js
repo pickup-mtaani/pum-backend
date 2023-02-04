@@ -261,7 +261,7 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       packages: req.body?.packages,
       business: req.body?.business,
       status: "pending",
-      code: uid,
+      code: uid(),
     }).save();
     // await new Promise((resolve) => setTimeout(resolve, 500));
     return res.status(200).json(result);
