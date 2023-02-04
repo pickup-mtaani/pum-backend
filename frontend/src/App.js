@@ -12,7 +12,7 @@ import Payments from "./components/payment";
 // import Tracks from "./components/tracks ";
 import WareHouse from "./components/warehouse";
 import Assign_Agent_package_riderWareHouse from "./components/warehouse/agent/assignRider";
-// import Agents from "./components/agents ";
+import Agents from "./components/agents ";
 import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
 import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
@@ -32,7 +32,7 @@ import Collections from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
 
 import Riderpage from "./components/warehouse/riderpage";
-// import AgentsDetails from "./components/agents/agentsDetails";
+import AgentsDetails from "./components/AgentsDetails";
 import SwitchBoard from "./components/packages/switchboard";
 import AssignRider from "./components/TrackRider";
 
@@ -43,6 +43,7 @@ import RentShelfAgents from "./components/rentshelf/business";
 import RentShelfAgent from "./components/rentshelf/details";
 
 import Setup from "./components/Setup";
+import Withdrawals from "./screens/mpesa/Withdrawals";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -116,8 +117,10 @@ const App = () => {
     { path: "/switch-board", element: <SwitchBoard /> },
     { path: "/track/:riders", element: <AssignRider /> },
 
-    // { path: "/agents", element: <Agents /> },
-    // { path: "/agent/:name", element: <AgentsDetails /> },
+    { path: "/agents", element: <Agents /> },
+    { path: "/agent/:name", element: <AgentsDetails /> },
+
+    { path: "/mpesa/withdrawals", element: <Withdrawals /> },
 
     // ...
   ]);

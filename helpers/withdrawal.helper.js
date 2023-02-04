@@ -3,13 +3,7 @@ const axios = require("axios");
 const validators = require("../helpers/validator.helper");
 const WithdrawalModel = require("../models/withdraws.model.js");
 
-const handleB2C = async (
-  withdrawal_amount,
-  withdrawal_phone,
-  user,
-  packages,
-  business
-) => {
+const handleB2C = async (withdrawal_amount, withdrawal_phone, w_id) => {
   try {
     const encode = new Buffer.from(
       `${process.env.MPESA_TRANSACTION_CONSUMER_KEY}:${process.env.MPESA_TRANSACTION_CONSUMER_SECRET}`
@@ -23,7 +17,7 @@ const handleB2C = async (
       },
     };
     const r = await axios(config);
-    console.log("WITHDRAWAL AUTH RESPONSE", r?.data);
+    // console.log("WITHDRAWAL AUTH RESPONSE", r?.data);
 
     const query_response = await axios.post(
       process.env.MPESA_URL,
@@ -48,19 +42,15 @@ const handleB2C = async (
     );
     const { data } = query_response;
 
-    const newWithdrawal = {
+    const withdrawal = {
       ConversationID: data?.ConversationID,
       OriginatorConversationID: data?.OriginatorConversationID,
       ResponseCode: data?.ResponseCode,
       ResponseDesc: data?.ResponseDescription,
-      user: user,
-      business,
-      amount: withdrawal_amount,
-      packages,
     };
 
-    await new WithdrawalModel(newWithdrawal).save();
-    return newWithdrawal;
+    await WithdrawalModel.findByIdAndUpdate(w_id, withdrawal);
+    return withdrawal;
   } catch (error) {
     console.log("B2C ERROR:", error);
   }

@@ -11,7 +11,7 @@ var DoorstepPackages = require("../models/doorStep_delivery_packages.model");
 var ShelfPackages = require("../models/rent_a_shelf_deliveries");
 var B2CHandler = require("../helpers/withdrawal.helper");
 var WithdrawalModel = require("../models/withdraws.model");
-var WithdrawalRequestModel = require("../models/withdrawal_request");
+const { default: ShortUniqueId } = require("short-unique-id");
 
 router.get(
   "/receieved/:b_id",
@@ -213,32 +213,55 @@ async function subscribe(result) {
   // await subscribe(result);
 }
 
-router.post("/withdraw", [authMiddleware, authorized], async (req, res) => {
-  try {
-    let result = await B2CHandler(
-      req?.body?.amount,
-      req.body?.phone_number,
-      req.user?._id,
-      req.body?.packages,
-      req.body?.business
-    );
+router.post(
+  "/withdraw/:w_id",
+  [authMiddleware, authorized],
+  async (req, res) => {
+    try {
+      //w_id is the withdrawal id
 
-    await subscribe(result);
-    // await new Promise((resolve) => setTimeout(resolve, 500));
-    return res.status(200).json(result);
-  } catch (error) {
-    console.log("MPESA WITHDRAWALS CALLBACK ERROR: ", error);
+      let result = await B2CHandler(
+        req?.body?.amount,
+        req.body?.phone_number,
+        req.params?.w_id
+      );
+
+      await subscribe(result);
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      return res.status(200).json(result);
+    } catch (error) {
+      console.log("MPESA WITHDRAWALS CALLBACK ERROR: ", error);
+    }
   }
-});
+);
 
 router.post("/request", [authMiddleware, authorized], async (req, res) => {
   try {
-    let result = await new WithdrawalRequestModel({
+    const uid = new ShortUniqueId({ length: 10 });
+
+    const packages = req.body?.packages;
+
+    packages?.forEach(async ({ _id, del_type }) => {
+      // find mpesa model and update withdrawal status.
+      let currentLog;
+      if (del_type === "agent") {
+        currentLog = await MpesaLogs.findOne({ package: _id });
+      } else if (del_type === "doorstep") {
+        currentLog = await MpesaLogs.findOne({ doorstep_package: _id });
+      } else if (del_type === "rent" || del_type === "") {
+        currentLog = await MpesaLogs.findOne({ rent_package: _id });
+      }
+      console.log(del_type, " : ", currentLog);
+    });
+
+    let result = await new WithdrawalModel({
       amount: req?.body?.amount,
       phone: req.body?.phone_number,
       user: req.user?._id,
       packages: req.body?.packages,
       business: req.body?.business,
+      status: 1,
+      code: uid,
     }).save();
     // await new Promise((resolve) => setTimeout(resolve, 500));
     return res.status(200).json(result);
