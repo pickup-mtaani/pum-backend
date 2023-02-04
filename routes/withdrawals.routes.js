@@ -245,11 +245,20 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       // find mpesa model and update withdrawal status.
       let currentLog;
       if (del_type === "agent") {
-        currentLog = await MpesaLogs.findOne({ package: _id });
+        currentLog = await MpesaLogs.findOneAndUpdate(
+          { package: _id },
+          { withdrawn: "pending" }
+        );
       } else if (del_type === "doorstep") {
-        currentLog = await MpesaLogs.findOne({ doorstep_package: _id });
+        currentLog = await MpesaLogs.findOneAndUpdate(
+          { doorstep_package: _id },
+          { withdrawn: "pending" }
+        );
       } else if (del_type === "rent" || del_type === "") {
-        currentLog = await MpesaLogs.findOne({ rent_package: _id });
+        currentLog = await MpesaLogs.findOneAndUpdate(
+          { rent_package: _id },
+          { withdrawn: "pending" }
+        );
       }
       console.log(del_type, " : ", currentLog);
     });
