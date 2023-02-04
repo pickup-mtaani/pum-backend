@@ -260,7 +260,7 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       user: req.user?._id,
       packages: req.body?.packages,
       business: req.body?.business,
-      status: 1,
+      status: "pending",
       code: uid,
     }).save();
     // await new Promise((resolve) => setTimeout(resolve, 500));
