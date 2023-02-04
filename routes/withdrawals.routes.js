@@ -219,7 +219,6 @@ router.post(
   async (req, res) => {
     try {
       //w_id is the withdrawal id
-      console.log("WITHDRAWAL: ", req.body);
 
       let result = await B2CHandler(
         req?.body?.amount,
@@ -241,6 +240,8 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
     const uid = new ShortUniqueId({ length: 10 });
 
     const packages = req.body?.packages;
+
+    console.log("WITHDRAWAL: ", req.body);
 
     packages?.forEach(async (p) => {
       // find mpesa model and update withdrawal status.
