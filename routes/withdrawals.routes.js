@@ -246,17 +246,17 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       let currentLog;
       if (p?.del_type === "agent") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { package: p?._id },
+          { package: p?._id, ResponseCode: 0 },
           { withdrawn: "pending" }
         );
       } else if (p?.del_type === "doorstep") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { doorstep_package: p?._id },
+          { doorstep_package: p?._id, ResponseCode: 0 },
           { withdrawn: "pending" }
         );
       } else if (p?.del_type === "rent" || p?.del_type === "") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { rent_package: p?._id },
+          { rent_package: p?._id, ResponseCode: 0 },
           { withdrawn: "pending" }
         );
       }
