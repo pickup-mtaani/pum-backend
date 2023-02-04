@@ -219,6 +219,7 @@ router.post(
   async (req, res) => {
     try {
       //w_id is the withdrawal id
+      console.log("WITHDRAWAL: ", req.body);
 
       let result = await B2CHandler(
         req?.body?.amount,
