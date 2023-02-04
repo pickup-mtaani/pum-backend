@@ -241,26 +241,26 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
 
     const packages = req.body?.packages;
 
-    packages?.forEach(async ({ _id, del_type }) => {
+    packages?.forEach(async (p) => {
       // find mpesa model and update withdrawal status.
       let currentLog;
-      if (del_type === "agent") {
+      if (p?.del_type === "agent") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { package: _id },
+          { package: p?._id },
           { withdrawn: "pending" }
         );
-      } else if (del_type === "doorstep") {
+      } else if (p?.del_type === "doorstep") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { doorstep_package: _id },
+          { doorstep_package: p?._id },
           { withdrawn: "pending" }
         );
-      } else if (del_type === "rent" || del_type === "") {
+      } else if (p?.del_type === "rent" || p?.del_type === "") {
         currentLog = await MpesaLogs.findOneAndUpdate(
-          { rent_package: _id },
+          { rent_package: p?._id },
           { withdrawn: "pending" }
         );
       }
-      console.log(del_type, " : ", currentLog);
+      console.log(p?.del_type, " : ", currentLog);
     });
 
     let result = await new WithdrawalModel({
