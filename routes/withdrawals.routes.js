@@ -219,6 +219,7 @@ router.post(
   async (req, res) => {
     try {
       //w_id is the withdrawal id
+      // console.log("WITHDRAWAL: ", req.body);
 
       let result = await B2CHandler(
         req?.body?.amount,
@@ -235,13 +236,12 @@ router.post(
   }
 );
 
+// request withdrawal by seller
 router.post("/request", [authMiddleware, authorized], async (req, res) => {
   try {
     const uid = new ShortUniqueId({ length: 10 });
 
     const packages = req.body?.packages;
-
-    console.log("WITHDRAWAL: ", req.body);
 
     packages?.forEach(async (p) => {
       // find mpesa model and update withdrawal status.
@@ -278,6 +278,36 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
     return res.status(200).json(result);
   } catch (error) {
     console.log("MPESA WITHDRAWALS REQUEST ERROR: ", error);
+  }
+});
+
+// fetch all withdrawals by admin
+router.get("/request", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const withdrawals = await WithdrawalModel.find()
+      .select("createdAt amount status business code phone_number")
+      ?.populate({ path: "business", select: "name" });
+
+    return res.status(200).json(withdrawals);
+  } catch (error) {
+    console.log("MPESA WITHDRAWALS REQUEST ERROR: ", error);
+    res?.status(400).json(error?.message);
+  }
+});
+// update withdrawal
+router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    let id = req?.params?.id;
+    let update = req?.body;
+    if (!id) {
+      res.status(400).json({ message: "withdrawal request id requiered!" });
+    } else {
+      const withdrawal = await WithdrawalModel.findByIdAndUpdate(id, update);
+      return res.status(200).json(withdrawal);
+    }
+  } catch (error) {
+    console.log("MPESA WITHDRAWAL UPDATE ERROR: ", error);
+    res?.status(400).json(error?.message);
   }
 });
 
