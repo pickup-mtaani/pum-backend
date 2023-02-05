@@ -1,4 +1,5 @@
 import React from "react";
+import "react-toastify/dist/ReactToastify.css";
 import Login from "./login";
 import { BrowserRouter as Router, useRoutes } from "react-router-dom";
 import Dashboard from "./components/dashboard";

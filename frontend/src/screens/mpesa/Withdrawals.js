@@ -1,11 +1,41 @@
-import React, { useState } from "react";
-import { ConfigProvider, Table } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { ConfigProvider, Popconfirm, Table } from "antd";
 import moment from "moment";
-import { Box } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import Layout from "../../views/Layouts";
-
+import withdrawalServices from "../../services/withdrawalServices";
+import { toast } from "react-toastify";
 const Withdrawals = () => {
   const [loading, setLoading] = useState(false);
+  const [withdrawals, setWithdrawals] = useState([]);
+
+  const fetchWithdrawals = useCallback(async () => {
+    try {
+      setLoading(true);
+      let withdraws = await withdrawalServices.fetchWithdrawals();
+      setWithdrawals(withdraws);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error("Withdrawals fetch error: ", error?.message);
+    }
+  }, []);
+
+  const handleReject = useCallback(async (id) => {
+    try {
+      setLoading(true);
+      await withdrawalServices.updateWithdrawal(id, { status: "rejected" });
+
+      setLoading(false);
+      fetchWithdrawals();
+      toast.success("Withdrawal rejected.");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error("Withdrawals fetch error: ", error?.message);
+    }
+  }, []);
 
   const columns = [
     {
@@ -19,10 +49,25 @@ const Withdrawals = () => {
     {
       title: "Business",
       dataIndex: "business",
+      render: (_, n) => {
+        return <span>{n?.business?.name}</span>;
+      },
     },
     {
       title: "Phone number",
-      dataIndex: "phone",
+      dataIndex: "phone_number",
+      render: (_, n) => {
+        return (
+          <span>
+            {n?.phone_number?.substring(0, 4) +
+              "***" +
+              n?.phone_number?.substring(
+                n?.phone_number?.length - 3,
+                n?.phone_number?.length
+              )}
+          </span>
+        );
+      },
     },
     {
       title: "Amount",
@@ -38,12 +83,12 @@ const Withdrawals = () => {
       render: (_, n) => {
         return (
           <>
-            {n?.status === 0 ? (
+            {n?.status === "approved" ? (
               <StatusTag
                 text={"Approved"}
                 className={"bg-green-500 text-white"}
               />
-            ) : n?.status === 1 ? (
+            ) : n?.status === "pending" ? (
               <StatusTag
                 text={"Pending"}
                 className={"bg-yellow-400 text-gray-50"}
@@ -72,14 +117,34 @@ const Withdrawals = () => {
       dataIndex: "action",
       render: (_, n) => {
         return (
-          <Box className="flex gap-1 justify-start">
-            <ActionButton text={"Confirm"} className={"bg-success"} />
-            <ActionButton className={"bg-red-600"} text={"Reject"} />
-          </Box>
+          <>
+            {n?.status !== "rejected" && (
+              <Box className="flex gap-1 justify-start">
+                <ActionButton text={"Confirm"} className={"bg-success"} />
+                <Popconfirm
+                  title="Reject the withdrawal?"
+                  description="Are you sure to reject this withdrawal?"
+                  onConfirm={() => handleReject(n?._id)}
+                  // onCancel={cancel}
+                  okText="Yes"
+                  cancelText="No"
+                  okButtonProps={{ className: "bg-primary text-slate-800" }}
+                >
+                  <div>
+                    <ActionButton className={"bg-red-600"} text={"Reject"} />
+                  </div>
+                </Popconfirm>
+              </Box>
+            )}
+          </>
         );
       },
     },
   ];
+
+  useEffect(() => {
+    fetchWithdrawals();
+  }, [fetchWithdrawals]);
 
   return (
     <Layout>
@@ -104,7 +169,7 @@ const Withdrawals = () => {
             pageSizeOptions: ["10", "20", "30", "50", "100"],
           }}
           columns={columns}
-          dataSource={sample_data}
+          dataSource={withdrawals}
         />
       </ConfigProvider>
     </Layout>
@@ -113,13 +178,14 @@ const Withdrawals = () => {
 
 export default Withdrawals;
 
-const ActionButton = ({ handleClick, text, className }) => (
-  <button
+const ActionButton = ({ handleClick, text, className, ...rest }) => (
+  <Button
     className={`text-sm py-1.5 px-3 rounded ${className} `}
     onClick={handleClick}
+    {...rest}
   >
     {text}
-  </button>
+  </Button>
 );
 
 const StatusTag = ({ handleClick, text, className }) => (
@@ -129,141 +195,3 @@ const StatusTag = ({ handleClick, text, className }) => (
     {text}
   </div>
 );
-
-let sample_data = [
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 0,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 1,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 0,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 1,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 0,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 1,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 0,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 1,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-  {
-    code: "pkrst7qv",
-    amount: "1250",
-    createdAt: new Date(),
-    business: "Sarova Tech",
-    status: 2,
-    phone: "0790***387",
-    transaction_id: "QWERTY123",
-  },
-];
