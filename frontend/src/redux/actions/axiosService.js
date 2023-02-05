@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosService = axios.create({
-  baseURL: "http://localhost:4000/",
+  // baseURL: "http://localhost:4000/",
+  baseURL: "https://stagingapi.pickupmtaani.com/",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

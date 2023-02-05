@@ -1,27 +1,17 @@
 import React from "react";
 
-import { BsBookshelf, BsPeople } from "react-icons/bs";
-import { IoSettingsOutline } from "react-icons/io5";
-import {
-  MdOutlineDashboard,
-  MdOutlineDirectionsCar,
-  MdOutlineSupportAgent,
-} from "react-icons/md";
 import { AiOutlineHome } from "react-icons/ai";
-import { useDispatch } from "react-redux";
+import { BsBookshelf } from "react-icons/bs";
+import { FaMoneyBill } from "react-icons/fa";
+import { GoPackage } from "react-icons/go";
+import { HiOutlineUsers, HiOutlineViewBoards } from "react-icons/hi";
+import { IoBusinessOutline } from "react-icons/io5";
+import { TbBuildingWarehouse } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import SideNavItem, { SideNavCollapse } from "./SideNavItem";
-import { TbBuildingWarehouse } from "react-icons/tb";
-import { HiOutlineUsers, HiOutlineViewBoards } from "react-icons/hi";
-import { GoPackage } from "react-icons/go";
-import { IoBusinessOutline } from "react-icons/io5";
-import { RiEBike2Line } from "react-icons/ri";
-import { FaMoneyBill } from "react-icons/fa";
 // import Finance from "../assets/svg/Finance";
 
 const SideNav = ({ current = "dashboard", isOpen = true }) => {
-  const dispatch = useDispatch();
-
   return (
     <div
       className={`bg-black max-h-screen relative flex-shrink-0 ${
@@ -72,7 +62,7 @@ let nav_list = [
   },
   {
     name: "Warehouse",
-    path: "/warehouse",
+    path: "/wahehouse",
     icon: <TbBuildingWarehouse />,
   },
 

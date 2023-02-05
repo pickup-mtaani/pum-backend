@@ -22,20 +22,23 @@ const Withdrawals = () => {
     }
   }, []);
 
-  const handleReject = useCallback(async (id) => {
-    try {
-      setLoading(true);
-      await withdrawalServices.updateWithdrawal(id, { status: "rejected" });
+  const handleReject = useCallback(
+    async (id) => {
+      try {
+        setLoading(true);
+        await withdrawalServices.updateWithdrawal(id, { status: "rejected" });
 
-      setLoading(false);
-      fetchWithdrawals();
-      toast.success("Withdrawal rejected.");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toast.error("Withdrawals fetch error: ", error?.message);
-    }
-  }, []);
+        setLoading(false);
+        fetchWithdrawals();
+        toast.success("Withdrawal rejected.");
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        toast.error("Withdrawals fetch error: ", error?.message);
+      }
+    },
+    [fetchWithdrawals]
+  );
 
   const columns = [
     {

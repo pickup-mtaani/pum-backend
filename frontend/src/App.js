@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./login";
