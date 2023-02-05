@@ -13,7 +13,7 @@ const Withdrawals = () => {
     try {
       setLoading(true);
       let withdraws = await withdrawalServices.fetchWithdrawals();
-      console.log(withdraws);
+      setWithdrawals(withdraws);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -22,20 +22,23 @@ const Withdrawals = () => {
     }
   }, []);
 
-  const handleReject = useCallback(async (id) => {
-    try {
-      setLoading(true);
-      await withdrawalServices.updateWithdrawal(id, { status: "rejected" });
+  const handleReject = useCallback(
+    async (id) => {
+      try {
+        setLoading(true);
+        await withdrawalServices.updateWithdrawal(id, { status: "rejected" });
 
-      setLoading(false);
-      fetchWithdrawals();
-      toast.success("Withdrawal rejected.");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toast.error("Withdrawals fetch error: ", error?.message);
-    }
-  }, []);
+        setLoading(false);
+        fetchWithdrawals();
+        toast.success("Withdrawal rejected.");
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        toast.error("Withdrawals fetch error: ", error?.message);
+      }
+    },
+    [fetchWithdrawals]
+  );
 
   const columns = [
     {
@@ -169,7 +172,7 @@ const Withdrawals = () => {
             pageSizeOptions: ["10", "20", "30", "50", "100"],
           }}
           columns={columns}
-          dataSource={[]}
+          dataSource={withdrawals}
         />
       </ConfigProvider>
     </Layout>
