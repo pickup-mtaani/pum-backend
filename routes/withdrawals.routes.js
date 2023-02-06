@@ -299,12 +299,15 @@ router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     let id = req?.params?.id;
 
-    let update = req?.body;
     if (!id) {
       res.status(400).json({ message: "withdrawal request id requiered!" });
-    } else {
-      // redo mpesa log withdrawal status to false
-      if (req?.body?.status === "rejected") {
+    }
+    let update = req?.body;
+    const withdrawal = await WithdrawalModel.findByIdAndUpdate(id, update);
+
+    if (req?.body?.status === "rejected") {
+      withdrawal?.packages?.forEach(async (p) => {
+        // redo mpesa log withdrawal status to false
         if (p?.del_type === "agent") {
           currentLog = await MpesaLogs.findOneAndUpdate(
             { package: p?._id, ResponseCode: 0 },
@@ -321,10 +324,10 @@ router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
             { withdrawn: "false" }
           );
         }
-      }
-      const withdrawal = await WithdrawalModel.findByIdAndUpdate(id, update);
-      return res.status(200).json(withdrawal);
+      });
     }
+
+    return res.status(200).json(withdrawal);
   } catch (error) {
     console.log("MPESA WITHDRAWAL UPDATE ERROR: ", error);
     res?.status(400).json(error?.message);
