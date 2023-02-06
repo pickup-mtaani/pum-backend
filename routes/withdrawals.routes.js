@@ -28,11 +28,10 @@ router.get(
           payLater: "true",
           ResponseCode: 0,
         })
-          ?.select("package amount type")
+          ?.select("package amount type updatedAt createdAt")
           ?.populate({
             path: "package",
-            select:
-              "customerName type receipt_no updatedAt createdAt on_delivery_balance",
+            select: "customerName type receipt_no  on_delivery_balance",
           });
 
         const totalPayment = _.sum(_.map(receieved_payments, "amount"));
