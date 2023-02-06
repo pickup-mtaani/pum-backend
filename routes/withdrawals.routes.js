@@ -298,10 +298,30 @@ router.get("/request", [authMiddleware, authorized], async (req, res) => {
 router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     let id = req?.params?.id;
+
     let update = req?.body;
     if (!id) {
       res.status(400).json({ message: "withdrawal request id requiered!" });
     } else {
+      // redo mpesa log withdrawal status to false
+      if (req?.body?.status === "rejected") {
+        if (p?.del_type === "agent") {
+          currentLog = await MpesaLogs.findOneAndUpdate(
+            { package: p?._id, ResponseCode: 0 },
+            { withdrawn: "false" }
+          );
+        } else if (p?.del_type === "doorstep") {
+          currentLog = await MpesaLogs.findOneAndUpdate(
+            { doorstep_package: p?._id, ResponseCode: 0 },
+            { withdrawn: "false" }
+          );
+        } else if (p?.del_type === "rent" || p?.del_type === "") {
+          currentLog = await MpesaLogs.findOneAndUpdate(
+            { rent_package: p?._id, ResponseCode: 0 },
+            { withdrawn: "false" }
+          );
+        }
+      }
       const withdrawal = await WithdrawalModel.findByIdAndUpdate(id, update);
       return res.status(200).json(withdrawal);
     }
