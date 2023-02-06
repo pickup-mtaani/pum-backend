@@ -323,7 +323,7 @@ router.get("/request/:b_id", [authMiddleware, authorized], async (req, res) => {
       business: req?.params?.b_id,
     }).select("createdAt amount status code ");
 
-    return res.status(200).json(withdrawals);
+    return res.status(200).json({ withdrawals, count: withdrawals?.length });
   } catch (error) {
     console.log("MPESA WITHDRAWALS REQUEST ERROR: ", error);
     res?.status(400).json(error?.message);
