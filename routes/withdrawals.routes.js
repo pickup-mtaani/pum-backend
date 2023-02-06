@@ -377,7 +377,8 @@ router.post(
       const { pin } = req?.body;
 
       if (pin === "4321") {
-        return res.status(200).json({ message: "verified" });
+        const uid = new ShortUniqueId({ length: 10 });
+        return res.status(200).json({ message: "verified", token: uid });
       } else {
         return res.status(403).json({ message: "Invalid pin number." });
       }
