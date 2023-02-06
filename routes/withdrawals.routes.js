@@ -32,7 +32,7 @@ router.get(
           ?.populate({
             path: "package",
             select:
-              "customerName type receipt_no updatedAt on_delivery_balance",
+              "customerName type receipt_no updatedAt createdAt on_delivery_balance",
           });
 
         const totalPayment = _.sum(_.map(receieved_payments, "amount"));
@@ -60,17 +60,23 @@ router.get("/pending/:b_id", [authMiddleware, authorized], async (req, res) => {
         businessId: b_id,
         payment_option: "collection",
         on_delivery_balance: { $gt: 0 },
-      }).select("customerName type receipt_no updatedAt on_delivery_balance");
+      }).select(
+        "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+      );
       const pending_agent = await AgentPackages.find({
         businessId: b_id,
         payment_option: "collection",
         on_delivery_balance: { $gt: 0 },
-      }).select("customerName type receipt_no updatedAt on_delivery_balance");
+      }).select(
+        "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+      );
       const pending_shelf = await ShelfPackages.find({
         businessId: b_id,
         payment_option: "collection",
         on_delivery_balance: { $gt: 0 },
-      }).select("customerName type receipt_no updatedAt on_delivery_balance");
+      }).select(
+        "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+      );
 
       const packageList = _.sortBy(
         [...pending_doorstep, ...pending_agent, ...pending_shelf],
@@ -103,19 +109,25 @@ router.get(
           payment_option: "collection",
           state: "rejected",
           on_delivery_balance: { $gt: 0 },
-        }).select("customerName type receipt_no updatedAt on_delivery_balance");
+        }).select(
+          "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+        );
         const pending_agent = await AgentPackages.find({
           businessId: b_id,
           payment_option: "collection",
           state: "rejected",
           on_delivery_balance: { $gt: 0 },
-        }).select("customerName type receipt_no updatedAt on_delivery_balance");
+        }).select(
+          "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+        );
         const pending_shelf = await ShelfPackages.find({
           businessId: b_id,
           payment_option: "collection",
           state: "rejected",
           on_delivery_balance: { $gt: 0 },
-        }).select("customerName type receipt_no updatedAt on_delivery_balance");
+        }).select(
+          "customerName type receipt_no updatedAt createdAt on_delivery_balance"
+        );
 
         const packageList = _.sortBy(
           [...pending_doorstep, ...pending_agent, ...pending_shelf],
