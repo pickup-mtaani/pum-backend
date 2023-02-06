@@ -33,6 +33,7 @@ const TrackDoorstep = require("routes/DoorStep/doorstep_track_package");
 const Withdrawals = require("./routes/withdrawals.routes");
 const MPesaRoute = require("routes/payments.routes");
 const junkRoute = require("./routes/junk/users.routes.junk");
+const securityQuizRoute = require("./routes/security_questions.routes");
 
 // const DoorstepRoutes = require('routes/door_step_package.routes')
 const ShelfToErrandRoutes = require("routes/Errand/shelf-to-errand.routes");
@@ -102,6 +103,7 @@ app.use("/api/", ShelfToErrandRoutes);
 app.use("/api/junk/", junkRoute);
 app.use("/api/", MPesaRoute);
 app.use("/api/withdrawals/", Withdrawals);
+app.use("/api/securityquiz/", securityQuizRoute);
 
 // global error handler
 // app.use(errorHandler);

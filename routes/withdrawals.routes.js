@@ -369,4 +369,23 @@ router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
   }
 });
 
+router.post(
+  "/verifypin/:id",
+  [authMiddleware, authorized],
+  async (req, res) => {
+    try {
+      const { pin } = req?.body;
+
+      if (pin === "4321") {
+        return res.status(200).json({ message: "verified" });
+      } else {
+        return res.status(403).json({ message: "Invalid pin number." });
+      }
+    } catch (error) {
+      console.log("MPESA WITHDRAWAL UPDATE ERROR: ", error);
+      res?.status(400).json(error?.message);
+    }
+  }
+);
+
 module.exports = router;
