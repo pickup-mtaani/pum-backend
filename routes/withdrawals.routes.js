@@ -306,7 +306,7 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
 router.get("/request", [authMiddleware, authorized], async (req, res) => {
   try {
     const withdrawals = await WithdrawalModel.find()
-      .select("createdAt amount status business code phone_number")
+      .select("createdAt amount status business code phone_number phone")
       ?.populate({ path: "business", select: "name" });
 
     return res.status(200).json(withdrawals);

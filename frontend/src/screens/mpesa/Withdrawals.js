@@ -61,14 +61,24 @@ const Withdrawals = () => {
       dataIndex: "phone_number",
       render: (_, n) => {
         return (
-          <span>
-            {n?.phone_number?.substring(0, 4) +
-              "***" +
-              n?.phone_number?.substring(
-                n?.phone_number?.length - 3,
-                n?.phone_number?.length
-              )}
-          </span>
+          <>
+            {n?.phone ? (
+              <span>
+                {n?.phone?.substring(0, 4) +
+                  "***" +
+                  n?.phone?.substring(n?.phone?.length - 3, n?.phone?.length)}
+              </span>
+            ) : (
+              <span>
+                {n?.phone_number?.substring(0, 4) +
+                  "***" +
+                  n?.phone_number?.substring(
+                    n?.phone_number?.length - 3,
+                    n?.phone_number?.length
+                  )}
+              </span>
+            )}
+          </>
         );
       },
     },
