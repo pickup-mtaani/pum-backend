@@ -315,6 +315,20 @@ router.get("/request", [authMiddleware, authorized], async (req, res) => {
     res?.status(400).json(error?.message);
   }
 });
+// fetch particular user withdrawals
+//return: withdrawalID status totalAmount dateRequested
+router.get("/request/:b_id", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const withdrawals = await WithdrawalModel.find({
+      business: req?.params?.b_id,
+    }).select("createdAt amount status code ");
+
+    return res.status(200).json(withdrawals);
+  } catch (error) {
+    console.log("MPESA WITHDRAWALS REQUEST ERROR: ", error);
+    res?.status(400).json(error?.message);
+  }
+});
 // update withdrawal
 router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
   try {
