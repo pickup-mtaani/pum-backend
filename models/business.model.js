@@ -74,14 +74,21 @@ const BizSchema = new Schema(
     },
     wallet_pin: {
       type: String,
-      maxLength: 4,
+    },
+    hasWalletPin: {
+      type: String,
+      default: "false",
     },
     wallet_security_question: {
-      question: { type: Schema.Types.ObjectId, ref: "security_questions" },
+      question: { type:String },
       answer: { type: String },
     },
   },
   { timestamps: true }
 );
+
+BizSchema.methods.comparePin = (pin, hashedPin) => {
+  return bcrypt.compareSync(pin, hashedPin);
+};
 
 module.exports = mongoose.model("business", BizSchema);

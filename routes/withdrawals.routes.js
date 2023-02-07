@@ -12,6 +12,8 @@ var ShelfPackages = require("../models/rent_a_shelf_deliveries");
 var B2CHandler = require("../helpers/withdrawal.helper");
 var WithdrawalModel = require("../models/withdraws.model");
 const { default: ShortUniqueId } = require("short-unique-id");
+const bcrypt = require("bcryptjs");
+const Business = require("../models/business.model");
 
 router.get(
   "/receieved/:b_id",
@@ -369,18 +371,27 @@ router.patch("/request/:id", [authMiddleware, authorized], async (req, res) => {
   }
 });
 
+// verify wallet pin
 router.post(
   "/verifypin/:id",
   [authMiddleware, authorized],
   async (req, res) => {
     try {
       const { pin } = req?.body;
+      const { id } = req?.params;
 
-      if (pin === "4321") {
+      const business = await Business.findById(id);
+      const password_match = business.comparePin(pin, business?.wallet_pin);
+
+      if (business?.hasWalletPin === "false" || !business?.wallet_pin) {
+        return res.status(401).json({ message: "wallet pin required!" });
+      }
+
+      if (password_match) {
         const uid = new ShortUniqueId({ length: 10 });
         return res.status(200).json({ message: "verified", token: uid });
       } else {
-        return res.status(403).json({ message: "Invalid pin number." });
+        return res.status(403).json({ message: "Invalid pin." });
       }
     } catch (error) {
       console.log("MPESA WITHDRAWAL UPDATE ERROR: ", error);
@@ -388,5 +399,33 @@ router.post(
     }
   }
 );
+// wallet registration
+router.post("/wallet/registration/:b_id", async (req, res) => {
+  try {
+    const { pin, security_question } = req.body;
+    const { b_id } = req.params;
+    const hashedPin = bcrypt.hashSync(pin, 10);
 
+    if (!pin || !security_question) {
+      return res
+        ?.status(400)
+        .json("Security pin, security question and answer required.");
+    }
+
+    const business = await Business.findOneAndUpdate(
+      { _id: b_id },
+      {
+        wallet_pin: hashedPin,
+        hasWalletPin: "true",
+        wallet_security_question: security_question,
+      },
+      { new: true, useFindAndModify: false }
+    ).select("-wallet_security_question -wallet_pin");
+
+    res.status(200).json({ message: "Business pin updated!", business });
+  } catch (error) {
+    console.log("WALLET REGISTRATION ERROR: ", error);
+    res?.status(400).json(error?.message);
+  }
+});
 module.exports = router;
