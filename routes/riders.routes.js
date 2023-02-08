@@ -27,6 +27,7 @@ const {
 var Sent_package = require("models/package.modal.js");
 const { v4: uuidv4 } = require("uuid");
 var multer = require("multer");
+var Path = require("../models/riderroute.model");
 const Format_phone_number = require("../helpers/phone_number_formater");
 const storagerider_id_front = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -690,11 +691,18 @@ router.get(
 );
 
 // get coordinates
-router.post("/tracking", [authMiddleware, authorized], async (req, res) => {
+router.post("/tracking/:id", [authMiddleware, authorized], async (req, res) => {
   try {
     // const body = req?.body;
+    // console.log("LOCATION CHANGED:", req?.body);
+    const { coords } = req?.body;
+    const { id } = req?.params;
 
-    // console.log("COORDINATES", body);
+    await new Path({
+      rider: id,
+      lng: coords.longitude,
+      lat: coords.latitude,
+    }).save();
 
     res.status(200).json({});
   } catch (error) {
