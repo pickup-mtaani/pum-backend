@@ -692,9 +692,9 @@ router.get(
 // get coordinates
 router.post("/tracking", [authMiddleware, authorized], async (req, res) => {
   try {
-    const body = req?.body;
+    // const body = req?.body;
 
-    console.log("COORDINATES", body);
+    // console.log("COORDINATES", body);
 
     res.status(200).json({});
   } catch (error) {

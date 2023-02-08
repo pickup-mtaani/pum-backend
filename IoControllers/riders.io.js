@@ -3,7 +3,12 @@ var Path = require("./../models/riderroute.model");
 module.exports = (http) => {
   const io = require("socket.io")(http, {
     cors: {
-      origin: ["http://localhost:3000", "https://2ff9-217-21-116-210.eu.ngrok.io/api/", "https://stagingapi.pickupmtaani.com/", "https://stagingapi.pickupmtaani.com/"],
+      origin: [
+        "http://localhost:3000",
+        "https://2ff9-217-21-116-210.eu.ngrok.io/api/",
+        "https://stagingapi.pickupmtaani.com/",
+        "https://stagingapi.pickupmtaani.com/",
+      ],
     },
   });
   // global.io = io;
@@ -12,7 +17,7 @@ module.exports = (http) => {
   let notificationrooms = [];
 
   io.on("connection", (socket) => {
-    // console.log("first connected")
+    console.log("SOCKET CONNECTION MADE:");
     let rider = null;
     const createRoom = (rider_id) => {
       const roomId = rider_id;
@@ -25,7 +30,6 @@ module.exports = (http) => {
 
       console.log("User created room");
     };
-
 
     const joinRoom = (roomId, userId) => {
       console.log("Join rooms: ", JSON.stringify(rooms));
@@ -72,47 +76,52 @@ module.exports = (http) => {
       socket.broadcast.emit(`rider-${rider_id}`, { coordinates });
       // socket.to(rider_id).emit("position-changed", { coordinates });
 
-      await new Path({ rider: rider_id, lng: coordinates.longitude, lat: coordinates.latitude }).save();
+      await new Path({
+        rider: rider_id,
+        lng: coordinates.longitude,
+        lat: coordinates.latitude,
+      }).save();
       // grab the coordinates
       // send the coordinates to rider's room.
-    };//console. ya on connection inatokea?
+    }; //console. ya on connection inatokea?
 
     socket.on("start-ride", (data) => {
-      // console.log(data);
+      console.log("RIDE STARTED: ", data);
+
       createRoom(data?.rider_id);
       {
         socket.on("position-change", (data_2) => {
-          // console.log("POSITION CHANGED:", data_2);
+          console.log("POSITION CHANGED:", data_2);
+
           riderChangedLocation({
             rider_id: data.rider_id,
             coordinates: data_2?.coordinates,
-          })
-        })
+          });
+        });
         const changeLoc = (coord) => {
-          console.log(coord)
-
-        }
+          console.log(coord);
+        };
       }
-
     });
     socket.on("seller-notification", (data) => {
-
-      const index = notificationrooms.findIndex(object => object.seller === data.id);
+      const index = notificationrooms.findIndex(
+        (object) => object.seller === data.id
+      );
       if (index === -1) {
         notificationrooms.push({ seller: data?.id, socket: socket.id });
       } else {
-        notificationrooms[index] = { seller: data?.id, socket: socket.id }
+        notificationrooms[index] = { seller: data?.id, socket: socket.id };
       }
-      global.sellers = notificationrooms
+      global.sellers = notificationrooms;
 
-      console.log("first", global.sellers)
+      console.log("first", global.sellers);
       // setRoom
     });
-    socket.emit("riders", (notificationrooms))
+    socket.emit("riders", notificationrooms);
     //
 
     socket.on("track_rider", (data) => {
-      console.log("Tracking rider:", data)
+      console.log("Tracking rider:", data);
       joinRoom(data?.rider_id, data.user_id);
       // let my_rider = riders.filter(rider => (Object.keys(rider)[0] === data.rider_id))[0]
       // console.log('my' + JSON.stringify(rooms));
@@ -125,7 +134,7 @@ module.exports = (http) => {
     // console.log(users);
   });
 
-  return io
+  return io;
 
   // socket.on("position-change", (data) => {
   //     users = users.map((u) => {
