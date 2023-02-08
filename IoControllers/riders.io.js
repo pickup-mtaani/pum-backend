@@ -5,8 +5,7 @@ module.exports = (http) => {
     cors: {
       origin: [
         "http://localhost:3000",
-        "https://2ff9-217-21-116-210.eu.ngrok.io/api/",
-        "https://stagingapi.pickupmtaani.com/",
+        "https://9d66-196-207-182-190.eu.ngrok.io",
         "https://stagingapi.pickupmtaani.com/",
       ],
     },
@@ -73,6 +72,7 @@ module.exports = (http) => {
 
     const riderChangedLocation = async ({ rider_id, coordinates }) => {
       // console.log("change location:", rider_id, coordinates);
+      console.log(rider_id + " POSITION CHANGED: ");
       socket.broadcast.emit(`rider-${rider_id}`, { coordinates });
       // socket.to(rider_id).emit("position-changed", { coordinates });
 
@@ -85,24 +85,27 @@ module.exports = (http) => {
       // send the coordinates to rider's room.
     }; //console. ya on connection inatokea?
 
-    socket.on("start-ride", (data) => {
-      console.log("RIDE STARTED: ", data);
+    socket.on("position-change", (data) => {
+      let current_rooms = Object.keys(rooms);
+      // console.log(current_rooms);
+      if (!current_rooms?.includes(data?.rider_id)) {
+        createRoom(data?.rider_id);
 
-      createRoom(data?.rider_id);
-      {
-        socket.on("position-change", (data_2) => {
-          console.log("POSITION CHANGED:", data_2);
-
-          riderChangedLocation({
-            rider_id: data.rider_id,
-            coordinates: data_2?.coordinates,
-          });
+        riderChangedLocation({
+          rider_id: data.rider_id,
+          coordinates: data?.coordinates,
         });
-        const changeLoc = (coord) => {
-          console.log(coord);
-        };
+      } else {
+        riderChangedLocation({
+          rider_id: data.rider_id,
+          coordinates: data?.coordinates,
+        });
       }
     });
+    const changeLoc = (coord) => {
+      console.log(coord);
+    };
+
     socket.on("seller-notification", (data) => {
       const index = notificationrooms.findIndex(
         (object) => object.seller === data.id
