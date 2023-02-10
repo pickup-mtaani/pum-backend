@@ -4,11 +4,17 @@ const initialState = {
   users: [],
   user: {},
   admins: [],
+  riders: [],
   loading: false,
 };
 
 export default function store(state = initialState, action) {
   switch (action.type) {
+    case "SET_RIDERS":
+      return {
+        ...state,
+        riders: action.payload,
+      };
     case "LOGIN":
       return {
         ...state,
@@ -18,7 +24,7 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        user: action.payload
+        user: action.payload,
       };
     case "LOGIN_FAIL":
       return {

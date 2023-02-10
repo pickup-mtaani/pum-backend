@@ -35,7 +35,7 @@ function Layout(props) {
           //   toggleSideBar={handleToggle}
           />
 
-          <div className="flex-1 py-2 px-4 bg-gray-200 overflow-scroll min-h-[90vh]">
+          <div className="flex-1 bg-gray-200 overflow-scroll min-h-[90vh]  h-full">
             {props?.children}
           </div>
         </Box>

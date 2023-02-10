@@ -15,6 +15,9 @@ var Package = require("models/package.modal");
 var RiderRoutes = require("models/rider_routes.model");
 
 var Sent_package = require("models/package.modal.js");
+var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
+var Erand_package = require("models/erand_delivery_packages.model");
+
 var Conversation = require("models/conversation.model");
 const { MakeActivationCode } = require("../helpers/randomNo.helper");
 const { SendMessage } = require("../helpers/sms.helper");
@@ -24,7 +27,6 @@ const {
   validateLoginInput,
   validateRiderRegisterInput,
 } = require("../va;lidations/user.validations");
-var Sent_package = require("models/package.modal.js");
 const { v4: uuidv4 } = require("uuid");
 var multer = require("multer");
 var Path = require("../models/riderroute.model");
@@ -400,8 +402,8 @@ router.get(
   async (req, res) => {
     try {
       const riders = await Path.find({ rider: req.params.id })
-        .limit(10)
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .limit(5);
 
       return res.status(200).json(riders);
     } catch (error) {
@@ -711,4 +713,95 @@ router.post("/tracking/:id", [authMiddleware, authorized], async (req, res) => {
   }
 });
 
+router.get("/all_riders", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const riders = await User.find({ role: "rider" })
+      .select("_id phone_number name rider")
+      .populate({
+        path: "rider",
+        select: "bike_reg_plate",
+      });
+
+    return res.status(200).json(riders);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+// get all riders latest coordinates
+router.post("/rider_path", [authMiddleware, authorized], async (req, res) => {
+  try {
+    const { riders } = req.body;
+    let riderPaths = {};
+
+    for (let i = 0; i < riders?.length; i++) {
+      const currentRiderPath = await Path.find({
+        rider: riders[i],
+      })
+        .select("lng lat createdAt rider ")
+        .populate({
+          path: "rider",
+          select: "name",
+        })
+        .limit(1);
+      riderPaths[riders[i]] = currentRiderPath;
+    }
+
+    return res.status(200).json({ success: true, paths: riderPaths });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get(
+  "/rider_path/:id",
+  [authMiddleware, authorized],
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // get current riders coordinates
+      const currentRiderPath = await Path.findOne({
+        rider: id,
+      })
+        .select("lng lat createdAt rider ")
+        .populate({
+          path: "rider",
+          select: "name",
+        }).sort({ createdAt: -1 }).limit(1);
+
+      // get current rider packages
+      // const doorsteps = await
+      const agents = await Sent_package.count({
+        assignedTo: id,
+        state: { $in: ["on-transit", "warehouse-transit"] },
+      });
+      const doorstep = await Door_step_Sent_package.count({
+        "assigned.assignedTo": id,
+        state: { $in: ["on-transit", "warehouse-transit"] },
+      });
+      const errand = await Door_step_Sent_package.count({
+        assignedTo: id,
+        state: { $in: ["on-transit", "warehouse-transit"] },
+      });
+
+      return res.status(200).json({
+        success: true,
+        paths: { id: currentRiderPath },
+        packages: { agents, doorstep, errand },
+      });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(400)
+        .json({ success: false, message: "operation failed ", error });
+    }
+  }
+);
 module.exports = router;

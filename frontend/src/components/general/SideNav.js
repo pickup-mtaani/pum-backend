@@ -1,7 +1,7 @@
 import React from "react";
 
 import { AiOutlineHome } from "react-icons/ai";
-import { BsBookshelf } from "react-icons/bs";
+import { BsBookshelf, BsPinMap } from "react-icons/bs";
 import { FaMoneyBill } from "react-icons/fa";
 import { GoPackage } from "react-icons/go";
 import { HiOutlineUsers, HiOutlineViewBoards } from "react-icons/hi";
@@ -109,6 +109,11 @@ let nav_list = [
     name: "Business",
     path: "/business",
     icon: <IoBusinessOutline />,
+  },
+  {
+    name: "Tracker",
+    path: "/tracker",
+    icon: <BsPinMap />,
   },
   {
     name: "setup",

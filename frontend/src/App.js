@@ -1,8 +1,10 @@
 /* eslint-disable react/jsx-pascal-case */
-import React from "react";
+import React, { useCallback } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./login";
 import { BrowserRouter as Router, useRoutes } from "react-router-dom";
+import { connect } from "react-redux";
+
 import Dashboard from "./components/dashboard";
 import Sellers from "./components/Seller";
 import UserDetails from "./components/Seller/UserDetails";
@@ -46,6 +48,9 @@ import RentShelfAgent from "./components/rentshelf/details";
 
 import Setup from "./components/Setup";
 import Withdrawals from "./screens/mpesa/Withdrawals";
+import Tracker from "./screens/Tracker";
+import RiderServices from "./services/RiderServices";
+import { set_riders } from "./redux/actions/products.actions";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -123,12 +128,32 @@ const App = () => {
     { path: "/agent/:name", element: <AgentsDetails /> },
 
     { path: "/mpesa/withdrawals", element: <Withdrawals /> },
+    { path: "/tracker", element: <Tracker /> },
 
     // ...
   ]);
   return routes;
 };
-const AppWrapper = () => {
+const AppWrapper = ({ riders, setRiders }) => {
+  const handleRiders = useCallback(async () => {
+    const storedRiders = JSON.parse(localStorage.getItem("riders"));
+
+    // if no riders fetch from backend and store locally(local storage)
+    if (storedRiders?.length > 0) {
+      setRiders(storedRiders);
+    } else {
+      let riders = await RiderServices.getRiders();
+      setRiders(riders);
+
+      localStorage.setItem("riders", JSON.stringify(riders));
+    } // else: get the riders and store to redux
+  }, []);
+
+  React.useEffect(() => {
+    // get riders array from local storage
+    handleRiders();
+  }, [handleRiders]);
+
   return (
     <Router>
       <App />
@@ -136,4 +161,12 @@ const AppWrapper = () => {
   );
 };
 
-export default AppWrapper;
+const mapStateToProps = (state) => ({
+  riders: state.riders,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setRiders: (data) => dispatch(set_riders(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppWrapper);
