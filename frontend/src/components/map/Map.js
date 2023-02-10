@@ -131,7 +131,9 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
               onCloseClick={() => {
                 setCurrent(null);
               }}
-              options={options}
+              options={{
+                pixelOffset: new window.google.maps.Size(0, -40),
+              }}
               position={{
                 lat: Number(current?.lat),
                 lng: Number(current?.lng),
