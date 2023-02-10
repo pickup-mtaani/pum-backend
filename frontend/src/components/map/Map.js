@@ -1,4 +1,5 @@
-import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
+import { Button, HStack } from "@chakra-ui/react";
+import { GoogleMap, InfoWindow, MarkerF } from "@react-google-maps/api";
 import React, {
   useCallback,
   useEffect,
@@ -6,14 +7,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Layout from "../../views/Layouts";
 import { connect } from "react-redux";
 import {
   fetchCoordinates,
   update_rider_data,
 } from "../../redux/actions/track_rider.actions";
-import { Button, HStack } from "@chakra-ui/react";
 import RiderServices from "../../services/RiderServices";
+import Layout from "../../views/Layouts";
+import Drawer from "./Drawer";
+import SideBarBtn from "./SideBarBtn";
 
 const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
   const mapRef = useRef();
@@ -21,7 +23,9 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
   const [currentRiderDetails, setCurrentRiderDetails] = useState(null);
   const [cLoading, setCLoading] = useState(false);
   const [coordinates, setCoordinates] = useState({});
+  const [currentRider, setCurrentRider] = useState(riders[0]?._id);
 
+  const [showRiderList, setShowRiderList] = useState(false);
   const center = useMemo(
     () => ({
       lat: -1.2878412,
@@ -48,7 +52,7 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
       fetchCoords(rider_ids);
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchCoords, riders]);
 
   useEffect(() => {
     setCoordinates(coords);
@@ -82,11 +86,14 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
     }
   }, [current?.rider?._id]);
 
-  // console.log("coordinates: ", coordinates);
+  const panToPoint = (lat, lng) => {
+    mapRef.current.panTo({ lat: Number(lat), lng: Number(lng) });
+    mapRef.current.setZoom(17);
+  };
 
   return (
     <Layout>
-      <div className="map bg-slate-300  w-full h-full">
+      <div className="map bg-slate-300  w-full h-full overflow-y-hidden">
         <GoogleMap
           zoom={13}
           center={center}
@@ -94,18 +101,28 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
           options={options}
           onLoad={onLoad}
           mapContainerStyle={{
-            height: "100vh",
+            height: "92vh",
             width: "100%",
           }}
         >
           {Object.values(coordinates)?.map((c) => (
-            <Marker
+            <MarkerF
               position={{
                 lat: Number(c[0]?.lat),
                 lng: Number(c[0]?.lng),
               }}
               onClick={() => setCurrent(c[0])}
               key={c[0]?._id}
+              icon={{
+                url:
+                  currentRider !== c[0]?._id
+                    ? "https://i0.wp.com/www.worth.com/wp-content/uploads/2017/09/map-marker-icon.png"
+                    : "https://www.pngkey.com/png/full/48-480344_maps-clipart-map-pin-grey-google-maps-marker.png",
+                scaledSize:
+                  currentRider !== c[0]?._id
+                    ? new window.google.maps.Size(60, 60)
+                    : new window.google.maps.Size(35, 50),
+              }}
             />
           ))}
 
@@ -167,6 +184,17 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
           {/* </Marker> */}
         </GoogleMap>
       </div>
+
+      <Drawer
+        handleHide={() => setShowRiderList(false)}
+        isOpen={showRiderList}
+        handlePan={(lat, lng, id) => {
+          setCurrentRider(id);
+          setCurrent(coords[id][0]);
+          panToPoint(lat, lng);
+        }}
+      />
+      <SideBarBtn handleClick={() => setShowRiderList(true)} />
     </Layout>
   );
 };

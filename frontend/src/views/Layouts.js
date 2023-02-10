@@ -25,17 +25,17 @@ function Layout(props) {
         />
 
         <Box
-          minH={"full"}
+          h={"100vh"}
           bg={"gray_bg"}
           w={"100%"}
           ml={0}
-          className={"max-h-screen overflow-scroll"}
+          className={"max-h-screen overflow-hidden"}
         >
           <TopNav
           //   toggleSideBar={handleToggle}
           />
 
-          <div className="flex-1 bg-gray-200 overflow-scroll min-h-[90vh]  h-full">
+          <div className="flex-1 bg-gray-200 overflow-y-scroll min-h-[90vh] scrollbar-hide h-full">
             {props?.children}
           </div>
         </Box>
