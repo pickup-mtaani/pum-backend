@@ -13,6 +13,7 @@ import {
   update_rider_data,
 } from "../../redux/actions/track_rider.actions";
 import RiderServices from "../../services/RiderServices";
+import MapStyles from "../../utils/MapStyles";
 import Layout from "../../views/Layouts";
 import Drawer from "./Drawer";
 import SideBarBtn from "./SideBarBtn";
@@ -38,6 +39,7 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
       //   mapId: "b181cac70f27f5e6",
       disableDefaultUI: true,
       clickableIcons: false,
+      mapId: "f2dbb0573bbff1b1",
     }),
     []
   );

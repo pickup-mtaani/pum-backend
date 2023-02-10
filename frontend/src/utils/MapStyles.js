@@ -1,55 +1,127 @@
 export default [
   {
     featureType: "all",
-    elementType: "all",
+    elementType: "labels",
     stylers: [
       {
-        saturation: "32",
-      },
-      {
-        lightness: "-3",
-      },
-      {
-        visibility: "on",
-      },
-      {
-        weight: "1.18",
+        visibility: "off",
       },
     ],
   },
   {
     featureType: "administrative",
-    elementType: "labels",
+    elementType: "all",
     stylers: [
       {
-        visibility: "on",
+        visibility: "off",
+      },
+      {
+        color: "#efebe2",
       },
     ],
   },
   {
     featureType: "landscape",
-    elementType: "labels",
-    stylers: [
-      {
-        visibility: "off",
-      },
-    ],
-  },
-  {
-    featureType: "landscape.man_made",
     elementType: "all",
     stylers: [
       {
-        saturation: "-70",
-      },
-      {
-        lightness: "14",
+        color: "#efebe2",
       },
     ],
   },
   {
     featureType: "poi",
-    elementType: "labels",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "poi.attraction",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "poi.business",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "poi.government",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#dfdcd5",
+      },
+    ],
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#dfdcd5",
+      },
+    ],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#bad294",
+      },
+    ],
+  },
+  {
+    featureType: "poi.place_of_worship",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "poi.school",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "poi.sports_complex",
+    elementType: "all",
+    stylers: [
+      {
+        color: "#efebe2",
+      },
+    ],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.fill",
+    stylers: [
+      {
+        color: "#ffffff",
+      },
+    ],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
     stylers: [
       {
         visibility: "off",
@@ -57,8 +129,35 @@ export default [
     ],
   },
   {
-    featureType: "road",
-    elementType: "labels",
+    featureType: "road.arterial",
+    elementType: "geometry.fill",
+    stylers: [
+      {
+        color: "#ffffff",
+      },
+    ],
+  },
+  {
+    featureType: "road.arterial",
+    elementType: "geometry.stroke",
+    stylers: [
+      {
+        visibility: "off",
+      },
+    ],
+  },
+  {
+    featureType: "road.local",
+    elementType: "geometry.fill",
+    stylers: [
+      {
+        color: "#fbfbfb",
+      },
+    ],
+  },
+  {
+    featureType: "road.local",
+    elementType: "geometry.stroke",
     stylers: [
       {
         visibility: "off",
@@ -67,7 +166,7 @@ export default [
   },
   {
     featureType: "transit",
-    elementType: "labels",
+    elementType: "all",
     stylers: [
       {
         visibility: "off",
@@ -79,22 +178,7 @@ export default [
     elementType: "all",
     stylers: [
       {
-        saturation: "100",
-      },
-      {
-        lightness: "-14",
-      },
-    ],
-  },
-  {
-    featureType: "water",
-    elementType: "labels",
-    stylers: [
-      {
-        visibility: "off",
-      },
-      {
-        lightness: "12",
+        color: "#a5d7e0",
       },
     ],
   },
