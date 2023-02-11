@@ -33,7 +33,7 @@ router.get("/:id", [authMiddleware, authorized], async (req, res) => {
       currentRiderPath = await Path.findOne({
         rider: assignedRider,
       })
-        .select("lng lat createdAt rider ")
+        .select("lng lat heading createdAt rider ")
         .populate({
           path: "rider",
           select: "name",
@@ -56,7 +56,7 @@ router.get("/:id", [authMiddleware, authorized], async (req, res) => {
       currentRiderPath = await Path.findOne({
         rider: assignedRider,
       })
-        .select("lng lat createdAt rider ")
+        .select("lng lat heading createdAt rider ")
         .populate({
           path: "rider",
           select: "name",
@@ -80,7 +80,7 @@ router.get("/:id", [authMiddleware, authorized], async (req, res) => {
       currentRiderPath = await Path.findOne({
         rider: assignedRider,
       })
-        .select("lng lat createdAt rider ")
+        .select("lng lat heading createdAt rider ")
         .populate({
           path: "rider",
           select: "name",
