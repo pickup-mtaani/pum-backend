@@ -704,6 +704,7 @@ router.post("/tracking/:id", [authMiddleware, authorized], async (req, res) => {
       rider: id,
       lng: coords.longitude,
       lat: coords.latitude,
+      heading:coords?.heading
     }).save();
 
     res.status(200).json({});

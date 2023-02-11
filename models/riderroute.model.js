@@ -15,6 +15,10 @@ const RoutesSchema = new Schema({
         type: String,
 
     },
+    heading: {
+        type: String,
+
+    },
 
     deleted_at: {
         type: Date,
