@@ -13,7 +13,6 @@ import {
   update_rider_data,
 } from "../../redux/actions/track_rider.actions";
 import RiderServices from "../../services/RiderServices";
-import MapStyles from "../../utils/MapStyles";
 import Layout from "../../views/Layouts";
 import Drawer from "./Drawer";
 import SideBarBtn from "./SideBarBtn";
@@ -88,10 +87,24 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
     }
   }, [current?.rider?._id]);
 
-  const panToPoint = (lat, lng) => {
-    mapRef.current.panTo({ lat: Number(lat), lng: Number(lng) });
+  const panToPoint = useCallback((lat, lng) => {
+    mapRef.current?.panTo({
+      lat: Number(lat),
+      lng: Number(lng),
+    });
     mapRef.current.setZoom(17);
-  };
+    // mapRef.current.duration(1000);
+  }, []);
+
+  useEffect(() => {
+    const currentRider = current?.rider?._id;
+    const currentCoords = coordinates[currentRider];
+    const coord = currentCoords ? currentCoords[0] : {};
+    console.log(coord);
+    if (coord?.lat) {
+      panToPoint(coord?.lat, coord?.lng);
+    }
+  }, [coordinates, current, panToPoint]);
 
   return (
     <Layout>
