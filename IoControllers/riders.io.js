@@ -5,7 +5,7 @@ module.exports = (http) => {
     cors: {
       origin: [
         "http://localhost:3000",
-        "https://9d66-196-207-182-190.eu.ngrok.io",
+        "https://6d13-196-207-182-190.eu.ngrok.io",
         "https://stagingapi.pickupmtaani.com/",
       ],
     },

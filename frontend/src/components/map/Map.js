@@ -100,7 +100,7 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
     const currentRider = current?.rider?._id;
     const currentCoords = coordinates[currentRider];
     const coord = currentCoords ? currentCoords[0] : {};
-    console.log(coord);
+    // console.log(coord);
     if (coord?.lat) {
       panToPoint(coord?.lat, coord?.lng);
     }

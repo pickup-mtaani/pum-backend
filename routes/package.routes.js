@@ -2304,6 +2304,7 @@ router.get(
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id)
+      .populate("assignedTo")
       .populate("receieverAgentID")
       .populate("senderAgentID");
     const rent = await Rent_a_shelf_deliveries.findById(req.params.id).populate(
