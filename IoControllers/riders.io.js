@@ -7,6 +7,7 @@ module.exports = (http) => {
         "http://localhost:3000",
         "https://6d13-196-207-182-190.eu.ngrok.io",
         "https://stagingapi.pickupmtaani.com/",
+        "http://192.168.0.29",
       ],
     },
   });
