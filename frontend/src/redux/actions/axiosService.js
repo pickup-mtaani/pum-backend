@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosService = axios.create({
   // baseURL: "http://localhost:4000/",
-  baseURL: "https://485d-196-207-182-190.ap.ngrok.io",
+  baseURL: "http://164.92.75.19",
   timeout: 20000,
   headers: {
     "Content-Type": "application/json",
