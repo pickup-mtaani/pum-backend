@@ -67,7 +67,11 @@ mongoose.connect(
 );
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://192.168.0.29",
+  })
+);
 
 // api routes
 
