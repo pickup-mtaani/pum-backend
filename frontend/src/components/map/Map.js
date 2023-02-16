@@ -131,11 +131,11 @@ const Map = ({ riders, coordinates: coords, fetchCoords, updateRider }) => {
               icon={{
                 url:
                   currentRider !== c[0]?._id
-                    ? "https://i0.wp.com/www.worth.com/wp-content/uploads/2017/09/map-marker-icon.png"
+                    ? require("../../img/marker.png")
                     : "https://www.pngkey.com/png/full/48-480344_maps-clipart-map-pin-grey-google-maps-marker.png",
                 scaledSize:
                   currentRider !== c[0]?._id
-                    ? new window.google.maps.Size(50, 50)
+                    ? new window.google.maps.Size(35, 50)
                     : new window.google.maps.Size(35, 50),
               }}
             />

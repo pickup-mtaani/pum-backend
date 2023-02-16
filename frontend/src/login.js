@@ -1,24 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Register from "./auth/register.auth";
+import { connect } from "react-redux";
 import LoginView from "./auth/login.auth";
-import { connect } from 'react-redux'
+import Register from "./auth/register.auth";
 
-import {
-  loginUser,
-  registerUser,
-  clearError,
-} from "./redux/actions/auth.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { clearError, loginUser } from "./redux/actions/auth.actions";
 function Login(props) {
-
   const error = useSelector((state) => state.userDetails);
   const [user, setUser] = useState({
-
     password: "",
 
     phone_number: "",
-
   });
   const dispatch = useDispatch();
   const [registering, setReistering] = useState(false);
@@ -37,36 +30,29 @@ function Login(props) {
 
   const RegisterUser = async () => {
     try {
-      await props.registerUser(user)
+      await props.registerUser(user);
       toggleRegistering();
-    } catch (error) {
-
-    }
-
+    } catch (error) {}
   };
   const LoginUser = async () => {
-    await props.loginUser(user)
-    var userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    await props.loginUser(user);
+    var userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo.role.name === "admin") {
       return navigate("/dashboard");
-    }
-    else {
+    } else {
       return navigate("/403");
     }
-
   };
 
   const navigate = useNavigate();
   useEffect(() => {
-    var userInfor = JSON.parse(localStorage.getItem('userInfo'));
+    var userInfor = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfor) {
       return navigate("/dashboard");
-    }
-    else {
+    } else {
       return navigate("/");
     }
-
-  }, [error])
+  }, [error, navigate]);
 
   return (
     <div className="h-screen w-screen bg-slate-900 flex justify-center items-center">
@@ -97,8 +83,7 @@ const mapStateToProps = (state) => {
     error: state.userDetails.error,
     loading: state.userDetails.loading,
     // packages: state.PackageDetails.packages
-  }
-
+  };
 };
 
 export default connect(mapStateToProps, { loginUser })(Login);

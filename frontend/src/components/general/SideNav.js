@@ -16,11 +16,14 @@ const SideNav = ({ current = "dashboard", isOpen = true }) => {
     <div
       className={`bg-black max-h-screen relative flex-shrink-0 ${
         isOpen ? "w-[230px]" : "w-20"
-      } duration-300`}
+      } duration-300
+      
+      absolute md:fixed overflow-scroll scrollbar-hide right-0 top-0 left-0 bottom-0
+      `}
     >
-      <div className="sticky right-0 top-0 left-0 bottom-0 flex flex-col px-0.5 py-2 ">
+      <div className=" flex flex-col px-0.5 py-2 ">
         {/* logo */}
-        <div className="flex justify-center py-8 ">
+        <div className="flex justify-center py-8 sticky top-0 left-0 bg-black z-10 ">
           <div className="font-bold text-lg text-white underline">
             PICKUP MTAANI
           </div>
@@ -54,7 +57,7 @@ const SideNav = ({ current = "dashboard", isOpen = true }) => {
 
 export default SideNav;
 
-let nav_list = [
+export let nav_list = [
   {
     name: "Home",
     icon: <AiOutlineHome />,
