@@ -2304,9 +2304,15 @@ router.get(
 router.get("/package/:id", async (req, res) => {
   try {
     const agent = await Sent_package.findById(req.params.id)
-      .populate("assignedTo")
-      .populate({ path: "receieverAgentID", populate: { path: "location_id",select:"name" } })
-      .populate({path:"senderAgentID",populate:{path:"location_id",select:"name"}});
+      .populate({ path: "assignedTo", select: "name phone_number" })
+      .populate({
+        path: "receieverAgentID",
+        populate: { path: "location_id", select: "name" },
+      })
+      .populate({
+        path: "senderAgentID",
+        populate: { path: "location_id", select: "name" },
+      });
     const rent = await Rent_a_shelf_deliveries.findById(req.params.id).populate(
       "location",
       "business_name"

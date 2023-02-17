@@ -83,6 +83,7 @@ router.get("/mpesa-payments", async (req, res, next) => {
 
 router.post("/CallbackUrl", async (req, res, next) => {
   try {
+    console.log(req?.body?.Body);
     const Logs = await MpesaLogs.find({
       MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID,
     });
