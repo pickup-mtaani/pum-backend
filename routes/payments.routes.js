@@ -102,7 +102,7 @@ router.post("/CallbackUrl", async (req, res, next) => {
         { new: true, useFindAndModify: false }
       );
 
-      if (req.body.Body?.stkCallback?.ResultCode?.toString === 0) {
+      if (Number(req.body.Body?.stkCallback?.ResultCode) === 0) {
         if (Logs[i].type === "agent") {
           package = await Sent_package.findOne({
             _id: Logs[i].package,
