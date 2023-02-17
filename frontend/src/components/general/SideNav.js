@@ -15,10 +15,10 @@ const SideNav = ({ current = "dashboard", isOpen = true }) => {
   return (
     <div
       className={`bg-black max-h-screen relative flex-shrink-0 ${
-        isOpen ? "w-[230px]" : "w-20"
+        isOpen ? "w-[230px]" : "w-0"
       } duration-300
       
-      absolute md:fixed overflow-scroll scrollbar-hide right-0 top-0 left-0 bottom-0
+      overflow-scroll scrollbar-hide right-0 top-0 left-0 bottom-0
       `}
     >
       <div className=" flex flex-col px-0.5 py-2 ">
