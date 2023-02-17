@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const handleOAuth = async () => {};
 
-const handleTransactionQuery = async () => {
+const handleTransactionQuery = async ({ transactionId, phone }) => {
   let timestamp = moment().format("YYYYMMDDHHmmss");
 
   // const {data} = await axios.get(
@@ -18,32 +18,35 @@ const handleTransactionQuery = async () => {
 
   try {
     const encode = new Buffer.from(
-      `${process.env.MPESA_TRANSACTION_CONSUMER_KEY}:${process.env.MPESA_TRANSACTION_CONSUMER_SECRET}`
+      `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRETE}`
     ).toString("base64");
 
     var config = {
       method: "get",
-      url: "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      url: `${process.env.MPESA_BASE_URL}/oauth/v1/generate?grant_type=client_credentials`,
       headers: {
         Authorization: `Basic ${encode}`,
       },
     };
     const r = await axios(config);
-    console.log(r?.data);
+
+    console.log("TRANSACTION QUERY: ", r?.data);
 
     const query_response = await axios.post(
-      process.env.MPESA_TRANSACTION_STATUS_URL,
+      `${process.env.MPESA_BASE_URL}/mpesa/transactionstatus/v1/query`,
       {
-        Initiator: "testapi",
-        SecurityCredential: process.env.MPESA_TRANSACTION_SECURITY_CREDENTIALS,
-        CommandID: "TransactionStatusQuery",
-        TransactionID: "OEI2AK4Q16",
-        PartyA: process.env.MPESA_TRANSACTION_SHORT_CODE,
-        IdentifierType: 2,
-        ResultURL: `${process.env.MPESA_BASE_URL}/api/transaction_query_callback`,
-        QueueTimeOutURL: `${process.env.MPESA_BASE_URL}/api/transaction_timeout_callback`,
+        BusinessShortCode: process.env.MPESA_SHORT_CODE,
+        Password: new Buffer.from(
+          `${process.env.MPESA_SHORT_CODE}${process.env.MPESA_CONSUMER_PASSKEY}${timestamp}`
+        ).toString("base64"),
+        Timestamp: timestamp,
+        TransactionType: "TransactionStatusQuery",
+        TransID: transactionId,
+        PartyA: phone,
+        IdentifierType: "1",
+        ResultURL: `${process.env.BASE_URL}/api/transaction_query_callback`,
+        QueueTimeOutURL: `${process.env.BASE_URL}/api/transaction_timeout_callback`,
         Remarks: "Confirm payment",
-        // Occasion: ""
       },
       {
         headers: {
