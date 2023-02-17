@@ -439,9 +439,12 @@ router.post(
   }
 );
 
-router.post("/transaction_query", async (_req, res) => {
+router.post("/transaction_query", async (req, res) => {
   try {
-    const response = await handleTransactionQuery();
+    const response = await handleTransactionQuery({
+      transactionId: req.body?.qid,
+      phone: req.body?.phone,
+    });
 
     res.json(response).status(200);
   } catch (error) {

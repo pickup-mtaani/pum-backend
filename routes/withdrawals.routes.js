@@ -236,28 +236,28 @@ async function subscribe(result) {
   // await subscribe(result);
 }
 
-router.post(
-  "/withdraw/:w_id",
-  [authMiddleware, authorized],
-  async (req, res) => {
-    try {
-      //w_id is the withdrawal id
-      // console.log("WITHDRAWAL: ", req.body);
+// router.post(
+//   "/withdraw/:w_id",
+//   [authMiddleware, authorized],
+//   async (req, res) => {
+//     try {
+//       //w_id is the withdrawal id
+//       // console.log("WITHDRAWAL: ", req.body);
 
-      let result = await B2CHandler(
-        req?.body?.amount,
-        req.body?.phone_number,
-        req.params?.w_id
-      );
+//       let result = await B2CHandler(
+//         req?.body?.amount,
+//         req.body?.phone_number,
+//         req.params?.w_id
+//       );
 
-      await subscribe(result);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      return res.status(200).json(result);
-    } catch (error) {
-      console.log("MPESA WITHDRAWALS CALLBACK ERROR: ", error);
-    }
-  }
-);
+//       await subscribe(result);
+//       // await new Promise((resolve) => setTimeout(resolve, 500));
+//       return res.status(200).json(result);
+//     } catch (error) {
+//       console.log("MPESA WITHDRAWALS CALLBACK ERROR: ", error);
+//     }
+//   }
+// );
 
 // request withdrawal by seller
 router.post("/request", [authMiddleware, authorized], async (req, res) => {
@@ -288,7 +288,7 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       console.log(p?.del_type, " : ", currentLog);
     });
 
-    let result = await new WithdrawalModel({
+    let withdrawal = await new WithdrawalModel({
       amount: req?.body?.amount,
       phone: req.body?.phone_number,
       user: req.user?._id,
@@ -297,6 +297,16 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
       status: "pending",
       code: uid(),
     }).save();
+
+    let result = await B2CHandler(
+      req?.body?.amount,
+      req.body?.phone_number,
+      withdrawal?._id
+    );
+
+    await subscribe(result);
+    // await new Promise((resolve) => setTimeout(resolve, 500));
+    return res.status(200).json(result);
     // await new Promise((resolve) => setTimeout(resolve, 500));
     return res.status(200).json(result);
   } catch (error) {
