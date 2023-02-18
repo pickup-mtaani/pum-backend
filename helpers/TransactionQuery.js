@@ -32,7 +32,7 @@ const handleTransactionQuery = async ({ transactionId, phone }) => {
 
     console.log("TRANSACTION QUERY: ", r?.data);
 
-    const query_response = await axios.get(
+    const query_response = await axios.post(
       `${process.env.MPESA_BASE_URL}/mpesa/transactionstatus/v1/query`,
       {
         BusinessShortCode: process.env.MPESA_SHORT_CODE,
