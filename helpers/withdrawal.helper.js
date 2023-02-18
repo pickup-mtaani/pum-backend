@@ -30,7 +30,7 @@ const handleB2C = async (withdrawal_amount, withdrawal_phone, w_id) => {
       process.env.MPESA_URL,
       {
         InitiatorName: "PICKUP MTAANI",
-        SecurityCredential: securityKey,
+        // SecurityCredential: securityKey,
         CommandID: "BusinessPayment",
         Amount: withdrawal_amount,
         PartyA: process.env.MPESA_SHORT_CODE,
