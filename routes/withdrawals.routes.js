@@ -217,12 +217,13 @@ router.post("/queuetimeouturl", async (req, res) => {
 });
 
 async function subscribe(result) {
-  // console.log("Subscribe");
+  console.log("Subscribe");
+  console.log(result);
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  let response = await WithdrawalModel.find({
-    ConversationID: result.ConversationID,
-  });
+  // let response = await WithdrawalModel.find({
+  //   ConversationID: result.ConversationID,
+  // });
 
   // if (response[0].log === "") {
   //   // console.log("Not yet");
@@ -305,8 +306,6 @@ router.post("/request", [authMiddleware, authorized], async (req, res) => {
     );
 
     await subscribe(result);
-    // await new Promise((resolve) => setTimeout(resolve, 500));
-    return res.status(200).json(result);
     // await new Promise((resolve) => setTimeout(resolve, 500));
     return res.status(200).json(result);
   } catch (error) {
