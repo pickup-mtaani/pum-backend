@@ -57,7 +57,7 @@ const handleTransactionQuery = async ({ transactionId, phone }) => {
 
     return query_response.data;
   } catch (error) {
-    console.log("AUTH ERROR:", JSON.stringify(error));
+    console.log("AUTH ERROR:", JSON.stringify(error?.response?.data));
   }
 
   // console.log("TRANSACTION QUERY: ", query_response);
