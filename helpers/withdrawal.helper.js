@@ -23,14 +23,14 @@ const handleB2C = async (withdrawal_amount, withdrawal_phone, w_id) => {
     const r = await axios(config);
     // console.log("WITHDRAWAL AUTH RESPONSE", r?.data);
     const securityKey = new Buffer.from(
-      `${process.env.MPESA_CONSUMER_KEY}${process.env.MPESA_CONSUMER_SECRETE}${timestamp}`
+      `${process.env.MPESA_SHORT_CODE}${process.env.MPESA_CONSUMER_KEY}${timestamp}`
     ).toString("base64");
 
     const query_response = await axios.post(
       process.env.MPESA_URL,
       {
         InitiatorName: "PICKUP MTAANI",
-        // SecurityCredential: securityKey,
+        SecurityCredential: securityKey,
         CommandID: "BusinessPayment",
         Amount: withdrawal_amount,
         PartyA: process.env.MPESA_SHORT_CODE,
