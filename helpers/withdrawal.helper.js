@@ -9,7 +9,7 @@ const handleB2C = async (withdrawal_amount, withdrawal_phone, w_id) => {
     let timestamp = moment().format("YYYYMMDDHHmmss");
 
     const encode = new Buffer.from(
-      `${process.env.MPESA_TRANSACTION_CONSUMER_KEY}:${process.env.MPESA_TRANSACTION_CONSUMER_SECRET}`
+      `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRETE}`
     ).toString("base64");
     const valid_phone_number = validators.validatePhone(withdrawal_phone);
 
