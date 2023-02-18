@@ -36,9 +36,9 @@ const handleTransactionQuery = async ({ transactionId, phone }) => {
       `${process.env.MPESA_BASE_URL}/mpesa/transactionstatus/v1/query`,
       {
         BusinessShortCode: process.env.MPESA_SHORT_CODE,
-        // SecurityCredential: new Buffer.from(
-        //   `${process.env.MPESA_SHORT_CODE}${process.env.MPESA_CONSUMER_PASSKEY}${timestamp}`
-        // ).toString("base64"),
+        SecurityCredential: new Buffer.from(
+          `${process.env.MPESA_SHORT_CODE}${process.env.MPESA_CONSUMER_PASSKEY}${timestamp}`
+        ).toString("base64"),
         CommandID: "TransactionStatusQuery",
         TransactionID: transactionId,
         PartyA: process.env.MPESA_SHORT_CODE,
