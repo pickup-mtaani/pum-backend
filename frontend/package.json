@@ -1,0 +1,70 @@
+{
+  "name": "todo_frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@chakra-ui/react": "^2.4.9",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@googlemaps/react-wrapper": "^1.1.35",
+    "@react-google-maps/api": "^2.18.1",
+    "@reduxjs/toolkit": "^1.9.2",
+    "@testing-library/jest-dom": "^5.16.3",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@ubilabs/google-maps-react-hooks": "^2.0.0",
+    "antd": "^5.1.7",
+    "axios": "^0.26.1",
+    "canvas": "^2.9.3",
+    "canvasjs-react-charts": "^1.0.5",
+    "framer-motion": "^9.0.1",
+    "mapbox-gl": "^2.11.0",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-data-table-component": "^7.5.2",
+    "react-dom": "^18.0.0",
+    "react-icons": "^4.7.1",
+    "react-map-gl": "^7.0.19",
+    "react-mapbox-gl-geocoder": "^1.1.0",
+    "react-redux": "^7.2.8",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.0",
+    "react-select": "^5.5.2",
+    "react-spinners": "^0.11.0",
+    "react-toastify": "^9.1.1",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.1",
+    "socket.io-client": "^4.5.1",
+    "styled-components": "^5.3.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.23"
+  }
+}
