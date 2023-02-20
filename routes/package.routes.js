@@ -1676,8 +1676,8 @@ router.get(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state,page } = req.query;
-      let currentPage = page ? (page - 1) : 0
+      const { state, page } = req.query;
+      let currentPage = page ? page - 1 : 0;
 
       console.log(state);
 
@@ -1693,7 +1693,7 @@ router.get(
         .limit(10)
         .sort({ updatedAt: -1 })
         .populate({ path: "senderAgentID", select: ["business_name"] })
-        .populate({ path: "receieverAgentID", select: ["business_name"] })
+        .populate({ path: "receieverAgentID", select: ["business_name"] });
 
       return res.status(200).json(agent_packages);
     } catch (error) {
@@ -1709,8 +1709,8 @@ router.get(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state,page } = req.query;
-      let currentPage = page ? (page - 1) : 0
+      const { state, page } = req.query;
+      let currentPage = page ? page - 1 : 0;
 
       let doorstep_packages = await Door_step_Sent_package.find({
         state: { $in: state },
@@ -1720,7 +1720,7 @@ router.get(
         .skip(currentPage * 10)
         .select(
           "destination customerName customerPhoneNumber state package_value fromLocation payment_option on_delivery_balance payment_phone_number type toLocation payment_status receipt_no agent"
-        ) 
+        )
         .skip(currentPage * 10)
         .limit(10)
         .populate({
@@ -1731,8 +1731,7 @@ router.get(
             select: "name zone",
           },
         })
-        .sort({ updatedAt: -1 })
-        
+        .sort({ updatedAt: -1 });
 
       return res.status(200).json(doorstep_packages);
     } catch (error) {
@@ -1755,10 +1754,10 @@ router.get(
         state: { $in: state },
         businessId: req.params.id,
       })
-      .select(
+        .select(
           "customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no color"
         )
-      .populate({
+        .populate({
           path: "agent",
           select: "business_name location_id",
           populate: {
@@ -1772,8 +1771,7 @@ router.get(
           path: "courier",
           select: "name",
         })
-        .sort({ updatedAt: -1 })
-      
+        .sort({ updatedAt: -1 });
 
       return res.status(200).json(errand_packages);
     } catch (error) {
@@ -1790,9 +1788,9 @@ router.get(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-       const { state,page } = req.query;
-      let currentPage = page ? (page - 1) : 0
-      
+      const { state, page } = req.query;
+      let currentPage = page ? page - 1 : 0;
+
       let shelves = await Rent_a_shelf_deliveries.find({
         state: { $in: state },
         createdBy: req.user._id,
