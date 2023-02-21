@@ -1697,7 +1697,6 @@ router.get(
         )
         .skip(currentPage * PAGE_SIZE)
         .limit(PAGE_SIZE)
-        .sort({ updatedAt: -1 })
         .populate({ path: "senderAgentID", select: ["business_name"] })
         .populate({ path: "receieverAgentID", select: ["business_name"] })
 
@@ -1735,7 +1734,6 @@ router.get(
         ) 
         .skip(currentPage * PAGE_SIZE)
         .limit(PAGE_SIZE)
-        .sort({ updatedAt: -1 })
         .populate({
           path: "agent",
           select: "business_name location_id",
@@ -1793,7 +1791,6 @@ router.get(
           path: "courier",
           select: "name",
         })
-        .sort({ updatedAt: -1 })
       
 
       return res.status(200).json({packages:errand_packages, page:currentPage+1, pages:totalPages, count:totalDocumentsCount});
@@ -1828,7 +1825,6 @@ router.get(
         .select(
           "customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no color"
         )
-        .sort({ updatedAt: -1 })
         .skip(currentPage * PAGE_SIZE) 
         .limit(PAGE_SIZE)
         .populate({
