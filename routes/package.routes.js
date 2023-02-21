@@ -1687,7 +1687,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID color"
+          "customerPhoneNumber createdAt customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID color"
         )
         .sort({ updatedAt: -1 })
         .populate({ path: "senderAgentID", select: ["business_name"] })
@@ -1714,7 +1714,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "destination customerName customerPhoneNumber state package_value fromLocation payment_option on_delivery_balance payment_phone_number type toLocation payment_status receipt_no agent"
+          "destination customerName customerPhoneNumber createdAt state package_value fromLocation payment_option on_delivery_balance payment_phone_number type toLocation payment_status receipt_no agent"
         )
         .populate({
           path: "agent",
@@ -1749,7 +1749,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no color"
+          "customerName customerPhoneNumber createdAt destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no color"
         )
         .populate({
           path: "agent",
@@ -1788,7 +1788,7 @@ router.get(
         businessId: req.params.id,
       })
         .select(
-          "customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no color"
+          "customerName customerPhoneNumber createdAt packageName state package_value on_delivery_balance booked receipt_no color"
         )
         .sort({ updatedAt: -1 })
         .populate({
