@@ -35,6 +35,7 @@ const MPesaRoute = require("routes/payments.routes");
 const junkRoute = require("./routes/junk/users.routes.junk");
 const securityQuizRoute = require("./routes/security_questions.routes");
 const trackPackageRoute = require("./routes/tracking.routes");
+const mysql = require("mysql2");
 
 // const DoorstepRoutes = require('routes/door_step_package.routes')
 const ShelfToErrandRoutes = require("routes/Errand/shelf-to-errand.routes");
@@ -65,12 +66,26 @@ mongoose.connect(
     console.log("db connected");
   }
 );
+
+const connection = mysql.createConnection({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USERNAME,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+});
+
+connection.connect((err) => {
+  if (err) {
+    console.error("Error connecting to MYSQL database: ", err);
+  } else {
+    console.log("MYSQL connected!");
+  }
+});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(
-  cors()
-);
+app.use(cors());
 
 // api routes
 
