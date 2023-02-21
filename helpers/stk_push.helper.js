@@ -73,7 +73,7 @@ const Mpesa_stk = async (
         TransactionType: "CustomerBuyGoodsOnline",
         Amount: new_amount,
         PartyA: phone,
-        PartyB: 8012474,
+        PartyB: 5684653,
         PhoneNumber: phone,
         CallBackURL: `${process.env.MPESA_CALLbACK}`,
         AccountReference: "Pick-up-delivery",
