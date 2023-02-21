@@ -1670,32 +1670,38 @@ router.get(
     } catch (error) {}
   }
 );
+const PAGE_SIZE = 8
 
 router.get(
   "/my-order-agent-to-agent-packages/:id",
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state, page } = req.query;
-      let currentPage = page ? page - 1 : 0;
+      const { state,page } = req.query;
 
-      console.log(state);
+      const totalDocumentsCount = await Sent_package.countDocuments({
+        state: { $in: state },
+        businessId: req.params.id,
+      })
+
+      const totalPages = Math.ceil(totalDocumentsCount / PAGE_SIZE);
+
+      let currentPage = page ? (page - 1) : 0
 
       let agent_packages = await Sent_package.find({
         state: { $in: state },
-        createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
           "customerPhoneNumber customerName fromLocation toLocation packageName type payment_status receipt_no package_value payment_option instant_bal state senderAgentID receiverAgentID color"
         )
-        .skip(currentPage * 10)
-        .limit(10)
+        .skip(currentPage * PAGE_SIZE)
+        .limit(PAGE_SIZE)
         .sort({ updatedAt: -1 })
         .populate({ path: "senderAgentID", select: ["business_name"] })
-        .populate({ path: "receieverAgentID", select: ["business_name"] });
+        .populate({ path: "receieverAgentID", select: ["business_name"] })
 
-      return res.status(200).json(agent_packages);
+      return res.status(200).json({packages:agent_packages, page:currentPage+1, pages:totalPages, count:totalDocumentsCount});
     } catch (error) {
       console.log(error);
       return res
@@ -1704,25 +1710,32 @@ router.get(
     }
   }
 );
+
 router.get(
   "/my-order-doorstep-packages/:id",
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state, page } = req.query;
-      let currentPage = page ? page - 1 : 0;
+      const { state,page } = req.query;
+
+      const totalDocumentsCount = await Door_step_Sent_package.countDocuments({
+        state: { $in: state },
+        businessId: req.params.id,
+      })
+      const totalPages = Math.ceil(totalDocumentsCount / PAGE_SIZE);
+
+      let currentPage = page ? (page - 1) : 0
 
       let doorstep_packages = await Door_step_Sent_package.find({
         state: { $in: state },
         businessId: req.params.id,
-        createdBy: req.user._id,
       })
-        .skip(currentPage * 10)
         .select(
           "destination customerName customerPhoneNumber state package_value fromLocation payment_option on_delivery_balance payment_phone_number type toLocation payment_status receipt_no agent"
-        )
-        .skip(currentPage * 10)
-        .limit(10)
+        ) 
+        .skip(currentPage * PAGE_SIZE)
+        .limit(PAGE_SIZE)
+        .sort({ updatedAt: -1 })
         .populate({
           path: "agent",
           select: "business_name location_id",
@@ -1731,14 +1744,14 @@ router.get(
             select: "name zone",
           },
         })
-        .sort({ updatedAt: -1 });
+        
 
-      return res.status(200).json(doorstep_packages);
+      return res.status(200).json({packages:doorstep_packages, page:currentPage+1, pages:totalPages, count:totalDocumentsCount});
     } catch (error) {
       console.log(error);
       return res
         .status(400)
-        .json({ success: false, message: "operationhj failed ", error });
+        .json({ success: false, message: "Operation failed ", error });
     }
   }
 );
@@ -1748,16 +1761,25 @@ router.get(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state } = req.query;
+      const { state,page } = req.query;
+
+      const totalDocumentsCount = await Erand_package.countDocuments({
+        state: { $in: state },
+        businessId: req.params.id,
+        // createdBy: req.user._id,
+      })
+      const totalPages = Math.ceil(totalDocumentsCount / PAGE_SIZE);
+
+      let currentPage = page ? (page - 1) : 0
 
       let errand_packages = await Erand_package.find({
         state: { $in: state },
         businessId: req.params.id,
       })
-        .select(
+      .select(
           "customerName customerPhoneNumber destination packageName state package_value courier agent instant_bal payment_option fromLocation type payment_status receipt_no color"
         )
-        .populate({
+      .populate({
           path: "agent",
           select: "business_name location_id",
           populate: {
@@ -1765,20 +1787,21 @@ router.get(
             select: "name zone",
           },
         })
-        .skip(currentPage * 10)
-        .limit(10)
+        .skip(currentPage * PAGE_SIZE)
+        .limit(PAGE_SIZE)
         .populate({
           path: "courier",
           select: "name",
         })
-        .sort({ updatedAt: -1 });
+        .sort({ updatedAt: -1 })
+      
 
-      return res.status(200).json(errand_packages);
+      return res.status(200).json({packages:errand_packages, page:currentPage+1, pages:totalPages, count:totalDocumentsCount});
     } catch (error) {
       console.log(error);
       return res
         .status(400)
-        .json({ success: false, message: "operationhj failed ", error });
+        .json({ success: false, message: "Operation failed ", error });
     }
   }
 );
@@ -1788,24 +1811,32 @@ router.get(
   [authMiddleware, authorized],
   async (req, res) => {
     try {
-      const { state, page } = req.query;
-      let currentPage = page ? page - 1 : 0;
+       const { state,page } = req.query;
 
+       const totalDocumentsCount = await Rent_a_shelf_deliveries.countDocuments({
+        state: { $in: state },
+        businessId: req.params.id,
+      })
+      const totalPages = Math.ceil(totalDocumentsCount / PAGE_SIZE);
+
+      let currentPage = page ? (page - 1) : 0
+      
       let shelves = await Rent_a_shelf_deliveries.find({
         state: { $in: state },
-        createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
           "customerName customerPhoneNumber packageName state package_value on_delivery_balance booked receipt_no color"
         )
         .sort({ updatedAt: -1 })
+        .skip(currentPage * PAGE_SIZE) 
+        .limit(PAGE_SIZE)
         .populate({
           path: "location",
           select: "business_name agent_description",
         })
-        .limit(20);
-      return res.status(200).json(shelves);
+
+      return res.status(200).json({packages:shelves, page:currentPage+1, pages:totalPages,count:totalDocumentsCount});
     } catch (error) {
       console.log(error);
       return res
@@ -1814,6 +1845,7 @@ router.get(
     }
   }
 );
+
 router.get(
   "/user-packages/:id",
   [authMiddleware, authorized],
