@@ -11,7 +11,7 @@ function queryTransaction(transactionCode) {
   });
 
   connection.query(
-    `SELECT * FROM mpesa_data where TransID='${transactionCode}'`,
+    `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
     (err, results) => {
       if (err) {
         console.error("Error selecting from database: ", err);
