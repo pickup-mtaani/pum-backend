@@ -453,12 +453,263 @@ router.post("/transaction_query", async (req, res) => {
 
     connection.query(
       `SELECT * FROM mpesa_data where TransID='${req?.body?.qid}'`,
-      (err, results) => {
+      async (err, results) => {
         if (err) {
           console.error("Error selecting from database: ", err);
           return { error: err?.message, data: null, success: false };
         } else {
           if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
+            if (
+              parseInt(results[0]?.TransAmount) <
+              parseInt(req.body?.toPayAmount)
+            ) {
+              return res.status(400).json({
+                successful: false,
+                message:
+                  "Transaction not successful. Payment made is less than the amount due.",
+              });
+            }
+
+            let Logs = req.body?.packages;
+            // make updates to package as paid
+            for (let i = 0; i < Logs.length; i++) {
+              if (req?.body?.type === "agent") {
+                package = await Sent_package.findOne({
+                  _id: Logs[i],
+                }).populate("createdBy");
+
+                if (package.state === "request") {
+                  let narration = await Track_agent_packages.findOne({
+                    package: Logs[i],
+                  });
+                  let u = await Sent_package.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: "paid",
+                      instant_bal: 0,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+
+                  let new_description = [
+                    ...narration?.descriptions,
+                    {
+                      time: Date.now(),
+                      desc: `Pkg paid for by ${
+                        package?.createdBy?.name
+                      } at  ${moment().format(
+                        "YYYY-MM-DD"
+                      )} awaiting drop off to sorting area`,
+                    },
+                  ];
+                  let Track = await Track_agent_packages.findOneAndUpdate(
+                    { package: Logs[i] },
+                    {
+                      descriptions: new_description,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                } else {
+                  let narration = await Track_agent_packages.findOne({
+                    package: Logs[i],
+                  });
+                  let v = await Sent_package.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: "paid",
+                      on_delivery_balance: 0,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                  console.log("V on request", v, package.state);
+                  let new_description = [
+                    ...narration?.descriptions,
+                    {
+                      time: Date.now(),
+                      desc: `Pkg paid for by ${
+                        package?.customerName
+                      } at  ${moment().format(
+                        "YYYY-MM-DD"
+                      )} awaiting drop off to sorting area`,
+                    },
+                  ];
+                  let Track = await Track_agent_packages.findOneAndUpdate(
+                    { package: Logs[i] },
+                    {
+                      descriptions: new_description,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                }
+              } else if (req?.body?.type === "doorstep") {
+                let dpackage = await Door_step_Sent_package.findOne({
+                  _id: Logs[i],
+                }).populate("createdBy");
+
+                if (dpackage.state === "request") {
+                  let v = await Door_step_Sent_package.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: "paid",
+                      instant_bal: 0,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                  let narration = await Track_door_step.findOne({
+                    package: Logs[i],
+                  });
+                  let new_description = [
+                    ...narration?.descriptions,
+                    {
+                      time: Date.now(),
+                      desc: `Pkg paid for by ${
+                        dpackage?.createdBy?.name
+                      } at  ${moment().format(
+                        "YYYY-MM-DD"
+                      )} awaiting drop off `,
+                    },
+                  ];
+
+                  await Track_door_step.findOneAndUpdate(
+                    { package: Logs[i] },
+                    {
+                      descriptions: new_description,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                } else {
+                  let v = await Door_step_Sent_package.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: "paid",
+                      on_delivery_balance: 0,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                  let narration = await Track_door_step.findOne({
+                    package: Logs[i],
+                  });
+
+                  let new_description = [
+                    ...narration?.descriptions,
+                    {
+                      time: Date.now(),
+                      desc: `Pkg paid for by ${
+                        dpackage?.customerName
+                      } at  ${moment().format(
+                        "YYYY-MM-DD"
+                      )} awaiting drop off `,
+                    },
+                  ];
+
+                  await Track_door_step.findOneAndUpdate(
+                    { package: Logs[i] },
+                    {
+                      descriptions: new_description,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                }
+              } else if (
+                req?.body?.type === "courier" ||
+                req?.body?.type === "courier"
+              ) {
+                let Courierpackage = await Erand_package.findOne({
+                  _id: Logs[i],
+                }).populate("createdBy");
+
+                let narration = await Track_Erand.findOne({
+                  Courierpackage: Logs[i],
+                });
+                await Erand_package.findOneAndUpdate(
+                  {
+                    _id: Logs[i],
+                  },
+                  {
+                    payment_status: "paid",
+                    instant_bal: 0,
+                  },
+                  { new: true, useFindAndModify: false }
+                );
+
+                let new_description = [
+                  ...narration?.descriptions,
+                  {
+                    time: Date.now(),
+                    desc: `Pkg paid for by ${
+                      Courierpackage?.createdBy?.name
+                    } at  ${moment().format(
+                      "YYYY-MM-DD hh:mm"
+                    )} awaiting drop off to sorting area`,
+                  },
+                ];
+
+                await Track_Erand.findOneAndUpdate(
+                  { package: Logs[i] },
+                  {
+                    descriptions: new_description,
+                  },
+                  { new: true, useFindAndModify: false }
+                );
+              } else if (req?.body?.type === "rent") {
+                if (req.body?.payLater) {
+                  await Rent_a_shelf_deliveries.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: "paid",
+                      on_delivery_balance: 0,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                }
+                let narration = await Track_rent_a_shelf.findOne({
+                  package: Logs[i],
+                });
+
+                let new_description = [
+                  ...narration?.descriptions,
+                  {
+                    time: Date.now(),
+                    desc: `Pkg paid for by ${
+                      package?.customerName
+                    } at  ${moment().format(
+                      "YYYY-MM-DD hh:mm"
+                    )} awaiting drop off to sorting area`,
+                  },
+                ];
+
+                await Track_rent_a_shelf.findOneAndUpdate(
+                  { package: Logs[i] },
+                  {
+                    descriptions: new_description,
+                  },
+                  { new: true, useFindAndModify: false }
+                );
+              } else if (req?.body?.type === "sale") {
+                if (req.body?.payLater) {
+                  await Sale.findOneAndUpdate(
+                    {
+                      _id: Logs[i],
+                    },
+                    {
+                      payment_status: true,
+                    },
+                    { new: true, useFindAndModify: false }
+                  );
+                }
+              }
+            }
+
             return res
               .status(200)
               .json({ successful: true, message: "Transaction successful" });
