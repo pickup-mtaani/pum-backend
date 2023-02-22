@@ -447,7 +447,7 @@ router.post("/transaction_query", async (req, res) => {
     new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, 1000);
+      }, 4000);
     });
 
     console.log("STATUS:", status);
