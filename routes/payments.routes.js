@@ -460,7 +460,7 @@ router.post("/transaction_query", async (req, res) => {
         } else {
           console.log("RESULTS:", results);
 
-          if (results[0]?.id && results[0]?.TransID === transactionId) {
+          if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
             return res
               .status(200)
               .json({ successful: true, message: "Transaction successful" });
