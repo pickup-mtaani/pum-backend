@@ -67,27 +67,10 @@ mongoose.connect(
   }
 );
 
-const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USERNAME,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-});
-
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to MYSQL database: ", err);
-  } else {
-    console.log("MYSQL connected!");
-  }
-});
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(cors());
-
-// api routes
 
 // app.get("/", (req, res) => {
 //     res.send().json('index.html');
@@ -136,18 +119,6 @@ app.use(express.static(root));
 app.get("*", function (req, res) {
   res.sendFile("index.html", { root: path.join(__dirname, "frontend/build") });
 });
-// app.post('/mpesa-callback', async (req, res) => {
-//     console.log("--------------------STK RESPONSE")
-//     console.log(req.body)
-
-//     // https://0dbf-217-21-116-210.in.ngrok.io
-//     // try {
-//     //   const Update = await MpesaLogs.findOneAndUpdate({ MerchantRequestID: req.body.Body?.stkCallback?.MerchantRequestID }, { log: JSON.stringify(req.body), ResultDesc: req.body.Body?.stkCallback?.ResultDesc, ResponseCode: req.body.Body?.stkCallback?.ResultCode, MpesaReceiptNumber: req.body.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value }, { new: true, useFindAndModify: false })
-//     //   return res.status(200).json({ success: true, message: `payments fetched successfully`, body: req.body });
-//     // } catch (error) {
-//     //   console.log(error)
-//     // }
-// })
 
 // start server
 const port =
