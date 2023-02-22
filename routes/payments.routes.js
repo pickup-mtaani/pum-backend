@@ -452,14 +452,12 @@ router.post("/transaction_query", async (req, res) => {
     });
 
     connection.query(
-      `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
+      `SELECT * FROM mpesa_data where TransID='${req?.body?.qid}'`,
       (err, results) => {
         if (err) {
           console.error("Error selecting from database: ", err);
           return { error: err?.message, data: null, success: false };
         } else {
-          console.log("RESULTS:", results);
-
           if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
             return res
               .status(200)
