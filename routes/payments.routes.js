@@ -444,7 +444,7 @@ router.post("/transaction_query", async (req, res) => {
     const status = await handleTransactionQuery({
       transactionId: req.body?.qid,
     });
-
+    console.log("STATUS:", status);
     if (status?.successful) {
       return res.status(200).json(status);
     } else {
