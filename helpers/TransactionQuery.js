@@ -1,6 +1,4 @@
-const moment = require("moment");
-const axios = require("axios");
-const queryTransaction = require("../mysql/QueryTransaction");
+const createConnection = require("../mysql/Mysql");
 
 const handleTransactionQuery = async ({ transactionId }) => {
   try {
