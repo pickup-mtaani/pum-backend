@@ -2,7 +2,7 @@ const createConnection = require("./Mysql");
 
 async function queryTransaction(transactionCode) {
   const connection = createConnection();
-  connection.connect((err) => {
+  await connection.connect((err) => {
     if (err) {
       console.error("Error connecting to database: ", err);
     } else {
@@ -10,7 +10,7 @@ async function queryTransaction(transactionCode) {
     }
   });
 
-  connection.query(
+  await connection.query(
     `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
     (err, results) => {
       if (err) {
@@ -22,7 +22,7 @@ async function queryTransaction(transactionCode) {
     }
   );
 
-  connection.end();
+  await connection.end();
 }
 
 module.exports = queryTransaction;
