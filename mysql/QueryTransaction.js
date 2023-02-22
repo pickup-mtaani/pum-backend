@@ -17,6 +17,7 @@ function queryTransaction(transactionCode) {
         console.error("Error selecting from database: ", err);
         return { error: err?.message, data: null, success: false };
       } else {
+        console.log("RESULTS:", results);
         return { error: null, data: results[0], success: true };
       }
     }
