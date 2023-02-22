@@ -6,8 +6,11 @@ const handleTransactionQuery = async ({ transactionId }) => {
   try {
     const res = await queryTransaction(transactionId);
 
-    console.log(res);
-    return "QUERY";
+    if (res?.id && res?.TransID === transactionId) {
+      return { successful: true, message: "Transaction successful" };
+    } else {
+      return { successful: false, message: "Transaction not successful" };
+    }
   } catch (error) {
     console.log(
       "TRANSACTION QUERY ERROR ERROR:",

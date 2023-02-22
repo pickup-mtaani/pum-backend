@@ -441,14 +441,20 @@ router.post(
 
 router.post("/transaction_query", async (req, res) => {
   try {
-    const response = await handleTransactionQuery({
+    const status = await handleTransactionQuery({
       transactionId: req.body?.qid,
-      phone: req.body?.phone,
     });
 
-    res.json(response).status(200);
+    if (status?.successful) {
+      return res.status(200).json(status);
+    } else {
+      return res.status(400).json(status);
+    }
   } catch (error) {
     console.log("MAIN URL ERROR: ", error);
+    return res
+      .status(400)
+      .json({ message: "Transaction Query error.", error: error?.message });
   }
 });
 

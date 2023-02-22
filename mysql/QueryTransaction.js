@@ -11,14 +11,13 @@ function queryTransaction(transactionCode) {
   });
 
   connection.query(
-    `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
+    `SELECT * FROM mpesa_data where TransID='${transactionCode}'`,
     (err, results) => {
       if (err) {
         console.error("Error selecting from database: ", err);
         return { error: err?.message, data: null, success: false };
       } else {
-        console.log("Selected results: ", results);
-        return { error: null, data: results, success: true };
+        return { error: null, data: results[0], success: true };
       }
     }
   );
