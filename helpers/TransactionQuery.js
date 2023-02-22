@@ -4,7 +4,7 @@ const queryTransaction = require("../mysql/QueryTransaction");
 
 const handleTransactionQuery = async ({ transactionId }) => {
   try {
-    const res = await queryTransaction(transactionId);
+    const res = queryTransaction(transactionId);
     console.log("RESPONSE: ", res);
     if (res?.id && res?.TransID === transactionId) {
       return { successful: true, message: "Transaction successful" };
