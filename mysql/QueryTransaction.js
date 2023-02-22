@@ -1,6 +1,6 @@
 const createConnection = require("./Mysql");
 
-function queryTransaction(transactionCode) {
+async function queryTransaction(transactionCode) {
   const connection = createConnection();
   connection.connect((err) => {
     if (err) {
