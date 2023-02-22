@@ -32,6 +32,7 @@ const { SendMessage } = require("../helpers/sms.helper");
 var MpesaLogs = require("../models/mpesa_logs.model");
 const Mpesa_stk = require("../helpers/stk_push.helper");
 const handleTransactionQuery = require("../helpers/TransactionQuery");
+const createConnection = require("../mysql/Mysql");
 router.get("/mpesa-payments", async (req, res, next) => {
   try {
     const { type } = req.query;
@@ -441,21 +442,39 @@ router.post(
 
 router.post("/transaction_query", async (req, res) => {
   try {
-    const status = await handleTransactionQuery({
-      transactionId: req.body?.qid,
-    });
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 4000);
+    const connection = createConnection();
+    connection.connect((err) => {
+      if (err) {
+        console.error("Error connecting to database: ", err);
+      } else {
+        console.log("Connected to MYSQL!");
+      }
     });
 
-    console.log("STATUS:", status);
-    if (status?.successful) {
-      return res.status(200).json(status);
-    } else {
-      return res.status(400).json(status);
-    }
+    connection.query(
+      `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
+      (err, results) => {
+        if (err) {
+          console.error("Error selecting from database: ", err);
+          return { error: err?.message, data: null, success: false };
+        } else {
+          console.log("RESULTS:", results);
+
+          if (results[0]?.id && results[0]?.TransID === transactionId) {
+            return res
+              .status(200)
+              .json({ successful: true, message: "Transaction successful" });
+          } else {
+            return res.status(400).json({
+              successful: false,
+              message: "Transaction not successful",
+            });
+          }
+        }
+      }
+    );
+
+    connection.end();
   } catch (error) {
     console.log("MAIN URL ERROR: ", error);
     return res
