@@ -2,6 +2,13 @@ const createConnection = require("./Mysql");
 
 function queryTransaction(transactionCode) {
   const connection = createConnection();
+  connection.connect((err) => {
+    if (err) {
+      console.error("Error connecting to database: ", err);
+    } else {
+      console.log("Connected to MYSQL!");
+    }
+  });
 
   connection.query(
     `SELECT * FROM mpesa_data where TransID='RBLO0FCP'`,
