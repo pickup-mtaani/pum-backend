@@ -11,23 +11,30 @@ const handleTransactionQuery = async ({ transactionId }) => {
       }
     });
 
-    connection.query(
-      `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
-      (err, results) => {
-        if (err) {
-          console.error("Error selecting from database: ", err);
-          return { error: err?.message, data: null, success: false };
-        } else {
-          console.log("RESULTS:", results);
+    new Promise((resolve) => {
+      setTimeout(() => {
+        connection.query(
+          `SELECT * FROM mpesa_data where TransID='RBL15O0FCP'`,
+          (err, results) => {
+            if (err) {
+              console.error("Error selecting from database: ", err);
+              return { error: err?.message, data: null, success: false };
+            } else {
+              console.log("RESULTS:", results);
 
-          if (results[0]?.id && results[0]?.TransID === transactionId) {
-            return { successful: true, message: "Transaction successful" };
-          } else {
-            return { successful: false, message: "Transaction not successful" };
+              if (results[0]?.id && results[0]?.TransID === transactionId) {
+                return { successful: true, message: "Transaction successful" };
+              } else {
+                return {
+                  successful: false,
+                  message: "Transaction not successful",
+                };
+              }
+            }
           }
-        }
-      }
-    );
+        );
+      }, 1000);
+    });
 
     connection.end();
   } catch (error) {
