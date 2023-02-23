@@ -35,6 +35,7 @@ const MPesaRoute = require("routes/payments.routes");
 const junkRoute = require("./routes/junk/users.routes.junk");
 const securityQuizRoute = require("./routes/security_questions.routes");
 const trackPackageRoute = require("./routes/tracking.routes");
+const locationRoute = require("./routes/Location.routes.js");
 const mysql = require("mysql2");
 
 // const DoorstepRoutes = require('routes/door_step_package.routes')
@@ -107,6 +108,7 @@ app.use("/api/", MPesaRoute);
 app.use("/api/withdrawals/", Withdrawals);
 app.use("/api/securityquiz/", securityQuizRoute);
 app.use("/api/track/", trackPackageRoute);
+app.use("/api/", locationRoute);
 
 // global error handler
 // app.use(errorHandler);

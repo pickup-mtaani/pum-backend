@@ -456,7 +456,7 @@ router.post("/transaction_query", async (req, res) => {
       async (err, results) => {
         if (err) {
           console.error("Error selecting from database: ", err);
-          return { error: err?.message, data: null, success: false };
+          return { message: err?.message, data: null, success: false };
         } else {
           if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
             if (
