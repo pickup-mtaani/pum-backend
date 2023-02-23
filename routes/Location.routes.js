@@ -27,7 +27,7 @@ function getClosestCoordinates(target, coordinates, n) {
   return closest;
 }
 
-router.get("/location/searchnear", async (req, res) => {
+router.post("/location/searchnear", async (req, res) => {
   try {
     // let {target} = { lat: -1.1646076510754735, lng: 36.925267230040916 };
     let { target } = req.body;
