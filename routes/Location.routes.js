@@ -44,6 +44,22 @@ router.post("/location/searchnear", async (req, res) => {
   }
 });
 
+router.post("/location/searchneardoorsteps", async (req, res) => {
+  try {
+    // let {target} = { lat: -1.1646076510754735, lng: 36.925267230040916 };
+    let { target } = req.body;
+
+    console.log(target);
+
+    const locations = await DoorstepLocs.find().select("lng lat name price id");
+
+    let closest = getClosestCoordinates(target, locations, 2);
+    return res.json(closest);
+  } catch (error) {
+    console.log("Search location error: ", error);
+  }
+});
+
 router.post("/location/setcoordinates", async (req, res) => {
   try {
     const body = req.body;
