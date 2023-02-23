@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Location = require("../models/agents.model");
 const DoorstepLocs = require("../models/doorsteps.model");
+var ZonePrice = require("../models/zone_pricing.model");
 
 function getClosestCoordinates(target, coordinates, n) {
   // calculate distances between target and each set of coordinates
