@@ -96,5 +96,108 @@ router.post("/location/setdoorstepcoordinates", async (req, res) => {
   }
 });
 
+router.post("/package/location-delivery-charge", async (req, res) => {
+  try {
+    let price;
+    const { senderLocation, receieverLocation } = req.body;
+    const senderZone = await Location.findOne({ _id: senderLocation }).populate(
+      "zone"
+    );
+    const recieverZone = await Location.findOne({
+      _id: receieverLocation,
+    }).populate("zone");
+
+    // console.log("sender", senderZone?.zone?.name)
+    // console.log("reciever", recieverZone?.zone?.name)
+    if (senderLocation === receieverLocation) {
+      price = 100;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    }
+    if (
+      senderZone?.zone.name === "Zone A" &&
+      recieverZone?.zone.name === "Zone B"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneAB",
+      });
+      price = zones.price;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else if (
+      senderZone?.zone.name === "Zone A" &&
+      recieverZone?.zone.name === "Zone A"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneAA",
+      });
+      price = zones.price;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else if (
+      senderZone?.zone.name === "Zone B" &&
+      recieverZone?.zone.name === "Zone A"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneBA",
+      });
+      price = zones.price;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else if (
+      senderZone?.zone.name === "Zone B" &&
+      recieverZone?.zone.name === "Zone B"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneBB",
+      });
+      price = zones.price;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else if (
+      senderZone?.zone.name === "Zone A" &&
+      recieverZone?.zone.name === "Zone C"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneAC",
+      });
+      price = zones.price;
+
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else if (
+      senderZone?.zone.name === "Zone B" &&
+      recieverZone?.zone.name === "Zone C"
+    ) {
+      const zones = await ZonePrice.findOne({
+        deleted_at: null,
+        name: "ZoneBC",
+      });
+      price = zones.price;
+      return res
+        .status(200)
+        .json({ message: "price set successfully ", price });
+    } else {
+      return res.status(200).json({ message: "price setting in progress  " });
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
 module.exports = router;
 // 900,180,100,100,
