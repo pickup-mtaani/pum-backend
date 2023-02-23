@@ -32,6 +32,8 @@ router.get("/location/searchnear", async (req, res) => {
     // let {target} = { lat: -1.1646076510754735, lng: 36.925267230040916 };
     let { target } = req.body;
 
+    console.log(target);
+
     const locations = await Location.find().select("lng lat name zone id");
 
     let closest = getClosestCoordinates(target, locations, 2);
