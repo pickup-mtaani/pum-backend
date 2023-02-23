@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Location = require("../models/agents.model");
+const DoorstepLocs = require("../models/doorsteps.model");
 
 function getClosestCoordinates(target, coordinates, n) {
   // calculate distances between target and each set of coordinates
@@ -51,6 +52,24 @@ router.post("/location/setcoordinates", async (req, res) => {
 
     for (let i = 0; i < locations.length; i++) {
       await Location.findByIdAndUpdate(locations[i], {
+        lat: body[locations[i]][0],
+        lng: body[locations[i]][1],
+      });
+    }
+    return locations;
+  } catch (error) {
+    console.log("Search location error: ", error);
+  }
+});
+
+router.post("/location/setdoorstepcoordinates", async (req, res) => {
+  try {
+    const body = req.body;
+
+    const locations = Object.keys(body);
+
+    for (let i = 0; i < locations.length; i++) {
+      await DoorstepLocs.findByIdAndUpdate(locations[i], {
         lat: body[locations[i]][0],
         lng: body[locations[i]][1],
       });

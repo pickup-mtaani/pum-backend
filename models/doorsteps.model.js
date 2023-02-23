@@ -1,31 +1,35 @@
-var mongoose = require('mongoose');
-const bcrypt = require('bcryptjs')
-
+var mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
 
-
-const RoadsSchema = new Schema({
+const RoadsSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     price: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
 
     road: {
-        type: Schema.Types.ObjectId,
-        ref: 'Roads'
+      type: Schema.Types.ObjectId,
+      ref: "Roads",
+    },
+    lng: {
+      type: Number,
+    },
+    lat: {
+      type: Number,
     },
     deleted_at: {
-        type: Date,
-        default: null
-    }
+      type: Date,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
 
-}, { timestamps: true });
-
-
-
-module.exports = mongoose.model('doorstep_destinations', RoadsSchema);
+module.exports = mongoose.model("doorstep_destinations", RoadsSchema);
