@@ -2420,12 +2420,57 @@ router.get("/track-by-code", async (req, res) => {
 
   let rent_narration = await Track_rent_a_shelf.findOne({
     package:rent?._id,
-  }); let agent_narration = await Track_agent_packages.findOne({
+  })?.populate({
+    path:"package",
+    populate:{
+      path:"location",
+      populate:{
+        path:"location_id"
+      }
+    },
+  }); 
+  let agent_narration = await Track_agent_packages.findOne({
     package:agent?.id,
-  }); let doorstep_narration = await Track_door_step.findOne({
+  })?.populate({
+    path:"package",
+     populate:{
+      path:"senderAgentID",
+      populate:{
+        path:"location_id"
+      }
+    }
+  }).populate({
+    path:"package",
+     populate:{
+      path:"receieverAgentID",
+      populate:{
+        path:"location_id"
+      }
+    }
+  });
+  
+   let doorstep_narration = await Track_door_step.findOne({
     package:package?.id,
-  }); let errand_narration = await Track_Erand.findOne({
+  })?.populate({
+    path:"package",
+    populate:{
+      path:"agent",
+      populate:{
+        path:"location_id"
+      }
+    },
+  });
+  
+  let errand_narration = await Track_Erand.findOne({
     package:errand?.id,
+  })?.populate({
+    path:"package",
+    populate:{
+      path:"agent",
+      populate:{
+        path:"location_id"
+      }
+    },
   });
 
     return res.status(200).json({ message: "Fetched Sucessfully", rent_narration,agent_narration,doorstep_narration,errand_narration });
