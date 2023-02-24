@@ -11,18 +11,22 @@ var ZonePrice = require("models/zone_pricing.model");
 // var AgentLocation = require('models/agents.model')
 var Zone = require("models/zones.model");
 var rentshelfNarations = require("models/rent_shelf_narations.model");
+
 var Track_rent_a_shelf = require("models/rent_shelf_package_track.model");
 var Track_door_step = require("models/door_step_package_track.model");
 var Track_Erand = require("models/erand_package_track.model");
 var Track_agent_packages = require("models/agent_package_track.model");
+
 var Bussiness = require("models/business.model");
 var Commision = require("models/commission.model");
 var Product = require("models/products.model.js");
 var Rider_Package = require("models/rider_package.model");
 var Notification = require("models/notification.model");
+
 var Sent_package = require("models/package.modal.js");
 var Door_step_Sent_package = require("models/doorStep_delivery_packages.model");
 var Erand_package = require("models/erand_delivery_packages.model");
+
 var Reject = require("models/Rejected_parcels.model");
 var Courrier = require("models/courier.model");
 var AgentUser = require("models/agent_user.model");
@@ -2398,6 +2402,33 @@ router.get("/packages/bussiness/:id", async (req, res) => {
 
     // await User.findOneAndUpdate({ _id: req.user._id }, { role: RoleOb._id }, { new: true, useFindAndModify: false })
     return res.status(200).json({ message: "Fetched Sucessfully", packages });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: "operation failed ", error });
+  }
+});
+
+router.get("/track-by-code", async (req, res) => {
+  try {
+    const {code} = req.query
+
+  const agent = await Sent_package.findOne({receipt_no:code}).select("_id receipt_no")
+  const rent = await Rent_a_shelf_deliveries.findOne({receipt_no:code}).select("_id receipt_no")
+  const package = await Door_step_Sent_package.findOne({receipt_no:code}).select("_id receipt_no")
+  const errand = await Erand_package.findOne({receipt_no:code}).select("_id receipt_no")
+
+  let rent_narration = await Track_rent_a_shelf.findOne({
+    package:rent?._id,
+  }); let agent_narration = await Track_agent_packages.findOne({
+    package:agent?.id,
+  }); let doorstep_narration = await Track_door_step.findOne({
+    package:package?.id,
+  }); let errand_narration = await Track_Erand.findOne({
+    package:errand?.id,
+  });
+
+    return res.status(200).json({ message: "Fetched Sucessfully", rent_narration,agent_narration,doorstep_narration,errand_narration });
   } catch (error) {
     return res
       .status(400)
