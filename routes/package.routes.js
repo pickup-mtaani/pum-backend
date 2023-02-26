@@ -2413,10 +2413,10 @@ router.get("/track-by-code", async (req, res) => {
   try {
     const {code} = req.query
 
-  const agent = await Sent_package.findOne({receipt_no:code}).select("_id receipt_no")
-  const rent = await Rent_a_shelf_deliveries.findOne({receipt_no:code}).select("_id receipt_no")
-  const package = await Door_step_Sent_package.findOne({receipt_no:code}).select("_id receipt_no")
-  const errand = await Erand_package.findOne({receipt_no:code}).select("_id receipt_no")
+  const agent = await Sent_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
+  const rent = await Rent_a_shelf_deliveries.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
+  const package = await Door_step_Sent_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
+  const errand = await Erand_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
 
   let rent_narration = await Track_rent_a_shelf.findOne({
     package:rent?._id,
@@ -2448,7 +2448,7 @@ router.get("/track-by-code", async (req, res) => {
       }
     }
   });
-  
+    
    let doorstep_narration = await Track_door_step.findOne({
     package:package?.id,
   })?.populate({
