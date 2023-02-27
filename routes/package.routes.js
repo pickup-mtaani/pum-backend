@@ -795,8 +795,6 @@ router.post("/package/delivery-charge", async (req, res) => {
   }
 });
 
-
-
 router.get("/agents/test/viaob/hgfh", async (req, res) => {
   try {
     let price;
@@ -1690,7 +1688,7 @@ router.get(
 
       let agent_packages = await Sent_package.find({
         state: { $in: state },
-        createdBy: req.user._id,
+        // createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
@@ -1791,7 +1789,7 @@ router.get(
       const { state } = req.query;
       let shelves = await Rent_a_shelf_deliveries.find({
         state: { $in: state },
-        createdBy: req.user._id,
+        // createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
@@ -1821,13 +1819,13 @@ router.get(
       let agent_packages = {};
       let doorstep_packages = {};
       let shelves = {};
-      console.log("Bud", req.params);
+      // console.log("Bud", req.params);
       // "request", "delivered", "collected", "cancelled", "rejected", "on-transit", "dropped-to-agent", 'collected', "assigned", "recieved-warehouse", "picked", "picked-from-sender", "unavailable", "dropped", "", "warehouse-transit"
       if (req.query.searchKey) {
         var searchKey = new RegExp(`${req.query.searchKey}`, "i");
         agent_packages.created = await Sent_package.findOne({
           state: "request",
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
           $or: [
             { packageName: searchKey },
@@ -2411,69 +2409,87 @@ router.get("/packages/bussiness/:id", async (req, res) => {
 
 router.get("/track-by-code", async (req, res) => {
   try {
-    const {code} = req.query
+    const { code } = req.query;
 
-  const agent = await Sent_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
-  const rent = await Rent_a_shelf_deliveries.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
-  const package = await Door_step_Sent_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
-  const errand = await Erand_package.findOne({receipt_no:code.toUpperCase()}).select("_id receipt_no")
+    const agent = await Sent_package.findOne({
+      receipt_no: code.toUpperCase(),
+    }).select("_id receipt_no");
+    const rent = await Rent_a_shelf_deliveries.findOne({
+      receipt_no: code.toUpperCase(),
+    }).select("_id receipt_no");
+    const package = await Door_step_Sent_package.findOne({
+      receipt_no: code.toUpperCase(),
+    }).select("_id receipt_no");
+    const errand = await Erand_package.findOne({
+      receipt_no: code.toUpperCase(),
+    }).select("_id receipt_no");
 
-  let rent_narration = await Track_rent_a_shelf.findOne({
-    package:rent?._id,
-  })?.populate({
-    path:"package",
-    populate:{
-      path:"location",
-      populate:{
-        path:"location_id"
-      }
-    },
-  }); 
-  let agent_narration = await Track_agent_packages.findOne({
-    package:agent?.id,
-  })?.populate({
-    path:"package",
-     populate:{
-      path:"senderAgentID",
-      populate:{
-        path:"location_id"
-      }
-    }
-  }).populate({
-    path:"package",
-     populate:{
-      path:"receieverAgentID",
-      populate:{
-        path:"location_id"
-      }
-    }
-  });
-    
-   let doorstep_narration = await Track_door_step.findOne({
-    package:package?.id,
-  })?.populate({
-    path:"package",
-    populate:{
-      path:"agent",
-      populate:{
-        path:"location_id"
-      }
-    },
-  });
-  
-  let errand_narration = await Track_Erand.findOne({
-    package:errand?.id,
-  })?.populate({
-    path:"package",
-    populate:{
-      path:"agent",
-      populate:{
-        path:"location_id"
-      }
-    },
-  });
+    let rent_narration = await Track_rent_a_shelf.findOne({
+      package: rent?._id,
+    })?.populate({
+      path: "package",
+      populate: {
+        path: "location",
+        populate: {
+          path: "location_id",
+        },
+      },
+    });
+    let agent_narration = await Track_agent_packages.findOne({
+      package: agent?.id,
+    })
+      ?.populate({
+        path: "package",
+        populate: {
+          path: "senderAgentID",
+          populate: {
+            path: "location_id",
+          },
+        },
+      })
+      .populate({
+        path: "package",
+        populate: {
+          path: "receieverAgentID",
+          populate: {
+            path: "location_id",
+          },
+        },
+      });
 
-    return res.status(200).json({ message: "Fetched Sucessfully", rent_narration,agent_narration,doorstep_narration,errand_narration });
+    let doorstep_narration = await Track_door_step.findOne({
+      package: package?.id,
+    })?.populate({
+      path: "package",
+      populate: {
+        path: "agent",
+        populate: {
+          path: "location_id",
+        },
+      },
+    });
+
+    let errand_narration = await Track_Erand.findOne({
+      package: errand?.id,
+    })?.populate({
+      path: "package",
+      populate: {
+        path: "agent",
+        populate: {
+          path: "location_id",
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({
+        message: "Fetched Sucessfully",
+        rent_narration,
+        agent_narration,
+        doorstep_narration,
+        errand_narration,
+      });
   } catch (error) {
     return res
       .status(400)
