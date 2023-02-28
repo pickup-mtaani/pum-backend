@@ -83,7 +83,6 @@ const Mpesa_stk = async (
   );
   const data = await fetch_response.json();
 
-  let package_id;
   const body = {
     MerchantRequestID: data.MerchantRequestID,
     CheckoutRequestID: data.CheckoutRequestID,

@@ -46,6 +46,7 @@ const MpesaLogsSchema = new Schema({
   },
   MpesaReceiptNumber: {
     type: String,
+    unique: true,
   },
   amount: {
     type: Number,

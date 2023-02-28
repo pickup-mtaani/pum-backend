@@ -470,7 +470,52 @@ router.post("/transaction_query", async (req, res) => {
               });
             }
 
+            // check if transaction is already verified from the mpesa logs
+            const currentQuery = await mpesa_logsModel.find({
+              MpesaReceiptNumber: req?.body?.qid,
+            });
+            if (currentQuery?.length > 0) {
+              return res.status(400).json({
+                successful: false,
+                message:
+                  "The transaction-id you have submitted is invalid, as it has already been used.",
+              });
+            }
+
+            let typeofDelivery = req.body?.type;
             let Logs = req.body?.packages;
+            // save transaction to the mpesa logs table
+            const body = {
+              phone_number: results[0]?.MSISDN,
+              amount: results[0]?.TransAmount,
+              ResponseCode: data.ResponseCode,
+              type: typeofDelivery,
+              payLater: paylater ? true : false,
+              business: req.body?.business,
+              withdrawn: "false",
+              log: results[0]?.AllData,
+              MpesaReceiptNumber: req?.body?.qid,
+            };
+
+            Logs.forEach(async (element) => {
+              if (typeofDelivery === "sale") {
+                body.sale = element;
+              } else if (
+                typeofDelivery === "courier" ||
+                typeofDelivery === "errand"
+              ) {
+                body.errand_package = element;
+                body.package = null;
+              } else if (typeofDelivery === "doorstep") {
+                body.doorstep_package = element;
+              } else if (typeofDelivery === "agent") {
+                body.package = element;
+              } else if (typeofDelivery === "rent") {
+                body.rent_package = element;
+              }
+              await new mpesa_logsModel(body).save();
+            });
+
             // make updates to package as paid
             for (let i = 0; i < Logs.length; i++) {
               if (req?.body?.type === "agent") {
@@ -525,7 +570,7 @@ router.post("/transaction_query", async (req, res) => {
                     },
                     { new: true, useFindAndModify: false }
                   );
-                  console.log("V on request", v, package.state);
+                  // console.log("V on request", v, package.state);
                   let new_description = [
                     ...narration?.descriptions,
                     {
@@ -732,6 +777,7 @@ router.post("/transaction_query", async (req, res) => {
   }
 });
 
+// testing endpoint
 router.post("/check_transaction", async (req, res) => {
   try {
     const connection = createConnection();
