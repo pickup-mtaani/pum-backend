@@ -1684,11 +1684,10 @@ router.get(
     try {
       const { state } = req.query;
 
-      console.log(state);
+      // console.log(state);
 
       let agent_packages = await Sent_package.find({
         state: { $in: state },
-        // createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
@@ -1789,7 +1788,6 @@ router.get(
       const { state } = req.query;
       let shelves = await Rent_a_shelf_deliveries.find({
         state: { $in: state },
-        // createdBy: req.user._id,
         businessId: req.params.id,
       })
         .select(
@@ -2481,15 +2479,13 @@ router.get("/track-by-code", async (req, res) => {
       },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Fetched Sucessfully",
-        rent_narration,
-        agent_narration,
-        doorstep_narration,
-        errand_narration,
-      });
+    return res.status(200).json({
+      message: "Fetched Sucessfully",
+      rent_narration,
+      agent_narration,
+      doorstep_narration,
+      errand_narration,
+    });
   } catch (error) {
     return res
       .status(400)

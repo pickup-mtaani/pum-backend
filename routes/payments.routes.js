@@ -732,6 +732,49 @@ router.post("/transaction_query", async (req, res) => {
   }
 });
 
+router.post("/check_transaction", async (req, res) => {
+  try {
+    const connection = createConnection();
+    connection.connect((err) => {
+      if (err) {
+        console.error("Error connecting to database: ", err);
+      } else {
+        console.log("Connected to MYSQL!");
+      }
+    });
+
+    connection.query(
+      `SELECT * FROM mpesa_data where TransID='${req?.body?.qid}'`,
+      async (err, results) => {
+        if (err) {
+          console.error("Error selecting from database: ", err);
+          return { message: err?.message, data: null, success: false };
+        } else {
+          if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
+            return res.status(200).json({
+              successful: true,
+              message: "Transaction successful",
+              data: results[0],
+            });
+          } else {
+            return res.status(400).json({
+              successful: false,
+              message: "Transaction not successful",
+            });
+          }
+        }
+      }
+    );
+
+    connection.end();
+  } catch (error) {
+    console.log("MAIN URL ERROR: ", error);
+    return res
+      .status(400)
+      .json({ message: "Transaction Query error.", error: error?.message });
+  }
+});
+
 router.post("/transaction_query_callback", async (req, res) => {
   try {
     console.log("TRANSACTION QUERY RESPONSE:", req.body);
