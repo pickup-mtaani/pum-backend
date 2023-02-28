@@ -488,7 +488,6 @@ router.post("/transaction_query", async (req, res) => {
             const body = {
               phone_number: results[0]?.MSISDN,
               amount: results[0]?.TransAmount,
-              ResponseCode: data.ResponseCode,
               type: typeofDelivery,
               payLater: paylater ? true : false,
               business: req.body?.business,
