@@ -751,6 +751,8 @@ router.post("/check_transaction", async (req, res) => {
           return { message: err?.message, data: null, success: false };
         } else {
           if (results[0]?.id && results[0]?.TransID === req?.body?.qid) {
+            console.log(results[0]?.AllData);
+
             return res.status(200).json({
               successful: true,
               message: "Transaction successful",
