@@ -2069,206 +2069,114 @@ router.get(
           .sort({ createdAt: -1 })
           .limit(100);
       } else {
-        agent_packages.created = await Sent_package.find({
-          state: "request",
-          createdBy: req.user._id,
+        agent_packages.created = await Sent_package.countDocuments({
+          state: { $in: ["request","pending-shelf-agent","pending-stock-agent"] },
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
-        agent_packages.dropped = await Sent_package.find({
+       
+        agent_packages.dropped = await Sent_package.countDocuments({
           state: "picked-from-sender",
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
-        agent_packages.transit = await Sent_package.find({
+          
+        agent_packages.transit = await Sent_package.countDocuments({
           $or: [
             { state: "on-transit" },
             { state: "warehouse-transit" },
             { state: "assigned" },
             { state: "dropped" },
           ],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
-        agent_packages.warehouse = await Sent_package.find({
+         
+        agent_packages.warehouse = await Sent_package.countDocuments({
           $or: [{ state: "recieved-warehouse" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
+         
 
-        agent_packages.delivered = await Sent_package.find({
+        agent_packages.delivered = await Sent_package.countDocuments({
           $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
-        agent_packages.collected = await Sent_package.find({
+     
+        agent_packages.collected = await Sent_package.countDocuments({
           $or: [{ state: "collected" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("senderAgentID")
-          .populate("receieverAgentID")
-          // .populate("agent")
-          .limit(100);
+          
 
-        doorstep_packages.created = await Door_step_Sent_package.find({
-          state: "request",
-          createdBy: req.user._id,
+        doorstep_packages.created = await Door_step_Sent_package.countDocuments({
+          state: { $in: ["request","pending-shelf-doorstep","pending-stock-doorstep"] },
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
-        doorstep_packages.dropped = await Door_step_Sent_package.find({
+        
+        doorstep_packages.dropped = await Door_step_Sent_package.countDocuments({
           state: "picked-from-sender",
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
-        doorstep_packages.transit = await Door_step_Sent_package.find({
+         
+        doorstep_packages.transit = await Door_step_Sent_package.countDocuments({
           $or: [
             { state: "on-transit" },
             { state: "warehouse-transit" },
             { state: "assigned" },
             { state: "dropped" },
           ],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
-        doorstep_packages.warehouse = await Door_step_Sent_package.find({
+          
+        doorstep_packages.warehouse = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "recieved-warehouse" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
+          
 
-        doorstep_packages.delivered = await Door_step_Sent_package.find({
+        doorstep_packages.delivered = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
-        doorstep_packages.collected = await Door_step_Sent_package.find({
+          
+        doorstep_packages.collected = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "collected" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .populate(
-            "customerPhoneNumber packageName package_value package_value packageName customerName"
-          )
-          .populate({
-            path: "agent",
-            populate: {
-              path: "location_id",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .limit(100);
-        shelves.created = await Rent_a_shelf_deliveries.find({
+        
+        shelves.created = await Rent_a_shelf_deliveries.countDocuments({
           state: "request",
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("location")
-          .limit(100);
-        shelves.dropped = await Rent_a_shelf_deliveries.find({
+         
+        shelves.dropped = await Rent_a_shelf_deliveries.countDocuments({
           $or: [
             { state: "agent" },
             { state: "doorstep" },
             { state: "picked-from-seller" },
             { state: "early_collection" },
           ],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("location")
-          .limit(100);
+          
 
-        shelves.collected = await Rent_a_shelf_deliveries.find({
+        shelves.collected = await Rent_a_shelf_deliveries.countDocuments({
           $or: [{ state: "collected" }],
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           businessId: req.params.id,
         })
-          .sort({ createdAt: -1 })
-          .populate("location")
-          .limit(100);
+        
       }
 
       return res.status(200).json({
