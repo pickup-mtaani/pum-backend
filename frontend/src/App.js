@@ -63,7 +63,7 @@ import AssignDoorstep from "./components/warehouse/AssignDoorstep";
 import CollectErrand from "./components/warehouse/CollectErrand";
 import AssignErrand from "./components/warehouse/AssignErrand";
 
-import PickAgentPackage from "./components/warehouse/agent/PickPackage";
+import PickAgentPackage from "./components/warehouse/agent/pickPackage";
 import PickDoorstepPackage from "./components/warehouse/doorstep/pickPackage";
 import PickErrandPackage from "./components/warehouse/errand/pickPackage";
 const App = () => {
