@@ -57,7 +57,7 @@ function Layout(props) {
         >
           <TopNav toggleSideBar={handleToggle} handleLogout={logout} />
 
-          <div className="flex-1 bg-gray-200 overflow-y-scroll min-h-[90vh] scrollbar-hide h-full">
+          <div className="flex-1 bg-gray-200 overflow-y-scroll min-h-[90vh] scrollbar-hide h-full relative ">
             {props?.children}
           </div>
         </Box>

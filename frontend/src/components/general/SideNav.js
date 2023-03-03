@@ -58,14 +58,14 @@ const SideNav = ({ current = "dashboard", isOpen = true }) => {
 export default SideNav;
 
 export let nav_list = [
-  {
-    name: "Home",
-    icon: <AiOutlineHome />,
-    path: "/",
-  },
+  // {
+  //   name: "Home",
+  //   icon: <AiOutlineHome />,
+  //   path: "/",
+  // },
   {
     name: "Warehouse",
-    path: "/wahehouse",
+    path: "/warehouse",
     icon: <TbBuildingWarehouse />,
   },
 

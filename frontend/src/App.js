@@ -20,7 +20,11 @@ import Agents from "./components/agents ";
 import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
 import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
-import PickFromAgentRider from "./components/warehouse/agent/pickPackage";
+
+import PickFromAgentRider from "./components/warehouse/agent/pickPackageAgents";
+import PickFromRiderDoorstep from "./components/warehouse/doorstep/pickPackageDoorstep";
+import PickFromRiderErrand from "./components/warehouse/errand/pickPackageErrand";
+
 import RiderAgents from "./components/warehouse/agent/agents";
 import GIvetoRiderPage from "./components/warehouse/doorstep/give";
 import AsRiderPage from "./components/warehouse/doorstep/assignRider";
@@ -51,6 +55,17 @@ import Withdrawals from "./screens/mpesa/Withdrawals";
 import Tracker from "./screens/Tracker";
 import RiderServices from "./services/RiderServices";
 import { set_riders } from "./redux/actions/products.actions";
+import Unpicked from "./components/warehouse/Unpicked";
+import CollectAgent from "./components/warehouse/CollectAgent";
+import AssignAgent from "./components/warehouse/AssignAgent";
+import CollectDoorstep from "./components/warehouse/CollectDoorstep";
+import AssignDoorstep from "./components/warehouse/AssignDoorstep";
+import CollectErrand from "./components/warehouse/CollectErrand";
+import AssignErrand from "./components/warehouse/AssignErrand";
+
+import PickAgentPackage from "./components/warehouse/agent/PickPackage";
+import PickDoorstepPackage from "./components/warehouse/doorstep/pickPackage";
+import PickErrandPackage from "./components/warehouse/errand/pickPackage";
 const App = () => {
   let routes = useRoutes([
     { path: "/", element: <Login /> },
@@ -72,13 +87,44 @@ const App = () => {
     },
 
     // { path: "/tracks", element: <Tracks /> },
-    { path: "/wahehouse", element: <WareHouse /> },
+    { path: "/warehouse", element: <WareHouse /> },
+
+    { path: "/warehouse/unpicked", element: <Unpicked /> },
+
+    { path: "/warehouse/agent/collect", element: <CollectAgent /> },
+    { path: "/warehouse/agent/assign", element: <AssignAgent /> },
+    { path: "/warehouse/doorstep/collect", element: <CollectDoorstep /> },
+    { path: "/warehouse/doorstep/assign", element: <AssignDoorstep /> },
+    { path: "/warehouse/errand/collect", element: <CollectErrand /> },
+    { path: "/warehouse/errand/assign", element: <AssignErrand /> },
+
     { path: "/wahehouse/:slug", element: <WareHouseActions /> },
     { path: "/wahehouse/assign/:rider", element: <Riderpage /> },
 
     {
-      path: "/wahehouse/agent-agent/pick-package-from-rider/:rider",
+      path: "/warehouse/agent/pick-packages-from/:rider",
       element: <PickFromAgentRider />,
+    },
+    {
+      path: "/warehouse/doorstep/pick-packages-from/:rider",
+      element: <PickFromRiderDoorstep />,
+    },
+    {
+      path: "/warehouse/errand/pick-packages-from/:rider",
+      element: <PickFromRiderErrand />,
+    },
+
+    {
+      path: "/warehouse/agent/pick-packages-from-rider/:agent",
+      element: <PickAgentPackage />,
+    },
+    {
+      path: "/warehouse/doorstep/pick-packages-from-rider/:agent",
+      element: <PickDoorstepPackage />,
+    },
+    {
+      path: "/warehouse/errand/pick-packages-from-rider/:agent",
+      element: <PickErrandPackage />,
     },
     { path: "/wahehouse/agent-agent/packages", element: <WHAgent /> },
     {

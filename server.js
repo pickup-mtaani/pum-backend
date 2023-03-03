@@ -36,6 +36,7 @@ const junkRoute = require("./routes/junk/users.routes.junk");
 const securityQuizRoute = require("./routes/security_questions.routes");
 const trackPackageRoute = require("./routes/tracking.routes");
 const locationRoute = require("./routes/Location.routes.js");
+const warehouseRoutes = require("./routes/warehouse_packages.routes.js");
 const mysql = require("mysql2");
 
 // const DoorstepRoutes = require('routes/door_step_package.routes')
@@ -109,6 +110,7 @@ app.use("/api/withdrawals/", Withdrawals);
 app.use("/api/securityquiz/", securityQuizRoute);
 app.use("/api/track/", trackPackageRoute);
 app.use("/api/", locationRoute);
+app.use("/api/warehouse", warehouseRoutes);
 
 // global error handler
 // app.use(errorHandler);

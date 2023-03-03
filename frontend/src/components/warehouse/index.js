@@ -1,58 +1,133 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { get_agents, get_zones, assign, fetchpackages, fetchdoorpackages } from '../../redux/actions/agents.actions'
-import Layout from '../../views/Layouts'
-import { DashboardWHItem, WHItem } from '../DashboardItems'
-const Index = props => {
-    const [collect, setCollections] = useState([])
-    const [assign, setAssign] = useState([])
-    const [agent, setAgent] = useState({ dropped: 0, transit: 0, recieved: 0 })
-    const [doorStep, setDoorstep] = useState({ dropped: 0, transit: 0, recieved: 0 })
+import React, { useEffect, useState } from "react";
+import WarehouseServices from "../../services/WarehouseServices";
+import Layout from "../../views/Layouts";
+import { WHItem } from "../DashboardItems";
+const Index = () => {
+  const [collect, setCollections] = useState([]);
+  const [errand, setErrand] = useState();
+  const [agent, setAgent] = useState({ dropped: 0, transit: 0, recieved: 0 });
+  const [doorstep, setDoorstep] = useState({
+    dropped: 0,
+    transit: 0,
+    recieved: 0,
+  });
+  const [unpicked, setUnpicked] = useState(0);
 
-    const fetch = async () => {
-        let agent_on_packages = await props.fetchpackages('on-transit')
-        let agent_dropped_packages = await props.fetchpackages('dropped')
-        let door_on_packages = await props.fetchdoorpackages('on-transit')
-        let door_dropped_packages = await props.fetchdoorpackages('dropped')
-        let recieved_dropped_packages = await props.fetchdoorpackages('recieved-warehouse')
-        let recieved_agent_packages = await props.fetchpackages('recieved-warehouse')
-        setAgent({ dropped: parseInt(agent_on_packages.length), transit: parseInt(agent_dropped_packages.length), recieved: parseInt(recieved_agent_packages.length) })
-        setDoorstep({ dropped: parseInt(door_on_packages.length), transit: parseInt(door_dropped_packages.length), recieved: parseInt(recieved_dropped_packages.length) })
+  const fetchPackagesCount = async () => {
+    try {
+      const count = await WarehouseServices.getWarehouseCount();
+      setAgent(count?.agent);
+      setDoorstep(count?.doorstep);
+      setErrand(count?.errand);
+      setUnpicked(
+        parseInt(
+          count?.errand?.unpicked +
+            count?.doorstep?.unpicked +
+            count?.agent?.unpicked
+        )
+      );
+      console.log(count);
+    } catch (error) {
+      console.log("FETCH WAREHOUSE PACKAGES ERROR: ", error);
     }
+  };
 
-    useEffect(() => {
-        fetch()
-    }, [])
+  useEffect(() => {
+    fetchPackagesCount();
+  }, []);
 
-    return (
-        <Layout>
-            <div className='flex w-full gap-x-20 '>
-                <WHItem noCount={false} obj={{ title: 'DOOR STEP PACKAGES', pathname: "/wahehouse/doorstep/packages", value: doorStep, state: "on-transit", data: collect }} />
-                <WHItem noCount={false} obj={{ title: 'AGENT PACKAGES', pathname: "/wahehouse/agent-agent/packages", value: agent, state: "recieved-warehouse", data: collect }} />
-                <WHItem noCount={false} obj={{ title: 'ERRAND PACKAGES', pathname: "/wahehouse/errand/packages", value: doorStep, state: "on-transit", data: collect }} />
+  return (
+    <Layout>
+      <div className="flex flex-col w-full p-12 gap-8 mb-12 ">
+        {/* Agent packages row */}
+        <div className="md:flex gap-8 justify-between">
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "Collect Agent Packages",
+              pathname: "/warehouse/agent/collect",
+              value: agent?.collect,
+              state: "on-transit",
+            }}
+            type={"from"}
+          />
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "Assign Agent Packages",
+              pathname: "/warehouse/agent/assign",
+              value: agent?.assign,
 
-            </div>
-            {/* <div className='flex w-full gap-x-20 mt-20'>
-                <DashboardWHItem obj={{ title: 'Collect Doorstep from Riders', value: doorStep.length, }} />
-                <DashboardWHItem obj={{ title: 'Assign Doorstep to Riders', value: assignDoorstep.length, }} />
-            </div> */}
+              state: "recieved-warehouse",
+            }}
+            type={"to"}
+          />
+        </div>
 
+        {/* Errand packages row */}
+        <div className="md:flex gap-8 justify-between">
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "COLLECT DOORSTEP PACKAGES",
+              pathname: "/warehouse/doorstep/collect",
+              value: doorstep?.collect,
 
+              state: "on-transit",
+            }}
+            type={"from"}
+          />
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "ASSIGN DOORSTEP PACKAGES",
+              pathname: "/warehouse/doorstep/assign",
+              value: doorstep?.assign,
 
-        </Layout>
-    )
-}
+              state: "recieved-warehouse",
+            }}
+            type={"to"}
+          />
+        </div>
 
-const mapStateToProps = (state) => {
-    return {
+        <div className="md:flex gap-8 justify-between">
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "Collect Errand riders",
+              pathname: "/warehouse/errand/collect",
+              value: errand?.collect,
+              state: "on-transit",
+            }}
+            type={"from"}
+          />
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "Assign Errand riders",
+              pathname: "/warehouse/errand/assign",
+              value: errand?.assign,
+              state: "recieved-warehouse",
+            }}
+            type={"to"}
+          />
+        </div>
 
-        agents: state.agentsData.agents,
-        packages: state.agentsData.packs,
-        loading: state.agentsData.loading,
-
-    };
+        <div className="md:flex gap-8 justify-center">
+          <WHItem
+            noCount={false}
+            obj={{
+              title: "Unpicked",
+              pathname: "/warehouse/doorstep/packages",
+              value: unpicked,
+              state: "on-transit",
+            }}
+            type={"unpicked packages"}
+          />
+        </div>
+      </div>
+    </Layout>
+  );
 };
 
-export default connect(mapStateToProps, { get_agents, get_zones, assign, fetchpackages, fetchdoorpackages })(Index)
-
+export default Index;

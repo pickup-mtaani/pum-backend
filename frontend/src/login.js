@@ -38,7 +38,7 @@ function Login(props) {
     await props.loginUser(user);
     var userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo.role.name === "admin") {
-      return navigate("/dashboard");
+      return navigate("/warehouse");
     } else {
       return navigate("/403");
     }
@@ -48,7 +48,7 @@ function Login(props) {
   useEffect(() => {
     var userInfor = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfor) {
-      return navigate("/dashboard");
+      return navigate("/warehouse");
     } else {
       return navigate("/");
     }

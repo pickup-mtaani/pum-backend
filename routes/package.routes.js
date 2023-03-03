@@ -1815,7 +1815,7 @@ router.get(
   async (req, res) => {
     try {
       let agent = {};
-      let doorstep= {};
+      let doorstep = {};
       let shelves = {};
       let errand = {};
 
@@ -2068,19 +2068,20 @@ router.get(
         })
           .sort({ createdAt: -1 })
           .limit(100);
-      } 
-      else {
+      } else {
         agent.created = await Sent_package.countDocuments({
-          state: { $in: ["request","pending-shelf-agent","pending-stock-agent"] },
+          state: {
+            $in: ["request", "pending-shelf-agent", "pending-stock-agent"],
+          },
           businessId: req.params.id,
-        })
-       
+        });
+
         agent.dropped = await Sent_package.countDocuments({
           state: "picked-from-sender",
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-          
+        });
+
         agent.transit = await Sent_package.countDocuments({
           $or: [
             { state: "on-transit" },
@@ -2090,40 +2091,44 @@ router.get(
           ],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-         
+        });
+
         agent.warehouse = await Sent_package.countDocuments({
           $or: [{ state: "recieved-warehouse" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-         
+        });
 
         agent.delivered = await Sent_package.countDocuments({
           $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-     
+        });
+
         agent.collected = await Sent_package.countDocuments({
           $or: [{ state: "collected" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-          
+        });
 
         doorstep.created = await Door_step_Sent_package.countDocuments({
-          state: { $in: ["request","pending-shelf-doorstep","pending-stock-doorstep"] },
+          state: {
+            $in: [
+              "request",
+              "pending-shelf-doorstep",
+              "pending-stock-doorstep",
+            ],
+          },
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-        
+        });
+
         doorstep.dropped = await Door_step_Sent_package.countDocuments({
           state: "picked-from-sender",
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-         
+        });
+
         doorstep.transit = await Door_step_Sent_package.countDocuments({
           $or: [
             { state: "on-transit" },
@@ -2133,32 +2138,31 @@ router.get(
           ],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-          
+        });
+
         doorstep.warehouse = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "recieved-warehouse" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-          
+        });
 
         doorstep.delivered = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-          
+        });
+
         doorstep.collected = await Door_step_Sent_package.countDocuments({
           $or: [{ state: "collected" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
-        
+        });
+
         shelves.created = await Rent_a_shelf_deliveries.countDocuments({
           state: "request",
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
+        });
         shelves.dropped = await Rent_a_shelf_deliveries.countDocuments({
           $or: [
             { state: "agent" },
@@ -2168,29 +2172,54 @@ router.get(
           ],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
+        });
         shelves.collected = await Rent_a_shelf_deliveries.countDocuments({
           $or: [{ state: "collected" }],
           // createdBy: req.user._id,
           businessId: req.params.id,
-        })
+        });
 
-      errand.created = await Erand_package.countDocuments({  state: { $in: ["request","pending-shelf-errand","pending-stock-errand"] },businessId: req.params.id })
-      errand.dropped = await Erand_package.countDocuments({ state: "picked-from-sender",  businessId: req.params.id })
-      errand.transit = await Erand_package.countDocuments({ $or: [{ state: "on-transit" }, { state: "warehouse-transit" }, { state: "assigned" }, { state: "dropped" }], businessId: req.params.id })
-      errand.warehouse = await Erand_package.countDocuments({ $or: [{ state: "recieved-warehouse" }],businessId: req.params.id })
-      errand.delivered = await Erand_package.countDocuments({ $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],  businessId: req.params.id })
-      errand.collected = await Erand_package.countDocuments({ $or: [{ state: "collected" }],  businessId: req.params.id })
-   
-      return res.status(200).json({
-        message: "Fetched Sucessfully",
-        agent,
-        doorstep,
-        shelves,
-        errand
-      });
-    }
-  } catch (error) {
+        errand.created = await Erand_package.countDocuments({
+          state: {
+            $in: ["request", "pending-shelf-errand", "pending-stock-errand"],
+          },
+          businessId: req.params.id,
+        });
+        errand.dropped = await Erand_package.countDocuments({
+          state: "picked-from-sender",
+          businessId: req.params.id,
+        });
+        errand.transit = await Erand_package.countDocuments({
+          $or: [
+            { state: "on-transit" },
+            { state: "warehouse-transit" },
+            { state: "assigned" },
+            { state: "dropped" },
+          ],
+          businessId: req.params.id,
+        });
+        errand.warehouse = await Erand_package.countDocuments({
+          $or: [{ state: "recieved-warehouse" }],
+          businessId: req.params.id,
+        });
+        errand.delivered = await Erand_package.countDocuments({
+          $or: [{ state: "dropped-to-agent" }, { state: "delivered" }],
+          businessId: req.params.id,
+        });
+        errand.collected = await Erand_package.countDocuments({
+          $or: [{ state: "collected" }],
+          businessId: req.params.id,
+        });
+
+        return res.status(200).json({
+          message: "Fetched Sucessfully",
+          agent,
+          doorstep,
+          shelves,
+          errand,
+        });
+      }
+    } catch (error) {
       console.log(error);
       return res
         .status(400)
@@ -2406,4 +2435,56 @@ router.get("/track-by-code", async (req, res) => {
   }
 });
 
+/**
+ * METHOD: GET
+ * RETURNS: Agent(dropped,received-warehouse,assigned)
+ * RETURNS: Doorstep(dropped,received-warehouse,assigned)
+ * RETURNS: Errand(dropped,received-warehouse, assigned)
+ */
+router.get("/packages/warehouse-package-count", async (req, res) => {
+  try {
+    let agent = {};
+    let doorstep = {};
+    let shelves = {};
+    let errand = {};
+
+    // packages to collect from rider
+    agent.collect = await Sent_package.countDocuments({
+      state: "dropped",
+    });
+    doorstep.collect = await Door_step_Sent_package.countDocuments({
+      state: "dropped",
+    });
+    errand.collect = await Erand_package.countDocuments({
+      state: "dropped",
+    });
+
+    // packages to assign rider
+    agent.assign = await Sent_package.countDocuments({
+      state: { $in: ["recieved-warehouse"] },
+    });
+    doorstep.assign = await Door_step_Sent_package.countDocuments({
+      state: { $in: ["recieved-warehouse"] },
+    });
+    errand.assign = await Erand_package.countDocuments({
+      state: { $in: ["recieved-warehouse"] },
+    });
+
+    // unpicked packages
+    agent.unpicked = await Sent_package.countDocuments({
+      state: { $in: ["assigned"] },
+    });
+    doorstep.unpicked = await Door_step_Sent_package.countDocuments({
+      state: { $in: ["assigned"] },
+    });
+    errand.unpicked = await Erand_package.countDocuments({
+      state: { $in: ["assigned"] },
+    });
+
+    return res.status(200).json({ errand, doorstep, agent });
+  } catch (error) {
+    console.log("FETCH WAREHOUSE COUNT ERROR:", error);
+    return res.status(400).json(error);
+  }
+});
 module.exports = router;
