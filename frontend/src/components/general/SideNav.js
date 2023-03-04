@@ -1,6 +1,5 @@
 import React from "react";
 
-import { AiOutlineHome } from "react-icons/ai";
 import { BsBookshelf, BsPinMap } from "react-icons/bs";
 import { FaMoneyBill } from "react-icons/fa";
 import { GoPackage } from "react-icons/go";

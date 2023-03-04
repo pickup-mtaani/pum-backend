@@ -3,7 +3,7 @@ import { TbPackgeExport, TbPackgeImport } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
 function DashboardItems(props) {
-  const { item } = props;
+  // const { item } = props;
 
   return (
     <div
@@ -18,7 +18,7 @@ function DashboardItems(props) {
             </h1>
             <h1 className="font-bold text-primary-500 text-xl">
               {props.item.value}
-              <span className="font-semibold pl-10 text-xl text-red-600 text-gray-400">
+              <span className="font-semibold pl-10 text-xl  text-gray-500">
                 {props.item.percent && props.item.percent}
                 {props.item.percent ? "%" : null}
               </span>
@@ -69,7 +69,7 @@ export function DashboardWHItem(props) {
 }
 export function WHItem(props) {
   return (
-    <div className=" w-full md:w-1/2 mb-8 md:md-0 bg-white rounded-xl shadow overflow-hidden">
+    <div className=" w-full md:w-1/2 mb-4 lg:mb-8  md:md-0 bg-white rounded-xl shadow overflow-hidden">
       <Link
         to={{
           pathname: `${props?.obj.pathname}`,

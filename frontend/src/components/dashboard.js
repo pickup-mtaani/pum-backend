@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../views/Layouts";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import DashboardItems from "./DashboardItems";
-import { CanvasJSChart } from "canvasjs-react-charts";
+import Layout from "../views/Layouts";
 import { getParcels } from "./../redux/actions/package.actions";
+import DashboardItems from "./DashboardItems";
 
 import { FetchAdmins, FetchUsers } from "../redux/actions/auth.actions";
 function Dashboard(props) {

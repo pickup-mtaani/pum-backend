@@ -3,7 +3,6 @@ import WarehouseServices from "../../services/WarehouseServices";
 import Layout from "../../views/Layouts";
 import { WHItem } from "../DashboardItems";
 const Index = () => {
-  const [collect, setCollections] = useState([]);
   const [errand, setErrand] = useState();
   const [agent, setAgent] = useState({ dropped: 0, transit: 0, recieved: 0 });
   const [doorstep, setDoorstep] = useState({
@@ -38,7 +37,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col w-full p-12 gap-8 mb-12 ">
+      <div className="flex flex-col w-full p-4 md:p-8 lg:p-12 gap-2 md:gap-8 mb-12 ">
         {/* Agent packages row */}
         <div className="md:flex gap-8 justify-between">
           <WHItem

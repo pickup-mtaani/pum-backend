@@ -1,22 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-pascal-case */
 import React, { useCallback } from "react";
+import { connect } from "react-redux";
+import { BrowserRouter as Router, useRoutes } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./login";
-import { BrowserRouter as Router, useRoutes } from "react-router-dom";
-import { connect } from "react-redux";
 
 import Dashboard from "./components/dashboard";
-import Sellers from "./components/Seller";
-import UserDetails from "./components/Seller/UserDetails";
-import Products from "./components/Seller/products";
 import Packages from "./components/packages";
 import AgentPackages from "./components/packages/aent";
-import Riders from "./components/Riders";
 import Payments from "./components/payment";
+import Riders from "./components/Riders";
+import Sellers from "./components/Seller";
+import Products from "./components/Seller/products";
+import UserDetails from "./components/Seller/UserDetails";
 // import Tracks from "./components/tracks ";
+import Agents from "./components/agents ";
 import WareHouse from "./components/warehouse";
 import Assign_Agent_package_riderWareHouse from "./components/warehouse/agent/assignRider";
-import Agents from "./components/agents ";
 import WHdoorstep from "./components/warehouse/doorstep";
 import PickFromRider from "./components/warehouse/doorstep/pick";
 import PickFromRiderPage from "./components/warehouse/doorstep/riderpage";
@@ -26,23 +27,25 @@ import PickFromRiderDoorstep from "./components/warehouse/doorstep/pickPackageDo
 import PickFromRiderErrand from "./components/warehouse/errand/pickPackageErrand";
 
 import RiderAgents from "./components/warehouse/agent/agents";
-import GIvetoRiderPage from "./components/warehouse/doorstep/give";
 import AsRiderPage from "./components/warehouse/doorstep/assignRider";
+import GIvetoRiderPage from "./components/warehouse/doorstep/give";
 
 import WereHouseErrands from "./components/warehouse/errand/";
+import {
+  default as AssignErrandRiderPage,
+  default as GiveErrandtoRiderPage,
+} from "./components/warehouse/errand/give";
 import PickErrandFromRider from "./components/warehouse/errand/pick";
 import PickErrandFromRiderPage from "./components/warehouse/errand/riderpage";
-import GiveErrandtoRiderPage from "./components/warehouse/errand/give";
-import AssignErrandRiderPage from "./components/warehouse/errand/give";
 
-import WHAgent from "./components/warehouse/agent";
 import Collections from "./components/routes";
 import WareHouseActions from "./components/warehouse/actionPage";
+import WHAgent from "./components/warehouse/agent";
 
-import Riderpage from "./components/warehouse/riderpage";
 import AgentsDetails from "./components/AgentsDetails";
 import SwitchBoard from "./components/packages/switchboard";
 import AssignRider from "./components/TrackRider";
+import Riderpage from "./components/warehouse/riderpage";
 
 import Bussiness from "./components/bussiness";
 
@@ -51,17 +54,17 @@ import RentShelfAgents from "./components/rentshelf/business";
 import RentShelfAgent from "./components/rentshelf/details";
 
 import Setup from "./components/Setup";
+import AssignAgent from "./components/warehouse/AssignAgent";
+import AssignDoorstep from "./components/warehouse/AssignDoorstep";
+import AssignErrand from "./components/warehouse/AssignErrand";
+import CollectAgent from "./components/warehouse/CollectAgent";
+import CollectDoorstep from "./components/warehouse/CollectDoorstep";
+import CollectErrand from "./components/warehouse/CollectErrand";
+import Unpicked from "./components/warehouse/Unpicked";
+import { set_riders } from "./redux/actions/products.actions";
 import Withdrawals from "./screens/mpesa/Withdrawals";
 import Tracker from "./screens/Tracker";
 import RiderServices from "./services/RiderServices";
-import { set_riders } from "./redux/actions/products.actions";
-import Unpicked from "./components/warehouse/Unpicked";
-import CollectAgent from "./components/warehouse/CollectAgent";
-import AssignAgent from "./components/warehouse/AssignAgent";
-import CollectDoorstep from "./components/warehouse/CollectDoorstep";
-import AssignDoorstep from "./components/warehouse/AssignDoorstep";
-import CollectErrand from "./components/warehouse/CollectErrand";
-import AssignErrand from "./components/warehouse/AssignErrand";
 
 import PickAgentPackage from "./components/warehouse/agent/pickPackage";
 import PickDoorstepPackage from "./components/warehouse/doorstep/pickPackage";
