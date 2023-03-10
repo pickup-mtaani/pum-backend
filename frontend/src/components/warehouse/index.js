@@ -93,7 +93,7 @@ const Index = () => {
           <WHItem
             noCount={false}
             obj={{
-              title: "Collect Errand riders",
+              title: "Collect Errand Packages",
               pathname: "/warehouse/errand/collect",
               value: errand?.collect,
               state: "on-transit",
@@ -103,7 +103,7 @@ const Index = () => {
           <WHItem
             noCount={false}
             obj={{
-              title: "Assign Errand riders",
+              title: "Assign Errand packages",
               pathname: "/warehouse/errand/assign",
               value: errand?.assign,
               state: "recieved-warehouse",
